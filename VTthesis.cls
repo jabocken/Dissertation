@@ -8,7 +8,7 @@
 %
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 %
 % Please see the GNU General Public License: <http://www.gnu.org/licenses/>.
 %
@@ -73,7 +73,7 @@
 
 %Use the following code to disable ligatures:
 \usepackage{fontspec}
-\setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Latin Modern Roman} %Set your font type here. The default font for this document class is Latin Modern Roman. 
+\setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Latin Modern Roman} %Set your font type here. The default font for this document class is Latin Modern Roman.
 
 %package required for abbreviations page
 \usepackage{nomencl}
@@ -96,7 +96,7 @@
 % links for references
 \RequirePackage[final,colorlinks=true,allcolors=blue]{hyperref}
 
-% For including pdf images: 
+% For including pdf images:
 %\RequirePackage[final]{graphicx}
 %\RequirePackage{float}
 
@@ -118,7 +118,7 @@
 \ifbool{@dft}{
   % \cofeAm{0.7}{0.75}{2}{0}{0}
   \usepackage[firstpage]{draftwatermark}
-  \SetWatermarkScale{1} %Smaller numbers decrease the size of the text. Originally set to 6. 
+  \SetWatermarkScale{1} %Smaller numbers decrease the size of the text. Originally set to 6.
   \SetWatermarkLightness{0.7}
 }
 
@@ -172,9 +172,9 @@ frame=single,
 \def\submitdate#1{\gdef\@submitdate{#1}}
 
 \ifnum\month>9
-    \@tempcnta=\year 
+    \@tempcnta=\year
     %\To advance the date by one year:
-    %\advance\@tempcnta by 1 
+    %\advance\@tempcnta by 1
     \edef\@copyrightyear{\number\the\@tempcnta}
 \else
     \def\@copyrightyear{\number\the\year}
