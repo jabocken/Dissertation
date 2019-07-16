@@ -12,13 +12,17 @@
 %
 %In addition to the standard formatting options, the following options are defined for the VTthesis class: proposal, prelim, doublespace, draft.
 
-\documentclass[doublespace,draft,nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
-
-% Using the following header instead will create a draft copy of your thesis
-%\documentclass[doublespace,draft]{VTthesis}
+\documentclass[draft,nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
 
 % The lipsum package is just included to put dummy text in the document in order to demonstrate page headers and table of contents behavior. You should remove it once you begin writing your actual thesis or dissertation.
 \usepackage{lipsum}
+
+\usepackage[en-US]{datetime2}      % For \DTMdate, etc.
+
+\usepackage{booktabs}              % For nicer-looking tables
+\usepackage{threeparttable}        % For tables with notes
+
+\usepackage{cleveref}              % Better auto-reference-typing than \autoref{}
 
 % Title of your thesis
 \title{Title of your thesis goes here}
@@ -27,28 +31,25 @@
 \keywords{Some Keywords, Subject matter, etc.}
 
 \author{Joshua A. Bockenek}
-
 \program{Electrical and Computer Engineering}
 
 % Change this to your degree, e.g. Master of Science, Master of Art, etc.
 \degree{Doctor of Philosophy}
 
-% This should be your defense date:
-\submitdate{September x, 2019}
+% This should be your defense date: (update when settled)
+\submitdate{\DTMdate{2019-09-01}}
 
 % Committee members. Only have five readers and one chair available.
 % Only use the ones you need and don't include the ones you don't need.
-% You can also declare a Co-advisor. If you do, the principal and co-advisors
-% will be listed as co-advisors on the title page.  Per the VT ETD standards,
+% Per the VT ETD standards,
 % you should not include titles or educational qualifications such as PhD or Dr.
 % You should, however, include middle initials if possible.
-\principaladvisor{John Q. Williams}
-%\coadvisor{Vicente Esparza}
-\firstreader{Janet K. Martin}
-\secondreader{Kara M. Jones}
-\thirdreader{James Smith}
-%\fourthreader{Fourth Committee Member}
-%\fifthreader{Fifth Committee Member}
+\principaladvisor{Binoy Ravindran}
+\firstreader{x}
+\secondreader{x}
+\thirdreader{x}
+\fourthreader{x}
+\fifthreader{x}
 
 % The dedication and acknowledgement pages are optional. Comment them out to remove them.
 \dedication{This is where you put your dedications.}
@@ -61,15 +62,15 @@
 \abstractgenaud{You are also required as of Spring 2016 to include a general audience abstract. This should be geared towards individuals outside of your field that may be reading seeking information about your work. You should avoid language that is particular to your field and clearly define any terms that may have special meaning in your discipline.}
 
 \begin{document}
-% The following lines set up the front matter of your thesis or dissertation and is required to ensure proper formatting per the VT ETD standards.
+  % The following lines set up the front matter of your thesis or dissertation and is required to ensure proper formatting per the VT ETD standards.
   \frontmatter
   \maketitle
   \tableofcontents
 
-% The list of figures and tables are now optional per the official ETD standards.  Unless you have a very good reason for removing them, you should leave these lists in the document. Comment them out to remove them.
+  % The list of figures and tables are now optional per the official ETD standards.  Unless you have a very good reason for removing them, you should leave these lists in the document. Comment them out to remove them.
 	\listoffigures
 	\listoftables
-    \printnomenclature %creates a list of abbreviations. Comment out to remove it.
+  \printnomenclature %creates a list of abbreviations.
 
 % sample text for abbreviations:
 NLP is a field of computer science, artificial intelligence, and linguistics concerned with the interactions between computers and human (natural) languages.
@@ -83,28 +84,16 @@ $\sigma$ is the eighteenth letter of the Greek alphabet, and carries the 's' sou
 % The following sets up the document for the main part of the thesis or dissertation. Do not comment out or remove this line.
 	\mainmatter
 
-	%now go ahead and start writing your thesis
-	\chapter{Introduction} \label{ch:introduction}
-   			\lipsum[1]
-
-%Copy/paste the code below to add sections and subsections to each chapter. Add your own text to the chapter and (sub)section labels to create custom headings.
-    \section{One Section} \label{se:one_section}
-			\lipsum[2]
-			\subsection{A sub-section} \label{ss:this_subsection}
-				\lipsum[1-4]
-		\section{Another Section} \label{se:another_section}
-			\lipsum[1-2]
-
-    \chapter{Review of Literature} \label{ch:lit_review}
-	\chapter{Results} \label{ch:results}
+  \chapter{Background} \label{ch:background}
+  \input{floyd}
 	\chapter{Discussion} \label{ch:discussion}
 	\chapter{Conclusions} \label{ch:conclusions}
 	\chapter{Summary} \label{ch:summary}
 
 	% This is the standard bibtex file. Do not include the .bib extension in 	  	<bib_file_name>.
 	% Uncomment the following lines to include your bibliography:
-	%\bibliography{<bib_file_name>}
 	%\bibliographystyle{plainnat}
+	%\bibliography{<bib_file_name>}
 
 	% This formats the chapter name to appendix to properly define the headers:
 	\appendix
