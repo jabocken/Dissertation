@@ -1,8 +1,7 @@
 \chapter{Control-Flow-Driven Verification}
 
 \section{Introduction}\label{se:cfg_intro}
-The first approach for memory usage analysis presented in this dissertation
-features a Floyd-style methodology.
+The memory usage analysis approach presented in this section features a Floyd-style methodology.
 
 This approach focuses on the property of \emph{memory preservation}.
 
@@ -14,21 +13,41 @@ Some basic invariants are generated but most must be added manually.
 Recursion is supported but requires a significant amount of work,
 much greater than that needed for loops.
 
-% TODO: revise this
+% TODO: revise this?
 The methodology was applied to several example functions
 as well as functions from the HermitCore unikernel library.
 Documentation of the example functions can be found in \cref{se:cfg_examples}.
 The HermitCore function work can be found in \cref{se:cfg_applications}.
 
 \section{Floyd Invariant Foundation}\label{se:cfg_invariant}
+% TODO: more here?
+
+Loops pose a significant problem when using symbolic execution to analyze code.
+
+Breaking up symbolic execution of loops is one method of resolving those issues.
+
+By using a control-flow-based Floyd approach, we can easily achieve this.
+
+\subsection{Composition}
 
 \section{Verification}\label{se:cfg_verification}
 
 \section{Examples}\label{se:cfg_examples}
 \subsection{Factorial}
+A simple demonstration of recursion can be found in the definition of the factorial operation.
+\begin{equation}
+  n!=\begin{cases}
+    n * (n - 1)!, & \text{n > 0} \\
+    1, & \text{n = 0}
+  \end{cases}
+\end{equation}
 % others
 
 \section{Applications}\label{se:cfg_applications}
 % HermitCore
+A \emph{unikernel} is a program designed for a specific task
+that is compiled with all kernel code necessary to run the program,
+bypassing the need for \iac{os}~\citep{madhavapeddy2014unikernels}.
+Unikernels can be used with hypervisors or even on bare metal systems.
 
 \section{Limitations}
