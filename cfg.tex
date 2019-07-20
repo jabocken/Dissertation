@@ -11,7 +11,7 @@ It features automatically-selected cutpoints.
 Some basic invariants are generated but most must be added manually.
 
 Recursion is supported but requires a significant amount of work,
-much greater than that needed for loops.
+much greater than that needed for loops and function calls alone.
 
 % TODO: revise this?
 The methodology was applied to several example functions
@@ -29,19 +29,31 @@ Breaking up symbolic execution of loops is one method of resolving those issues.
 By using a control-flow-based Floyd approach, we can easily achieve this.
 
 \subsection{Composition}
+Composition is crucial for scalability.
+
+This control-flow-oriented approach provides compositionality on the level of function calls
+as well as within the bodies of functions.
+
+%TODO: figure out if Hoare triples actually used for composition here.
 
 \section{Verification}\label{se:cfg_verification}
 
 \section{Examples}\label{se:cfg_examples}
-\subsection{Factorial}
-A simple demonstration of recursion can be found in the definition of the factorial operation.
+\subsection{Non-recursive example}
+
+\subsection{Recursion: Factorial}
+The factorial operation can provide a simple example of recursion.
+The basic definition of factorial is $n!=\prod_{i=1}^n i$.%
+\nomenclature{$\prod$}{Product of a sequence of terms; multiplication equivalent of $\sum$.}
+This results in a number that is the product of the numbers from $1$ to $n$.
+Expressed in recursive form, that definition is:
 \begin{equation}
   n!=\begin{cases}
-    n * (n - 1)!, & \text{n > 0} \\
-    1, & \text{n = 0}
+    n * (n - 1)! & \text{if }n > 0 \\
+    1 & \text{if }n = 0
   \end{cases}
 \end{equation}
-% others
+This can be easily represented in a programming language. % TODO: kind of a pointless sentence, I feel.
 
 \section{Applications}\label{se:cfg_applications}
 % HermitCore
@@ -49,5 +61,6 @@ A \emph{unikernel} is a program designed for a specific task
 that is compiled with all kernel code necessary to run the program,
 bypassing the need for \iac{os}~\citep{madhavapeddy2014unikernels}.
 Unikernels can be used with hypervisors or even on bare metal systems.
+\Acp{os} do stuff.
 
 \section{Limitations}
