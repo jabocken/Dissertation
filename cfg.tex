@@ -61,9 +61,17 @@ Composition is crucial for scalability.
 This control-flow-oriented approach provides compositionality
 on the level of function calls.
 
-%TODO: figure out if Hoare triples actually used for composition here.
+Generally, compositionality over function calls requires proving
+that the stack pointer remains unchanged after execution of every function call.
+There are some exceptions for optimized tail calls
+in which a called function returns to the caller of its callee,
+but those are not the norm.
+
+% TODO: provide simple example and walk through it like the explanation in the SAFECOMP paper
 
 \section{Verification}\label{se:cfg_verification}
+%TODO: Provide Hoare triple text here, explanations from the paper sections
+% that were previously grouped under Loops, Composition?
 
 \section{Examples}\label{se:cfg_examples}
 \subsection{Non-recursive example}
