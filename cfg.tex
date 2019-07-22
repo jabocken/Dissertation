@@ -35,9 +35,38 @@ requested as output as part of a ``heartbeat'' message.
 This, combined with a custom memory manager
 that also had no security protections against out-of-bounds memory accesses,
 lead to potential leakage of sensitive data such as passwords and encryption keys.
+% TODO: need another, better example that involves data modification too
+Memory preservation can serve as a foundation for formal security analyses
+that could be used to expose vulnerabilities involving malicious writes.
 
 \subsubsection{Composition}
+Scalability in verification is only feasible with composition.
+Proofs of functional correctness over a large suite of software
+require decomposing that suite into manageable chunks.
+Separation logic provides a \emph{frame rule} that supports such decomposition\cite{reynolds2002separation}.
+In words, the frame rule states that,
+if a program or program fragment can be confined to a certain part of a state,
+properties of that program or program fragment carry over
+when used as part of a larger system involving that state.
+Memory preservation allows for discharging the most involved part of the frame rule,
+at least in terms of individual assembly functions.
+That is, it shows that the memory usage of those functions is constrained
+to specific regions in memory.
+This can then serve as a basis
+for any larger proof effort over multifunction assembly programs.
+
 \subsubsection{Concurrency}
+Reasoning over concurrent programs is complicated
+due to the potential interactions between threads.
+While there are ways of handling such interactions in a structured manner
+via kernel- or library-provided \ac{ipc},
+one method commonly used for the sake of efficiency is shared memory.
+Shared memory can result in \emph{unintended} interactions between threads.
+Memory preservation could be adapted to show the absence of such interactions
+by proving that multiple threads only write
+to specifically-allowed regions of shared memory.
+Doing so would, of course, require a proper model of concurrency,
+which is out of scope of this dissertation.
 
 \section{Floyd Invariant Foundation}\label{se:cfg_invariant}
 % TODO: more here?
