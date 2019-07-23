@@ -70,8 +70,12 @@ Reasoning over concurrent programs is complicated
 due to the potential interactions between threads.
 While there are ways of handling such interactions in a structured manner
 via kernel- or library-provided \ac{ipc},
-one method commonly used for the sake of efficiency is shared memory.
-Shared memory can result in \emph{unintended} interactions between threads.
+one method commonly used for the sake of efficiency is \emph{shared memory}.
+Shared memory, in the context of this work,
+refers to threads or processes sharing either a full memory space
+or portions of one (via memory mapping)
+that can be written to and read from freely by any thread or process with access to it.
+Usage of shared memory can result in \emph{unintended} interactions between threads.
 Memory preservation could be adapted to show the absence of such interactions
 by proving that multiple threads only write
 to specifically-allowed regions of shared memory.
