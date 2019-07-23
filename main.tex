@@ -25,10 +25,22 @@
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{cleveref}              % Better auto-reference-typing than \autoref{}
 
+\DeclareAcronym{abi}{
+  short            = ABI,
+  short-indefinite = an,
+  long             = application binary interface,
+  long-indefinite  = an
+}
 \DeclareAcronym{ipc}{
   short            = IPC,
   short-indefinite = an,
   long             = inter-process communication,
+  long-indefinite  = an
+}
+\DeclareAcronym{isa}{
+  short            = ISA,
+  short-indefinite = an,
+  long             = instruction set architecture,
   long-indefinite  = an
 }
 \DeclareAcronym{os}{

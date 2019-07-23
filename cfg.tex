@@ -3,8 +3,8 @@
 \section{Introduction}\label{se:cfg_intro}
 The memory usage analysis approach presented in this section features a Floyd-style methodology.
 
-This approach focuses on the property of \emph{memory preservation}.
-See \cref{se:memory_preservation} for more information.
+This approach focuses on the property of \emph{memory preservation},
+fully described in \cref{se:memory_preservation}.
 
 It features automatically-selected cutpoints.
 
@@ -24,7 +24,17 @@ The HermitCore function work can be found in \cref{se:cfg_applications}.
 \section{Memory Preservation}\label{se:memory_preservation}
 Memory preservation shows that the values written by a program
 are restrained to specified regions in memory.
-This property is useful for several reasons.
+Those regions cannot be fully identified when working with source code alone,
+particularly when the end result is optimized.
+Memory may be laid out differently depending on the \ac{isa} and \ac{abi} targeted,
+as well as on the compiler used.
+This can include positioning of global variables as well as the layout of stack frames.
+While one way of resolving that issue would be to choose a specific compiler
+and provide a formal analysis of how it arranges memory, that method is not flexible.
+It may instead be better to target assembly or machine code directly,
+as done in this dissertation.
+
+The following small sections elaborate on the usefulness of memory preservation.
 
 \subsubsection{Security}
 Unbounded memory usage can lead to vulnerabilities
