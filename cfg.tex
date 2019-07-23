@@ -140,7 +140,35 @@ A \emph{unikernel} is a program designed for a specific task
 that is compiled with all kernel code necessary to run the program,
 bypassing the need for \iac{os}~\citep{madhavapeddy2014unikernels}.
 Unikernels can be used with hypervisors or even on bare metal systems.
-This allows for reduced overall size and a reduction in attack surface;
-security issues in code that is not compiled into the binary do not matter, after all.
+This allows for reduced overall size and a reduction in attack surface
+by leaving out those kernel components that are not necessary.
+
+% TODO: place table properly
+\begin{table*}
+  \centering
+  \renewcommand\theadalign{tc}
+  \begin{threeparttable}
+    \caption{Summary of functions analyzed}
+    \label{tbl:functions}
+    \begin{tabular}{lrrrrrrrrr}
+      \toprule
+      \thead{Functions} & \thead{Count} & \thead{\acs*{sloc}} & \thead{Insts\tnote{\dag}} & \thead{Loops} & \thead{Recursion} & \thead{Pointer\\args} & \thead{Globals} & \thead{Subcalls} & \thead{\texttt{-O3}} \\
+      \midrule
+      \lstinline|dequeue_*| & 3 & 46 & 159 &&& 3 && 3 & 3 \\
+      \lstinline|buddy_*| & 5 & 67 & 225 & 1 & 1 & 1 & 3 & 3 & 3 \\
+      \lstinline|task_list_*| & 3 & 43 & 128 &&& 3 &&& 3 \\
+      \lstinline|vring_*| & 3 & 19 & 80 &&& 1 &&& 3 \\
+      \lstinline|string.h| & 8 & 81 & 280 & 8 && 8 &&& \\
+      \lstinline|syscall.c| & 23 & 293 & 857 & 5 && 19 & 7 & 17 & \\
+      \lstinline|tasks.c| & 10 & 122 & 396 & 2 && 3 & 9 & 4 & \\
+      \lstinline|spinlock.h| & 8 & 89 & 254 & 2 && 8 & 2 & 6 & \\
+      Total & 71 & 760 & 2379 & 18 & 1 & 46 & 21 & 33 & 12 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \item[\dag] Non-optimized count
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table*}
 
 \section{Limitations}

@@ -146,9 +146,8 @@ frame=single,
   stepnumber=1, %line number every line
   numbersep=5pt,
   tabsize=2, %set tabs to two spaces
-  basicstyle=\small, % print whole listing small
-  keywordstyle=\bfseries,% green keywords
-  stringstyle=\ttfamily % typewriter type for strings
+  basicstyle=\ttfamily, % typewriter type for code
+  keywordstyle=\bfseries % green keywords
 }
 
 % \author,\title are defined in book; here are the rest of the front matter defining macros:

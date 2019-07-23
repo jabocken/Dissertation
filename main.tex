@@ -20,6 +20,7 @@
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
 
 \usepackage{booktabs}              % For nicer-looking tables
+\usepackage{makecell}              % For table heading cells and cells with line breaks
 \usepackage{threeparttable}        % For tables with notes
 
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
@@ -50,7 +51,8 @@
   long-indefinite  = an,
   short-plural     = es
 }
-
+\DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
+  
 % Title of your thesis
 \title{Title of your thesis goes here}
 
