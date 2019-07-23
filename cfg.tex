@@ -18,7 +18,7 @@ much greater than that needed for loops and function calls alone.
 The methodology was applied to several example functions
 as well as functions from the HermitCore unikernel library.
 Documentation of the example functions can be found in \cref{se:cfg_examples}.
-The HermitCore function work can be found in \cref{se:cfg_applications}.
+The HermitCore function work can be found in \cref{se:cfg_application}.
 
 % TODO: maybe move into Memory Usage section
 \section{Memory Preservation}\label{se:memory_preservation}
@@ -34,7 +34,8 @@ and provide a formal analysis of how it arranges memory, that method is not flex
 It may instead be better to target assembly or machine code directly,
 as done in this dissertation.
 
-The following small sections elaborate on the usefulness of memory preservation.
+The following small sections elaborate on the usefulness of memory preservation
+as a platform for further verification efforts.
 
 \subsubsection{Security}
 Unbounded memory usage can lead to vulnerabilities
@@ -133,12 +134,13 @@ Expressed in recursive form, that definition is:
 \end{equation}
 This can be easily represented in a programming language. % TODO: kind of a pointless sentence, I feel.
 
-\section{Applications}\label{se:cfg_applications}
+\section{Application: HermitCore}\label{se:cfg_application}
 % HermitCore
 A \emph{unikernel} is a program designed for a specific task
 that is compiled with all kernel code necessary to run the program,
 bypassing the need for \iac{os}~\citep{madhavapeddy2014unikernels}.
 Unikernels can be used with hypervisors or even on bare metal systems.
-\Acp{os} do stuff.
+This allows for reduced overall size and a reduction in attack surface;
+security issues in code that is not compiled into the binary do not matter, after all.
 
 \section{Limitations}
