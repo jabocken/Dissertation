@@ -136,7 +136,7 @@
 \newtheorem{algorithm}[proposition]{Algorithm}
 
 \lstset{ % command to set programming language parameter(s)
-frame=single,
+  frame=single,
   showstringspaces=false,
   showlines=false, %get rid of trailing white lines
   emptylines=1, %allow blank line

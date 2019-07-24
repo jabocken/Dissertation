@@ -132,7 +132,23 @@ Expressed in recursive form, that definition is:
     1 & \text{if }n = 0
   \end{cases}
 \end{equation}
-This can be easily represented in a programming language. % TODO: kind of a pointless sentence, I feel.
+The C equivalent of that function is shown in \cref{factorial-c}.
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  caption=Factorial in C,
+  label=factorial-c
+]
+  unsigned int factorial(unsigned int n) {
+    if (n > 0) {
+      return n * factorial(n - 1);
+    }
+    
+    return 1;
+  }
+\end{lstlisting}
+
+% TODO: don't want to go through the process of trying to prove factorial, we don't have it as a proper example already (I thought we did, though.)
 
 \section{Application: HermitCore}\label{se:cfg_application}
 % HermitCore

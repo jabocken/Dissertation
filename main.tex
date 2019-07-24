@@ -12,7 +12,7 @@
 %
 %In addition to the standard formatting options, the following options are defined for the VTthesis class: proposal, prelim, doublespace, draft.
 
-\documentclass[draft,nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
+\documentclass[nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
 
 % The lipsum package is just included to put dummy text in the document in order to demonstrate page headers and table of contents behavior. You should remove it once you begin writing your actual thesis or dissertation.
 \usepackage{lipsum}
@@ -25,6 +25,8 @@
 
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{cleveref}              % Better auto-reference-typing than \autoref{}
+
+\renewcommand\lstlistlistingname{List of Listings}
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -97,8 +99,11 @@
   \tableofcontents
 
 	\listoffigures
-	\listoftables
-  % Bit of work needed to get acronyms in the TOC properly
+  \listoftables
+  % Bit of work needed to get listings and acronyms in the TOC properly
+  \clearpage\phantomsection % Getting hyperref to link to the right page
+  \addcontentsline{toc}{chapter}{\lstlistlistingname}
+  \lstlistoflistings
   \clearpage\phantomsection % Getting hyperref to link to the right page
   \addcontentsline{toc}{chapter}{Acronyms}
   \printacronyms[heading=chapter*]
