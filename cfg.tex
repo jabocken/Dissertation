@@ -117,6 +117,18 @@ but those are not the norm.
 %TODO: Provide Hoare triple text here, explanations from the paper sections
 % that were previously grouped under Loops, Composition?
 
+\subsection{Modeling External Calls}
+In many cases, users of a verification methodology over functions
+will encounter calls to functions that are not included in the verification effort.
+These may be system calls or simply functions not currently under consideration
+due to unsupported features or lack of time.
+If those functions affect memory in some known way, that functionality must be modeled.
+If the exact behavior is unknown,
+those functions can instead be assumed to have correct behavior
+that is left out of the existing analysis, leaving those functions in the \ac{tcb}.
+
+%TODO: more
+
 \section{Examples}\label{se:cfg_examples}
 \subsection{Non-recursive example}
 
