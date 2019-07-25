@@ -1,4 +1,4 @@
-\chapter{Control-Flow-Driven Verification}
+\chapter{Control-Flow-Driven Verification}\label{ch:cfg}
 
 \section{Introduction}\label{se:cfg_intro}
 The memory usage analysis approach presented in this section features a Floyd-style methodology.
@@ -87,17 +87,62 @@ which is out of scope of this dissertation.
 % TODO: more here?
 
 Loops pose a significant problem when using symbolic execution to analyze code.
+%...
 
 Breaking up symbolic execution of loops is one method of resolving those issues.
+%...
 
 By using a control-flow-based Floyd approach, we can easily achieve this.
+%...
 
 Taking this approach also allows minimizing symbolic execution
 even in non-loop situations.
 Placing a cutpoint at the start of each block where control flow converges
 results in all instructions being symbolically executed only once each.
+Each cutpoint then requires a state predicate contained in a \emph{Floyd invariant}.
 
-% TODO: need more
+The Floyd invariant for a function is a partial function
+that take the form $I:L\rightharpoonup(S\mapsto\mathbb{B})$.%
+\nomenclature{$L$}{The type of instruction addresses in a program; a 64-bit word}%
+\nomenclature{$S$}{Type representing program state; an Isabelle record}%
+\nomenclature{$\mathbb{B}$}{The type of boolean values, True and False}
+This function maps from instruction addresses with invariants
+to the corresponding state predicate that is the invariant.
+As a technical detail, some function proofs require additional arguments to $I$
+that represent the arguments passed to the function.
+\begin{definition}
+  A Floyd invariant~$I$ \emph{holds} if and only if, for any state~$\sigma$,
+  \begin{equation}
+    I(\loc\sigma)(\sigma)\longrightarrow
+    \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(\loc\sigma')(\sigma')),
+  \end{equation}%
+  \nomenclature{$\bot_E$}{Indicates exceptional state}%
+  \nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
+  where
+  $\sigma'=\run((\lambda\sigma\cdot I(\loc\sigma)(\sigma)\neq\bot),\sigma)$%
+  \nomenclature{$\bot$}{Used here to represent the result of calling a partial function with a value it does not have an actual result for}
+  and $\loc\sigma$ is the current program location,
+  stored in \inlineasm{rip} on x86-64 systems.
+\end{definition}
+In words, if the Floyd invariant holds on the current state~$\sigma$,
+then running to the next annotated location does not produce an exception.
+If it terminates, the produced state~$\sigma'$ satisfies the Floyd invariant.
+
+The following theorem states that a Floyd invariant
+can be used to prove properties over its corresponding program or function
+as a whole:
+\begin{theorem}
+  Assume that Floyd invariant~$I$ holds and provides an annotation for locations~$l_0$ and~$l_f$ (the initial and final location).
+  Let halting condition~$H$ stop at location~$l_f$;
+  that is, $H(\sigma)\longrightarrow\loc\sigma=l_f$.
+  Then $\htriple{I(l_0)}{H}{I(l_f)}$.
+\end{theorem}
+\begin{proof}
+  content...
+\end{proof}
+
+Intuitively, Floyd style verification allows a program to be modeled as \iac{cfg}.
+In that \ac{cfg}, each edge can be seen as an implication.
 
 \section{Composition}
 Composition is crucial for scalability.
@@ -114,8 +159,7 @@ but those are not the norm.
 % TODO: provide simple example and walk through it like the explanation in the SAFECOMP paper
 
 \section{Verification}\label{se:cfg_verification}
-%TODO: Provide Hoare triple text here, explanations from the paper sections
-% that were previously grouped under Loops, Composition?
+%TODO: Provide further explanations from the paper sections that were previously grouped under Loops, Composition?
 
 \subsection{Modeling External Calls}
 In many cases, users of a verification methodology over functions
@@ -135,7 +179,7 @@ that is left out of the existing analysis, leaving those functions in the \ac{tc
 \subsection{Recursion: Factorial}
 The factorial operation can provide a simple example of recursion.
 The basic definition of factorial is $n!=\prod_{i=1}^n i$.%
-\nomenclature{$\prod$}{Product of a sequence of terms; multiplication equivalent of $\sum$.}
+\nomenclature{$\prod$}{Product of a sequence of terms; multiplication equivalent of $\sum$}
 This results in a number that is the product of the numbers from $1$ to $n$.
 Expressed in recursive form, that definition is:
 \begin{equation}

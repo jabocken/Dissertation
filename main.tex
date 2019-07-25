@@ -14,10 +14,11 @@
 
 \documentclass[nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
 
-% The lipsum package is just included to put dummy text in the document in order to demonstrate page headers and table of contents behavior. You should remove it once you begin writing your actual thesis or dissertation.
-\usepackage{lipsum}
+\usepackage{microtype} % Not everything is supported when using XeLaTeX, but should help a bit in making text look nicer.
+\usepackage{textcomp}  % Fixes issue with microtype+siunitx's \micro
 
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
+\usepackage[binary-units]{siunitx}
 
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
@@ -34,6 +35,7 @@
   long             = application binary interface,
   long-indefinite  = an
 }
+\DeclareAcronym{cfg}{short=CFG, long=control flow graph}
 \DeclareAcronym{ipc}{
   short            = IPC,
   short-indefinite = an,
@@ -55,7 +57,50 @@
 }
 \DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
 \DeclareAcronym{tcb}{short=TCB, long=trusted computing base}
-  
+
+\lstdefinelanguage
+  [x64]{Assembler}     % add an "x64" dialect of Assembler
+  [x86masm]{Assembler} % based on the "x86masm" dialect
+  % with these extra keywords:
+  {morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD,% will add more insts as needed
+      POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS,%
+      MOVAPD,MOVDQA,
+      dil,%
+      rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp,rip,%
+      r8,r8d,r8w,r8b,r9,r9d,r9w,r9b,%
+      r10,r10d,r10w,r10b,r11,r11d,r11w,r11b,%
+      r12,r12d,r12w,r12b,r13,r13d,r13w,r13b,%
+      r14,r14d,r14w,r14b,r15,r15d,r15w,r15b}} % etc.
+\lstdefinestyle{x64}{
+  language=[x64]{Assembler},
+  keywordstyle=\bfseries\color{blue}, % bold blue keywords
+  commentstyle=\color{gray},
+  identifierstyle=\color{purple},
+  stringstyle=\color{brown},
+}
+
+\newcommand{\inlineasm}[1]{\lstinline[style=x64]|#1|}
+
+%% Math commands
+\newcommand{\var}[1]{\mathit{#1}}
+\DeclareMathOperator{\run}{run\_until}
+\DeclareMathOperator{\loc}{loc}
+
+\newcommand{\htriple}[3]{\{#1\}~#2~\{#3\}}
+
+\newcommand{\mathrip}{\text{\inlineasm{rip}}}
+\newcommand{\mathrbp}{\text{\inlineasm{rbp}}}
+\newcommand{\mathrbx}{\text{\inlineasm{rbx}}}
+\newcommand{\mathrdi}{\text{\inlineasm{rdi}}}
+\newcommand{\mathrsi}{\text{\inlineasm{rsi}}}
+\newcommand{\mathrsp}{\text{\inlineasm{rsp}}}
+\newcommand{\mathdil}{\text{\inlineasm{dil}}}
+\newcommand{\mathdl}{\text{\inlineasm{dl}}}
+
+% Misc. commands
+\newcommand{\todo}[1]{{\bfseries\color{purple}#1}} % Allowing paragraphs in todos
+\newcommand*{\fturl}[1]{\footnote{\url{#1}}}
+
 % Title of your thesis
 \title{Title of your thesis goes here}
 
@@ -121,9 +166,11 @@
   \section{Restrictions on Supported Features}
   \section{Previous Approaches to Assembly Verification}
 
-  \chapter{Background}\label{ch:background}
+  \chapter{Background}\label{ch:background} 
   \section{Floyd-Style Verification}\label{ch:floyd}
   \section{Hoare Logic}
+  \todo{Mention that \cref{ch:cfg} uses Hoare triples based on halting conditions,
+  as the instructions are part of the state and we use symbolic execution to iterate over them}
   \section{Lifting Assembly into Isabelle/HOL}
   
   \chapter{Memory Usage}
@@ -131,7 +178,8 @@
   \section{Memory Region Relations}
   
   \chapter{Symbolic Execution in Isabelle/HOL}
-  
+  \todo{Introduce $\run$, other things}
+
   \input{cfg}
   
   \chapter{Syntax-Driven Verification} % compare to CFG-driven
@@ -149,11 +197,8 @@
 	\begin{appendices}
 		\chapter{First Appendix} \label{app:appendix_one}
 			\section{Section one} \label{ase:app_one_sect_1}
-				\lipsum[1-3]
 			\section{Section two} \label{ase:app_one_sect_2}
-				\lipsum[1-3]
 		\chapter{Second Appendix} \label{app:appendix_two}
-			\lipsum[2]
 	\end{appendices}
 
 \end{document}

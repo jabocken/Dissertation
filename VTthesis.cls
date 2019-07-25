@@ -76,7 +76,7 @@
 \setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Latin Modern Roman} %Set your font type here. The default font for this document class is Latin Modern Roman.
 
 %package required for abbreviations page
-\usepackage[intoc]{nomencl}
+\usepackage[intoc,refpage]{nomencl}
 \makenomenclature
 
 \setlength{\textwidth}{6.5in}
