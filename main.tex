@@ -25,6 +25,7 @@
 \usepackage{threeparttable}        % For tables with notes
 
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
+\usepackage{makeidx}               % For indices!
 \usepackage{cleveref}              % Better auto-reference-typing than \autoref{}
 
 \renewcommand\lstlistlistingname{List of Listings}
@@ -83,6 +84,7 @@
 
 %% Math commands
 \newcommand{\var}[1]{\mathit{#1}}
+\DeclareMathOperator{\step}{step}
 \DeclareMathOperator{\run}{run\_until}
 \DeclareMathOperator{\loc}{loc}
 
@@ -138,6 +140,7 @@
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{You are also required as of Spring 2016 to include a general audience abstract. This should be geared towards individuals outside of your field that may be reading seeking information about your work. You should avoid language that is particular to your field and clearly define any terms that may have special meaning in your discipline.}
 
+\makeindex
 \begin{document}
   % The following lines set up the front matter of your thesis or dissertation and is required to ensure proper formatting per the VT ETD standards.
   \frontmatter
@@ -168,6 +171,7 @@
 
   \chapter{Background}\label{ch:background} 
   \section{Floyd-Style Verification}\label{ch:floyd}
+  \index{Floyd!verification}
   \section{Hoare Logic}
   \todo{Mention that \cref{ch:cfg} uses Hoare triples based on halting conditions,
   as the instructions are part of the state and we use symbolic execution to iterate over them}
@@ -189,6 +193,9 @@
 
 	\bibliographystyle{plainnat}
 	\bibliography{bibliography}
+
+  \clearpage\phantomsection % Getting hyperref to link to the right page
+  \printindex
 
 	% This formats the chapter name to appendix to properly define the headers:
 	\appendix

@@ -34,6 +34,7 @@ and provide a formal analysis of how it arranges memory, that method is not flex
 It may instead be better to target assembly or machine code directly,
 as done in this dissertation.
 
+\subsection{Usefulness}
 The following small sections elaborate on the usefulness of memory preservation
 as a platform for further verification efforts.
 
@@ -83,28 +84,44 @@ to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
+\subsection{Formal Definition}
+The formal definition of memory preservation starts with the notion of \emph{state}.
+%TODO
+
+The machine model provides a step function having type
+$A\times S\mapsto(S\mid\bot_E)$.%
+\nomenclature{$A$}{The type of assembly instructions}%
+\nomenclature{$S$}{Type representing program state; an Isabelle record}%
+\nomenclature{$\bot_E$}{Indicates exceptional state}
+This function takes a tuple of instruction to execute and current state~$\sigma$,
+returning the state~$\sigma'$ after execution of that instruction.
+If some sort of exception, such as a divide by zero, occurs,
+the function returns $\bot_E$ instead.
+
+% TODO: more
+
 \section{Floyd Invariant Foundation}\label{se:cfg_invariant}
 % TODO: more here?
 
 Loops pose a significant problem when using symbolic execution to analyze code.
-%...
+%TODO
 
 Breaking up symbolic execution of loops is one method of resolving those issues.
-%...
+%TODO
 
 By using a control-flow-based Floyd approach, we can easily achieve this.
-%...
+%TODO
 
 Taking this approach also allows minimizing symbolic execution
 even in non-loop situations.
 Placing a cutpoint at the start of each block where control flow converges
 results in all instructions being symbolically executed only once each.
 Each cutpoint then requires a state predicate contained in a \emph{Floyd invariant}.
+\index{Floyd!invariant}
 
 The Floyd invariant for a function is a partial function
 that take the form $I:L\rightharpoonup(S\mapsto\mathbb{B})$.%
 \nomenclature{$L$}{The type of instruction addresses in a program; a 64-bit word}%
-\nomenclature{$S$}{Type representing program state; an Isabelle record}%
 \nomenclature{$\mathbb{B}$}{The type of boolean values, True and False}
 This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
@@ -116,7 +133,6 @@ that represent the arguments passed to the function.
     I(\loc\sigma)(\sigma)\longrightarrow
     \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(\loc\sigma')(\sigma')),
   \end{equation}%
-  \nomenclature{$\bot_E$}{Indicates exceptional state}%
   \nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
   where
   $\sigma'=\run((\lambda\sigma\cdot I(\loc\sigma)(\sigma)\neq\bot),\sigma)$%
@@ -171,10 +187,13 @@ If the exact behavior is unknown,
 those functions can instead be assumed to have correct behavior
 that is left out of the existing analysis, leaving those functions in the \ac{tcb}.
 
-%TODO: more
+%TODO: more?
 
 \section{Examples}\label{se:cfg_examples}
-\subsection{Non-recursive example}
+\subsection{Non-recursive example: pow2}
+This simple function raises its argument to the power of two.
+
+%TODO: More
 
 \subsection{Recursion: Factorial}
 The factorial operation can provide a simple example of recursion.
@@ -215,7 +234,9 @@ Unikernels can be used with hypervisors or even on bare metal systems.
 This allows for reduced overall size and a reduction in attack surface
 by leaving out those kernel components that are not necessary.
 
-% TODO: place table properly
+% TODO: describe!
+
+% TODO: place table properly?
 \begin{table*}
   \centering
   \renewcommand\theadalign{tc}
@@ -244,3 +265,4 @@ by leaving out those kernel components that are not necessary.
 \end{table*}
 
 \section{Limitations}
+% TODO
