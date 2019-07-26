@@ -104,7 +104,11 @@ the function returns $\bot_E$ instead.
 % TODO: more here?
 
 Loops pose a significant problem when using symbolic execution to analyze code.
-%TODO
+One of the major issues is that they result in significant path explosion.
+While there exist methodologies to reduce the number of paths to execute
+when using loops~\citep{saxena2009lese,obdrzalek2011efficient},
+those methods are not formally verified and therefore not usable within Isabelle/HOL.
+
 
 Breaking up symbolic execution of loops is one method of resolving those issues.
 %TODO
@@ -114,9 +118,21 @@ By using a control-flow-based Floyd approach, we can easily achieve this.
 
 Taking this approach also allows minimizing symbolic execution
 even in non-loop situations.
-Placing a cutpoint at the start of each block where control flow converges
-results in all instructions being symbolically executed only once each.
-Each cutpoint then requires a state predicate contained in a \emph{Floyd invariant}.
+Consider the following pseudocode,
+which sequentially executes an if-statement and some program~$P$:
+\begin{flushleft}
+  \texttt{if} $b$ \texttt{then} $x$ \texttt{else} $y$; $P$
+\end{flushleft}
+The assembly corresponding to this code can be verified using symbolic execution.
+If executed in full, the symbolic execution engine
+would require first considering the case where~$b$ is true,
+executing~$x$ and subsequently symbolically executing program~$P$.
+It would then consider the case where~$b$ is false, executing~$y$ followed by~$P$.
+Program~$P$ would thus be symbolically executed twice.
+This repetition can be avoided
+by placing a cutpoint at the start of each block where control flow converges,
+resulting in all instructions being symbolically executed only once each.
+Each cutpoint, however, requires a state predicate contained in a \emph{Floyd invariant}.
 \index{Floyd!invariant}
 
 The Floyd invariant for a function is a partial function
@@ -154,7 +170,7 @@ as a whole:
   Then $\htriple{I(l_0)}{H}{I(l_f)}$.
 \end{theorem}
 \begin{proof}
-  content...
+  \todo{requires Hoare triple explanation}
 \end{proof}
 
 Intuitively, Floyd style verification allows a program to be modeled as \iac{cfg}.
@@ -162,6 +178,14 @@ In that \ac{cfg}, each edge can be seen as an implication.
 
 \section{Composition}
 Composition is crucial for scalability.
+There are two main reasons for this.
+First, on the function call level,
+compositionality ensures that, when a function is called,
+a successful verification effort over that function can be reused
+if preexisting or developed later if need be.
+Second, compositionality can drastically improve scalability
+\emph{within} a function body as well.
+
 
 This control-flow-oriented approach provides compositionality
 on the level of function calls.
@@ -226,15 +250,42 @@ The C equivalent of that function is shown in \cref{factorial-c}.
 % TODO: don't want to go through the process of trying to prove factorial, we don't have it as a proper example already (I thought we did, though.)
 
 \section{Application: HermitCore}\label{se:cfg_application}
-% HermitCore
-A \emph{unikernel} is a program designed for a specific task
-that is compiled with all kernel code necessary to run the program,
-bypassing the need for \iac{os}~\citep{madhavapeddy2014unikernels}.
-Unikernels can be used with hypervisors or even on bare metal systems.
+The concept of \emph{unikernels} has existed in the world of virtualization
+for over five years now.
+\index{unikernel}
+The term ``unikernel'' can refer to any single-address-space program.
+All that is required is that it be compiled with a library
+that provides all kernel code necessary to run the program.
+This bypasses the need for a separate \ac{os}~\citep{madhavapeddy2014unikernels},
+allowing the program to be used directly with a hypervisor
+\index{hypervisor}
+or even run on a bare metal system with no additional support.
 This allows for reduced overall size and a reduction in attack surface
 by leaving out those kernel components that are not necessary.
 
-% TODO: describe!
+Slightly implied by the mention of hypervisors,
+unikernels are intended for use in the same situations as traditional \acp{vm}
+or Docker containers.
+They are meant for simultaneous juxtaposed execution in a virtualized setting,
+with many single-purpose unikernels all performing their own tasks in isolation.
+This makes unikernels an interesting target for verification,
+as they aim to provide a high speed and real-time environment for cloud software.
+
+The unikernel library HermitCore was chosen
+\index{HermitCore}
+to demonstrate the applicability of this methodology
+due to its established functionality and decent size.
+Designed for the x86-64 \ac{isa}, HermitCore is mostly written in C.
+While it does use some inline assembly, not uncommon in kernel code,
+that is no issue for the assembly-level methodology presented here.
+The subset of HermitCore functions that were verified feature features
+such as loops, pointers, complex data structures, function calls, and recursion.
+The 71 functions analyzed were generally compiled unoptimized,
+but twelve of those functions were also analyzed in their optimized forms.
+This was done to show that the more complex code produced by optimizing compilers
+can also potentially be handled.
+The proofs and all associated code
+are available at \url{https://doi.org/10.6084/m9.figshare.7356110.v4}.
 
 % TODO: place table properly?
 \begin{table*}
