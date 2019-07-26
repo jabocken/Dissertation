@@ -57,6 +57,12 @@
   short-plural     = es
 }
 \DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
+\DeclareAcronym{sse}{
+  short            = SSE,
+  short-indefinite = an,
+  long             = Streaming SIMD Extensions,
+  long-indefinite  = an,
+}
 \DeclareAcronym{tcb}{short=TCB, long=trusted computing base}
 \DeclareAcronym{vm}{short=VM, long=virtual machine}
 
@@ -182,9 +188,7 @@
   \section{Definitions}
   \section{Memory Region Relations}
   
-  \chapter{Symbolic Execution in Isabelle/HOL}
-  \todo{Introduce $\run$, other things}
-
+  \input{symbolic_execution}
   \input{cfg}
   
   \chapter{Syntax-Driven Verification} % compare to CFG-driven

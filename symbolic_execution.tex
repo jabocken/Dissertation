@@ -1,0 +1,33 @@
+\chapter{Symbolic Execution in Isabelle/HOL}
+% TODO
+
+\section{Machine Model}
+The machine model used in this dissertation takes the following general form.
+\index{symbolic execution!machine model}
+Each instruction is executed by a \emph{step} function having the type
+\index{symbolic execution!step function}
+$A\times S\mapsto(S\mid\bot_E)$.%
+\nomenclature{$A$}{The type of assembly instructions}%
+\nomenclature{$S$}{Type representing program state; an Isabelle record}%
+\nomenclature{$\bot_E$}{Indicates exceptional state}
+This function takes a tuple of instruction to execute and current state~$\sigma$,
+returning the state~$\sigma'$ after execution of that instruction.
+If some sort of exception, such as a divide by zero, occurs,
+the function returns $\bot_E$ instead.
+% TODO: rework this, only the SAFECOMP step possibly returns $\bot_E$, I think.
+
+The semantics of the instructions as executed by the step function
+\index{semantics}
+are those produced by Roessle et al.~\citep{roessle2019},
+which built upon the work of Heule et al.~\citep{heule2016}.
+Heule et al.\ used machine learning to derive semantics
+by executing instructions on an actual x86-64 machine.
+Their semantics were validated against the Intel reference manual.
+The formal model was obtained by embedding those semantics into Isabelle/HOL.
+\index{Isabelle/HOL}
+It has been tested against an actual x86-64 machine, increasing the model's reliability.
+The model provides a formalization of large parts of the x86-64 \ac{isa},
+including several modern instruction set extensions such as the \ac{sse} family.
+Concurrency is not included in the model.
+
+\todo{Introduce $\run$, other things}

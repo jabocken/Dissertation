@@ -88,18 +88,6 @@ which is out of scope of this dissertation.
 The formal definition of memory preservation starts with the notion of \emph{state}.
 %TODO
 
-The machine model provides a step function having type
-$A\times S\mapsto(S\mid\bot_E)$.%
-\nomenclature{$A$}{The type of assembly instructions}%
-\nomenclature{$S$}{Type representing program state; an Isabelle record}%
-\nomenclature{$\bot_E$}{Indicates exceptional state}
-This function takes a tuple of instruction to execute and current state~$\sigma$,
-returning the state~$\sigma'$ after execution of that instruction.
-If some sort of exception, such as a divide by zero, occurs,
-the function returns $\bot_E$ instead.
-
-% TODO: more
-
 \section{Floyd Invariant Foundation}\label{se:cfg_invariant}
 % TODO: more here?
 
@@ -108,7 +96,7 @@ One of the major issues is that they result in significant path explosion.
 While there exist methodologies to reduce the number of paths to execute
 when using loops~\citep{saxena2009lese,obdrzalek2011efficient},
 those methods are not formally verified and therefore not usable within Isabelle/HOL.
-
+\index{Isabelle/HOL}
 
 Breaking up symbolic execution of loops is one method of resolving those issues.
 %TODO
@@ -132,7 +120,8 @@ Program~$P$ would thus be symbolically executed twice.
 This repetition can be avoided
 by placing a cutpoint at the start of each block where control flow converges,
 resulting in all instructions being symbolically executed only once each.
-Each cutpoint, however, requires a state predicate contained in a \emph{Floyd invariant}.
+Each cutpoint, however, requires a state predicate contained
+in a \emph{Floyd invariant}.
 \index{Floyd!invariant}
 
 The Floyd invariant for a function is a partial function
@@ -286,8 +275,6 @@ This was done to show that the more complex code produced by optimizing compiler
 can also potentially be handled.
 The proofs and all associated code
 are available at \url{https://doi.org/10.6084/m9.figshare.7356110.v4}.
-
-\subsection{Machine Model}
 
 \subsection{Functions Analyzed}
 
