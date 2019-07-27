@@ -337,5 +337,69 @@ even if they do not possess a null terminator within the specified range.
   \end{threeparttable}
 \end{table*}
 
+\Cref{fig:dequeue_push,fig:buddy_large_avail} show the \acp{cfg} for two of
+the HermitCore functions verified here,
+\lstinline|dequeue_push| and \lstinline|buddy_large_avail|.
+The former pushes a value onto a generic array-based queue
+while the latter checks for the smallest available reused memory block
+for a given allocation size.
+The former, lacking any loops, requires only pre- and postconditions
+(though additional invariants may be added).
+In contrast, the latter function
+requires a loop invariant in addition to the pre- and postconditions.
+
+\begin{figure*}
+  \centering
+  \begin{subfigure}{.48\linewidth}
+    \begin{tikzpicture}[>={stealth}]
+      \graph[math nodes, grow down=2.5cm]{
+        a/"129:\begin{array}{l}
+          \readmem{a}{1} = v_0~\wedge~\mathrsp = \rspo~\wedge \\
+          \mathrbp = \rbpo~\wedge~\mathrdi = \deqptr~\wedge \\
+          \readmem{\rspo}{8} = \retaddr
+        \end{array}" ->[
+          "\dots"
+        ] b/"\retaddr:\begin{array}{l}
+          \readmem{a}{1} = v_0~\wedge\\
+          \mathrsp = \rspo + 8~\wedge\\
+          \mathrbp = \rbpo
+        \end{array}"
+      };
+    \end{tikzpicture}
+    \caption{\lstinline|dequeue_push|}\label{fig:dequeue_push}
+  \end{subfigure}
+  \begin{subfigure}{.50\linewidth}
+    \begin{tikzpicture}[>={stealth}]
+      \graph[math nodes, grow down=3cm]{
+        a/"0:\begin{array}{l}
+          \readmem{a}{1} = v_0~\wedge~\mathrsp = \rspo~\wedge \\
+          \mathrbp = \rbpo~\wedge
+          \readmem{\rspo}{8} = \retaddr
+        \end{array}" ->[
+          align=left,
+          "$\mathrsp\coloneqq\mathrsp-8$\\
+          $\mathrbp\coloneqq\mathrsp$"
+        ] b/"21:\begin{array}{l}
+          \readmem{a}{1} = v_0~\wedge~\mathrsp = \rspo-8~\wedge \\
+          \mathrbp = \rspo-8~\wedge \\
+          \readmem{\rspo-8}{8} = \rbpo~\wedge \\
+          \readmem{\rspo}{8} = \retaddr
+        \end{array}" ->[
+          align=left,
+          "$\mathrbp\coloneqq\readmem{\mathrsp}{8}$\\
+          $\mathrsp\coloneqq\mathrsp+16$"
+        ] c/"\retaddr:\begin{array}{l}
+          \readmem{a}{1} = v_0~\wedge \\
+          \mathrsp = \rspo + 8~\wedge \\
+          \mathrbp = \rbpo
+        \end{array}";
+        b ->[out=-15, in=15, looseness=1] b;
+      };
+    \end{tikzpicture}
+    \caption{\lstinline|buddy_large_avail|}\label{fig:buddy_large_avail}
+  \end{subfigure}
+  \caption{Example Floyd invariants}
+\end{figure*}
+
 \section{Limitations}
 % TODO

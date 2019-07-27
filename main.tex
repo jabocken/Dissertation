@@ -19,6 +19,7 @@
 
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
 \usepackage[binary-units]{siunitx}
+\usepackage{mathtools}             % for \coloneqq
 
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
@@ -27,6 +28,9 @@
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{makeidx}               % For indices!
 \usepackage{cleveref}              % Better auto-reference-typing than \autoref{}
+
+\usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
+\usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
 
 \renewcommand\lstlistlistingname{List of Listings}
 
@@ -95,7 +99,15 @@
 \DeclareMathOperator{\run}{run\_until}
 \DeclareMathOperator{\loc}{loc}
 
+\newcommand{\region}[2]{\ensuremath{[#1,#2]}}
+\newcommand{\readmem}[2]{\ensuremath{\ast\region{#1}{#2}}}
+\newcommand{\readmemS}[3]{\ensuremath{#1:\readmem{#2}{#3}}}
 \newcommand{\htriple}[3]{\{#1\}~#2~\{#3\}}
+
+\newcommand{\deqptr}{\var{deq}_\mathrm{ptr}}
+\newcommand{\bufferptr}{\var{buf}_\mathrm{ptr}}
+\newcommand{\outptr}{\var{out}_\mathrm{ptr}}
+\newcommand{\valueptr}{\var{value}_\mathrm{ptr}}
 
 \newcommand{\mathrip}{\text{\inlineasm{rip}}}
 \newcommand{\mathrbp}{\text{\inlineasm{rbp}}}
@@ -105,6 +117,11 @@
 \newcommand{\mathrsp}{\text{\inlineasm{rsp}}}
 \newcommand{\mathdil}{\text{\inlineasm{dil}}}
 \newcommand{\mathdl}{\text{\inlineasm{dl}}}
+
+\newcommand{\rspo}{\var{rsp}_0}
+\newcommand{\rbpo}{\var{rbp}_0}
+
+\newcommand{\retaddr}{\mathtt{ret\_addr}}
 
 % Misc. commands
 \newcommand{\todo}[1]{{\bfseries\color{purple}#1}} % Allowing paragraphs in todos
