@@ -20,6 +20,7 @@
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
 \usepackage[binary-units]{siunitx}
 \usepackage{mathtools}             % for \coloneqq
+\usepackage{bussproofs}            % for prooftree environment
 
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
@@ -193,23 +194,8 @@
   \section{Restrictions on Supported Features}
   \section{Previous Approaches to Assembly Verification}
 
-  \chapter{Background}\label{ch:background} 
-  \section{Floyd-Style Verification}\label{ch:floyd}
-  \index{Floyd!verification}
-  \section{Hoare Logic}
-  \index{Hoare!logic}
-  \index{Hoare!triple}
-  \todo{Mention that \cref{ch:cfg} uses Hoare triples based on halting conditions,
-  as the instructions are part of the state and we use symbolic execution to iterate over them}
-  \section{Lifting Assembly into Isabelle/HOL}
-  \index{Isabelle/HOL}
-
-  \chapter{Memory Usage}
-  \index{memory!region}
-  \section{Definitions}
-  \section{Memory Region Relations}
-  \index{memory!region relation}
-  
+  \input{background}
+  \input{memory_usage}  
   \input{symbolic_execution}
   \input{cfg}
   

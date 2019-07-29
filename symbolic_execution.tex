@@ -1,5 +1,15 @@
 \chapter{Symbolic Execution in Isabelle/HOL}
-% TODO
+Symbolic execution, in a sense,
+\index{symbolic execution}
+is an extension of symbolic manipulation of mathematical equations.
+It involves executing a program with a set of symbolic inputs
+rather than concrete values~\citep{king1976symbolic}.
+In a theorem prover such as Isabelle/HOL,
+\index{Isabelle/HOL}
+that occurs via formal \emph{rewrite rules}.
+\index{symbolic execution!rewrite rule}
+
+%TODO: more
 
 \section{Machine Model}
 The machine model used in this dissertation takes the following general form.
@@ -31,3 +41,30 @@ including several modern instruction set extensions such as the \ac{sse} family.
 Concurrency is not included in the model.
 
 \todo{Introduce $\run$, other things}
+\index{symbolic execution!run function}
+
+\section{Hoare Logic and Symbolic Execution}
+Unlike the usual formulation of Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},
+\index{Hoare!logic}
+Hoare triples as defined in this dissertation use a halting condition.
+\index{Hoare!triple}
+Standard composition does not apply to such Hoare triples.
+Consider a symbolic execution obtained by halting condition~$H'$.
+% TODO: requires explaining the method of symbolic execution in this paper
+It is possible to break this run into two parts
+by first running until a halting condition~$H$ and then until~$H'$.
+This requires that~$H'$ is \emph{stronger} than~$H$; that is, $H'$ implies~$H$.
+This ensures that the run first stops at~$H$ before it stops at~$H'$.
+%\refstepcounter{equation}
+\begin{theorem}\label{thm:comp}
+  Hoare triples are compositional with respect to stronger halting conditions:
+  %  \def\labelSpacing{24.574 pt}
+  \begin{prooftree}
+    \AxiomC{$\htriple{P}{H}{Q}$}
+    \AxiomC{$\htriple{Q}{H'}{R}$}
+    \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
+    %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
+    %    \RightLabel{\textnormal{(\theequation)}}
+    \TrinaryInfC{$\htriple{P}{H'}{R}$}
+  \end{prooftree}
+\end{theorem}

@@ -13,22 +13,28 @@ Some basic invariants are generated but most must be added manually.
 
 Recursion is supported but requires a significant amount of work,
 much greater than that needed for loops and function calls alone.
+\index{loop}
+\index{function!call}
 
 % TODO: revise this?
 The methodology was applied to several example functions
 as well as functions from the HermitCore unikernel library.
+\index{HermitCore}
+\index{unikernel}
 Documentation of the example functions can be found in \cref{se:cfg_examples}.
 The HermitCore function work can be found in \cref{se:cfg_application}.
 
 % TODO: maybe move into Memory Usage section
 \section{Memory Preservation}\label{se:memory_preservation}
 Memory preservation shows that the values written by a program
+\index{memory!preservation}
 are restrained to specified regions in memory.
 Those regions cannot be fully identified when working with source code alone,
 particularly when the end result is optimized.
 Memory may be laid out differently depending on the \ac{isa} and \ac{abi} targeted,
 as well as on the compiler used.
 This can include positioning of global variables as well as the layout of stack frames.
+\index{stack!frame}
 While one way of resolving that issue would be to choose a specific compiler
 and provide a formal analysis of how it arranges memory, that method is not flexible.
 It may instead be better to target assembly or machine code directly,
@@ -49,6 +55,7 @@ that also had no security protections against out-of-bounds memory accesses,
 lead to potential leakage of sensitive data such as passwords and encryption keys.
 % TODO: need another, better example that involves data modification too
 Memory preservation can serve as a foundation for formal security analyses
+\index{memory!preservation}
 that could be used to expose vulnerabilities involving malicious writes.
 
 \subsubsection{Composition}
@@ -92,17 +99,36 @@ The formal definition of memory preservation starts with the notion of \emph{sta
 % TODO: more here?
 
 Loops pose a significant problem when using symbolic execution to analyze code.
+\index{loop}
 One of the major issues is that they result in significant path explosion.
-While there exist methodologies to reduce the number of paths to execute
+While there are methodologies to reduce the number of paths to execute
 when using loops~\citep{saxena2009lese,obdrzalek2011efficient},
-those methods are not formally verified and therefore not usable within Isabelle/HOL.
+those methods are not currently formally verified
+and therefore not usable within Isabelle/HOL.
 \index{Isabelle/HOL}
+Additionally, deciding the loop condition on a symbolic state
+may involve non-determinism (such as an event loop dependent on user input to exit),
+\index{non-determinism}
+which can cause infinite execution.
 
 Breaking up symbolic execution of loops is one method of resolving those issues.
-%TODO
-
-By using a control-flow-based Floyd approach, we can easily achieve this.
-%TODO
+With the right annotations,
+it is possible to only need to symbolically execute one iteration per loop.
+This eliminates the above-mentioned loop issues.
+That breaking up of loops can be accomplished using a control-flow-based approach
+akin to \emph{Floyd verification}~\citep{floyd1967assigning}.
+\index{Floyd!verification}
+A state predicate assigned to an instruction within a loop
+\index{state!predicate}
+functions as an \emph{invariant} for that loop.
+\index{loop!invariant}
+Such invariants hold for every iteration of the loop,
+allowing a symbolic description of the loop's behavior.
+When combined with a general methodology
+of structured preconditions and postconditions that show,
+for each annotated state, the succeeding annotated state satisfies its state predicate,
+a Hoare triple can be inferred for the program as a whole.
+\index{Hoare!triple}
 
 Taking this approach also allows minimizing symbolic execution
 even in non-loop situations.
@@ -163,7 +189,7 @@ as a whole:
   \todo{requires Hoare triple explanation}
 \end{proof}
 
-Intuitively, Floyd style verification allows a program to be modeled as \iac{cfg}.
+Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg}.
 \index{Floyd!verification}
 In that \ac{cfg}, each edge can be seen as an implication.
 

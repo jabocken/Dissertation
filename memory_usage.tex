@@ -1,0 +1,14 @@
+\chapter{Memory Usage}
+\index{memory!region}
+
+\section{Definitions}
+Much of the memory work in this document relates to the concept of \emph{basic blocks}.
+\index{basic block}
+A basic block is defined here as a sequence of assembly instructions
+whose behavior can be described using only state transitions and branches.
+A block always terminates and has no loops.
+This definition differs slightly from the definition used by compilers such as LLVM,
+in which basic blocks also do not contain any internal branching.
+
+\section{Memory Region Relations}
+\index{memory!region relation}
