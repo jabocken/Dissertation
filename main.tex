@@ -25,6 +25,7 @@
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
 \usepackage{threeparttable}        % For tables with notes
+\usepackage[inline]{enumitem}
 
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{makeidx}               % For indices!
@@ -41,6 +42,7 @@
   long             = application binary interface,
   long-indefinite  = an
 }
+\DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs}
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
 \DeclareAcronym{ipc}{
   short            = IPC,
@@ -54,6 +56,12 @@
   long             = instruction set architecture,
   long-indefinite  = an
 }
+\DeclareAcronym{itp}{
+  short            = ITP,
+  short-indefinite = an,
+  long             = interactive theorem prover,
+  long-indefinite  = an
+}
 \DeclareAcronym{os}{
   short            = OS,
   short-indefinite = an,
@@ -62,6 +70,11 @@
   short-plural     = es
 }
 \DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
+\DeclareAcronym{smt}{
+  short            = SMT,
+  short-indefinite = an,
+  long             = satisfiability modulo theories
+}
 \DeclareAcronym{sse}{
   short            = SSE,
   short-indefinite = an,
@@ -186,11 +199,10 @@
   % The following sets up the document for the main part of the thesis or dissertation. Do not comment out or remove this line.
 	\mainmatter
 
-  \chapter{Introduction}
-  \section{Levels of Verification}
-  \section{Challenges of Assembly-Level Verification}
+  \input{introduction}
 
   \chapter{Related Work}
+  % TODO: contrast with fully automated methods using \ac{smt} solvers\cite{de2008z3,barrett2011cvc4}.
   \section{Restrictions on Supported Features}
   \section{Previous Approaches to Assembly Verification}
 
@@ -198,7 +210,7 @@
   \input{memory_usage}  
   \input{symbolic_execution}
   \input{cfg}
-  
+
   \chapter{Syntax-Driven Verification} % compare to CFG-driven
 
 	\chapter{Conclusions}\label{ch:conclusions}

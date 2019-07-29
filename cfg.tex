@@ -1,28 +1,47 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
 
 \section{Introduction}\label{se:cfg_intro}
-The memory usage analysis approach presented in this section features a Floyd-style methodology.
+The memory usage analysis approach presented in this chapter
+features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
+This methodology allows for minimization of symbolic execution
+\index{symbolic execution} while still ensuring correctness.
+It also provides proper loop handling.
 
-This approach focuses on the property of \emph{memory preservation},
+The main goal of the approach is to prove the property of \emph{memory preservation},
+\index{memory!preservation}
 fully described in \cref{se:memory_preservation}.
+In short, this property ensures only documented regions of memory are modified;
+\index{memory!region}
+anything outside of those regions remains unchanged.
+This property has the potential to be used
+to prove the absence of common memory-related issues,
+such as buffer overflows or some forms of data leakage.
 
-It features automatically-selected cutpoints.
-
-% TODO: double-check, most stack frame stuff might be generated and it's just loop ones and a few others that aren't (recursion too)
-Some basic invariants are generated but most must be added manually.
-
+To achieve minimal symbolic execution,
+it features automatically-selected cutpoints obtained via control flow analysis
+\index{cutpoint}
+using the tool angr~\citep{shoshitaishvili2016state}.
+\index{angr}
+The cutpoints are described in \cref{se:cfg_invariant}.
+Basic starting predicates for those preconditions and postconditions
+as well as the cutpoints are generated,
+but the bulk of the information must be added manually.
+Larger-scale scalability is achieved by using function-level compositionality.
 Recursion is supported but requires a significant amount of work,
 much greater than that needed for loops and function calls alone.
 \index{loop}
 \index{function!call}
 
-% TODO: revise this?
 The methodology was applied to several example functions
-as well as functions from the HermitCore unikernel library.
+as well as to functions
+from the HermitCore unikernel library~\citep{lankes2016hermitcore}.
 \index{HermitCore}
 \index{unikernel}
-Documentation of the example functions can be found in \cref{se:cfg_examples}.
-The HermitCore function work can be found in \cref{se:cfg_application}.
+HermitCore is \iac{os} kernel library aiming to provide real-time guarantees for high-performance computing.
+Documentation of the example functions can be found in \cref{se:cfg_examples},
+while the HermitCore function work can be found in \cref{se:cfg_application}.
+These functions have a variety of features such as loops,
+non-trivial data structures, pointers, subcalls, and even recursion in some cases.
 
 % TODO: maybe move into Memory Usage section
 \section{Memory Preservation}\label{se:memory_preservation}
@@ -145,6 +164,7 @@ It would then consider the case where~$b$ is false, executing~$y$ followed by~$P
 Program~$P$ would thus be symbolically executed twice.
 This repetition can be avoided
 by placing a cutpoint at the start of each block where control flow converges,
+\index{cutpoint}
 resulting in all instructions being symbolically executed only once each.
 Each cutpoint, however, requires a state predicate contained
 in a \emph{Floyd invariant}.
@@ -203,7 +223,6 @@ if preexisting or developed later if need be.
 Second, compositionality can drastically improve scalability
 \emph{within} a function body as well.
 
-
 This control-flow-oriented approach provides compositionality
 on the level of function calls.
 
@@ -216,6 +235,13 @@ but those are not the norm.
 % TODO: provide simple example and walk through it like the explanation in the SAFECOMP paper
 
 \section{Verification}\label{se:cfg_verification}
+The skeletons of the necessary theories for proving memory preservation
+\index{memory!preservation}
+are produced by a Python program that relies on the symbolic execution-based
+\index{Python}
+analysis framework called angr~\citep{shoshitaishvili2016state}.
+\index{angr}
+
 %TODO: Provide further explanations from the paper sections that were previously grouped under Loops, Composition?
 
 \subsection{Modeling External Calls}
@@ -288,7 +314,7 @@ with many single-purpose unikernels all performing their own tasks in isolation.
 This makes unikernels an interesting target for verification,
 as they aim to provide a high speed and real-time environment for cloud software.
 
-The unikernel library HermitCore was chosen
+The unikernel library HermitCore~\citep{lankes2016hermitcore} was chosen
 \index{HermitCore}
 to demonstrate the applicability of this methodology
 due to its established functionality and decent size.
@@ -427,5 +453,59 @@ requires a loop invariant in addition to the pre- and postconditions.
   \caption{Example Floyd invariants}
 \end{figure*}
 
-\section{Limitations}
-% TODO
+\section{On Usability}
+The three main aspects of per-function user interaction for this methodology are
+\begin{enumerate*}
+  \item defining a Floyd invariant,\index{Floyd!invariant}
+  \item defining memory region set~$R$, and
+  \item proving memory preservation.\index{memory!preservation}
+\end{enumerate*}
+While restricting the verification effort to memory preservation
+does reduce the effort required to provide Floyd invariants, it does not eliminate it.
+This is more of a problem for loops with complex behavior
+and is a significant problem for recursive functions.
+With non-looping control flow,
+the primary effort required for invariant predicates is showing how input arguments
+are carried through the program (stored on the stack, in registers, etc.).
+\index{stack}
+With loops, the exact formulation relies on development of a symbolic representation
+of the behavior of the loop as it relates to memory accesses.
+Recursive functions are the most complex
+due to the flat, non-abstract memory model used in this work
+requiring manual reasoning over stack frames.
+Both the stack and frame pointers must be preserved throughout the recursion,
+\index{stack!pointer}
+\index{stack!frame pointer}
+and all return addresses must be properly pushed on and popped off the stack as needed.
+
+Another aspect of Floyd invariant development
+\index{Floyd!invariant}
+that is not easily determined ahead of time is strengthening of the precondition.
+Making reasoned guesses about the necessary precondition clauses is one way to proceed,
+and source code annotations as well as reference documentation
+may provide additional help,
+but sometimes it is necessary to just symbolically execute
+until non-determinism is encountered.
+\index{non-determinism}
+At that point, the cause of the non-determinism can be identified
+and the precondition can be strengthened in such a way so as to eliminate
+that non-determinism.
+Because this proof methodology works on the assembly level,
+it may well expose implicit or undocumented preconditions.
+
+Formulation of the memory region set~$R$ as well as parent relationships,
+if necessary,
+are also generally manual.
+If a necessary region is not present,
+symbolic execution will again result in non-determinism,
+requiring another round of user input.
+After symbolic execution for a basic block has completed,
+a proof that the resulting symbolic state satisfies the Floyd invariant
+is generally required.
+In most cases, that proof can be handled by Isabelle/HOL
+\index{Isabelle/HOL}
+using standard off-the-shelf libraries,
+either ones included with Isabelle or ones from the \ac{afp}~\citep{afp}.
+Recursion is the primary exception,
+with the proofs of stack and frame pointer preservation
+requiring interactive theorem proving over word arithmetic.
