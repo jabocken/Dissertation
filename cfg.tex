@@ -6,6 +6,7 @@ features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
 This methodology allows for minimization of symbolic execution
 \index{symbolic execution} while still ensuring correctness.
 It also provides proper loop handling.
+An overview of the methodology can be seen in \cref{fig:cfg_overview}.
 
 The main goal of the approach is to prove the property of \emph{memory preservation},
 \index{memory!preservation}
@@ -46,7 +47,7 @@ much greater than that needed for loops and function calls alone.
   \draw [transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
   \draw [transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
-  \caption{Overview of Methodology}\label{fig:overview}
+  \caption{Overview of Methodology}\label{fig:cfg_overview}
 \end{figure}
 
 The methodology was applied to several example functions
