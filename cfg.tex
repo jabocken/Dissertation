@@ -32,6 +32,23 @@ much greater than that needed for loops and function calls alone.
 \index{loop}
 \index{function!call}
 
+\tikzstyle{myblock} = [rectangle, draw, text width=2.25cm, text centered, rounded corners, minimum height=2cm]
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[node distance=4.5cm, auto, >=stealth, ->]
+  \node [myblock] (binary) {x86-64 binary};
+  \node [myblock, right of=binary, minimum height=1cm] (cfg) {angr script};
+  \node [myblock, right of=cfg] (isa) {Isabelle Proof Assistant};
+  \node [myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
+  \draw [transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
+  \draw (binary) -- (cfg);
+  \draw [transform canvas={yshift=-.5em}] (cfg) -- node[above] {\footnotesize generate} node[below] {\footnotesize theories}(isa);
+  \draw [transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
+  \draw [transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
+  \end{tikzpicture}
+  \caption{Overview of Methodology}\label{fig:overview}
+\end{figure}
+
 The methodology was applied to several example functions
 as well as to functions
 from the HermitCore unikernel library~\citep{lankes2016hermitcore}.
