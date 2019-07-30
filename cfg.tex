@@ -6,9 +6,6 @@ features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
 This methodology allows for minimization of symbolic execution
 \index{symbolic execution} while still ensuring correctness.
 It also provides proper loop handling.
-By building on the binary analysis tool angr~\citep{shoshitaishvili2016state},
-\index{angr}
-the work of abstracting from assembly to \ac{cfg} is handled automatically.
 
 An overview of the methodology can be seen in \cref{fig:cfg_overview}.
 The main goal of the approach is to prove the property of \emph{memory preservation},
@@ -21,9 +18,12 @@ This property has the potential to be used
 to prove the absence of common memory-related issues,
 such as buffer overflows or some forms of data leakage.
 
-The first step is disassembly of an x86-64 binary using a commodity disassembler;
+By building on the binary analysis tool angr~\citep{shoshitaishvili2016state},
+\index{angr}
+the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
+The first step is disassembly of an x86-64 binary using
 \index{x86-64}
-specifically, a tweaked version of the angr
+a tweaked version of the angr
 \lstinline|reassembly| analysis~\citep{wang2017ramblr}
 provided by Roessle et al.~\citep{roessle2019}.
 \index{angr!reassembly}
@@ -34,7 +34,8 @@ the Isabelle parser relies on specific size annotations the tweaked analysis gen
 To achieve minimal symbolic execution,
 it features automatically-selected cutpoints
 \index{cutpoint}
-identified by interfacing with angr's \lstinline|CFGEmulated| control flow analysis.
+identified by a Python script that relies on
+angr's \lstinline|CFGEmulated| control flow analysis.
 \index{angr!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
 Basic starting predicates for those preconditions and postconditions
@@ -76,12 +77,12 @@ does reduce the amount of work required
 as seen in \cref{se:cfg_examples,se:cfg_application}.
 The work is still not trivial, however.
 
-\tikzstyle{myblock} = [rectangle, draw, text width=2.25cm, text centered, rounded corners, minimum height=2cm]
+\tikzstyle{myblock} = [rectangle, draw, text width=2.5cm, text centered, rounded corners, minimum height=2cm]
 \begin{figure}
   \centering
   \begin{tikzpicture}[node distance=4.5cm, auto, >=stealth, ->]
   \node [myblock] (binary) {x86-64 binary};
-  \node [myblock, right of=binary, minimum height=1cm] (cfg) {angr script};
+  \node [myblock, right of=binary, minimum height=1cm] (cfg) {Python script};
   \node [myblock, right of=cfg] (isa) {Isabelle};
   \node [myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
   \draw [transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
@@ -106,92 +107,6 @@ These functions have a variety of features such as loops,
 non-trivial data structures, pointers, subcalls, and even recursion in some cases.
 \index{function!call}
 \index{recursion}
-
-% TODO: maybe move into Memory Usage section
-\section{Memory Preservation}\label{se:memory_preservation}
-Memory preservation shows that the values written by a program
-\index{memory!preservation}
-are restrained to specified regions in memory.
-Those regions cannot be fully identified when working with source code alone,
-particularly when the end result is optimized.
-Memory may be laid out differently depending on the \ac{isa} and \ac{abi} targeted,
-as well as on the compiler used.
-This can include positioning of global variables as well as the layout of stack frames.
-\index{stack!frame}
-While one way of resolving that issue would be to choose a specific compiler
-and provide a formal analysis of how it arranges memory, that method is not flexible.
-It may instead be better to target assembly or machine code directly,
-as done in this dissertation.
-
-\subsection{Usefulness}
-The following small sections elaborate on the usefulness of memory preservation
-as a platform for further verification efforts.
-
-\subsubsection{Security}
-Unbounded memory usage can lead to vulnerabilities
-such as buffer overflows and data leakage.
-One example of such a vulnerability would be 2014's Heartbleed~\citep{heartbleed}.
-Heartbleed was caused by a lack of bounds checking on a string array
-requested as output as part of a ``heartbeat'' message.
-This, combined with a custom memory manager
-that also had no security protections against out-of-bounds memory accesses,
-lead to potential leakage of sensitive data such as passwords and encryption keys.
-% TODO: need another, better example that involves data modification too
-Memory preservation can serve as a foundation for formal security analyses
-\index{memory!preservation}
-that could be used to expose vulnerabilities involving malicious writes.
-
-\subsubsection{Composition}
-Scalability in verification is only feasible with composition.
-Proofs of functional correctness over a large suite of software
-require decomposing that suite into manageable chunks.
-Separation logic provides a \emph{frame rule} that supports such decomposition\cite{reynolds2002separation}.
-In words, the frame rule states that,
-if a program or program fragment can be confined to a certain part of a state,
-properties of that program or program fragment carry over
-when used as part of a larger system involving that state.
-Memory preservation allows for discharging the most involved part of the frame rule,
-at least in terms of individual assembly functions.
-That is, it shows that the memory usage of those functions is constrained
-to specific regions in memory.
-This can then serve as a basis
-for any larger proof effort over multifunction assembly programs.
-
-\subsubsection{Concurrency}
-Reasoning over concurrent programs is complicated
-due to the potential interactions between threads.
-While there are ways of handling such interactions in a structured manner
-via kernel- or library-provided \ac{ipc},
-one method commonly used for the sake of efficiency is \emph{shared memory}.
-Shared memory, in the context of this work,
-refers to threads or processes sharing either a full memory space
-or portions of one (via memory mapping)
-that can be written to and read from freely by any thread or process with access to it.
-Usage of shared memory can result in \emph{unintended} interactions between threads.
-Memory preservation could be adapted to show the absence of such interactions
-by proving that multiple threads only write
-to specifically-allowed regions of shared memory.
-Doing so would, of course, require a proper model of concurrency,
-which is out of scope of this dissertation.
-
-\subsection{Formal Definition}
-The formal definition of memory preservation takes the form of a Hoare triple.
-\index{memory!preservation}
-\index{Hoare!triple}
-Assume some predicate~$P$ that characterizes the initial state, at a minimum
-by setting the instruction pointer to the first instruction of a function body.
-Moreover, let~$R$ be the set of regions that the function is allowed to write to.
-Set~$R$ includes the stack frame and utilized data sections from the source binary
-as well as any utilized heap memory.
-Memory preservation formulates that any byte not within any region in~$R$ has to remain unchanged throughout the execution of that function.
-This is formalized as follows.
-\begin{definition}
-  Let~$R$ be a set of regions, let~$P$ be a precondition and let~$H$ denote a halting condition.
-  A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$:
-  \begin{equation}
-  (\forall r\in R\cdot r\bowtie\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
-  \end{equation}
-\end{definition}
 
 \section{Floyd Invariant Foundation}\label{se:cfg_invariant}
 Loops pose a significant problem when using symbolic execution to analyze code.
