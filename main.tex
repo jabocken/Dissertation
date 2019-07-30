@@ -30,8 +30,11 @@
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{makeidx}               % For indices!
 
+\usetikzlibrary{external}          % To reduce build times for complex figures (does one-time builds and stores as images)
 \usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
+
+\tikzexternalize[prefix=extern/]                   % Enables externalization
 
 \renewcommand\lstlistlistingname{List of Listings}
 
