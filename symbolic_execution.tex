@@ -1,4 +1,4 @@
-\chapter{Symbolic Execution in Isabelle/HOL}
+\chapter{Symbolic Execution in Isabelle/HOL}\label{ch:symbolic_execution}
 Symbolic execution, in a sense,
 \index{symbolic execution}
 is an extension of symbolic manipulation of mathematical equations.
@@ -14,6 +14,10 @@ that occurs via formal \emph{rewrite rules}.
 \section{Machine Model}
 The machine model used in this dissertation takes the following general form.
 \index{symbolic execution!machine model}
+There exists some symbolic \emph{state} defined as a record
+\index{state!symbolic}
+that stores registers, flags, and 64-bit addressable byte-level memory.
+The instructions to be executed are stored in that memory.
 Each instruction is executed by a \emph{step} function having the type
 \index{symbolic execution!step function}
 $A\times S\mapsto(S\mid\bot_E)$.%
@@ -24,7 +28,7 @@ This function takes a tuple of instruction to execute and current state~$\sigma$
 returning the state~$\sigma'$ after execution of that instruction.
 If some sort of exception, such as a divide by zero, occurs,
 the function returns $\bot_E$ instead.
-% TODO: rework this, only the SAFECOMP step possibly returns $\bot_E$, I think.
+% TODO: rework this? Only the SAFECOMP step possibly returns $\bot_E$, I think.
 
 The semantics of the instructions as executed by the step function
 \index{semantics}
@@ -40,17 +44,54 @@ The model provides a formalization of large parts of the x86-64 \ac{isa},
 including several modern instruction set extensions such as the \ac{sse} family.
 Concurrency is not included in the model.
 
-\todo{Introduce $\run$, other things}
+From the machine model, we manually derive a run function
 \index{symbolic execution!run function}
+$\run:(S\mapsto\mathbb{B})\times S\mapsto(S\mid\bot_E\mid\bot_\var{NT})$.%
+\nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
+This partial function takes as input a state predicate~$H$ and a state~$\sigma$.
+\index{state!predicate}
+Predicate~$H$ denotes the \emph{halting condition}.
+\index{symbolic execution!halting condition}
+Typically, the halting condition instructs the run function to stop
+at a certain instruction, such as \lstinline{ret}.
+The run function iteratively fetches the current instruction
+via the current value of the instruction pointer
+and uses the machine model to execute it.
+Whenever an exception occurs, it stops and returns~$\bot_E$.
+If the execution were to continue forever
+without an exception or reaching the halting condition
+(e.g.\ due to an infinite loop),
+the function returns $\bot_\var{NT}$.
+Formally, this is achieved by a standard least-fixed-point construction.
 
 \section{Hoare Logic and Symbolic Execution}
 Unlike the usual formulation of Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},
 \index{Hoare!logic}
-Hoare triples as defined in this dissertation use a halting condition.
+Hoare triples as defined in this dissertation take a halting condition
 \index{Hoare!triple}
+\index{symbolic execution!halting condition}
+as their middle input rather than a program statement.
+The program statement is instead characterized by the addresses of its initial
+and ending instructions, defined in~$P$ and~$H$.
+Thus, we have the following definition:
+\begin{definition}\label{def:htriple}
+  $\htriple{P}{H}{Q}$
+  denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
+  $\run(H,\sigma)$ produces a non-exceptional state that satisfies postcondition~$Q$.
+  
+  Formally,
+  \begin{equation}
+    \htriple{P}{H}{Q}\equiv\forall\sigma\cdot
+    P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+    \sigma'\neq\bot_E\wedge Q(\sigma'),
+  \end{equation}
+  where $\sigma'=\run(H,\sigma)$.
+\end{definition}
+% TODO: may not need the explicit $\sigma'\neq\bot_E$
+ 
 Standard composition does not apply to such Hoare triples.
-Consider a symbolic execution obtained by halting condition~$H'$.
-% TODO: requires explaining the method of symbolic execution in this paper
+Consider a symbolic run that executes until halting condition~$H'$.
+\index{symbolic execution!halting condition}
 It is possible to break this run into two parts
 by first running until a halting condition~$H$ and then until~$H'$.
 This requires that~$H'$ is \emph{stronger} than~$H$; that is, $H'$ implies~$H$.

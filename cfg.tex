@@ -6,8 +6,11 @@ features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
 This methodology allows for minimization of symbolic execution
 \index{symbolic execution} while still ensuring correctness.
 It also provides proper loop handling.
-An overview of the methodology can be seen in \cref{fig:cfg_overview}.
+By building on the binary analysis tool angr~\citep{shoshitaishvili2016state},
+\index{angr}
+the work of abstracting from assembly to \ac{cfg} is handled automatically.
 
+An overview of the methodology can be seen in \cref{fig:cfg_overview}.
 The main goal of the approach is to prove the property of \emph{memory preservation},
 \index{memory!preservation}
 fully described in \cref{se:memory_preservation}.
@@ -18,20 +21,60 @@ This property has the potential to be used
 to prove the absence of common memory-related issues,
 such as buffer overflows or some forms of data leakage.
 
+The first step is disassembly of an x86-64 binary using a commodity disassembler;
+\index{x86-64}
+specifically, a tweaked version of the angr
+\lstinline|reassembly| analysis~\citep{wang2017ramblr}
+provided by Roessle et al.~\citep{roessle2019}.
+\index{angr!reassembly}
+More detail on why this specific disassembler was chosen
+can be found previously in \cref{sse:loading_assembly}; in short,
+the Isabelle parser relies on specific size annotations the tweaked analysis generates.
+
 To achieve minimal symbolic execution,
-it features automatically-selected cutpoints obtained via control flow analysis
+it features automatically-selected cutpoints
 \index{cutpoint}
-using the tool angr~\citep{shoshitaishvili2016state}.
-\index{angr}
+identified by interfacing with angr's \lstinline|CFGEmulated| control flow analysis.
+\index{angr!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
 Basic starting predicates for those preconditions and postconditions
 as well as the cutpoints are generated,
 but the bulk of the information must be added manually.
 Larger-scale scalability is achieved by using function-level compositionality.
 Recursion is supported but requires a significant amount of work,
-much greater than that needed for loops and function calls alone.
+\index{recursion}
+much greater than that needed for loops or function calls alone,
 \index{loop}
 \index{function!call}
+as recursive functions are equivalent to one or more loops that utilize a stack.
+This can significantly complicate the necessary invariants
+as program stacks, when used with most modern \acp{isa}, are stored in regular memory.
+Even when recursive code primarily uses registers
+to hold most of the intermediate values and local variables,
+those locals must be stored on the stack with each recursive call
+\index{stack}
+and potentially restored on return.
+Tail call recursion~\citep{clinger1998tail} can help with that,
+\index{recursion!tail call}
+but only when it is supported by the compiler in use\footnote{%
+  \acs{gcc}, Clang, and \acs{icc} all support it via the \texttt{-foptimize-sibling-calls} flag
+} and is applicable to the functions under consideration
+(which is not the case for the examples presented in this paper).
+
+The process that selects cutpoints
+also generates skeleton memory preservation theories for every function analyzed.
+The theory files can then be opened in the theorem prover Isabelle
+and the assembly loaded using the methodology described in \cref{sse:loading_assembly}.
+Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
+and add the necessary sets of memory regions
+that the functions write to (\cref{sse:memory_regions})
+in order to complete the proofs of memory preservation.
+Defining the necessary invariants for functions with complex control flow
+is generally a hard task,
+but targeting a property such as memory preservation
+does reduce the amount of work required
+as seen in \cref{se:cfg_examples,se:cfg_application}.
+The work is still not trivial, however.
 
 \tikzstyle{myblock} = [rectangle, draw, text width=2.25cm, text centered, rounded corners, minimum height=2cm]
 \begin{figure}
@@ -39,7 +82,7 @@ much greater than that needed for loops and function calls alone.
   \begin{tikzpicture}[node distance=4.5cm, auto, >=stealth, ->]
   \node [myblock] (binary) {x86-64 binary};
   \node [myblock, right of=binary, minimum height=1cm] (cfg) {angr script};
-  \node [myblock, right of=cfg] (isa) {Isabelle Proof Assistant};
+  \node [myblock, right of=cfg] (isa) {Isabelle};
   \node [myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
   \draw [transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
   \draw (binary) -- (cfg);
@@ -50,16 +93,19 @@ much greater than that needed for loops and function calls alone.
   \caption{Overview of Methodology}\label{fig:cfg_overview}
 \end{figure}
 
-The methodology was applied to several example functions
-as well as to functions
+This methodology was applied to two example functions
+as well as to multiple functions
 from the HermitCore unikernel library~\citep{lankes2016hermitcore}.
 \index{HermitCore}
 \index{unikernel}
 HermitCore is \iac{os} kernel library aiming to provide real-time guarantees for high-performance computing.
-Documentation of the example functions can be found in \cref{se:cfg_examples},
+Documentation of the two example functions can be found in \cref{se:cfg_examples},
 while the HermitCore function work can be found in \cref{se:cfg_application}.
 These functions have a variety of features such as loops,
+\index{loop}
 non-trivial data structures, pointers, subcalls, and even recursion in some cases.
+\index{function!call}
+\index{recursion}
 
 % TODO: maybe move into Memory Usage section
 \section{Memory Preservation}\label{se:memory_preservation}
@@ -129,12 +175,25 @@ Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
 \subsection{Formal Definition}
-The formal definition of memory preservation starts with the notion of \emph{state}.
-%TODO
+The formal definition of memory preservation takes the form of a Hoare triple.
+\index{memory!preservation}
+\index{Hoare!triple}
+Assume some predicate~$P$ that characterizes the initial state, at a minimum
+by setting the instruction pointer to the first instruction of a function body.
+Moreover, let~$R$ be the set of regions that the function is allowed to write to.
+Set~$R$ includes the stack frame and utilized data sections from the source binary
+as well as any utilized heap memory.
+Memory preservation formulates that any byte not within any region in~$R$ has to remain unchanged throughout the execution of that function.
+This is formalized as follows.
+\begin{definition}
+  Let~$R$ be a set of regions, let~$P$ be a precondition and let~$H$ denote a halting condition.
+  A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$:
+  \begin{equation}
+  (\forall r\in R\cdot r\bowtie\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
+  \end{equation}
+\end{definition}
 
 \section{Floyd Invariant Foundation}\label{se:cfg_invariant}
-% TODO: more here?
-
 Loops pose a significant problem when using symbolic execution to analyze code.
 \index{loop}
 One of the major issues is that they result in significant path explosion.
@@ -171,9 +230,14 @@ Taking this approach also allows minimizing symbolic execution
 even in non-loop situations.
 Consider the following pseudocode,
 which sequentially executes an if-statement and some program~$P$:
-\begin{flushleft}
-  \texttt{if} $b$ \texttt{then} $x$ \texttt{else} $y$; $P$
-\end{flushleft}
+\begin{lstlisting}[
+  escapechar=|,
+  gobble=2,
+  caption=Simple Pseudocode,
+  label=compositional_pseudocode
+]
+  if |$b$| then |$x$| else |$y$|; |$P$|
+\end{lstlisting}
 The assembly corresponding to this code can be verified using symbolic execution.
 If executed in full, the symbolic execution engine
 would require first considering the case where~$b$ is true,
@@ -196,13 +260,12 @@ This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
 As a technical detail, some function proofs require additional arguments to $I$
 that represent the arguments passed to the function.
-\begin{definition}
+\begin{definition}\label{def:floyd_inv}
   A Floyd invariant~$I$ \emph{holds} if and only if, for any state~$\sigma$,
   \begin{equation}
     I(\loc\sigma)(\sigma)\longrightarrow
     \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(\loc\sigma')(\sigma')),
-  \end{equation}%
-  \nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
+  \end{equation}
   where
   $\sigma'=\run((\lambda\sigma\cdot I(\loc\sigma)(\sigma)\neq\bot),\sigma)$%
   \nomenclature{$\bot$}{Used here to represent the result of calling a partial function with a value it does not have an actual result for}
@@ -217,74 +280,243 @@ The following theorem states that a Floyd invariant
 can be used to prove properties over its corresponding program or function
 as a whole:
 \begin{theorem}
-  Assume that Floyd invariant~$I$ holds and provides an annotation for locations~$l_0$ and~$l_f$ (the initial and final location).
+  Assume that Floyd invariant~$I$ holds and provides annotations for locations~$l_0$ and~$l_f$ (the initial and final location).
   \index{Floyd!invariant}
   Let halting condition~$H$ stop at location~$l_f$;
+  \index{halting condition}
   that is, $H(\sigma)\longrightarrow\loc\sigma=l_f$.
   Then $\htriple{I(l_0)}{H}{I(l_f)}$.
 \end{theorem}
 \begin{proof}
-  \todo{requires Hoare triple explanation}
+  Remember from \cref{def:htriple} that
+  \begin{equation*}
+    \htriple{P}{H}{Q}\equiv\forall\sigma\cdot
+    P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+    \sigma'\neq\bot_E\wedge Q(\sigma').
+  \end{equation*}
+  This results in the statement
+  \begin{equation*}
+      I(l_0)(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+      \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
+  \end{equation*}
+  As we have already assumed that $I$ holds,
+  we can apply \emph{modus ponens}, using \cref{def:floyd_inv},  
+  \index{modus ponens}
+  to obtain
+  \begin{equation*}
+    \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(l_f)(\sigma'))\wedge
+    \sigma'\neq\bot_{\var{NT}}\longrightarrow
+    \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
+  \end{equation*}
+  This then simplifies to 
+  \begin{equation*}
+    \sigma'\neq\bot_E\wedge I(l_f)(\sigma')\longrightarrow
+    \sigma'\neq\bot_E\wedge I(l_f)(\sigma'),
+  \end{equation*}
+  which is trivial.
+  (Strictly speaking, a transitive closure over Floyd invariant annotations
+  would be required for a more formal proof.)
 \end{proof}
 
 Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg}.
 \index{Floyd!verification}
 In that \ac{cfg}, each edge can be seen as an implication.
 
-\section{Composition}
-Composition is crucial for scalability.
-There are two main reasons for this.
-First, on the function call level,
+\section{Composition}\label{se:composition}
+As stated above, composition is crucial for scalability.
+\index{composition}
+There are two main reasons for this. First, on the function call level,
 compositionality ensures that, when a function is called,
 a successful verification effort over that function can be reused
 if preexisting or developed later if need be.
 Second, compositionality can drastically improve scalability
 \emph{within} a function body as well.
-
 This control-flow-oriented approach provides compositionality
-on the level of function calls.
+on the level of function calls as well as internally.
 
+Internal composition is simply a more formal refomulation
+of the cutpoint discussion for \cref{compositional_pseudocode}.
+\index{cutpoint}
+\begin{proof}
+  Let~$l_f$ denote the final location of executing that pseudocode,
+  and let~$l_P$ denote the initial location of program~$P$.
+  \Cref{thm:comp} can then be used
+  by instantiating~$H$ to halt at either location~$l_f$ or~$l_P$
+  and~$H'$ to halt at~$l_f$.
+  Assuming programs~$x$ and~$y$ do not contain goto's,
+  condition~$H'$ will be equivalent to halting at~$l_P$.
+  As~$H'$ is stronger than~$H$, those runs can be composed.
+\end{proof}
+
+\subsection{Function Calls}
 Generally, compositionality over function calls requires proving
 that the stack pointer remains unchanged after execution of every function call.
+\index{stack!pointer}
 There are some exceptions for optimized tail calls
 in which a called function returns to the caller of its callee,
 but those are not the norm.
 
-% TODO: provide simple example and walk through it like the explanation in the SAFECOMP paper
+As an example, consider a function~$f$ starting in a text section at location~$l_0$.
+The function is called from a different text section
+by the instruction \lstinline{call f} at location $l_\var{call}$.
+This means the return address for the call is $l_\var{call} + 5$%
+\footnote{the \texttt{call} instruction is five bytes long}.
+After execution of \lstinline{call f}, the program will be at location~$l_0$
+and the stack pointer will have some value $\rspo$.
+In order to apply compositionality to function calls, the pre- and postcondition have to meet the following requirements.
+First, the precondition must imply that the return address is pushed on the stack (which has been done by \lstinline{call}):
+$\readmem{\rspo}{8} = l_\var{call} + 5 \wedge \mathrsp = \rspo$.
+Second, the postcondition must imply that after \lstinline{ret},
+the net effect of the function body
+is that the stack pointer has been incremented by 8:
+$\mathrsp = \rspo + 8 \wedge \loc = l_\var{call} + 5$.
+Note that \lstinline{call} itself decrements the stack pointer by 8,
+so this implies the net effect, from the point of view of the caller,
+is that the stack pointer is unchanged.
+The postcondition must also show
+that the location has been set back to the return address, $l_\var{call} + 5$.
 
-\section{Verification}\label{se:cfg_verification}
-The skeletons of the necessary theories for proving memory preservation
-\index{memory!preservation}
-are produced by a Python program that relies on the symbolic execution-based
-\index{Python}
-analysis framework called angr~\citep{shoshitaishvili2016state}.
-\index{angr}
-
-%TODO: Provide further explanations from the paper sections that were previously grouped under Loops, Composition?
+Besides the stack pointer, modern calling conventions have other \emph{callee-saved}
+registers, such as \lstinline{rbp} and \lstinline{r12-r15}.
+\index{register!callee-saved}
+It is generally assumed that the net effect of a function call
+does not touch these registers.
+Consider a situation in which \lstinline{rbp} contains an address,
+which will be used as the target of a write after a function call.
+In order to prove memory preservation, \lstinline{rbp} must be shown to be preserved.
+Generally, this is easy to prove
+by strengthening the pre- and postcondition with a conjunct $\mathrbp = \var{rbp}_0$.
+The proof is generally not complicated,
+as these callee-saved registers are pushed onto the stack
+at the beginning of functions that use them and popped off at the end.
 
 \subsection{Modeling External Calls}
 In many cases, users of a verification methodology over functions
 will encounter calls to functions that are not included in the verification effort.
 These may be system calls or simply functions not currently under consideration
 due to unsupported features or lack of time.
-If those functions affect memory in some known way, that functionality must be modeled.
-If the exact behavior is unknown,
-those functions can instead be assumed to have correct behavior
-that is left out of the existing analysis, leaving those functions in the \ac{tcb}.
+External functions are simply assumed to have correct behavior
+and are thus left out of the existing analysis,
+leaving those functions in the \ac{tcb}.
 
 %TODO: more?
 
 \section{Examples}\label{se:cfg_examples}
-\subsection{Non-recursive example: pow2}
-This simple function raises its argument to the power of two.
+\subsection{Non-recursive example: \texttt{pow2}}
+This simple loop-based function, shown in \cref{lst:pow2},
+raises two to the power of its argument.
+The assembly code was obtained by compiling a C program containing the function
+with \ac{gcc} 7.2.0
+and disassembling it using the modified \lstinline|reassembly| analysis
+mentioned in \cref{se:cfg_intro}. The input is stored in~\lstinline{edi}.
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  caption=\texttt{pow2} in C,
+  label=lst:pow2
+]
+  unsigned long pow2(unsigned exponent) {
+      unsigned long a = 1;
+      
+      for (unsigned i = 0; i < exponent; ++i) {
+          a += a;
+      }
+      
+      return a;
+  }
+\end{lstlisting}
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  caption=\texttt{pow2} in Assembly,
+  label=lst:pow2a,
+  firstnumber=0
+]
+  pow2:
+      push	rbp # Size:1
+      mov	rbp, rsp # Size:3
+      mov	dword ptr [rbp - 0x14], edi # Size:3
+      mov	qword ptr [rbp - 8], 1 # Size:8
+      mov	dword ptr [rbp - 0xc], 0 # Size:7
+      jmp	.label_10 # Size:2
+  .label_11:
+      shl	qword ptr [rbp - 8], 1 # Size:4
+      add	dword ptr [rbp - 0xc], 1 # Size:4
+  .label_10:
+      mov	eax, dword ptr [rbp - 0xc] # Size:3
+      cmp	eax, dword ptr [rbp - 0x14] # Size:3
+      jb	.label_11 # Size:2
+      mov	rax, qword ptr [rbp - 8] # Size:4
+      pop	rbp # Size:1
+      ret	 # Size:1
+\end{lstlisting}
+The function uses memory in five places, all on the stack.
+These are expressed relative to the original value of the stack pointer $\rspo$:
+\begin{enumerate*}[label=\alph*.)]
+  \item the caller's \lstinline|rbp| at $\mathrbp = \rspo - 8$ (eight bytes);
+  \item the argument to the function at $\mathrbp - 0\text{x}14$ (four bytes);
+  \item the accumulation variable and return value at $\mathrbp - 8$ (eight bytes);
+  \item the counter variable at $\mathrbp - 0\text{xc}$ (four bytes);
+  \item and the address of the location to return to at $\rspo$.
+\end{enumerate*}
+The memory region for this function is thus $r_s = \region{\rspo - 28}{36}$.
+\index{memory!region}
+Assigning region~$r_s$ with ID~$i_s$ and the untouched region $\region{a}{1}$ with ID~$i_a$,
+parent relationships can then be established as shown below:
+\begin{align*}
+  & \parent{\region{\rspo}{8}}{i_s}{r_s} && \parent{\region{\rspo - 20}{4}}{i_s}{r_s} \\
+  & \parent{\region{\rspo - 8}{8}}{i_s}{r_s} && \parent{\region{\rspo - 28}{4}}{i_s}{r_s} \\
+  & \parent{\region{\rspo - 16}{8}}{i_s}{r_s} && \parent{\region{a}{1}}{i_a}{\region{a}{1}}
+\end{align*}
 
-%TODO: More
+For the memory preservation proof of this function, we chose to associate annotations
+\index{memory!preservation}
+at the start of the function, an instruction that broke the loop,
+and the return address of the function
+(a logical variable, as the caller of the function is unspecified for this proof).
+\Cref{fig:pow2cfg} shows the Floyd invariant in \ac{cfg} form for this function.
+\index{Floyd!invariant}
+The invariant carries through the preservation of memory,
+showing that region $\region{a}{1}$ maintains its value throughout.
+The equalities over \inlineasm{rbp} and \inlineasm{rsp}
+are used by the memory region reasoner.
+For compositional purposes as described in \cref{se:composition},
+the function is also shown to preserve the value of the stack pointer.
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[>={stealth}]
+    \graph[math nodes, grow down=2.2cm]{
+      a/"1:\begin{array}{l}
+        \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
+        \readmem{\rspo}{8}=\retaddr
+      \end{array}" ->[
+        align=left,
+        "$\mathrsp\coloneqq\mathrsp-8$\\
+        $\mathrbp\coloneqq\mathrsp$"
+      ] b/"12:\begin{array}{l}
+        \readmem{a}{1}=v_0\wedge~\\
+        \mathrbp=\mathrsp=\rspo-8
+      \end{array}" ->[
+        "$\mathrsp\coloneqq\mathrsp+16$"
+      ] c/"\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
+      b ->[out=-16, in=16, looseness=3] b;
+    };
+  \end{tikzpicture}
+  \caption{Floyd invariant for \texttt{pow2}}
+  \label{fig:pow2cfg}
+\end{figure}
+Given the parent regions,the proof that the Floyd invariant holds
+is executed automatically using the symbolic execution engine
+described in \cref{ch:symbolic_execution}.
 
 \subsection{Recursion: Factorial}
 The factorial operation can provide a simple example of recursion.
+\index{factorial}
+\index{recursion}
 The basic definition of factorial is $n!=\prod_{i=1}^n i$.%
-\nomenclature{$\prod$}{Product of a sequence of terms; multiplication equivalent of $\sum$}
-This results in a number that is the product of the numbers from $1$ to $n$.
+\nomenclature{$\prod$}{Product of a sequence of terms;
+  multiplication equivalent of $\sum$}
+This results in a number that is the product of the numbers from~$1$ to~$n$.
 Expressed in recursive form, that definition is:
 \begin{equation}
   n!=\begin{cases}
@@ -299,16 +531,154 @@ The C equivalent of that function is shown in \cref{factorial-c}.
   caption=Factorial in C,
   label=factorial-c
 ]
-  unsigned int factorial(unsigned int n) {
-    if (n > 0) {
-      return n * factorial(n - 1);
-    }
-    
-    return 1;
+  uint64_t factorial(uint8_t n) {
+      if (n) {
+          return n * factorial(n - 1);
+      }
+      return 1;
   }
 \end{lstlisting}
+The assembly snippet shown in \cref{lst:factasm} is again
+the result of a function compiled with \ac{gcc} 7.2.0
+and disassembled by the tweaked \lstinline|reassembly| analysis~\citep{wang2017ramblr}.
+In this case, the function performs a recursive factorial calculation on the value~$n$ stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|rdi|).
+\begin{lstlisting}[
+  caption=Assembly of Factorial Example,
+  label=lst:factasm,
+  float,
+  escapechar=|,
+  firstnumber=0
+]
+  factorial:
+      push rbp|\label{factasm:precondition}|
+      mov rbp, rsp
+      push rbx
+      sub rsp, 0x18
+      mov eax, edi
+      mov byte ptr [rbp - 0x14], al
+      cmp byte ptr [rbp - 0x14], 0
+      je .label_12
+      movzx ebx, byte ptr [rbp - 0x14]
+      movzx eax, byte ptr [rbp - 0x14]
+      sub eax, 1
+      movzx eax, al
+      mov edi, eax
+      call factorial
+      imul rax, rbx|\label{factasm:resume}|
+      jmp .label_13
+  .label_12:
+      mov eax, 1
+  .label_13:
+      add rsp, 0x18
+      pop rbx
+      pop rbp
+      ret
+\end{lstlisting}
+As with \lstinline|pow2|, the proof for this function relies on an~$\rspo$,
+though in this case that value specifically refers to the value of \lstinline|rsp|
+for the first/topmost call to the recursive function.
+The memory locations operated on by this function
+are similar to those of \lstinline|pow2|,
+but the memory locations themselves cannot be directly offset
+from~$\rspo$ due to the function's recursive nature.
+\begin{figure*}
+  \centering
+  \begin{tikzpicture}[>=stealth]
+    \graph[math nodes, grow down=3.5cm]{
+      a/"1:\begin{array}{l}
+        \readmem{a}{1}=v_0\wedge\mathdil\le n\wedge~\\
+        \mathrsp=\rspo-48*(n-\mathdil)\wedge~\\
+        (\mathdil\not=n\longrightarrow\mathrbx=\mathdil+1)\wedge~\\
+        \rbxpops(32,\rspo,n,\mathdil)\wedge~\\
+        \retsites(0,\rspo,n,\mathdil)
+      \end{array}" ->[
+        align=left,
+        "$\begin{array}{l}
+          \text{if }\mathdil = 0 \\
+          \mathrsp\coloneqq\mathrsp+8
+        \end{array}$"
+      ] b/"15:\begin{array}{c}
+        \readmem{a}{1}=v_0\wedge\mathrbx>0\wedge\mathrbx\le n\wedge~\\
+        \mathrsp=\rspo-48*(n-\mathrbx+1)+8\wedge~\\
+        \rbxpops(24,\rspo,n,\mathrbx-1)\wedge~\\
+        \retsites(8,\rspo,n,\mathrbx-1)
+      \end{array}" ->[
+        align=left,
+        "$\begin{array}{l}
+          \text{if }\mathrbx = n \\
+          \mathrsp\coloneqq\mathrsp+48
+        \end{array}$"
+      ] c/"\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
+      a ->[out=-17, in=17, swap, align=left, looseness=2,
+        "$\text{if }\mathdil\neq 0$ \\
+        $\mathrsp\coloneqq\mathrsp-48$ \\
+        push \lstinline|rbx| \\
+        $\mathrbx\coloneqq\mathdil$ \\
+        $\mathrdi\coloneqq\mathdil-1$"
+      ] a;
+      b ->[out=-17, in=17, swap, align=left, looseness=2,
+        "$\text{if }\mathrbx\neq n$ \\
+        $\mathrsp\coloneqq\mathrsp+48$ \\
+        pop \lstinline|rbx|"
+      ] b;
+    };
+  \end{tikzpicture}
+  \caption{Floyd invariant for factorial}
+  \label{fig:factcfg}
+\end{figure*}
+The set~$R$ of separated parent regions is characterized by the following assumptions:
+\begin{align*}
+  \forall m\le n\cdot(i_m,\region{\rspo+48*m-(n*48)-40}{40})\in R \\
+  \forall m\le n\cdot(i'_m,\region{\rspo+48*m-(n*48)}{8})\in R \\
+  (i_a,\region{a}{1})\in R
+\end{align*}
+The first assumption models all stack frames of size~40.
+The second models the parts of the stack where return addresses are pushed.
+The parent relations are defined in a similar way.
 
-% TODO: don't want to go through the process of trying to prove factorial, we don't have it as a proper example already (I thought we did, though.)
+\begin{multline}
+\rbxpops(\var{offset},\rspo,n,x)\equiv\\
+\forall i\cdot n>x\wedge i<n-x-1\longrightarrow\readmem{\mathrsp+i*48+\var{offset}}{8}=i+1+\mathrbx
+\label{eq:rbxpops}
+\end{multline}
+\begin{multline}
+\operatorname{ret\_address}(\var{rsp},\rspo,\var{offset},n,x,i)\equiv\\
+\text{if }\var{rsp}+(n-x-i)*48-\var{offset}=\rspo\text{ then }\retaddr \text{ else } 15
+\label{eq:ret_address}
+\end{multline}
+\begin{multline}
+\retsites(\var{offset},\rspo,n,x)\equiv\\
+\forall i\le n-x\cdot\readmem{\mathrsp+(n-x-i)*48-\var{offset}}{8}=\operatorname{ret\_address}(\mathrsp,\rspo,\var{offset},n,x,i)
+\label{eq:retsites}
+\end{multline}
+
+The Floyd invariant for the factorial function is shown in
+\index{Floyd!invariant}
+\cref{fig:factcfg,eq:rbxpops,eq:ret_address,eq:retsites}.
+The first loop from location~1 back to~1 is going deeper into recursion.
+It pushes values onto the stack.
+The invariant on this loop states that all stack frames between
+the current stack pointer and the original~$\rspo$ contain the multiplicand
+at the right address (expressed by function $\rbxpops$).
+Moreover, it states that for each recursion, return address~15 has been pushed
+to the correct memory location and the return address for the topmost stack frame
+is stored (function $\retsites$).
+If $\mathdil = 0$, the function has executed its final recursion
+and control reaches location~15.
+The second loop, which pops values of the stack until $n=\mathrbx$, is then entered.
+
+A Hoare triple can now be derived from the the Floyd invariant.
+\index{Floyd!invariant}
+\index{Hoare!triple}
+This is done by instantiating variable~$n$ with~\lstinline|dil|.
+Doing so simplifies the precondition:
+initially, no values or return addresses are pushed
+other than the upmost return address. The resulting Hoare triple becomes:
+\begin{align*}
+  &\{\readmem{a}{1} = v_0 \wedge \mathrsp = \rspo \wedge \readmem{\rspo}{8} = \retaddr\}\\
+  &H\\
+  &\{\readmem{a}{1} = v_0 \wedge \mathrsp = \rspo + 8 \wedge \loc = \retaddr\}
+\end{align*}
 
 \section{Application: HermitCore}\label{se:cfg_application}
 The concept of \emph{unikernels} has existed in the world of virtualization
@@ -376,10 +746,16 @@ does not support detection of access violations for unallocated areas of memory,
 that would effectively mean an infinite loop.
 Those functions with an explicit iteration limit do not need to assume null termination,
 as they will eventually terminate even if a null character is not encountered.
-Due to the lack of access violation support, we assume the arrays are of sufficient length
+Due to the lack of access violation support,
+we assume the arrays are of sufficient length
 even if they do not possess a null terminator within the specified range.
 
-% TODO: place table properly?
+All of these functions were isolated and then compiled into binaries.
+Because of this, functions marked as \lstinline|static inline|
+had those qualifiers removed.
+This prevented them from being eliminated when compiled with optimizations,
+as most of the functions would otherwise have their bodies inlined.
+
 \begin{table*}
   \centering
   \renewcommand\theadalign{tc}
@@ -421,47 +797,47 @@ requires a loop invariant in addition to the pre- and postconditions.
 \begin{figure*}
   \centering
   \begin{subfigure}{.48\linewidth}
-    \begin{tikzpicture}[>={stealth}]
+    \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=2.5cm]{
         a/"129:\begin{array}{l}
-          \readmem{a}{1} = v_0~\wedge~\mathrsp = \rspo~\wedge \\
-          \mathrbp = \rbpo~\wedge~\mathrdi = \deqptr~\wedge \\
-          \readmem{\rspo}{8} = \retaddr
+          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
+          \mathrbp=\rbpo\wedge\mathrdi=\deqptr\wedge~\\
+          \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           "\dots"
         ] b/"\retaddr:\begin{array}{l}
-          \readmem{a}{1} = v_0~\wedge\\
-          \mathrsp = \rspo + 8~\wedge\\
-          \mathrbp = \rbpo
+          \readmem{a}{1}=v_0\wedge~\\
+          \mathrsp=\rspo+8\wedge~\\
+          \mathrbp=\rbpo
         \end{array}"
       };
     \end{tikzpicture}
     \caption{\lstinline|dequeue_push|}\label{fig:dequeue_push}
   \end{subfigure}
   \begin{subfigure}{.50\linewidth}
-    \begin{tikzpicture}[>={stealth}]
+    \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=3cm]{
         a/"0:\begin{array}{l}
-          \readmem{a}{1} = v_0~\wedge~\mathrsp = \rspo~\wedge \\
-          \mathrbp = \rbpo~\wedge
-          \readmem{\rspo}{8} = \retaddr
+          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
+          \mathrbp=\rbpo\wedge
+          \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           align=left,
           "$\mathrsp\coloneqq\mathrsp-8$\\
           $\mathrbp\coloneqq\mathrsp$"
         ] b/"21:\begin{array}{l}
-          \readmem{a}{1} = v_0~\wedge~\mathrsp = \rspo-8~\wedge \\
-          \mathrbp = \rspo-8~\wedge \\
-          \readmem{\rspo-8}{8} = \rbpo~\wedge \\
-          \readmem{\rspo}{8} = \retaddr
+          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo-8\wedge~\\
+          \mathrbp =\rspo-8\wedge~\\
+          \readmem{\rspo-8}{8}=\rbpo\wedge~\\
+          \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           align=left,
           "$\mathrbp\coloneqq\readmem{\mathrsp}{8}$\\
           $\mathrsp\coloneqq\mathrsp+16$"
         ] c/"\retaddr:\begin{array}{l}
-          \readmem{a}{1} = v_0~\wedge \\
-          \mathrsp = \rspo + 8~\wedge \\
-          \mathrbp = \rbpo
+          \readmem{a}{1}=v_0\wedge~\\
+          \mathrsp=\rspo+8\wedge~\\
+          \mathrbp=\rbpo
         \end{array}";
         b ->[out=-15, in=15, looseness=1] b;
       };

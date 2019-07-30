@@ -7,7 +7,31 @@ Used in \cref{se:cfg_invariant},
 \section{Hoare Logic}
 Stuff\dots~\citep{hoare1969axiomatic,myreen2007hoare}
 \index{Hoare!logic}
+
+A \emph{Hoare triple} denotes a pre- and postcondition for a certain program.
 \index{Hoare!triple}
+Let~$P$ and~$Q$ be state predicates.
 
 \section{Lifting Assembly into Isabelle/HOL}
 \index{Isabelle/HOL}
+
+In order to perform symbolic execution of assembly instructions in Isabelle,
+the instructions must somehow be embedded in the theorem prover.
+This is done using the symbolic execution toolchain
+of Roessle et al.~\citep{roessle2019},
+the machine model of which is based on the work of Heule et al.~\citep{heule2016}.
+\index{symbolic execution!machine model}
+
+\index{embedding!shallow}
+\index{embedding!deep}
+
+This dissertation utilizes two methods of lifting 
+
+\subsection{Loading Assembly File}\label{sse:loading_assembly}
+% SAFECOMP style
+
+\subsection{Direct Translation}\label{sse:direct_translation}
+% POPL style
+An alternative method is to convert the assembly into the text for the deep embedding
+and then load that in the theorem prover directly,
+bypassing the Isabelle parser.

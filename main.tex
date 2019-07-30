@@ -29,7 +29,6 @@
 
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{makeidx}               % For indices!
-\usepackage{cleveref}              % Better auto-reference-typing than \autoref{}
 
 \usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
@@ -44,6 +43,12 @@
 }
 \DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs}
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
+\DeclareAcronym{gcc}{short=GCC, long=the GNU Compiler Collection}
+\DeclareAcronym{icc}{
+  short            = ICC,
+  short-indefinite = an,
+  long             = the Intel C++ Compiler
+}
 \DeclareAcronym{ipc}{
   short            = IPC,
   short-indefinite = an,
@@ -112,11 +117,14 @@
 \DeclareMathOperator{\step}{step}
 \DeclareMathOperator{\run}{run\_until}
 \DeclareMathOperator{\loc}{loc}
+\DeclareMathOperator{\rbxpops}{multiplicands\_pushed}
+\DeclareMathOperator{\retsites}{ret\_addrs\_pushed}
 
 \newcommand{\region}[2]{\ensuremath{[#1,#2]}}
 \newcommand{\readmem}[2]{\ensuremath{\ast\region{#1}{#2}}}
 \newcommand{\readmemS}[3]{\ensuremath{#1:\readmem{#2}{#3}}}
 \newcommand{\htriple}[3]{\{#1\}~#2~\{#3\}}
+\newcommand{\parent}[3]{\operatorname{parent}(#1,#2,#3)}
 
 \newcommand{\deqptr}{\var{deq}_\mathrm{ptr}}
 \newcommand{\bufferptr}{\var{buf}_\mathrm{ptr}}
@@ -149,24 +157,17 @@
 
 \author{Joshua A. Bockenek}
 \program{Electrical and Computer Engineering}
-
-% Change this to your degree, e.g. Master of Science, Master of Art, etc.
 \degree{Doctor of Philosophy}
 
 % This should be your defense date: (update when settled)
 \submitdate{\DTMdate{2019-09-01}}
 
-% Committee members. Only have five readers and one chair available.
-% Only use the ones you need and don't include the ones you don't need.
-% Per the VT ETD standards,
-% you should not include titles or educational qualifications such as PhD or Dr.
-% You should, however, include middle initials if possible.
 \principaladvisor{Binoy Ravindran}
-\firstreader{x}
-\secondreader{x}
-\thirdreader{x}
-\fourthreader{x}
-\fifthreader{x}
+\firstreader{Freek Verbeek}
+\secondreader{Patrick R. Schaumont}
+\thirdreader{Michael S. Hsiao}
+\fourthreader{Changhee Jung}
+%\fifthreader{}
 
 % The dedication and acknowledgement pages are optional. Comment them out to remove them.
 \dedication{This is where you put your dedications.}
@@ -180,7 +181,6 @@
 
 \makeindex
 \begin{document}
-  % The following lines set up the front matter of your thesis or dissertation and is required to ensure proper formatting per the VT ETD standards.
   \frontmatter
   \maketitle
   \tableofcontents

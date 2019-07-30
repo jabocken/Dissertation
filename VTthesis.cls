@@ -103,6 +103,8 @@
 \RequirePackage{listings}
 \RequirePackage{verbatim}
 
+\RequirePackage{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings)
+
 % Misc Packages
 \RequirePackage{booktabs}
 \RequirePackage[mathscr]{eucal}
