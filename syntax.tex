@@ -83,58 +83,55 @@ It provides some of the functionality of \ac{qemu}.
 \index{emulator}
 Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
 
+\begin{table*}
+  \centering
+  \begin{tabular}{l r r r r}
+    \toprule
+    Binaries & Function Count & Instruction Count & Loops & Manual Lines of Proof \\
+    \midrule
+    \lstinline|xenstore| & 2/6 & 100 & 0 & 6 \\
+    \lstinline|xen-cpuid| & 2/3 & 210 & 2 & 39 \\
+    \lstinline|qemu-img-xen| & 247/343 & 11,942 & 64 & 1,002 \\
+    Total & 251/352 & 12,252 & 65 & 1,047 \\
+    \bottomrule
+  \end{tabular}
+  \caption{Verified Xen Functions}\label{func-counts}
+\end{table*}
 \begin{figure*}
-  \begin{subtable}{\linewidth}
-    \caption{Verified functions}\label{func-counts}
-    \centering
-    \begin{tabular}{l r r r r}
-      \toprule
-      Binaries & Function Count & Instruction Count & Loops & Manual Lines of Proof \\
-      \midrule
-      \lstinline|xenstore| & 2/6 & 100 & 0 & 6 \\
-      \lstinline|xen-cpuid| & 2/3 & 210 & 2 & 39 \\
-      \lstinline|qemu-img-xen| & 247/343 & 11,942 & 64 & 1,002 \\
-      Total & 251/352 & 12,252 & 65 & 1,047 \\
-      \bottomrule
-    \end{tabular}
-  \end{subtable}
-  \\[1em]
-  \begin{subfigure}{\linewidth}
-    \centering
-    \begin{tikzpicture}
-      \begin{axis}[
-        width=0.9\linewidth,
-        height=0.35\linewidth,
-        ybar,
-        ylabel=Counts and Percentages,
-        bar width=0.3,
-        nodes near coords, % causes build failure when combined with symbolic x coords
-        point meta=y/3.52, % can't get \% shown right
-        enlarge y limits={value=0.2, upper},
-        ymin=-20,
-        xticklabels={
-          Verified,
-          Indirection,
-          \begin{tabular}{c}Address\\Computation\end{tabular},
-          \texttt{repz cmps},
-          Recursion,
-          \acs{scf} explosion
-        },
-        xtick=data
-      ]
-      \addplot coordinates {
-        (0, 251)
-        (1, 66)
-        (2, 19)
-        (3, 10)
-        (4, 2)
-        (5, 4)
-      };
-      \end{axis}
-    \end{tikzpicture}
-    \caption{Functions and unverified features}\label{fig:unverified}
-  \end{subfigure}
-  \caption{Xen Analysis Overview}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.98\linewidth,
+      height=0.35\linewidth,
+      ybar,
+      ylabel=Counts and Percentages,
+      bar width=0.3,
+      nodes near coords, % causes build failure when combined with symbolic x coords
+      point meta=y/3.52, % can't get \% shown right
+      enlarge y limits={value=0.2, upper},
+      ymin=-20,
+      xticklabels={
+        Verified,
+        Indirection,
+        \begin{tabular}{c}Address\\Computation\end{tabular},
+        \texttt{repz cmps},
+        Recursion,
+        \acs{scf} explosion
+      },
+      xtick=data
+    ]
+    \addplot coordinates {
+      (0, 251)
+      (1, 66)
+      (2, 19)
+      (3, 10)
+      (4, 2)
+      (5, 4)
+    };
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Analzyed Xen Functions Compared to Unverified Features}
+  \label{fig:unverified}
 \end{figure*}
 
 This methodology is currently capable of dealing with \xenpercentage\
