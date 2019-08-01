@@ -16,7 +16,7 @@ via the proof ingredients and customized proof strategies.
 \index{proof!ingredient}
 \index{proof!strategy}
 
-After going into further detail on \acp{fmuc} in \cref{se:fmuc},
+After going into further detail on \acp{fmuc} in \cref{se:fmuc_gen,se:fmuc_ver},
 \cref{se:syntax_example} provides an example to illustrate the generation
 and verification process.
 On its own, that example could theoretically overwrite its own return address
@@ -27,6 +27,175 @@ along with a formal proof of return address preservation under those conditions.
 Following the simple example is a full case study
 on the Xen hypervisor~\citep{chisnall2008definitive} in \cref{se:xen}.
 
-\section{Formal Memory Usage Certificates}\label{se:fmuc}
+\section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
+\section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
 \section{Examples}\label{se:syntax_example}
+
 \section{Application: Xen Project}\label{se:xen}
+The Xen Project~\citep{chisnall2008definitive}
+\index{Xen}
+is a mature, widely-used \ac{vmm}, also known as a \emph{hypervisor}.
+\index{hypervisor}
+Hypervisors provide a method of managing multiple
+\acp{vm} (called domains in the Xen documentation) on a physical host.
+\index{domain}
+%Xen has support for hardware-assisted virtualization, referred to as \acp{hvm}. % Relevant because of QEMU
+
+The Xen hypervisor is a suitable case study because of its security relevance
+\index{Xen}
+and its complex build process involving real production code.
+Security is a significant issue in environments where hypervisors are used,
+such as the \ac{aec2}, Rackspace Cloud, and many other cloud service providers.
+For example, when one or more hosts support guest domains
+for any number of distinct users,
+ensuring isolation of the domains is important.
+
+The Xen build process produces multiple binaries
+that contain functions not present in the Xen source itself.
+This is due to the inclusion of external static libraries and programs.
+Xen version 4.12 was compiled with \ac{gcc} 8.2 via the standard Xen build process.
+This build process uses various optimization levels, ranging from \texttt{O1} to \texttt{O3}.
+The version of \texttt{objdump} used to disassemble the compiled binaries
+was 2.31.1.
+\index{objdump}
+
+The verification effort presented here
+covered three of the binaries produced by the Xen build process:
+\lstinline|xenstore|, \lstinline|xen-cpuid|, and \lstinline|qemu-img-xen|.
+The \lstinline|xenstore| binary is involved in the functionality of
+XenStore\fturl{https://wiki.xen.org/wiki/XenStore},
+a hierarchical data structure shared amongst all Xen domains.
+This sharing allows for the possibility of inter-domain communication,
+though in general XenStore is intended for simple configuration information.
+A smaller program than \lstinline|xenstore|, \lstinline|xen-cpuid|
+provides functionality similar to that of the
+\lstinline|cpuid| utility\fturl{https://linux.die.net/man/1/cpuid}.
+This utility queries the underlying processors
+and displays information about the features they support.
+Such functionality is important for Xen
+as it supports migrating domains
+between processors with different variants of the same \ac{isa}~\citep{cpuid-masking}.
+The third binary used, \lstinline|qemu-img-xen|,
+consists of over three hundred functions
+that are not present in the Xen source code.
+It provides some of the functionality of \ac{qemu}.
+\Ac{qemu} is a free, open-source emulator\fturl{https://www.qemu.org/}.
+\index{emulator}
+Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
+
+\begin{figure*}
+  \begin{subtable}{\linewidth}
+    \caption{Verified functions}\label{func-counts}
+    \centering
+    \begin{tabular}{l r r r r}
+      \toprule
+      Binaries & Function Count & Instruction Count & Loops & Manual Lines of Proof \\
+      \midrule
+      \lstinline|xenstore| & 2/6 & 100 & 0 & 6 \\
+      \lstinline|xen-cpuid| & 2/3 & 210 & 2 & 39 \\
+      \lstinline|qemu-img-xen| & 247/343 & 11,942 & 64 & 1,002 \\
+      Total & 251/352 & 12,252 & 65 & 1,047 \\
+      \bottomrule
+    \end{tabular}
+  \end{subtable}
+  \\[1em]
+  \begin{subfigure}{\linewidth}
+    \centering
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=0.9\linewidth,
+        height=0.35\linewidth,
+        ybar,
+        ylabel=Counts and Percentages,
+        bar width=0.3,
+        nodes near coords, % causes build failure when combined with symbolic x coords
+        point meta=y/3.52, % can't get \% shown right
+        enlarge y limits={value=0.2, upper},
+        ymin=-20,
+        xticklabels={
+          Verified,
+          Indirection,
+          \begin{tabular}{c}Address\\Computation\end{tabular},
+          \texttt{repz cmps},
+          Recursion,
+          \acs{scf} explosion
+        },
+        xtick=data
+      ]
+      \addplot coordinates {
+        (0, 251)
+        (1, 66)
+        (2, 19)
+        (3, 10)
+        (4, 2)
+        (5, 4)
+      };
+      \end{axis}
+    \end{tikzpicture}
+    \caption{Functions and unverified features}\label{fig:unverified}
+  \end{subfigure}
+  \caption{Xen Analysis Overview}
+\end{figure*}
+
+This methodology is currently capable of dealing with \xenpercentage\
+of the functions present in the aforementioned binaries (see \cref{fig:unverified}).
+The supported features include (nested) loops,
+subcalls, variable argument lists, jumps into other function bodies,
+string instructions with the \texttt{rep} prefix, and \ac{simd} instructions.
+There is no particular limit on function size.
+The average number of instructions per function analyzed is 49.
+Some of the functions analyzed have over 300 instructions and over 100 basic blocks.
+
+There are five categories of features not currently supported.
+The first and most common is \emph{indirection}, accounting for \SI{19}{\percent}.
+\index{indirection}
+Indirection involves a call or jump instruction
+that loads the target address from a register or memory location
+rather than using a static value.
+Switch statements and certain uses of \texttt{goto}
+are the most common causes of indirect jumps.
+Indirect calls generally result from usage of function pointers.
+For example, the \lstinline|main| functions of all three verified binaries
+used switch statements in loops in the process of parsing command line options.
+These statements introduced indirect branches.
+
+The second category involves issues related to generating the \acp{mrr}.
+This step requires solving linear arithmetic over symbolically computed addresses.
+\index{linear arithmetic}
+Sometimes, addresses are computed using a combination of arithmetic operators
+\index{operator!arithmetic}
+with bitwise logical operators.
+\index{operator!bitwise}
+In some of these cases, our translation to Z3 does not produce an answer.
+\index{Z3}
+As an example, function \texttt{qcow\_open}
+uses the rotate-left function to compute an address.
+As another example, function \texttt{AES\_set\_encrypt\_key}
+produces addresses that are obtained via combinations of bit-shifting,
+bit masking, and \texttt{xor}-ing.
+For these cases, separation and enclosure relations cannot be generated.
+
+The instruction \texttt{repz cmps} is currently not supported for technical reasons.
+It is the assembly equivalent of the function \texttt{strncmp},
+but instead writes its result to a flag.
+Various other string-related instructions with the \texttt{rep} prefix are supported,
+however.
+
+Functions with \emph{recursion}, a minority in systems code, are also not supported.
+Recursive stack frames are not well-suited to automation in this framework.
+The two recursive functions encountered both perform file-system-like tasks.
+Functions \lstinline|do_chmod| and \lstinline|do_ls| are similar to the permission-setting \lstinline|chmod| utility
+and the directory-displaying \lstinline|ls|, respectively.
+
+The final category is functions whose \ac{scf} explodes.
+The issue occurs when the pattern in \cref{fig:ex_nonopt} shows up extensively
+or when while loops have multiple entries.
+
+\Cref{func-counts} provides an overview of the verification effort.
+The table shows the absolute counts of functions verified
+as well as the total number of instructions for those functions.
+Alongside that information is the number of functions with loops
+that were verified and how many manual lines of proof were required in total.
+The vast majority of those manual proof lines were related to the loop count.
+Meanwhile, a comparison with those functions not verified
+can be found in \cref{fig:unverified}.

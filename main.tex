@@ -30,11 +30,14 @@
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
 \usepackage{makeidx}               % For indices!
 
+\usepackage{pgfplots}               % For plots
+
 \usetikzlibrary{external}          % To reduce build times for complex figures (does one-time builds and stores as images)
 \usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
 
-\tikzexternalize[prefix=extern/]                   % Enables externalization
+\pgfplotsset{compat=1.15}          % For up-to-date features
+\tikzexternalize[prefix=extern/]                  % Enables externalization
 
 \renewcommand\lstlistlistingname{List of Listings}
 
@@ -44,13 +47,20 @@
   long             = application binary interface,
   long-indefinite  = an
 }
+\DeclareAcronym{aec2}{short=Amazon EC2, long=Amazon Elastic Compute Cloud}
 \DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs}
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
 \DeclareAcronym{cfi}{short=CFI, long=control-flow integrity}
+\DeclareAcronym{dm}{short=DM, long=device model}
 \DeclareAcronym{fmuc}{
   short            = FMUC,
   short-indefinite = an,
   long             = formal memory usage certificate
+}
+\DeclareAcronym{hvm}{
+  short            = HVM,
+  short-indefinite = an,
+  long             = hardware virtual machine
 }
 \DeclareAcronym{gcc}{short=GCC, long=the GNU Compiler Collection}
 \DeclareAcronym{icc}{
@@ -76,6 +86,7 @@
   long             = interactive theorem proving,
   long-indefinite  = an
 }
+\DeclareAcronym{mrr}{short=MRR, long=memory region relation}
 \DeclareAcronym{os}{
   short            = OS,
   short-indefinite = an,
@@ -83,6 +94,13 @@
   long-indefinite  = an,
   short-plural     = es
 }
+\DeclareAcronym{qemu}{short=QEMU, long=Quick Emulator}
+\DeclareAcronym{scf}{
+  short            = SCF,
+  short-indefinite = an,
+  long             = syntactic control flow
+}
+\DeclareAcronym{simd}{short=SIMD, long=single instruction multiple data}
 \DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
 \DeclareAcronym{smt}{
   short            = SMT,
@@ -97,6 +115,7 @@
 }
 \DeclareAcronym{tcb}{short=TCB, long=trusted computing base}
 \DeclareAcronym{vm}{short=VM, long=virtual machine}
+\DeclareAcronym{vmm}{short=VMM, long=virtual machine monitor}
 
 \lstdefinelanguage
   [x64]{Assembler}     % add an "x64" dialect of Assembler
@@ -118,6 +137,9 @@
   identifierstyle=\color{purple},
   stringstyle=\color{brown},
 }
+
+\newcommand{\xenpercentage}{\SI{71}{\percent}}
+\newcommand{\xenpercentagenot}{\SI{29}{\percent}}
 
 \newcommand{\inlineasm}[1]{\lstinline[style=x64]|#1|}
 
