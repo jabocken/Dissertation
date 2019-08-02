@@ -62,7 +62,31 @@ all of which were simple reuses of established proof methods.
 The majority of added lines of proof involved guiding loop invariant application.
 
 \section{Overview of \acsp*{fmuc}}\label{se:fmuc_ex}
+
 \section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[>=stealth, gnode/.style={
+    draw,
+    text width=1.8cm,
+    text centered,
+    rounded corners,
+%    minimum height=2cm
+  }]
+    \graph[grow right=3cm]{
+      Assembly[gnode] -> "Control Flow Graph"[gnode] ->["\ref{sse:cfg_extract}"]
+      "Syntactic Control Flow"[gnode] ->["\ref{sse:symb_app}"]
+      "Memory Regions"[gnode] ->["\ref{sse:inv_gen}"]
+      Invariants[gnode] -> Certificate[gnode];
+    };
+  \end{tikzpicture}
+  \caption{FMUC Overview}\label{fig:overview}
+\end{figure}
+
+\subsection{Control Flow Extraction}\label{sse:cfg_extract}
+\subsection{Application of Symbolic Execution}\label{sse:symb_app}
+\subsection{Invariant Generation}\label{sse:inv_gen}
+
 \section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
 \section{Examples}\label{se:syntax_example}
 
@@ -232,3 +256,5 @@ that were verified and how many manual lines of proof were required in total.
 The vast majority of those manual proof lines were related to the loop count.
 Meanwhile, a comparison with those functions not verified
 can be found in \cref{fig:unverified}.
+
+\section{Conclusion}

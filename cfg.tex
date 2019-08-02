@@ -77,19 +77,24 @@ does reduce the amount of work required
 as seen in \cref{se:cfg_examples,se:cfg_application}.
 The work is still not trivial, however.
 
-\tikzstyle{myblock} = [rectangle, draw, text width=2.5cm, text centered, rounded corners, minimum height=2cm]
 \begin{figure}
   \centering
-  \begin{tikzpicture}[node distance=4.5cm, auto, >=stealth, ->]
-  \node [myblock] (binary) {x86-64 binary};
-  \node [myblock, right of=binary, minimum height=1cm] (cfg) {Python script};
-  \node [myblock, right of=cfg] (isa) {Isabelle};
-  \node [myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
-  \draw [transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
-  \draw (binary) -- (cfg);
-  \draw [transform canvas={yshift=-.5em}] (cfg) -- node[above] {\footnotesize generate} node[below] {\footnotesize theories}(isa);
-  \draw [transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
-  \draw [transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
+  \begin{tikzpicture}[node distance=4.5cm, auto, >=stealth, ->, myblock/.style={
+    draw,
+    text width=2.5cm,
+    text centered,
+    rounded corners,
+    minimum height=2cm
+  }]
+    \node [myblock] (binary) {x86-64 binary};
+    \node [myblock, right of=binary, minimum height=1cm] (cfg) {Python script};
+    \node [myblock, right of=cfg] (isa) {Isabelle};
+    \node [myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
+    \draw [transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
+    \draw (binary) -- (cfg);
+    \draw [transform canvas={yshift=-.5em}] (cfg) -- node[above] {\footnotesize generate} node[below] {\footnotesize theories}(isa);
+    \draw [transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
+    \draw [transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
   \caption{Overview of Methodology}\label{fig:cfg_overview}
 \end{figure}
@@ -401,7 +406,7 @@ the function is also shown to preserve the value of the stack pointer.
   \centering
   \begin{tikzpicture}[>={stealth}]
     \graph[math nodes, grow down=2.2cm]{
-      a/"1:\begin{array}{l}
+      "1:\begin{array}{l}
         \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
         \readmem{\rspo}{8}=\retaddr
       \end{array}" ->[
@@ -413,12 +418,11 @@ the function is also shown to preserve the value of the stack pointer.
         \mathrbp=\mathrsp=\rspo-8
       \end{array}" ->[
         "$\mathrsp\coloneqq\mathrsp+16$"
-      ] c/"\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
+      ] "\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
       b ->[out=-16, in=16, looseness=3] b;
     };
   \end{tikzpicture}
-  \caption{Floyd invariant for \texttt{pow2}}
-  \label{fig:pow2cfg}
+  \caption{Floyd invariant for \texttt{pow2}}\label{fig:pow2cfg}
 \end{figure}
 Given the parent regions,the proof that the Floyd invariant holds
 is executed automatically using the symbolic execution engine
@@ -523,7 +527,7 @@ from~$\rspo$ due to the function's recursive nature.
           \text{if }\mathrbx = n \\
           \mathrsp\coloneqq\mathrsp+48
         \end{array}$"
-      ] c/"\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
+      ] "\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
       a ->[out=-17, in=17, swap, align=left, looseness=2,
         "$\text{if }\mathdil\neq 0$ \\
         $\mathrsp\coloneqq\mathrsp-48$ \\
@@ -715,13 +719,13 @@ requires a loop invariant in addition to the pre- and postconditions.
   \begin{subfigure}{.48\linewidth}
     \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=2.5cm]{
-        a/"129:\begin{array}{l}
+        "129:\begin{array}{l}
           \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
           \mathrbp=\rbpo\wedge\mathrdi=\deqptr\wedge~\\
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           "\dots"
-        ] b/"\retaddr:\begin{array}{l}
+        ] "\retaddr:\begin{array}{l}
           \readmem{a}{1}=v_0\wedge~\\
           \mathrsp=\rspo+8\wedge~\\
           \mathrbp=\rbpo
@@ -733,7 +737,7 @@ requires a loop invariant in addition to the pre- and postconditions.
   \begin{subfigure}{.50\linewidth}
     \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=3cm]{
-        a/"0:\begin{array}{l}
+        "0:\begin{array}{l}
           \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
           \mathrbp=\rbpo\wedge
           \readmem{\rspo}{8}=\retaddr
@@ -750,7 +754,7 @@ requires a loop invariant in addition to the pre- and postconditions.
           align=left,
           "$\mathrbp\coloneqq\readmem{\mathrsp}{8}$\\
           $\mathrsp\coloneqq\mathrsp+16$"
-        ] c/"\retaddr:\begin{array}{l}
+        ] "\retaddr:\begin{array}{l}
           \readmem{a}{1}=v_0\wedge~\\
           \mathrsp=\rspo+8\wedge~\\
           \mathrbp=\rbpo
