@@ -72,6 +72,25 @@ can be treated as black boxes, the usage of which is described in \cref{sse:fmuc
 
 \begin{figure*}
   \centering
+  \lstset{frame=none, numbers=none}
+  \begin{subfigure}{.51\linewidth}
+    \begin{lstlisting}[language=C, gobble=6]
+      int main(int argc, char** argv) {
+          return argv[argc - 1][0];
+      }
+    \end{lstlisting}
+    \caption{Source code}\label{fig:example-src}
+  \end{subfigure}
+  \begin{subfigure}{.48\linewidth}
+    \begin{lstlisting}[style=x64, basicstyle=\footnotesize\ttfamily, gobble=6]
+      4f0: movsxd rdi, edi
+      4f3: mov rax, qword ptr [rsi+rdi*8-8]
+      4f8: movsx eax, byte ptr [rax]
+      4fb: ret
+    \end{lstlisting}
+    \caption{Compiled assembly}\label{fig:example-asm}
+  \end{subfigure}
+
   \caption{Example \ac{fmuc}}\label{fig:fmuc}
 \end{figure*}
 
