@@ -14,6 +14,8 @@
 
 \documentclass[nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
 
+\usepackage{suffix}                % For defining command versions with *s
+
 \usepackage{microtype} % Not everything is supported when using XeLaTeX, but should help a bit in making text look nicer.
 \usepackage{textcomp}  % Fixes issue with microtype+siunitx's \micro
 
@@ -151,10 +153,20 @@
 \DeclareMathOperator{\rbxpops}{multiplicands\_pushed}
 \DeclareMathOperator{\retsites}{ret\_addrs\_pushed}
 
+\DeclareMathOperator{\ABB}{Block}
+\DeclareMathOperator{\ASkip}{Skip}
+\DeclareMathOperator{\ACall}{Call}
+\DeclareMathOperator{\ABreak}{Break}
+\DeclareMathOperator{\AContinue}{Continue}
+\DeclareMathOperator{\AWhileResume}{Resume}
+
+\newcommand{\Block}[2]{\mathtt{#1-\!\!\!>\!\!#2}}
+
 \newcommand{\region}[2]{\ensuremath{[#1,#2]}}
 \newcommand{\readmem}[2]{\ensuremath{\ast\region{#1}{#2}}}
 \newcommand{\readmemS}[3]{\ensuremath{#1:\readmem{#2}{#3}}}
-\newcommand{\htriple}[3]{\{#1\}~#2~\{#3\}}
+\newcommand{\htriple}[3]{\{#1\}#2\{#3\}}
+\WithSuffix\newcommand\htriple*[4]{\{#1\}#2\{#3;#4\}}
 \newcommand{\parent}[3]{\operatorname{parent}(#1,#2,#3)}
 
 \newcommand{\deqptr}{\var{deq}_\mathrm{ptr}}

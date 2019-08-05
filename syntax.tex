@@ -90,9 +90,42 @@ can be treated as black boxes, the usage of which is described in \cref{sse:fmuc
     \end{lstlisting}
     \caption{Compiled assembly}\label{fig:example-asm}
   \end{subfigure}
-
+  \begin{subfigure}{\linewidth}
+    \centering
+    \begin{align*}
+      \text{\bfseries Thm: } & \var{MRR}\Longrightarrow\htriple*{P}{f}{Q}{M} \\
+      \text{\bfseries Proof: } & \ldots\text{ where}
+    \end{align*}
+    \begin{align*}
+      f &\equiv \ABB~\Block{4f0}{4fb} \\
+      P &\equiv \mathrip = \mathtt{4f0} \wedge \mathrsp = \rspo \wedge \ldots \wedge \readmem{\mathrsp}{8} = \retaddr \\
+      Q &\equiv \mathrip = \retaddr \wedge \mathrsp = \rspo + 8 \wedge \ldots \wedge \readmem{\rspo}{8} = \retaddr \\
+      M &\equiv\begin{aligned}
+      \region{\rspo}{8}, \\
+      \region{\mathtt{rsi}_0 + \sextend\langle 31,0\rangle\mathtt{rdi}_0 * 8 - 8}{8}, \\
+      \region{\readmem{\mathtt{rsi}_0 + \sextend\langle 31,0\rangle\mathtt{rdi}_0 * 8 - 8}{8}}{1}
+      \end{aligned}
+    \end{align*}
+    \caption{\Acl*{fmuc}}\label{fig:fmuc-thm}
+  \end{subfigure}
   \caption{Example \ac{fmuc}}\label{fig:fmuc}
 \end{figure*}
+
+The small program shown in \cref{fig:example-src} provides a simple example
+for \ac{fmuc} explanation. This one-function program
+returns the numeric value of the first character of its last command-line argument.
+When compiled to assembly (x86-64 using the System V \ac{abi}),
+the program will resemble the code depicted in \cref{fig:example-asm}.
+In this assembly code,
+\lstinline|argc| maps to the register \inlineasm{edi},
+which is the low 32 bits of the 64-bit register \inlineasm{rdi},
+and \lstinline|argv| maps to \inlineasm{rsi}.
+After sign-extending \inlineasm{edi} to fill \inlineasm{rdi},
+that value and the other argument are used to calculate
+an address, stored in the register \inlineasm{rax},
+from which a one-byte value is read.
+That value sign extended and stored in the lower 32 bits of \inlineasm{rax},
+\inlineasm{eax}.
 
 \section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
 \begin{figure*}
