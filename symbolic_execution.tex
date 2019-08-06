@@ -67,8 +67,9 @@ Formally, this is achieved by a standard least-fixed-point construction.
 \section{Hoare Logic and Symbolic Execution}
 Unlike the usual formulation of Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},
 \index{Hoare!logic}
-Hoare triples as defined in this dissertation take a halting condition
+Hoare triples as defined for the first contribuation of this dissertation
 \index{Hoare!triple}
+take a halting condition
 \index{symbolic execution!halting condition}
 as their middle input rather than a program statement.
 The program statement is instead characterized by the addresses of its initial
@@ -109,3 +110,38 @@ This ensures that the run first stops at~$H$ before it stops at~$H'$.
     \TrinaryInfC{$\htriple{P}{H'}{R}$}
   \end{prooftree}
 \end{theorem}
+
+\section{Hoare Triples for Memory Usage}\label{se:hoare2}
+This formulation, $\htriple*{P}{f}{Q}{M}$,
+resembles traditional Hoare triples a bit more,
+\index{Hoare!triple}
+as rather than a halting condition
+it takes a syntactic representation of the program,~$f$, known as \ac{scf}.
+Unlike traditional Hoare triples, however,
+it also explicitly contains the set of memory regions,~$M$,
+that enumerate the areas of memory read and written by the program
+the \ac{scf} encodes.
+
+\todo\dots
+
+\begin{definition}\label{def:usage}
+  A memory usage Hoare triple is defined as
+  \begin{equation*}
+    \htriple*{P}{f}{Q}{M}\equiv
+    \forall\sigma~\sigma'\cdot P(\sigma)\wedge\exec(f,\sigma,\sigma')\longrightarrow
+    Q(\sigma')\wedge\usage(M,\sigma,\sigma')
+  \end{equation*}
+  The above equation states the following:
+  if precondition~$P$ holds on the initial state~$\sigma$
+  and~$\sigma'$ can be obtained by executing~$f$,
+  postcondition~$Q$ holds on the produced state
+  and the values stored in all memory regions outside set~$M$ are preserved.
+\end{definition}
+While \cref{def:usage} focuses on the regions written to,
+the regions read must also be included as symbolic execution
+relies on those regions being included.
+Without them, proofs involving symbolic execution
+of the related instructions will not complete.
+
+\todo{Discuss how it can be an overapproximation
+  due to necessities of loops/etc.\ in Hoare triples/etc.}

@@ -103,3 +103,18 @@ This is formalized as follows.
   (\forall r\in R\cdot r\bowtie\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
   \end{equation}
 \end{definition}
+
+
+\todo\dots
+% TODO: move to a proper location
+
+First, we define the notion of memory usage with respect to a certain state change:
+\begin{definition}
+  The set of memory regions~$M$ represents \emph{memory usage} with respect to
+  the state change from $\sigma$ to $\sigma'$ if and only if
+  any byte at an address~$a$ not inside one of the regions is unchanged.
+  \begin{equation}
+    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}{1}\bowtie r)
+    \longrightarrow\readmemS{\sigma'}{a}{1}=\readmemS{\sigma}{a}{1}.
+  \end{equation}
+\end{definition}

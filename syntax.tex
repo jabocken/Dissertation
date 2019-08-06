@@ -94,7 +94,7 @@ can be treated as black boxes, the usage of which is described in \cref{sse:fmuc
   \begin{subfigure}{\linewidth}
     \centering
     \begin{align*}
-      \text{\bfseries Thm: } & \var{MRR}\Longrightarrow\htriple*{P}{f}{Q}{M} \\
+      \text{\bfseries Theorem: } & \var{MRR}\Longrightarrow\htriple*{P}{f}{Q}{M} \\
       \text{\bfseries Proof: } & \ldots\text{ where}
     \end{align*}
     \begin{align*}
@@ -141,6 +141,11 @@ a theorem on memory usage and its associated proof ingredients,
 the two of which are used in a theorem prover to prove the theorem.
 The \ac{fmuc} for the associated example can be seen in \cref{fig:fmuc-thm}.
 
+The theorem consists of a Hoare triple as defined in \cref{def:usage}.
+\index{Hoare!triple}
+One set of proof ingredients,
+the \acp{mrr} required to ensure successful proof completion,
+are included as assumptions on the theorem.
 
 \hyperlink{m:a}{test1} % not perfect, but close enough
 \hyperlink{m:b}{test2}

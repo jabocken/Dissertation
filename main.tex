@@ -157,6 +157,7 @@
 \DeclareMathOperator{\nbo}{no\_block\_overflow}
 \DeclareMathOperator{\sextend}{sextend}
 \DeclareMathOperator{\usage}{usage}
+\DeclareMathOperator{\exec}{exec\_scf}
 
 \DeclareMathOperator{\ABB}{Block}
 \DeclareMathOperator{\ASkip}{Skip}
@@ -171,7 +172,7 @@
 \newcommand{\readmem}[2]{\ensuremath{\ast\region{#1}{#2}}}
 \newcommand{\readmemS}[3]{\ensuremath{#1:\readmem{#2}{#3}}}
 \newcommand{\htriple}[3]{\{#1\}#2\{#3\}}
-\WithSuffix\newcommand\htriple*[4]{\{#1\}#2\{#3;#4\}}
+\WithSuffix\newcommand\htriple*[4]{\{#1\}#2\{#3{;}#4\}}
 \newcommand{\parent}[3]{\operatorname{parent}(#1,#2,#3)}
 
 \newcommand{\deqptr}{\var{deq}_\mathrm{ptr}}
