@@ -116,11 +116,15 @@ This formulation, $\htriple*{P}{f}{Q}{M}$,
 resembles traditional Hoare triples a bit more,
 \index{Hoare!triple}
 as rather than a halting condition
-it takes a syntactic representation of the program,~$f$, known as \ac{scf}.
+it takes a syntactic representation of the program,~$f$, known as \emph{\ac{scf}}.
 Unlike traditional Hoare triples, however,
 it also explicitly contains the set of memory regions,~$M$,
 that enumerate the areas of memory read and written by the program
 the \ac{scf} encodes.
+\Ac{scf} is a representation of the control flow of a function
+in terms of syntactic structures such as basic blocks,
+loops, and if-then-else statements.
+Syntactic structure is required because Hoare logic is a syntax-guided approach.
 
 \todo\dots
 

@@ -297,8 +297,8 @@ The postcondition must also show
 that the location has been set back to the return address, $l_\var{call} + 5$.
 
 Besides the stack pointer, modern calling conventions have other \emph{callee-saved}
-registers, such as \lstinline{rbp} and \lstinline{r12-r15}.
 \index{register!callee-saved}
+registers, such as \lstinline{rbp} and \lstinline{r12-r15}.
 It is generally assumed that the net effect of a function call
 does not touch these registers.
 Consider a situation in which \lstinline{rbp} contains an address,

@@ -95,16 +95,23 @@ can be treated as black boxes, the usage of which is described in \cref{sse:fmuc
     \centering
     \begin{align*}
       \text{\bfseries Theorem: } & \var{MRR}\Longrightarrow\htriple*{P}{f}{Q}{M} \\
-      \text{\bfseries Proof: } & \ldots\text{ where}
+      \text{\bfseries Proof: } & \ldots
     \end{align*}
+    where
     \begin{align*}
       f &\equiv\ABB~\Block{4f0}{4fb} \\
-      P &\equiv\mathrip=\mathtt{4f0}\wedge\mathrsp=\rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \\
-      Q &\equiv\mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \\
+      P &\equiv\mathrip=
+      \mathtt{4f0}\wedge\mathrsp=\rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \\
+      Q &\equiv\begin{multlined}[t]
+        \mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge \\
+        \langle 31,0\rangle\mathrax=\sextend(\readmem{\readmem{\rsio+\sextend(\langle 31,0\rangle\rdio)*8-8}{8}}{1})
+      \end{multlined} \\
       M &\equiv\begin{cases}
         \region{\rspo}{8} & \hypertarget{m:a}{(a)} \\
-        \region{\rsio+\sextend(\langle 31,0\rangle\rdio)*8-8}{8} & \hypertarget{m:b}{(b)} \\
-        \region{\readmem{\rsio+\sextend(\langle 31,0\rangle\rdio)*8-8}{8}}{1} & \hypertarget{m:c}{(c)}
+        \region{\rsio+\sextend(\langle 31,0\rangle\rdio)*8-8}{8}
+        & \hypertarget{m:b}{(b)} \\
+        \region{\readmem{\rsio+\sextend(\langle 31,0\rangle\rdio)*8-8}{8}}{1}
+        & \hypertarget{m:c}{(c)}
       \end{cases} \\
       \var{MRR} &\equiv\begin{aligned}
         \not\bowtie &= \{\} \\
@@ -112,7 +119,10 @@ can be treated as black boxes, the usage of which is described in \cref{sse:fmuc
       \end{aligned}
     \end{align*}
     \caption{\Acl*{fmuc}\footnote{%
-      $\sextend$ indicates sign extension, $\langle h,l\rangle w$ indicates taking bits $l$ through $h$ of word $w$, and $\readmem{a}{n}$ indicates reading $n$ bytes of memory starting at address $a$.
+      $\sextend$ indicates sign extension,
+      $\langle h,l\rangle w$ indicates taking bits $l$ through $h$ of word $w$,
+      and $\readmem{a}{n}$ indicates reading $n$ bytes of memory
+      starting at address $a$.
     }}\label{fig:fmuc-thm}
   \end{subfigure}
   \caption{Example \ac{fmuc}}\label{fig:fmuc}
@@ -146,6 +156,22 @@ The theorem consists of a Hoare triple as defined in \cref{def:usage}.
 One set of proof ingredients,
 the \acp{mrr} required to ensure successful proof completion,
 are included as assumptions on the theorem.
+The control flow ingredient,
+represented as the \ac{scf} variable~$f$, is a single basic block for this function
+starting at instruction \inlineasm{4f0} and going to instruction \inlineasm{4fb}.
+Following that, the precondition~$P$ provides the starting conditions for the function,
+which include symbolic variables for initial register values,
+storage on the stack of the address to jump to after function execution,
+and the address of the instruction to start from
+(stored in the instruction pointer register, \inlineasm{rip}).
+Last of the traditional Hoare triple components is the postcondition~$Q$,
+which indicates completion of function execution
+by showing that the instruction pointer is now set to the address to return to,
+the stack pointer \inlineasm{rsp} has been updated with an increment of eight,
+and the return value register, \inlineasm{rax},
+contains the value \lstinline|argv[argc - 1][0]|.
+All additional callee-saved registers are shown to retain their initial values as well.
+\index{register!callee-saved}
 
 \hyperlink{m:a}{test1} % not perfect, but close enough
 \hyperlink{m:b}{test2}
