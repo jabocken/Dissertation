@@ -154,7 +154,7 @@ The \ac{fmuc} for the associated example can be seen in \cref{fig:fmuc-thm}.
 The theorem consists of a Hoare triple as defined in \cref{def:usage}.
 \index{Hoare!triple}
 One set of proof ingredients,
-the \acp{mrr} required to ensure successful proof completion,
+the \acp{mrr} required to ensure successful proof completion (detailed below),
 are included as assumptions on the theorem.
 The control flow ingredient,
 represented as the \ac{scf} variable~$f$, is a single basic block for this function
@@ -173,9 +173,27 @@ contains the value \lstinline|argv[argc - 1][0]|.
 All additional callee-saved registers are shown to retain their initial values as well.
 \index{register!callee-saved}
 
-\hyperlink{m:a}{test1} % not perfect, but close enough
-\hyperlink{m:b}{test2}
-\hyperlink{m:c}{test3}
+Following the traditional Hoare triple elements is the memory region set,~$M$.
+For the function under consideration, this set consists of three regions.
+The eight-byte location of the return address
+on the stack frame (\hyperlink{m:a}{$a$}),
+the location of the pointer \lstinline|argv[argc - 1]| (\hyperlink{m:b}{$b$}),
+and the first element of the array pointed to by that pointer (\hyperlink{m:c}{$c$}).
+Without additional assumptions, those regions may \emph{alias};
+\index{memory!aliasing}
+they may overlap or even be the same.
+While that is not a problem for this specific example,
+as none of the regions are written to,
+in cases where writes do occur
+aliasing can result in writes to regions that are not considered by symbolic execution.
+This can result in requirements for significant effort on the part of proof engineers,
+greatly reducing automation.
+To avoid such issues, the \ac{fmuc} generation methodology,
+detailed in \cref{se:fmuc_gen},
+produces another proof ingredient: the aforementioned \acp{mrr}.
+\index{proof!ingredient}
+\Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)
+as well as which regions are enclosed within one another ($\sqsubseteq$).
 
 \section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
 \begin{figure*}
