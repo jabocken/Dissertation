@@ -1,4 +1,6 @@
 \chapter{Syntax-Driven Verification} % compare to CFG-driven
+% TODO: mention that recursion is not covered here
+
 \section{Introduction}
 While the methodology presented in the previous chapter
 for verifying memory preservation works well, it is not ideal.
@@ -190,10 +192,25 @@ This can result in requirements for significant effort on the part of proof engi
 greatly reducing automation.
 To avoid such issues, the \ac{fmuc} generation methodology,
 detailed in \cref{se:fmuc_gen},
-produces another proof ingredient: the aforementioned \acp{mrr}.
+produces the aforementioned \acp{mrr} proof ingredient.
 \index{proof!ingredient}
 \Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)
 as well as which regions are enclosed within one another ($\sqsubseteq$).
+
+The \ac{fmuc} for a function as a whole is broken down by Hoare rules
+as described in \cref{se:hoare_rules} to the level of basic blocks,
+each of which gets its own \ac{fmuc} of sorts.
+The generation of these per-block \acp{fmuc} involves generation of per-block
+pre- and postconditions as well; these conditions are treated as invariants.
+Stronger invariants can lead to a tighter approximation of memory usage
+(remember, the memory usage here is an overapproximation).
+
+With the \acp{fmuc} as generated, their theorems and proof ingredients all considered,
+minimal effort is required in the vast majority of cases to complete the proofs.
+The main exception is functions containing loops.
+For functions that do have loops, as well as for any other cases where proof completion
+is not automatic, Isabelle/HOL proof strategies as documented in \cref{se:fmuc_ver}
+provide assistance in completing the proofs efficiently.
 
 \section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
 \begin{figure*}
