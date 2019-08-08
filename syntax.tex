@@ -190,12 +190,14 @@ in cases where writes do occur
 aliasing can result in writes to regions that are not considered by symbolic execution.
 This can result in requirements for significant effort on the part of proof engineers,
 greatly reducing automation.
-To avoid such issues, the \ac{fmuc} generation methodology,
-detailed in \cref{se:fmuc_gen},
-produces the aforementioned \acp{mrr} proof ingredient.
+To avoid such issues, the \ac{fmuc} generation methodology
+produces the aforementioned \acp{mrr} proof ingredient,
 \index{proof!ingredient}
+the production of which is detailed in \cref{sse:mem_reg}.
 \Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)
+\index{memory!region!separation}
 as well as which regions are enclosed within one another ($\sqsubseteq$).
+\index{memory!region!enclosure}
 
 The \ac{fmuc} for a function as a whole is broken down by Hoare rules
 as described in \cref{se:hoare_rules} to the level of basic blocks,
@@ -243,6 +245,8 @@ is utilized to generate the set of memory regions
 read and written by the function in question.
 To eliminate duplicates and produce \acp{mrr}
 showing which regions overlap or are enclosed or separate,
+\index{memory!region!enclosure}
+\index{memory!region!separation}
 the region sets are fed to the \ac{smt} solver Z3~\citep{de2008z3}
 as described in \cref{sse:mem_reg}.
 % TODO: may not need the second subsection as we describe symbolic execution elsewhere
@@ -261,10 +265,85 @@ will fail if there are issues in control flow extraction,
 because the \acp{mrr} are formulated as assumptions,
 and thus inconsistent \acp{mrr} will result in vacuous proofs.
 This is why the methodology relies on Z3 for \ac{mrr} generation;
-using a known-reliable tool greatly reduces the possibility of \ac{mrr} issues.
+using a known-reliable tool greatly reduces the possibility of issues.
 
 \subsection{Control Flow Extraction}\label{sse:cfg_extract}
 \subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
+This process primarily relies on unverified symbolic execution in the generation code.
+\index{symbolic execution}
+
+\subsubsection{Memory Aliasing}
+Mentioned earlier,
+this section provides a deeper view on the issue of \emph{memory aliasing}.
+\index{memory!aliasing}
+For example, consider a write to memory region $\region{a_1}{s_1}$
+using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
+The aggregated result of that set of assignments
+depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
+overlap, are \emph{separate}, or have an \emph{enclosure} relation.
+\index{memory!region!separation}
+\index{memory!region!enclosure}
+\begin{definition}
+  Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
+  notation $r_0\bowtie r_1$, if and only if
+  \begin{equation*}
+    s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
+  \end{equation*}
+  If those regions are not separate, they \emph{overlap}.
+\end{definition}
+\begin{definition}
+  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\sqsubseteq r_1$,
+  if and only if
+  \begin{equation*}
+    a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
+  \end{equation*}
+\end{definition}
+Because the methodology in this chapter uses symbolic execution,
+the above properties must be determined for symbolic expressions.
+Unfortunately, there is no single solution, no one decision procedure,
+that can determine these properties for all symbolic expressions.
+As an example of the potential issues that can occur,
+take the aforementioned completely symbolic regions $r_0$ and $r_1$.
+Without additional information, we cannot determine any relations for these regions.
+If they are \emph{possibly} different then they must be treated as different regions,
+while if they \emph{necessarily} overlap
+then they must be treated as a single merged region.
+
+To deal with such symbolic issues,
+the three aforementioned properties of enclosure, separation, and overlapping
+are formulated as \ac{smt} problems.
+\Ac{smt} formulations generally require inverting the desired condition
+and then proving that the resultant problem is unsatisfiable.
+Thus, for separation, we have the below definition.
+\begin{definition}
+  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
+  are necessarily separate if and only if, for any address~$a$,
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+    a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
+  \end{equation*}
+\end{definition}
+Overlap may occur if two regions are not necessarily separate.
+\begin{definition}
+  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+    (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
+  \end{equation*}
+\end{definition}
+\begin{definition}
+  Region $r_0$ is enclosed by $r_1$ if and only if,
+  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+    a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
+  \end{equation*}
+\end{definition}
+These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
+for a wide range of expressions over bitvectors
+using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
+
+%TODO: continuing from here
+
 \subsection{Invariant Generation}\label{sse:inv_gen}
 
 \section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
