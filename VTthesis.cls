@@ -135,7 +135,7 @@
 \newtheorem{example}[proposition]{Example}
 \newtheorem{definition}[proposition]{Definition}
 \newtheorem{remark}[proposition]{Remark}
-\newtheorem{algorithm}[proposition]{Algorithm}
+%\newtheorem{algorithm}[proposition]{Algorithm}
 
 \lstset{ % command to set programming language parameter(s)
   frame=single,

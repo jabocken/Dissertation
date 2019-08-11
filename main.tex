@@ -23,6 +23,8 @@
 \usepackage[binary-units]{siunitx}
 \usepackage{mathtools}             % for \coloneqq
 \usepackage{bussproofs}            % for prooftree environment
+\usepackage{algorithm}             % For algorithm float
+\usepackage{algpseudocode}         % algorithmicx pseudocode
 
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
@@ -40,6 +42,12 @@
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
 \tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+
+% Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
+% for acmart class, use \renewcommand instead of \providecommand
+\makeatletter
+\providecommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
+\makeatother
 
 \renewcommand\lstlistlistingname{List of Listings}
 
@@ -146,6 +154,8 @@
 \newcommand{\inlineasm}[1]{\lstinline[style=x64]|#1|}
 
 %% Math commands
+\newcommand{\concat}{\bullet}
+\newcommand{\mmerge}{\text{ merge }}
 \newcommand{\var}[1]{\mathit{#1}}
 \DeclareMathOperator{\step}{step}
 \DeclareMathOperator{\run}{run\_until}
@@ -165,6 +175,9 @@
 \DeclareMathOperator{\ABreak}{Break}
 \DeclareMathOperator{\AContinue}{Continue}
 \DeclareMathOperator{\AWhileResume}{Resume}
+
+\DeclarePairedDelimiter{\takebits}{\langle}{\rangle}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
 
 \newcommand{\Block}[2]{\mathtt{#1-\!\!\!>\!\!#2}}
 
@@ -239,11 +252,14 @@
 
 	\listoffigures
   \listoftables
-  % Bit of work needed to get listings and acronyms in the TOC properly
+  % Bit of work needed to get stuff not added to the TOC automatically into the TOC
   \clearpage\phantomsection % Getting hyperref to link to the right page
+  \addcontentsline{toc}{chapter}{List of Algorithms}
+  \listofalgorithms
+  \clearpage\phantomsection
   \addcontentsline{toc}{chapter}{\lstlistlistingname}
   \lstlistoflistings
-  \clearpage\phantomsection % Getting hyperref to link to the right page
+  \clearpage\phantomsection
   \addcontentsline{toc}{chapter}{Acronyms}
   \printacronyms[heading=chapter*]
   \printnomenclature
