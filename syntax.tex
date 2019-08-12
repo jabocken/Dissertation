@@ -176,6 +176,7 @@ All additional callee-saved registers are shown to retain their initial values a
 \index{register!callee-saved}
 
 Following the traditional Hoare triple elements is the memory region set,~$M$.
+\index{Hoare!triple}
 For the function under consideration, this set consists of three regions.
 The eight-byte location of the return address
 on the stack frame (\hyperlink{m:a}{$a$}),
@@ -200,6 +201,7 @@ as well as which regions are enclosed within one another ($\sqsubseteq$).
 \index{memory!region!enclosure}
 
 The \ac{fmuc} for a function as a whole is broken down by Hoare rules
+\index{Hoare!rule}
 as described in \cref{se:hoare_rules} to the level of basic blocks,
 each of which gets its own \ac{fmuc} of sorts.
 The generation of these per-block \acp{fmuc} involves generation of per-block
@@ -238,7 +240,7 @@ ultimately producing \iac{scf} (details of which are presented
 in \cref{sse:cfg_extract}).
 Afterwards, per-basic block symbolic execution,
 \index{basic block}
-\index{symbolic!execution}
+\index{symbolic execution}
 as detailed in \cref{ch:symbolic_execution},
 is utilized to generate the set of memory regions
 \index{memory!region}
@@ -265,6 +267,7 @@ will fail if there are issues in control flow extraction,
 because the \acp{mrr} are formulated as assumptions,
 and thus inconsistent \acp{mrr} will result in vacuous proofs.
 This is why the methodology relies on Z3 for \ac{mrr} generation;
+\index{Z3}
 using a known-reliable tool greatly reduces the possibility of issues.
 
 \subsection{Control Flow Extraction}\label{sse:cfg_extract}
@@ -279,7 +282,9 @@ for that purpose.
 and function calls.
 The following grammar provides a description of \ac{scf}
 from the perspective of the Haskell code
-(the formulation in Isabelle is slightly different).
+\index{Haskell}
+(the formulation in Isabelle/HOL is slightly different).
+\index{Isabelle/HOL}
 Each basic block is represented by the polymorphic type~$\beta$,%
 \nomenclature{$\beta$}{Type of basic blocks}
 while branching conditions are represented using the polymorphic type~$\phi$.%
@@ -288,7 +293,6 @@ while branching conditions are represented using the polymorphic type~$\phi$.%
   \bnfprod*{scf}{
     \bnfpn{scf}\bnfsp\bnfts{;}\bnfsp\bnfpn{scf}
     \bnfor\bnfts{Block}\bnfsp\bnftd{$\beta$}
-    \bnfor\bnfts{Call}\bnfsp\bnftd{f}
     \bnfor\bnfts{Skip}
     \bnfor\bnfts{Continue}
     \bnfor\bnfts{Break}\bnfsp\bnfpn{br}
@@ -309,9 +313,12 @@ while branching conditions are represented using the polymorphic type~$\phi$.%
   }
 \end{bnf}
 Loops in this formulation have no exit condition;
+\index{loop}
 instead, they rely on having one or more internal \texttt{Break} statements,
+\index{loop!break}
 which may have an identifier to indicate how the loop was exited, for termination.
 \texttt{Continue}s function the same as in C,
+\index{loop!continue}
 causing loop execution to skip to the next iteration.
 For loops that have multiple exit points,
 \texttt{Resume} statements provide different code to execute
@@ -353,7 +360,7 @@ based on which exit was taken as indicated by the \texttt{Break} identifier.
       \State\Return $a_0;a_1$
     \EndFunction
     \Function{singleLoop}{$v,v_e$}
-      \State\Return $\AWhile~\ABB v;\AIf~L(v,v_e)~\AThen~\ABreak(\ID v)~\AFi~\AOd$
+      \State\Return $\AWhile~\ABB v;\AIf~L(v,v_e)~\AThen~\ABreak(\ID v)~\AElse~\ASkip~\AFi~\AOd$
     \EndFunction
     \Function{ite}{$v,v_0,v_1,v'$}
         \State\Return $\ABB v;\AIf~L(v,v_0)~\AThen~\Call{stmts}{v_0,v',0}~\AElse~ \Call{stmts}{v_1,v',\false}~\AFi$
@@ -367,7 +374,8 @@ based on which exit was taken as indicated by the \texttt{Break} identifier.
   \end{algorithmic}
 \end{algorithm}
 
-\Cref{algo:cf} presents an algorithm for control flow extraction.
+\Cref{algo:cf} presents the methodology for control flow extraction
+used in this chapter.
 The first input is a (sub-)\ac{cfg}, an edge-labeled graph $(B,E,L)$.
 $B$ is the set of all vertices in the graph, the basic blocks.%
 \nomenclature{$B$}{Concrete type of basic blocks}
@@ -381,10 +389,23 @@ The label type,~$E_F$, consists of logical expressions over flags.%
 Thus, the control flow extraction algorithm
 produces \iac{scf} with $\beta=B$ and $\phi=E_F$.
 
-\todo{continue here}
+The algorithm, \textsc{cfgToCf}, operates recursively, starting with the full \ac{cfg}
+of the function under consideration.
+It decomposes the \ac{cfg} into a sequence of statements and then \acp{scf}
+using the subfunction \textsc{stmts}, which also operates recursively.
+If any non-trivial loops are encountered in the execution of \textsc{stmts},
+\textsc{cfgToCf} is again called with the bodies of those loops as subgraphs.
+
+The following concepts elaborate on the notation used in the text of the algorithm.
 
 
 
+\subsubsection{Syntactic Control Flow in Isabelle/HOL}
+\index{Isabelle/HOL}
+% TODO: mention that the CFGs are preprocessed so that calls are split into single-instruction blocks
+% For Isabelle version:     \bnfor\bnfts{Call}\bnfsp\bnftd{f}
+
+% TODO: more
 
 \subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
 This process primarily relies on unverified symbolic execution in the generation code.

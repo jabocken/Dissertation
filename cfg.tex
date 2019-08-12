@@ -215,14 +215,20 @@ as a whole:
     P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
     \sigma'\neq\bot_E\wedge Q(\sigma').
   \end{equation*}
-  This results in the statement
+  Though there could be any number of additional annotations between~$l_0$
+  and~$l_f$, Floyd~\citep{floyd1967assigning} showed that a Floyd invariant that holds
+  starting from some initial condition to an intermediate annotation at~$l_1$
+  will also hold starting from that annotation.
+  % TODO: double-check this with Freek, Floyd didn't actually prove that in the paper.
+  Thus, as $I$ holds, we can substitute in~$I(l_0)(\sigma)$ for~$P(\sigma)$
+  and~$I(l_f)(\sigma')$ for~$Q(\sigma')$ without issue,
+  resulting in the following statement:
   \begin{equation*}
       I(l_0)(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
       \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
   \end{equation*}
-  As we have already assumed that $I$ holds,
-  we can apply \emph{modus ponens}, using \cref{def:floyd_inv},  
-  \index{modus ponens}
+  As we have already assumed that~$I$ holds,
+  we can substitute in the right side of the implication from \cref{def:floyd_inv}
   to obtain
   \begin{equation*}
     \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(l_f)(\sigma'))\wedge
@@ -235,8 +241,6 @@ as a whole:
     \sigma'\neq\bot_E\wedge I(l_f)(\sigma'),
   \end{equation*}
   which is trivial.
-  (Strictly speaking, a transitive closure over Floyd invariant annotations
-  would be required for a more formal proof.)
 \end{proof}
 
 Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg}.
