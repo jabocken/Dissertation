@@ -71,9 +71,12 @@
 \RequirePackage[titletoc,page]{appendix}
 \RequirePackage[nottoc]{tocbibind}
 
-%Use the following code to disable ligatures:
+%Use the following code to configure fonts:
 \usepackage{fontspec}
-\setmainfont[Ligatures={NoRequired,NoCommon,NoContextual}]{Latin Modern Roman} %Set your font type here. The default font for this document class is Latin Modern Roman.
+\setmainfont[
+  Ligatures=TeX,
+  SmallCapsFont={* Caps}
+]{Latin Modern Roman} %Set your font type here. The default font for this document class is Latin Modern Roman.
 
 %package required for abbreviations page
 \usepackage[intoc,refpage]{nomencl}

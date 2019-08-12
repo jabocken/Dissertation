@@ -323,16 +323,51 @@ based on which exit was taken as indicated by the \texttt{Break} identifier.
   \begin{algorithmic}[1]
     \Require{A subgraph $\var{sg}=(B,E,L)$ and an entry vertex}
     \Ensure{Result is syntactic control flow of type $\scf(B,E_F)$}
-    \Function{cfg\_to\_cf}{$\var{sg},\var{entry}$}
+    \Function{cfgToCf}{$\var{sg},\var{entry}$}
       \State $\var{sccs}\gets\sccs(\var{sg})$
       \If{$\abs{\var{sccs}}=1$}
         \State $\var{sccs}\gets\sccs(\var{sg}-\text{edges to }\var{entry})$
       \EndIf
-      \State \textbf{let} $[v_0,v_1,\dotsc,v_k]$ \textbf{such that} $v_0=\var{entry}\wedge v_0\ll v_1\ll\dotsb\ll v_k\ll\bot$
-      \State\Return $\stmts(v_0,v_1,1);\stmts(v_1,v_2,0);\dotsb;\stmts(v_k,\bot,0)$
+      \State \letin{[v_0,v_1,\dotsc,v_k]}{v_0=\var{entry}\wedge v_0\ll v_1\ll\dotsb\ll v_k\ll\bot}
+      \State\Return $\Call{stmts}{v_0,v_1,\true};\Call{stmts}{v_1,v_2,\false};\dotsb;\Call{stmts}{v_k\bot,\false}$%
+    \EndFunction
+    \Function{stmts}{$v,v_j,\var{first}$}
+      \State\Return $\begin{cases}
+        \ABB v & \text{if }\abs{\post v}=0 \\
+        \ASkip & \text{if }v=v_j \\
+        \AContinue & \text{if }v=\var{entry}\wedge\neg\var{first} \\
+        \ABreak(\ID(\pre v)) & \text{if }\var{sccs}(v)=\bot \\
+        \AWhile~\ABB v~\AOd & \text{if }\post v=\{v\}
+      \end{cases}$ \Comment{Func continues if no match}
+      \State \letin{v'}{v\ll v'}
+      \State $a_0\gets\begin{cases}
+        \Call{loop}{v,v'} & \text{if }\abs{\var{sccs}(v)}>1 \\
+        \ABB v & \text{if }\abs{\post v}=1 \\
+        \Call{singleLoop}{v,v_e} & \text{if }\post v=\{v,v_e\} \\
+        \Call{ite}{v,v_0,v_1,v'} & \text{if }\post v=\{v_0,v_1\}
+      \end{cases}$
+      \State $a_1\gets\begin{cases}
+        \Call{stmts}{v',v_j,\false} & \text{if }v'\neq\bot \\
+        \ASkip & \text{otherwise}
+      \end{cases}$
+      \State\Return $a_0;a_1$
+    \EndFunction
+    \Function{singleLoop}{$v,v_e$}
+      \State\Return $\AWhile~\ABB v;\AIf~L(v,v_e)~\AThen~\ABreak(\ID v)~\AFi~\AOd$
+    \EndFunction
+    \Function{ite}{$v,v_0,v_1,v'$}
+        \State\Return $\ABB v;\AIf~L(v,v_0)~\AThen~\Call{stmts}{v_0,v',0}~\AElse~ \Call{stmts}{v_1,v',\false}~\AFi$
+    \EndFunction
+    \Function{loop}{$v,v'$}
+      \State $\var{scc}\gets\var{sccs}(v)$
+      \State $a\gets\Call{cfgToCf}{\var{scc},v}$
+      \State $\var{resumes}\gets\{(i,a)\mid\exists v_0~v_e\cdot i=\ID v_0\wedge \exit(v_0,v_e,\var{scc})\wedge a=\Call{stmts}{v_e,v',\false}\}$
+      \State\Return $\AWhile~a~\AOd~\AWhileResume\var{resumes}$
     \EndFunction
   \end{algorithmic}
 \end{algorithm}
+
+
 
 
 \subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}

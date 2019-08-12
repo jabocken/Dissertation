@@ -156,6 +156,11 @@
 \newcommand{\inlineasm}[1]{\lstinline[style=x64]|#1|}
 
 %% Math commands
+\newcommand{\letin}[2]{\textbf{let} \(#1\) \textbf{such that} \(#2\)}
+
+\newcommand{\true}{\mathrm{T}}
+\newcommand{\false}{\mathrm{F}}
+
 \newcommand{\concat}{\bullet}
 \newcommand{\mmerge}{\text{ merge }}
 \newcommand{\var}[1]{\mathit{#1}}
@@ -170,22 +175,29 @@
 \DeclareMathOperator{\sextend}{sextend}
 \DeclareMathOperator{\usage}{usage}
 \DeclareMathOperator{\exec}{exec\_scf}
-\DeclareMathOperator{\scf}{scf}
-\DeclareMathOperator{\sccs}{SCCS}
 
-\DeclareMathOperator{\AWhile}{Loop}
-\DeclareMathOperator{\AOd}{Pool}
-\DeclareMathOperator{\AIf}{If}
-\DeclareMathOperator{\AThen}{Then}
-\DeclareMathOperator{\AElse}{Else}
-\DeclareMathOperator{\AFi}{Fi}
-\DeclareMathOperator{\ABB}{Block}
-\DeclareMathOperator{\ASkip}{Skip}
-\DeclareMathOperator{\ACall}{Call}
-\DeclareMathOperator{\ABreak}{Break}
-\DeclareMathOperator{\AContinue}{Continue}
-\DeclareMathOperator{\AWhileResume}{Resume}
-\DeclareMathOperator{\stmts}{stmts}
+\newcommand{\AWhile}{\mathtt{Loop}}
+\newcommand{\AOd}{\mathtt{Pool}}
+\newcommand{\AIf}{\mathtt{If}}
+\newcommand{\AThen}{\mathtt{Then}}
+\newcommand{\AElse}{\mathtt{Else}}
+\newcommand{\AFi}{\mathtt{Fi}}
+\DeclareMathOperator{\ABB}{\mathtt{Block}}
+\newcommand{\ASkip}{\mathtt{Skip}}
+\DeclareMathOperator{\ACall}{\mathtt{Call}}
+\DeclareMathOperator{\ABreak}{\mathtt{Break}}
+\newcommand{\AContinue}{\mathtt{Continue}}
+\DeclareMathOperator{\AWhileResume}{\mathtt{Resume}}
+
+\DeclareMathOperator{\scf}{scf}
+\DeclareMathOperator{\pre}{pre}
+\DeclareMathOperator{\post}{post}
+\DeclareMathOperator{\ID}{ID}
+\DeclareMathOperator{\exit}{exit}
+\DeclareMathOperator{\sccs}{SCCS}
+\DeclareMathOperator{\sem}{sem}
+\DeclareMathOperator{\takeuntil}{takeuntil}
+\DeclareMathOperator{\subst}{subst}
 
 \DeclarePairedDelimiter{\takebits}{\langle}{\rangle}
 \DeclarePairedDelimiter{\abs}{\lvert}{\rvert}

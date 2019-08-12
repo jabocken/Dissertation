@@ -188,7 +188,8 @@ that represent the arguments passed to the function.
   \end{equation}
   where
   $\sigma'=\run((\lambda\sigma\cdot I(\loc\sigma)(\sigma)\neq\bot),\sigma)$%
-  \nomenclature{$\bot$}{Used here to represent the result of calling a partial function with a value it does not have an actual result for}
+  \nomenclature{$\bot$}{Used here to represent an empty value,
+    such as the result of calling a partial function with a value it does not have an actual result for}
   and $\loc\sigma$ is the current program location,
   stored in \inlineasm{rip} on x86-64 systems.
 \end{definition}
