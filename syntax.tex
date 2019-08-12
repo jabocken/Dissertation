@@ -269,19 +269,59 @@ using a known-reliable tool greatly reduces the possibility of issues.
 
 \subsection{Control Flow Extraction}\label{sse:cfg_extract}
 As described in \cref{se:hoare2,se:hoare_rules},
-in order to apply \iac{vcg} that utilizes Hoare rules,
+in order to apply \iac{vcg} that utilizes Hoare rules to verify a Hoare triple,
 \index{Hoare!rule}
+\index{Hoare!triple}
 there must be some syntactic structure to apply those rules to.
+This chapter uses a syntactic representation of control flow, called \ac{scf},
+for that purpose.
+\Ac{scf} expresses assembly programs as a combination of basic blocks, branches, loops,
+and function calls.
+The following grammar provides a description of \ac{scf}
+from the perspective of the Haskell code
+(the formulation in Isabelle is slightly different).
+Each basic block is represented by the polymorphic type~$\beta$,%
+\nomenclature{$\beta$}{Type of basic blocks}
+while branching conditions are represented using the polymorphic type~$\phi$.%
+\nomenclature{$\phi$}{Type of branching conditions}
+\begin{bnf}
+  \bnfprod*{scf}{
+    \bnfpn{scf}\bnfsp\bnfts{;}\bnfsp\bnfpn{scf}
+    \bnfor\bnfts{Block}\bnfsp\bnftd{$\beta$}
+    \bnfor\bnfts{Call}\bnfsp\bnftd{f}
+    \bnfor\bnfts{Skip}
+    \bnfor\bnfts{Continue}
+    \bnfor\bnfts{Break}\bnfsp\bnfpn{br}
+  } \\
+  \bnfmore{
+    \bnfor\bnfts{If}\bnfsp\bnftd{$\phi$}
+      \bnfsp\bnfts{Then}\bnfsp\bnfpn{scf}
+      \bnfsp\bnfts{Else}\bnfsp\bnfpn{scf}
+      \bnfsp\bnfts{Fi}
+    \bnfor\bnfts{Loop}\bnfsp\bnfpn{scf}\bnfsp\bnfts{Pool}\bnfsp\bnfpn{res}
+  } \\
+  \bnfprod{br}{
+    \bnftd{ID}\bnfor\bnfes
+  } \\
+  \bnfprod{res}{
+    \bnfts{Resume}\bnfsp\bnfts{\{(}\bnftd{ID}\bnfts{,}\bnfpn{scf}\bnfts{),}\bnfsk\bnfts{\}}
+    \bnfor\bnfes
+  }
+\end{bnf}
+Loops in this formulation have no exit condition;
+instead, they rely on having one or more internal \texttt{Break} statements,
+which may have an identifier to indicate how the loop was exited, for termination.
+\texttt{Continue}s function the same as in C,
+causing loop execution to skip to the next iteration.
+For loops that have multiple exit points,
+\texttt{Resume} statements provide different code to execute
+based on which exit was taken as indicated by the \texttt{Break} identifier.
 
 \subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
 This process primarily relies on unverified symbolic execution in the generation code.
 \index{symbolic execution}
 
 % TODO
-
-The \acp{mrr} for the memory region set presented in \cref{ex:simple}
-can be easily established by supplying each pair of regions
-to the Z3 decision procedure presented here.
 
 \subsection{Invariant Generation}\label{sse:inv_gen}
 

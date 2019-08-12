@@ -25,6 +25,7 @@
 \usepackage{bussproofs}            % for prooftree environment
 \usepackage{algorithm}             % For algorithm float
 \usepackage{algpseudocode}         % algorithmicx pseudocode
+\usepackage[epsilon]{backnaur}     % For BNF diagrams; a (more complex?) alternative is the syntax package
 
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
@@ -169,7 +170,14 @@
 \DeclareMathOperator{\sextend}{sextend}
 \DeclareMathOperator{\usage}{usage}
 \DeclareMathOperator{\exec}{exec\_scf}
+\DeclareMathOperator{\scf}{scf}
 
+\DeclareMathOperator{\AWhile}{Loop}
+\DeclareMathOperator{\AOd}{Pool}
+\DeclareMathOperator{\AIf}{If}
+\DeclareMathOperator{\AThen}{Then}
+\DeclareMathOperator{\AElse}{Else}
+\DeclareMathOperator{\AFi}{Fi}
 \DeclareMathOperator{\ABB}{Block}
 \DeclareMathOperator{\ASkip}{Skip}
 \DeclareMathOperator{\ACall}{Call}
