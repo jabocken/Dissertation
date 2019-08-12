@@ -317,6 +317,24 @@ For loops that have multiple exit points,
 \texttt{Resume} statements provide different code to execute
 based on which exit was taken as indicated by the \texttt{Break} identifier.
 
+\subsubsection{Extraction Algorithm}
+\begin{algorithm}
+  \caption{Control flow extraction}\label{algo:cf}
+  \begin{algorithmic}[1]
+    \Require{A subgraph $\var{sg}=(B,E,L)$ and an entry vertex}
+    \Ensure{Result is syntactic control flow of type $\scf(B,E_F)$}
+    \Function{cfg\_to\_cf}{$\var{sg},\var{entry}$}
+      \State $\var{sccs}\gets\sccs(\var{sg})$
+      \If{$\abs{\var{sccs}}=1$}
+        \State $\var{sccs}\gets\sccs(\var{sg}-\text{edges to }\var{entry})$
+      \EndIf
+      \State \textbf{let} $[v_0,v_1,\dotsc,v_k]$ \textbf{such that} $v_0=\var{entry}\wedge v_0\ll v_1\ll\dotsb\ll v_k\ll\bot$
+      \State\Return $\stmts(v_0,v_1,1);\stmts(v_1,v_2,0);\dotsb;\stmts(v_k,\bot,0)$
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+
+
 \subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
 This process primarily relies on unverified symbolic execution in the generation code.
 \index{symbolic execution}
