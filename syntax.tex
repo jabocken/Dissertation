@@ -321,7 +321,7 @@ based on which exit was taken as indicated by the \texttt{Break} identifier.
 \begin{algorithm}
   \caption{Control flow extraction}\label{algo:cf}
   \begin{algorithmic}[1]
-    \Require{A subgraph $\var{sg}=(B,E,L)$ and an entry vertex}
+    \Require{A subgraph $\var{sg}=(B,E,L)$ and an entry vertex (basic block)}
     \Ensure{Result is syntactic control flow of type $\scf(B,E_F)$}
     \Function{cfgToCf}{$\var{sg},\var{entry}$}
       \State $\var{sccs}\gets\sccs(\var{sg})$
@@ -367,6 +367,20 @@ based on which exit was taken as indicated by the \texttt{Break} identifier.
   \end{algorithmic}
 \end{algorithm}
 
+\Cref{algo:cf} presents an algorithm for control flow extraction.
+The first input is a (sub-)\ac{cfg}, an edge-labeled graph $(B,E,L)$.
+$B$ is the set of vertices in the graph, the basic blocks.%
+\nomenclature{$B$}{Concrete type of basic blocks}
+These blocks are represented by their start and end addresses.
+After~$B$, $E:B\mapsto\{B\}$ indicates the edges originating from each node
+and $L:E\mapsto E_F$ is a labeling function.
+The label type,~$E_F$, consists of logical expressions over flags.%
+\nomenclature{$E_F$}{Label type, logical expressions over flags}
+Thus, the control flow extraction algorithm
+produces \iac{scf} with $\beta=B$ and $\phi=E_F$.
+
+\todo{continue here}
+
 
 
 
@@ -377,6 +391,9 @@ This process primarily relies on unverified symbolic execution in the generation
 % TODO
 
 \subsection{Invariant Generation}\label{sse:inv_gen}
+
+
+
 
 \section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
 \subsection{Composition}\label{sse:fmuc_comp}
