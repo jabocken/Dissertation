@@ -369,11 +369,12 @@ based on which exit was taken as indicated by the \texttt{Break} identifier.
 
 \Cref{algo:cf} presents an algorithm for control flow extraction.
 The first input is a (sub-)\ac{cfg}, an edge-labeled graph $(B,E,L)$.
-$B$ is the set of vertices in the graph, the basic blocks.%
+$B$ is the set of all vertices in the graph, the basic blocks.%
 \nomenclature{$B$}{Concrete type of basic blocks}
 These blocks are represented by their start and end addresses.
-After~$B$, $E:B\mapsto\{B\}$ indicates the edges originating from each node
-and $L:E\mapsto E_F$ is a labeling function.
+Following on from~$B$, $E:B\rightarrow\mathcal{P}(B)$
+indicates the edges originating from each node
+and $L:E\rightarrow E_F$ is a labeling function.
 The label type,~$E_F$, consists of logical expressions over flags.%
 \nomenclature{$E_F$}{Label type, logical expressions over flags}
 Thus, the control flow extraction algorithm
