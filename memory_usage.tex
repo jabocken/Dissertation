@@ -118,3 +118,149 @@ First, we define the notion of memory usage with respect to a certain state chan
     \longrightarrow\readmemS{\sigma'}{a}{1}=\readmemS{\sigma}{a}{1}.
   \end{equation}
 \end{definition}
+
+\subsection{Memory Aliasing}
+This section provides a deeper view on the issue of \emph{memory aliasing}.
+\index{memory!aliasing}
+For example, consider a write to memory region $\region{a_1}{s_1}$
+using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
+The aggregated result of that set of assignments
+depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
+overlap, are \emph{separate}, or have an \emph{enclosure} relation.
+\index{memory!region!separation}
+\index{memory!region!enclosure}
+\begin{definition}
+  Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
+  notation $r_0\bowtie r_1$, if and only if
+  \begin{equation*}
+  s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
+  \end{equation*}
+  If those regions are not separate, they \emph{overlap}.
+\end{definition}
+\begin{definition}
+  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\sqsubseteq r_1$,
+  if and only if
+  \begin{equation*}
+  a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
+  \end{equation*}
+\end{definition}
+Because the methodology in this chapter uses symbolic execution,
+the above properties must be determined for symbolic expressions.
+Unfortunately, there is no single solution, no one decision procedure,
+that can determine these properties for all symbolic expressions.
+As an example of the potential issues that can occur,
+take the aforementioned completely symbolic regions $r_0$ and $r_1$.
+Without additional information, we cannot determine any relations for these regions.
+If they are \emph{possibly} different then they must be treated as different regions,
+while if they \emph{necessarily} overlap
+then they must be treated as a single merged region.
+
+To deal with such symbolic issues,
+the three aforementioned properties of enclosure, separation, and overlapping
+are formulated as \ac{smt} problems.
+\Ac{smt} formulations generally require inverting the desired condition
+and then proving that the resultant problem is unsatisfiable.
+Thus, for separation, we have the below definition.
+\begin{definition}
+  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
+  are necessarily separate if and only if, for any address~$a$,
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
+  \end{equation*}
+\end{definition}
+Overlap may occur if two regions are not necessarily separate.
+\begin{definition}
+  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
+  \end{equation*}
+\end{definition}
+\begin{definition}
+  Region $r_0$ is enclosed by $r_1$ if and only if,
+  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
+  \end{equation*}
+\end{definition}
+These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
+for a wide range of expressions over bitvectors
+using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
+
+An additional problem is when a region that overlaps with at least one other region
+that has been modified is written to.
+To combine those writes, the regions must be \emph{merged}.
+\index{memory!merging}
+\begin{definition}
+  The \emph{merge} of two symbolic assignments
+  $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
+  where the write to~$r_1$ occurs before the write to~$r_0$,
+  is defined as $r=\region{a}{s}\coloneqq b_0\concat b_1\concat b_2$, where:
+  \nomenclature{$\bullet$}{Indicates bitstring concatenation}
+  \begin{align*}
+  i_0 &= a_0 - a_1 \\
+  i_1 &= a_1 + s_1 - (a_0 + s_0) \\
+  a   &= \text{if } i_0 < 0 \text{ then } a_0 \text{ else } a_1 \\
+  s   &= s_0 + \max(i_0, 0) + \max(i_1, 0) \\
+  b_0 &= \text{if } i_1 > 0 \text{ then } \takebits{8 s_1-1,8 s_1 - 8 i_1}v_1 \text{ else } 0_0 \\
+  b_1 &= \takebits{8 s-1, 0} v_0 \\
+  b_2 &= \text{if } i_0 > 0 \text{ then } \takebits{8 i_0-1, 0}v_1 \text{ else } 0_0
+  \end{align*}
+\end{definition}
+As the merged region must encompass both original regions,
+its address~$a$ is the minimum of~$a_0$ and~$a_1$.
+The value stored in the merged region consists of three parts:
+whatever portion of~$v_1$, if any, is below~$a_0$;
+a possibly zero-extended~$v_0$;
+and the part of~$v_1$ above $a_0+s_0$ (the upper bound of~$r_0$),
+if there are any bits in~$r_1$ above that address.
+As the signs of values~$i_0$ and~$i_1$ are necessary factors
+in determining the result of the region merge,
+Z3 is again used to evaluate those symbolic expressions.
+For sets of assignments such as those mentioned above,
+merge is used as an infix operator, with order being important
+(the first assignment overwrites [parts of] the second as shown above).
+
+Writing to and reading from memory in the process of symbolic execution
+requires utilizing decision procedures for separation and merging.
+Consider reading from the region $\region{a}{s}$ given a set of assignments~$\alpha$,
+using \cref{algo:mem_read} as our guide.
+\begin{algorithm}
+  \caption{Symbolically reading from memory}\label{algo:mem_read}
+  \begin{algorithmic}[1]
+    \Require{A symbolic region $\region{a}{s}$}
+    \Ensure{A symbolic value}\Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
+    \Function{read\_mem}{$\region{a}{s}$}
+    \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
+    \State\Return $v$
+    \Else
+    \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in\alpha\mid\region{a'}{s'}\not\bowtie\region{a}{s}\}$
+    \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in\alpha\mid\region{a'}{s'}\bowtie\region{a}{s}\}$
+    \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets\text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
+    \State $r\gets\region{a_l}{a_r-a_l+s_r}$
+    \State $\region{a'}{s'}\coloneqq v'\gets\var{ovl}_0\mmerge\var{ovl}_1\mmerge\ldots\mmerge(r\coloneqq *r)$
+    \State $\alpha\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
+    \State $a''\gets8(a-a')-1$
+    \State\Return $\takebits{s+a'',a''}v'$
+    \EndIf
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+If an assignment to $\region{a}{s}$ exactly exists in the current set of assignments,
+then the value assigned to that region,~$v$, is returned.
+Otherwise, the algorithm must consider the set of assignments
+for all possibly overlapping and necessarily separated regions.
+One single assignment that accounts for all overlapping regions must be developed.
+To do this, the leftmost and rightmost overlapping regions are considered.
+These regions are defined as the regions that start at the smallest address~$a_l$
+and end at the greatest upper bound $a_r+s_r$, respectively.
+The new region~$r$ has address~$a_l$ and size $a_r-a_l+s_r$.
+All of the overlapping regions are then merged into one single assignment based on~$r$,
+starting with the trivial assignment $r\coloneqq *r$.
+This assignment does nothing but set up the merging,
+as it writes the value read from region~$r$ back to that same region.
+After merging, the current set of assignments is updated to be the merged region
+and assignment combined with all separate assignments.
+The final value read from memory is extracted from the merged assignment.
+Writing to memory occurs in a similar fashion.

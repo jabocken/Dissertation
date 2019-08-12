@@ -1,13 +1,15 @@
-\chapter{Symbolic Execution in Isabelle/HOL}\label{ch:symbolic_execution}
+\chapter{Symbolic Execution}\label{ch:symbolic_execution}
 Symbolic execution, in a sense,
 \index{symbolic execution}
 is an extension of symbolic manipulation of mathematical equations.
 It involves executing a program with a set of symbolic inputs
 rather than concrete values~\citep{king1976symbolic}.
-In a theorem prover such as Isabelle/HOL,
-\index{Isabelle/HOL}
-that occurs via formal \emph{rewrite rules}.
+The individual steps of execution are implemented as \emph{rewrite rules}
 \index{symbolic execution!rewrite rule}
+over the state.
+When used in a theorem prover such as Isabelle/HOL,
+\index{Isabelle/HOL}
+those rules are ideally proven to be correct.
 
 %TODO: more
 
@@ -63,6 +65,57 @@ without an exception or reaching the halting condition
 (e.g.\ due to an infinite loop),
 the function returns $\bot_\var{NT}$.
 Formally, this is achieved by a standard least-fixed-point construction.
+
+% TODO
+
+As the x86-64 \ac{isa} is a little-endian architecture,
+\index{endianness!little}
+all operations on memory presented in this dissertation are designed with that in mind.
+\begin{example}
+  Given the state $\{\region{a}{2}\coloneqq\mathtt{0xEEFF}\}$,
+  a read of region $\region{a}{1}$ would produce $\mathtt{0xFF}$.
+\end{example}
+Support for big-endian architectures would require changing how reads and writes
+\index{endianness!big}
+are performed. For every read and write, the bytes would need to be reversed
+in order to use them appropriately.
+Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian
+\index{endianness!bi}
+memory operations. These include modern versions of ARM, PowerPC, SPARC, and MIPS.
+Supporting bi-endianness would require additional complexity in memory handling.
+
+\section{Symbolic Execution and Memory Usage}
+% TODO: probably need more here
+Symbolic execution in Haskell keeps track of all used memory regions,
+\index{symbolic execution}
+both the actual regions used by instructions as well as merged regions.
+\begin{example}\label{ex:simple}
+  Consider the following x86-64 assembly block:
+  \begin{lstlisting}[style=x64,gobble=4]
+    a0: mov    word ptr [rsp-0x8], 0xEEFF
+    a1: mov    dword ptr [rsp-0x4], 0xAABBCCDD
+    a2: mov    ax, word ptr [rsp-0x7]
+    a3: mov    edi, dword ptr [rsp-0x6]
+  \end{lstlisting}
+  The instructions at addresses \lstinline|a0| and \lstinline|a1|
+  write to two separate regions in memory,
+  $r_0=\region{\mathrsp-8}{2}$ and $r_1=\region{\mathrsp-4}{4}$.
+  Following the writes, the instruction at \lstinline|a2|
+  reads from region $\region{\mathrsp-7}{2}$,
+  which is merged with~$r_0$ to obtain $r_2=\region{\mathrsp-8}{3}$.
+  Reading from region $\region{\mathrsp-6}{4}$
+  results in a merge with~$r_2$ and~$r_1$, producing region $\region{\mathrsp-8}{8}$.
+  The aggregated assignment is then
+  \begin{equation*}
+    \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
+    \takebits{31,16}\region{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
+  \end{equation*}
+  The set~$M$ of memory regions for the given block of assembly is ultimately
+  \begin{equation*}
+    M\equiv\{\region{\rspo-8}{2},\region{\rspo-4}{4},\region{\rspo-7}{2},
+    \region{\rspo-6}{4},\region{\rspo-8}{8}\}.
+  \end{equation*}
+\end{example}
 
 \section{Hoare Logic and Symbolic Execution}
 Unlike the usual formulation of Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},
@@ -151,3 +204,4 @@ of the related instructions will not complete.
   due to necessities of loops/etc.\ in Hoare triples/etc.}
 
 \section{Hoare Rules for Memory Usage}\label{se:hoare_rules}
+% TODO: mention \acp{vcg} that apply the rules

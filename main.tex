@@ -124,6 +124,7 @@
   long-indefinite  = an,
 }
 \DeclareAcronym{tcb}{short=TCB, long=trusted computing base}
+\DeclareAcronym{vcg}{short=VCG, long=verification condition generator}
 \DeclareAcronym{vm}{short=VM, long=virtual machine}
 \DeclareAcronym{vmm}{short=VMM, long=virtual machine monitor}
 
@@ -244,6 +245,13 @@
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{You are also required as of Spring 2016 to include a general audience abstract. This should be geared towards individuals outside of your field that may be reading seeking information about your work. You should avoid language that is particular to your field and clearly define any terms that may have special meaning in your discipline.}
 
+% Bit of work needed to get stuff not added to the TOC automatically into the TOC
+\newcommand{\addtocfix}[2]{
+  \clearpage\phantomsection % Getting hyperref to link to the right page
+  \addcontentsline{toc}{chapter}{#1}
+  #2
+}
+
 \makeindex
 \begin{document}
   \frontmatter
@@ -252,16 +260,9 @@
 
 	\listoffigures
   \listoftables
-  % Bit of work needed to get stuff not added to the TOC automatically into the TOC
-  \clearpage\phantomsection % Getting hyperref to link to the right page
-  \addcontentsline{toc}{chapter}{List of Algorithms}
-  \listofalgorithms
-  \clearpage\phantomsection
-  \addcontentsline{toc}{chapter}{\lstlistlistingname}
-  \lstlistoflistings
-  \clearpage\phantomsection
-  \addcontentsline{toc}{chapter}{Acronyms}
-  \printacronyms[heading=chapter*]
+  \addtocfix{List of Algorithms}{\listofalgorithms}
+  \addtocfix{\lstlistlistingname}{\lstlistoflistings}
+  \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
   \printnomenclature
 
   % The following sets up the document for the main part of the thesis or dissertation. Do not comment out or remove this line.
