@@ -352,27 +352,33 @@ in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function cal
   \begin{algorithmic}[1]
     \Require{A subgraph $\var{sg}=(B,E,L)$ and its entry block}
     \Ensure{Result is syntactic control flow of type $\scf(B,E_F)$}
-    \Function{cfgToCf}{$\var{sg},\var{entry}$}
-      \State $\var{sccs}\gets\Call{sccs}{\var{sg}}$ \label{line:scc1}
-      \If{$\abs{\var{sccs}}=1$}%
-      \nomenclature{$\abs\cdot$}{Indicates size of~$\cdot$}
+    \Function{cfgToScf}{$\var{sg},\var{entry}$}
+      \State $\var{sccs}\gets\Call{sccs}{\var{sg}}$
+        \Comment{Implicit argument to subcalls, along with $\var{entry}$}
+        \label{line:scc1}
+      \If{$\abs{\var{sccs}}=1$}\nomenclature{$\abs\cdot$}{Indicates size of~$\cdot$}
+          \Comment{Only one \acs*{scc} present, may be a recursive loop}
         \State $\var{sccs}\gets\Call{sccs}{\var{sg}-\text{edges to }\var{entry}}$
         \label{line:scc2}
       \EndIf
-      \State \letin{[b_0,b_1,\dotsc,b_k]}
-      {b_0=\var{entry}\wedge b_0\ll b_1\ll\dotsb\ll b_k\ll\bot}
-      \State\Return $\Call{stmts}{b_0,b_1,\true};
-      \Call{stmts}{b_1,b_2,\false};\dotsb;\Call{stmts}{b_k\bot,\false}$%
+      \State \letin{[\var{entry},b_1,\dotsc,b_k]}
+      {\var{entry}\ll b_1\ll\dotsb\ll b_k\ll\bot}%
+      \nomenclature{$\ll$}{Indicates post-dominance; in this dissertation,
+        it is restricted to immediate post-dominance}
+      \label{line:ipdoms}
+      \State\Return $\Call{stmts}{\var{entry},b_1,\true};
+      \Call{stmts}{b_1,b_2,\false};\dotsb;
+      \Call{stmts}{b_k,\bot,\false}$
     \EndFunction
     \Function{stmts}{$b,b_j,\var{first}$}
       \State\Return $\begin{cases}
-        \ABB b & \text{if }\abs{\Call{post}{b}}=0 \\
         \ASkip & \text{if }b=b_j \\
         \AContinue & \text{if }b=\var{entry}\wedge\neg\var{first} \\
         \ABreak(\ID(\Call{pre}{b})) & \text{if }\var{sccs}(b)=\bot \\
+        \ABB b & \text{if }\abs{\Call{post}{b}}=0 \\
         \AWhile~\ABB b~\AOd & \text{if }\Call{post}{b}=\{b\}
-      \end{cases}$ \Comment{Func continues if no match}\label{line:prepost}
-      \State \letin{b'}{b\ll b'}
+      \end{cases}$\label{line:prepost}
+      \State \letin{b'}{b\ll b'}\Comment{$b'$ may be~$b_j$}
       \State $a_0\gets\begin{cases}
         \Call{loop}{b,b'} & \text{if }\abs{\var{sccs}(b)}>1 \\
         \ABB b & \text{if }\abs{\Call{post}{b}}=1 \\
@@ -393,12 +399,12 @@ in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function cal
         \State\Return $\ABB b;\AIf~L(b,b_0)~\AThen~
         \Call{stmts}{b_0,b',\false}~\AElse~\Call{stmts}{b_1,v',\false}~\AFi$
     \EndFunction
-    \Function{loop}{$b,b'$}
+    \Function{loop}{$b,b'$}\label{line:loop}
       \State $\var{scc}\gets\var{sccs}(b)$
-      \State $a\gets\Call{cfgToCf}{\var{scc},b}$
-      \State $\var{resumes}\gets\{(i,a)\mid
+      \State $a\gets\Call{cfgToScf}{\var{scc},b}$
+      \State $\var{resumes}\gets\{(i,a')\mid
       \exists b_0~b_e\cdot i=\ID b_0\wedge
-      \Call{exit}{b_0,b_e,\var{scc}}\wedge a=\Call{stmts}{b_e,b',\false}\}$
+      \Call{exit}{b_0,b_e,\var{scc}}\wedge a'=\Call{stmts}{b_e,b',\false}\}$
       \State\Return $\AWhile~a~\AOd~\AWhileResume\var{resumes}$
     \EndFunction
   \end{algorithmic}
@@ -409,22 +415,23 @@ used in this chapter.
 The first input is a (sub-)\ac{cfg}, an edge-labeled graph $(B,E,L)$.
 $B$ is the set of all vertices in the graph, the basic blocks.%
 \nomenclature{$B$}{Concrete type of basic blocks}
+\index{basic block}
 These blocks are represented by their start and end addresses.
 Following on from~$B$, $E:B\rightarrow\powerset(B)$%
 \nomenclature{$\powerset(\cdot)$}{Indicates power set of $\cdot$}
-indicates the edges originating from each node
-and $L:E\rightarrow E_F$ is a labeling function.
+indicates the edges originating from each block
+and $L:B\times B\rightarrow E_F$ is a labeling function.
 The label type,~$E_F$, consists of logical expressions over flags.%
 \nomenclature{$E_F$}{Label type, logical expressions over flags}
 Thus, the control flow extraction algorithm
 produces \iac{scf} with $\beta=B$ and $\phi=E_F$.
 
-The algorithm, \textsc{cfgToCf}, operates recursively, starting with the full \ac{cfg}
+The algorithm, \textsc{cfgToScf}, operates recursively, starting with the full \ac{cfg}
 of the function under consideration.
-It decomposes the \ac{cfg} into a sequence of statements and then \acp{scf}
+It decomposes the \ac{cfg} into a sequence of syntactic statements
 using the subfunction \textsc{stmts}, which also operates recursively.
 If any non-trivial loops are encountered in the execution of \textsc{stmts},
-\textsc{cfgToCf} is again called with the bodies of those loops as subgraphs.
+\textsc{cfgToScf} is again called with the bodies of those loops as subgraphs.
 
 The following paragraphs elaborate on the notation and functions
 used in the text of the algorithm.
@@ -436,13 +443,179 @@ returns the \acp{scc} of the subgraph supplied to it,
 the subgraphs of that subgraph that are all strongly connected
 (every vertex is reachable from every other vertex).
 \Iac{scc} is trivial if it consists of only one element and is not a loop.
-The \acp{scc} are stored as a mapping from blocks to subgraphs.
+The \acp{scc} are stored as a partial surjection
+\index{surjection}
+from blocks to their corresponding \acp{scc}.
 If block~$b$ is not in subgraph~$\var{sg}$,
-then \textsc{sccs}$(\var{sg})(b)$ returns~$\bot$.
-Function \textsc{exit}$(b_0,b_1,\var{sg})$ checks if~$b_1$ is an \emph{exit child}
+then $\textsc{sccs}(\var{sg})(b)$ returns~$\bot$.
+Function $\textsc{exit}(b_0,b_1,\var{sg})$ checks if~$b_1$ is an \emph{exit child}
 \index{exit child}
 of~$b_0$; that is, it checks if~$b_1$ is a child of $b_0$,
 that~$b_0$ is in $\var{sg}$, and that~$b_1$ is not.
+
+Next, notation $b_0\ll b_1$ expresses that block~$b_1$
+\emph{immediately post-dominates}~$b_0$.
+\index{dominance!post!immediate}
+This means two things:
+\begin{enumerate}
+  \item $b_1$ strictly post-dominates~$b_0$:
+  all paths to an exit block of the \ac{cfg} that start at~$b_0$
+  must go through~$b_1$ and $b_0\neq b_1$.
+  \item $b_1$ does not strictly post-dominate
+  any other strict post-dominators of~$b_0$.
+\end{enumerate}
+The paths involved in post-dominance calculation include those in loops,
+so if a \ac{cfg} contains a block~$b_0$
+that loops back on itself and has one child~$b_1$,
+then~$b_1$ is still considered the immediate post-dominator of~$b_0$.
+Only exit blocks lack immediate post-dominators, a situation denoted as $b\ll\bot$.
+As every block has at most one immediate post-dominator
+and no other block in its path will have the same one,
+there exists a unique chain of blocks formed by the immediate post-dominance relation
+for every starting block that leads to an exit.
+
+Now that the terminology and notation not elsewhere defined is out of the way,
+the behavior of \textsc{cfgToScf} itself can be discussed.
+It starts by computing the \acp{scc} of the supplied subgraph,~$\var{sg}$.
+If~$\var{sg}$ consists of a single non-trivial \ac{scc}, it is a loop,
+\index{loop}
+a situation that only happens when the function is recursive.
+\index{recursion}
+Otherwise, the \ac{cfg} either has multiple \acp{scc} or one trivial \ac{scc}.
+As the recursive loop situation cannot be handled in that exact form,
+it is broken by removing all back edges to the entry block
+and recomputing the \acp{scc}.
+The immediate post-dominance chain of blocks in the subgraph
+that follow from the entry block is then produced (\cref{line:ipdoms})
+and used to construct a sequence of \acl{scf} statements
+extracted from every immediate post-dominance pair,
+ending with a statement extracted from the exit block.
+
+Statement extraction occurs in the \textsc{stmts} function.
+It is recursive, operating from block~$b$ to the \emph{joint} block,~$b_j$,
+and has multiple base cases.
+The first is when execution has reached the joint block,
+in which case the function produces \texttt{Skip}.
+Alternatively, if~$b$ is the entry block for the current subgraph
+but this is not the first time \textsc{stmts} has been called
+for the current invocation of \textsc{cfgToScf},
+then the \ac{cfg} has jumped back to the start of a loop
+and the result should be \texttt{Continue}.
+\index{loop!continue}
+There is also the possibility of the current block
+not being present in the current \ac{scc}, indicating that a loop has been exited.
+In that case, a \texttt{Break} is generated
+\index{loop!break}
+and annotated with the ID of the parent block, the one that caused the exit.
+The next two cases to consider are based on the children of the current block~$b$.
+If it has no children, then the result is a single \texttt{Block}
+with~$b$ as its argument.
+If its only child is itself, it is a simple, one-block infinite loop
+and is returned as such.
+
+In the remaining cases,
+the algorithm produces one or more sequences of \ac{scf} components;
+the components from~$b$ to its immediate post-dominator~$b'$ (stored in~$a_0$)
+sequenced with those from~$b'$ to~$b_j$ ($a_1$, which may be \texttt{Skip} if,
+for whatever reason,~$b$ has no immediate post-dominator).
+If there are multiple \acp{scc} in the current mapping,
+a non-trivial loop is present and requires loop analysis between~$b$ and~$b'$,
+performed by \textsc{loop}.
+Next, if~$b$ only has one child, it can be mapped to a simple \texttt{Block}.
+The two remaining cases involve~$b$ having two children,
+meaning there is a conditional jump.
+If one of~$b$'s children is itself and the other is some block~$b_c$,
+then it forms a single-block loop that exits to~$b_c$.
+Otherwise,~$b$ and its two children produce an if-then-else statement.
+
+Loop extraction in \textsc{loop} (\cref{line:loop}) requires two steps.
+First, the body of the loop is extracted using a (recursive) call to \textsc{cfgToScf}.
+Second, the \ac{scf} components between every exit child of the current \ac{scc}
+and the joint block~$b'$ are stored in a set, associated with the corresponding
+exit child's ID, and supplied to the loop's \texttt{Resume} statement.
+This ensures that the control flow is properly configured
+for all exit points of the loop.
+
+\begin{example}
+  \Cref{fig:ex_cf} provides an example of \ac{scf} extracted from \iac{cfg}.
+  At the first call of \textsc{cfgToScf},
+  the post-dominator relation is $0\ll 6\ll\bot$
+  \index{dominance!post}
+  and thus $\textsc{stmts}(0,6,1)$ and $\textsc{stmts}(6,\bot,0)$ are computed.
+  For the first call to \textsc{stmts},
+  term~$a_0$ becomes an if statement computed by $\textsc{ite}(0,1,7,6)$
+  and term~$a_1$ is computed by $\textsc{stmts}(6,6,0)$.
+  The computed if statement has two branches,
+  of which this example considers the branch where~$f_0$ holds.
+  Extraction for that branch computes $\textsc{stmts}(1,6,0)$.
+  As $1\ll 5$, that call results in $a_0=\textsc{loop}(1,5)$
+  and $a_1=\textsc{stmts}(5,6,0)$.
+  The loop body in~$a_0$ is extracted from subgraph $\{1,2\}$,
+  \index{loop}
+  while the paths from~$4$ to~$5$ and~$3$ to~$5$ continue after the loop.
+  Term~$a_1$ is simply $\ABB 5$.
+\end{example}
+
+\begin{figure*}
+  \hspace*{\fill}
+  \subcaptionbox{Example \ac*{cfg}}{
+    \begin{tikzpicture}[->, >=stealth, node distance=0.75cm]
+      \node[draw=none] (0) {0};
+      \node[draw=none] (1) [below=of 0] {1};
+      \node[draw=none] (2) [below=of 1]{2};
+      \node[draw=none] (3) [below=of 2]{3};
+      \node[draw=none] (4) [left=of 3, xshift=0.5cm, yshift=0.5cm]{4};
+      \node[draw=none] (5) [below=of 3]{5};
+      \node[draw=none] (6) [below=of 5, xshift=0.5cm, yshift=0.5cm]{6};
+      \node[draw=none] (7) [right=of 1]{7};
+      \node[draw=none] (8) [right=of 3, xshift=0.5cm, yshift=0.5cm]{8};
+      \node[draw=none] (9) [right=of 5]{9};
+      
+      \path (0) edge node[left]{$f_0$} (1);
+      \draw[rounded corners=2mm] (0) -| node[above, xshift=0.4cm, yshift=-0.9cm]{$\neg f_0$} (7);
+      \path (1) edge [bend left] node[right]{$f_1$} (2);
+      \draw[rounded corners=2mm] (1) -| node[left, yshift=-1.3cm]{$\neg f_1$} (4);
+      \path (2) edge [bend left] node[left, xshift=0.1cm]{$f_2$} (1);
+      \path (2) edge node[right]{$\neg f_2$} (3);
+      \path (3) edge node[right]{} (5);
+      \draw[rounded corners=2mm] (4) |- (5);
+      \path (5) edge node[right]{} (6);
+      \draw[rounded corners=2mm] (7) -| node[right, yshift=-1.3cm]{$\neg f_7$} (8);
+      \path (7) edge node[left, yshift=-1cm]{$f_7$} (9);
+      \draw[rounded corners=2mm] (8) |- (9);
+      \path (9) edge node[right]{} (6);
+    \end{tikzpicture}
+  }
+  \hfill
+  \subcaptionbox{Syntactic Control Flow}{
+    \(\begin{array}{l}
+      \ABB 0; \\
+      \AIf~f_0~\AThen \\
+      \ind{2ex}\AWhile \\
+      \ind{4ex}\ABB 1; \\
+      \ind{4ex}\AIf~f_1~\AThen \\
+      \ind{6ex}\ABB 2;~\AIf~f_2~\AThen~\AContinue~\AElse~\ABreak 2~\AFi \\
+      \ind{4ex}\AElse~\ABreak~1~\AFi \\
+      \ind{2ex}\AOd~\AWhileResume\{(2,\ABB 3), (1,\ABB 4)\} \\
+      \ind{2ex}\ABB 5 \\
+      \AElse \\
+      \ind{2ex}\ABB 7; \\
+      \ind{2ex}\AIf~f_7~\AThen~\ASkip~\AElse~\ABB 8~\AFi; \\
+      \ind{2ex}\ABB~9 \\
+      \AFi; \\
+      \ABB 6
+    \end{array}\)
+  }
+  \hspace*{\fill}
+  \caption{Example of control flow extraction}\label{fig:ex_cf}
+\end{figure*}
+
+\subsubsection{Analysis}
+This section presents an informal proof that the \textsc{cfgToScf} algorithm
+\emph{terminates} and is \emph{sound}.
+
+
+
 
 
 

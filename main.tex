@@ -38,9 +38,10 @@
 \usetikzlibrary{external}          % To reduce build times for complex figures (does one-time builds and stores as images)
 \usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
+\usetikzlibrary{positioning}       % For relative (=of) node positioning
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
-\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+%\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -152,6 +153,7 @@
 
 %% Math commands
 \newcommand{\letin}[2]{\textbf{let} \(#1\) \textbf{such that} \(#2\)}
+\newcommand{\ind}[1]{\hspace{#1}}
 
 \newcommand{\true}{\mathrm{T}}
 \newcommand{\false}{\mathrm{F}}
@@ -203,8 +205,8 @@
 \newcommand{\Block}[2]{\mathtt{#1-\!\!\!>\!\!#2}}
 
 \newcommand{\region}[2]{\ensuremath{[#1,#2]}}
-\newcommand{\readmem}[2]{\ensuremath{\ast\region{#1}{#2}}}
-\newcommand{\readmemS}[3]{\ensuremath{#1:\readmem{#2}{#3}}}
+\newcommand{\readmem}[2]{\ast\region{#1}{#2}}
+\newcommand{\readmemS}[3]{#1:\readmem{#2}{#3}}
 \newcommand{\htriple}[3]{\{#1\}#2\{#3\}}
 \WithSuffix\newcommand\htriple*[4]{\{#1\}#2\{#3{;}#4\}}
 \newcommand{\parent}[3]{\operatorname{parent}(#1,#2,#3)}
