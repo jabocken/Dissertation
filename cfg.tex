@@ -42,14 +42,17 @@ Basic starting predicates for those preconditions and postconditions
 as well as the cutpoints are generated,
 but the bulk of the information must be added manually.
 Larger-scale scalability is achieved by using function-level compositionality.
-Recursion is supported but requires a significant amount of work,
+Even recursive functions are supported, albeit with a caveat.
 \index{recursion}
-much greater than that needed for loops or function calls alone,
+
+The caveat on recursion is that it requires a significant amount of work,
+much greater than that needed for loops or function calls alone.
 \index{loop}
 \index{function!call}
-as recursive functions are equivalent to one or more loops that utilize a stack.
-This can significantly complicate the necessary invariants
-as program stacks, when used with most modern \acp{isa}, are stored in regular memory.
+Recursive functions are equivalent to one or more loops that utilize a stack,
+which significantly complicates the necessary invariants
+due to the fact that program stacks, when used with most modern \acp{isa},
+are stored in regular memory.
 Even when recursive code primarily uses registers
 to hold most of the intermediate values and local variables,
 those locals must be stored on the stack with each recursive call
@@ -147,7 +150,7 @@ a Hoare triple can be inferred for the program as a whole.
 \index{Hoare!triple}
 
 Taking this approach also allows minimizing symbolic execution
-even in non-loop situations.
+even in non-loop situations, a form of internal compositionality.
 Consider the following pseudocode,
 which sequentially executes an if-statement and some program~$P$:
 \begin{lstlisting}[
@@ -247,60 +250,40 @@ Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg
 \index{Floyd!verification}
 In that \ac{cfg}, each edge can be seen as an implication.
 
-\section{Composition}\label{se:composition}
+\section{Function-level Composition}\label{se:composition}
 As stated above, composition is crucial for scalability.
 \index{composition}
-There are two main reasons for this. First, on the function call level,
-compositionality ensures that, when a function is called,
+On the function call level, compositionality ensures that, when a function is called,
 a successful verification effort over that function can be reused
 if preexisting or developed later if need be.
-Second, compositionality can drastically improve scalability
-\emph{within} a function body as well.
-This control-flow-oriented approach provides compositionality
-on the level of function calls as well as internally.
 
-Internal composition is simply a more formal refomulation
-of the cutpoint discussion for \cref{compositional_pseudocode}.
-\index{cutpoint}
-\begin{proof}
-  Let~$l_f$ denote the final location of executing that pseudocode,
-  and let~$l_P$ denote the initial location of program~$P$.
-  \Cref{thm:comp} can then be used
-  by instantiating~$H$ to halt at either location~$l_f$ or~$l_P$
-  and~$H'$ to halt at~$l_f$.
-  Assuming programs~$x$ and~$y$ do not contain goto's,
-  condition~$H'$ will be equivalent to halting at~$l_P$.
-  As~$H'$ is stronger than~$H$, those runs can be composed.
-\end{proof}
-
-\subsection{Function Calls}
 Generally, compositionality over function calls requires proving
 that the stack pointer remains unchanged after execution of every function call.
 \index{stack!pointer}
 There are some exceptions for optimized tail calls
 in which a called function returns to the caller of its callee,
 but those are not the norm.
-
-As an example, consider a function~$f$ starting in a text section at location~$l_0$.
-The function is called from a different text section
-by the instruction \lstinline{call f} at location $l_\var{call}$.
-This means the return address for the call is $l_\var{call} + 5$%
-\footnote{the \texttt{call} instruction is five bytes long}.
-After execution of \lstinline{call f}, the program will be at location~$l_0$
-and the stack pointer will have some value $\rspo$.
-In order to apply compositionality to function calls, the pre- and postcondition have to meet the following requirements.
-First, the precondition must imply that the return address is pushed on the stack (which has been done by \lstinline{call}):
-$\readmem{\rspo}{8} = l_\var{call} + 5 \wedge \mathrsp = \rspo$.
-Second, the postcondition must imply that after \lstinline{ret},
-the net effect of the function body
-is that the stack pointer has been incremented by 8:
-$\mathrsp = \rspo + 8 \wedge \loc = l_\var{call} + 5$.
-Note that \lstinline{call} itself decrements the stack pointer by 8,
-so this implies the net effect, from the point of view of the caller,
-is that the stack pointer is unchanged.
-The postcondition must also show
-that the location has been set back to the return address, $l_\var{call} + 5$.
-
+\begin{example}
+  consider a function~$f$ starting in a text section at location~$l_0$.
+  The function is called from a different text section
+  by the instruction \lstinline{call f} at location $l_\var{call}$.
+  This means the return address for the call is $l_\var{call} + 5$%
+  \footnote{the \texttt{call} instruction is five bytes long}.
+  After execution of \lstinline{call f}, the program will be at location~$l_0$
+  and the stack pointer will have some value $\rspo$.
+  In order to apply compositionality to function calls, the pre- and postcondition have to meet the following requirements.
+  First, the precondition must imply that the return address is pushed on the stack (which has been done by \lstinline{call}):
+  $\readmem{\rspo}{8} = l_\var{call} + 5 \wedge \mathrsp = \rspo$.
+  Second, the postcondition must imply that after \lstinline{ret},
+  the net effect of the function body
+  is that the stack pointer has been incremented by 8:
+  $\mathrsp = \rspo + 8 \wedge \loc = l_\var{call} + 5$.
+  Note that \lstinline{call} itself decrements the stack pointer by 8,
+  so this implies the net effect, from the point of view of the caller,
+  is that the stack pointer is unchanged.
+  The postcondition must also show
+  that the location has been set back to the return address, $l_\var{call} + 5$.
+\end{example}
 Besides the stack pointer, modern calling conventions have other \emph{callee-saved}
 \index{register!callee-saved}
 registers, such as \lstinline{rbp} and \lstinline{r12-r15}.
@@ -315,7 +298,6 @@ The proof is generally not complicated,
 as these callee-saved registers are pushed onto the stack
 at the beginning of functions that use them and popped off at the end.
 
-\subsection{Modeling External Calls}
 In many cases, users of a verification methodology over functions
 will encounter calls to functions that are not included in the verification effort.
 These may be system calls or simply functions not currently under consideration
@@ -429,7 +411,7 @@ the function is also shown to preserve the value of the stack pointer.
   \end{tikzpicture}
   \caption{Floyd invariant for \texttt{pow2}}\label{fig:pow2cfg}
 \end{figure}
-Given the parent regions,the proof that the Floyd invariant holds
+Given the parent regions presented above, the proof that the Floyd invariant holds
 is executed automatically using the symbolic execution engine
 described in \cref{ch:symbolic_execution}.
 
@@ -498,6 +480,11 @@ In this case, the function performs a recursive factorial calculation on the val
       pop rbp
       ret
 \end{lstlisting}
+It essentially consists of two loops,
+one loop to perform storing the integers from~$n$ to 2 on the stack as the function
+is called recursively
+and the second to multiply all those values together as each call returns.
+
 As with \lstinline|pow2|, the proof for this function relies on an~$\rspo$,
 though in this case that value specifically refers to the value of \lstinline|rsp|
 for the first/topmost call to the recursive function.
@@ -560,6 +547,17 @@ The first assumption models all stack frames of size~40.
 The second models the parts of the stack where return addresses are pushed.
 The parent relations are defined in a similar way.
 
+The following functions assist in characterizing the stack frame
+for any particular call in the recursive chain.
+To start with, $\rbxpops$ characterizes the multiplicands currently stored on the stack
+for any particular recursive call,
+both in the initial recursing loop as well as in the second loop
+as the recursive calls return.
+The following functions, $\operatorname{ret\_address}$ and $\retsites$,
+establish that return address~15 is pushed
+to the correct memory location for every call except the first.
+For the first call, the topmost stack frame,
+the initial return address must also be properly stored.
 \begin{multline}
 \rbxpops(\var{offset},\rspo,n,x)\equiv\\
 \forall i\cdot n>x\wedge i<n-x-1\longrightarrow\readmem{\mathrsp+i*48+\var{offset}}{8}=i+1+\mathrbx
@@ -579,30 +577,30 @@ The parent relations are defined in a similar way.
 The Floyd invariant for the factorial function is shown in
 \index{Floyd!invariant}
 \cref{fig:factcfg,eq:rbxpops,eq:ret_address,eq:retsites}.
-The first loop from location~1 back to~1 is going deeper into recursion.
-It pushes values onto the stack.
-The invariant on this loop states that all stack frames between
-the current stack pointer and the original~$\rspo$ contain the multiplicand
-at the right address (expressed by function $\rbxpops$).
-Moreover, it states that for each recursion, return address~15 has been pushed
-to the correct memory location and the return address for the topmost stack frame
-is stored (function $\retsites$).
-If $\mathdil = 0$, the function has executed its final recursion
+The first loop, from location~1 back to~1, goes deeper into recursion,
+pushing values onto the stack until \inlineasm{dil} becomes 0.
+As stated, $\rbxpops$ and $\retsites$ characterize the stack frame for every call,
+ensuring that all necessary information is properly stored.
+Once $\mathdil=0$, the function has executed its final recursion
 and control reaches location~15.
-The second loop, which pops values of the stack until $n=\mathrbx$, is then entered.
+The second loop then pops values of the stack until $n=\mathrbx$,
+at which point there are no more recursive stack frames to pop
+and the final result of the factorial operation can be returned.
 
 A Hoare triple can now be derived from the the Floyd invariant.
 \index{Floyd!invariant}
 \index{Hoare!triple}
 This is done by instantiating variable~$n$ with~\lstinline|dil|.
-Doing so simplifies the precondition:
-initially, no values or return addresses are pushed
+Doing so simplifies the precondition,
+as initially, no values or return addresses are pushed
 other than the upmost return address. The resulting Hoare triple becomes:
 \begin{align*}
-  &\{\readmem{a}{1} = v_0 \wedge \mathrsp = \rspo \wedge \readmem{\rspo}{8} = \retaddr\}\\
+  &\{\readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge\readmem{\rspo}{8}=\retaddr\}\\
   &H\\
-  &\{\readmem{a}{1} = v_0 \wedge \mathrsp = \rspo + 8 \wedge \loc = \retaddr\}
+  &\{\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8\wedge\loc=\retaddr\}.
 \end{align*}
+This, combined with the regions presented above as assumptions,
+provide us with our theorem of memory preservation.
 
 \section{Application: HermitCore}\label{se:cfg_application}
 The concept of \emph{unikernels} has existed in the world of virtualization
