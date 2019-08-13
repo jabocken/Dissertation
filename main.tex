@@ -23,8 +23,6 @@
 \usepackage[binary-units]{siunitx}
 \usepackage{mathtools}             % for \coloneqq
 \usepackage{bussproofs}            % for prooftree environment
-\usepackage{algorithm}             % For algorithm float
-\usepackage{algpseudocode}         % algorithmicx pseudocode
 \usepackage[epsilon]{backnaur}     % For BNF diagrams; a (more complex?) alternative is the syntax package
 
 \usepackage{booktabs}              % For nicer-looking tables
@@ -43,14 +41,6 @@
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
 \tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
-
-% Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
-% for acmart class, use \renewcommand instead of \providecommand
-\makeatletter
-\providecommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
-\makeatother
-
-\renewcommand\lstlistlistingname{List of Listings}
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -106,6 +96,11 @@
   short-plural     = es
 }
 \DeclareAcronym{qemu}{short=QEMU, long=Quick Emulator}
+\DeclareAcronym{scc}{
+  short            = SCC,
+  short-indefinite = an,
+  long             = strongly connected component
+}
 \DeclareAcronym{scf}{
   short            = SCF,
   short-indefinite = an,
@@ -277,6 +272,12 @@
   #2
 }
 
+% Listings properly in TOC
+\renewcommand\lstlistlistingname{List of Listings}
+\renewcommand{\lstlistoflistings}{\begingroup
+  \tocfile{\lstlistlistingname}{lol}
+\endgroup}
+
 \makeindex
 \begin{document}
   \frontmatter
@@ -285,8 +286,8 @@
 
 	\listoffigures
   \listoftables
-  \addtocfix{List of Algorithms}{\listofalgorithms}
-  \addtocfix{\lstlistlistingname}{\lstlistoflistings}
+  \listofalgorithms
+  \lstlistoflistings
   \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
   \printnomenclature
 
@@ -294,13 +295,13 @@
 	\mainmatter
 
   \input{introduction}
+  \input{background}
 
   \chapter{Related Work}
   % TODO: contrast with fully automated methods using \ac{smt} solvers\cite{de2008z3,barrett2011cvc4}.
   \section{Restrictions on Supported Features}
   \section{Previous Approaches to Assembly Verification}
 
-  \input{background}
   \input{memory_usage}  
   \input{symbolic_execution}
   \input{cfg}

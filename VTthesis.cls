@@ -69,6 +69,14 @@
 \RequirePackage[numbers,sort]{natbib}
 \RequirePackage{paralist}
 \RequirePackage[titletoc,page]{appendix}
+
+% Proper chapter spacing in List of Algorithms (courtesy of https://tex.stackexchange.com/a/88563)
+\patchcmd{\@chapter}% <cmd>
+{\chaptermark{#1}}% <search>
+{\chaptermark{#1}%
+  \addtocontents{loa}{\protect\addvspace{10\p@}}}% replace
+{}{}% <success><failure>
+
 \RequirePackage[nottoc]{tocbibind}
 
 %Use the following code to configure fonts:
@@ -105,6 +113,20 @@
 % MATLAB Code formatting
 \RequirePackage{listings}
 \RequirePackage{verbatim}
+
+\RequirePackage{algorithm} % For algorithm float
+\RequirePackage{algpseudocode} % algorithmicx pseudocode (needs to come before cleveref)
+
+% Fix for tocbibind from algorithms package docs (the \let is the important part, rest is standard)
+\renewcommand{\listofalgorithms}{\begingroup
+  \tocfile{List of Algorithms}{loa}
+\endgroup}
+\let\l@algorithm\l@figure
+
+% So algorithm numbering matches other floats (doesn't work with acmart class, but that doesn't use chapters anyway)
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}}
+% Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
+\renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
 
 \RequirePackage[capitalize]{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings)
 

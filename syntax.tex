@@ -324,51 +324,81 @@ For loops that have multiple exit points,
 \texttt{Resume} statements provide different code to execute
 based on which exit was taken as indicated by the \texttt{Break} identifier.
 
-\subsubsection{Extraction Algorithm}
+\subsubsection{Syntactic Control Flow in Isabelle/HOL}
+There are some modifications to the \acp{scf} when loaded into Isabelle/HOL
+\index{Isabelle/HOL}
+due to how the Hoare rules in \cref{se:hoare_rules} are applied.
+In that representation, there are no \texttt{Break}s or \texttt{Continue}s;
+any occurrences are translated to \texttt{Skip}.
+This does mean that programs that cannot be easily transformed
+such that that translation does not modify the overall semantics
+are not easily handled in this framework.
+However, none of functions encountered in the case study presented in \cref{se:xen}
+had that issue, so it does not appear to be a significant drawback.
+
+Additionally, loops in the Isabelle/HOL syntax do rely on a explicit exit condition.
+This condition is simply the precondition of the entry block of the loop
+as generated using the methodology in \cref{sse:inv_gen}.
+
+Finally, to properly handle function calls in the Isabelle/HOL syntax,
+function \acp{cfg} are preprocessed before performing extraction
+to isolate \inlineasm{call} instructions into their own basic blocks.
+These single-instruction blocks are then translated into \texttt{Call}~$f$ entries
+in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function called.
+
+\subsection{Extraction Algorithm}
 \begin{algorithm}
   \caption{Control flow extraction}\label{algo:cf}
   \begin{algorithmic}[1]
-    \Require{A subgraph $\var{sg}=(B,E,L)$ and an entry vertex (basic block)}
+    \Require{A subgraph $\var{sg}=(B,E,L)$ and its entry block}
     \Ensure{Result is syntactic control flow of type $\scf(B,E_F)$}
     \Function{cfgToCf}{$\var{sg},\var{entry}$}
-      \State $\var{sccs}\gets\sccs(\var{sg})$
-      \If{$\abs{\var{sccs}}=1$}
-        \State $\var{sccs}\gets\sccs(\var{sg}-\text{edges to }\var{entry})$
+      \State $\var{sccs}\gets\Call{sccs}{\var{sg}}$ \label{line:scc1}
+      \If{$\abs{\var{sccs}}=1$}%
+      \nomenclature{$\abs\cdot$}{Indicates size of~$\cdot$}
+        \State $\var{sccs}\gets\Call{sccs}{\var{sg}-\text{edges to }\var{entry}}$
+        \label{line:scc2}
       \EndIf
-      \State \letin{[v_0,v_1,\dotsc,v_k]}{v_0=\var{entry}\wedge v_0\ll v_1\ll\dotsb\ll v_k\ll\bot}
-      \State\Return $\Call{stmts}{v_0,v_1,\true};\Call{stmts}{v_1,v_2,\false};\dotsb;\Call{stmts}{v_k\bot,\false}$%
+      \State \letin{[b_0,b_1,\dotsc,b_k]}
+      {b_0=\var{entry}\wedge b_0\ll b_1\ll\dotsb\ll b_k\ll\bot}
+      \State\Return $\Call{stmts}{b_0,b_1,\true};
+      \Call{stmts}{b_1,b_2,\false};\dotsb;\Call{stmts}{b_k\bot,\false}$%
     \EndFunction
-    \Function{stmts}{$v,v_j,\var{first}$}
+    \Function{stmts}{$b,b_j,\var{first}$}
       \State\Return $\begin{cases}
-        \ABB v & \text{if }\abs{\post v}=0 \\
-        \ASkip & \text{if }v=v_j \\
-        \AContinue & \text{if }v=\var{entry}\wedge\neg\var{first} \\
-        \ABreak(\ID(\pre v)) & \text{if }\var{sccs}(v)=\bot \\
-        \AWhile~\ABB v~\AOd & \text{if }\post v=\{v\}
-      \end{cases}$ \Comment{Func continues if no match}
-      \State \letin{v'}{v\ll v'}
+        \ABB b & \text{if }\abs{\Call{post}{b}}=0 \\
+        \ASkip & \text{if }b=b_j \\
+        \AContinue & \text{if }b=\var{entry}\wedge\neg\var{first} \\
+        \ABreak(\ID(\Call{pre}{b})) & \text{if }\var{sccs}(b)=\bot \\
+        \AWhile~\ABB b~\AOd & \text{if }\Call{post}{b}=\{b\}
+      \end{cases}$ \Comment{Func continues if no match}\label{line:prepost}
+      \State \letin{b'}{b\ll b'}
       \State $a_0\gets\begin{cases}
-        \Call{loop}{v,v'} & \text{if }\abs{\var{sccs}(v)}>1 \\
-        \ABB v & \text{if }\abs{\post v}=1 \\
-        \Call{singleLoop}{v,v_e} & \text{if }\post v=\{v,v_e\} \\
-        \Call{ite}{v,v_0,v_1,v'} & \text{if }\post v=\{v_0,v_1\}
-      \end{cases}$
+        \Call{loop}{b,b'} & \text{if }\abs{\var{sccs}(b)}>1 \\
+        \ABB b & \text{if }\abs{\Call{post}{b}}=1 \\
+        \Call{singleLoop}{b,b_e} & \text{if }\Call{post}{b}=\{b,b_e\} \\
+        \Call{ite}{b,b_0,b_1,b'} & \text{if }\Call{post}{b}=\{b_0,b_1\}
+      \end{cases}$\label{line:post}
       \State $a_1\gets\begin{cases}
-        \Call{stmts}{v',v_j,\false} & \text{if }v'\neq\bot \\
+        \Call{stmts}{b',b_j,\false} & \text{if }b'\neq\bot \\
         \ASkip & \text{otherwise}
       \end{cases}$
       \State\Return $a_0;a_1$
     \EndFunction
-    \Function{singleLoop}{$v,v_e$}
-      \State\Return $\AWhile~\ABB v;\AIf~L(v,v_e)~\AThen~\ABreak(\ID v)~\AElse~\ASkip~\AFi~\AOd$
+    \Function{singleLoop}{$b,b_e$}
+      \State\Return $\AWhile~\ABB b;
+      \AIf~L(b,b_e)~\AThen~\ABreak(\ID b)~\AElse~\ASkip~\AFi~\AOd$
     \EndFunction
-    \Function{ite}{$v,v_0,v_1,v'$}
-        \State\Return $\ABB v;\AIf~L(v,v_0)~\AThen~\Call{stmts}{v_0,v',0}~\AElse~ \Call{stmts}{v_1,v',\false}~\AFi$
+    \Function{ite}{$b,b_0,b_1,b'$}
+        \State\Return $\ABB b;\AIf~L(b,b_0)~\AThen~
+        \Call{stmts}{b_0,b',\false}~\AElse~\Call{stmts}{b_1,v',\false}~\AFi$
     \EndFunction
-    \Function{loop}{$v,v'$}
-      \State $\var{scc}\gets\var{sccs}(v)$
-      \State $a\gets\Call{cfgToCf}{\var{scc},v}$
-      \State $\var{resumes}\gets\{(i,a)\mid\exists v_0~v_e\cdot i=\ID v_0\wedge \exit(v_0,v_e,\var{scc})\wedge a=\Call{stmts}{v_e,v',\false}\}$
+    \Function{loop}{$b,b'$}
+      \State $\var{scc}\gets\var{sccs}(b)$
+      \State $a\gets\Call{cfgToCf}{\var{scc},b}$
+      \State $\var{resumes}\gets\{(i,a)\mid
+      \exists b_0~b_e\cdot i=\ID b_0\wedge
+      \Call{exit}{b_0,b_e,\var{scc}}\wedge a=\Call{stmts}{b_e,b',\false}\}$
       \State\Return $\AWhile~a~\AOd~\AWhileResume\var{resumes}$
     \EndFunction
   \end{algorithmic}
@@ -396,16 +426,27 @@ using the subfunction \textsc{stmts}, which also operates recursively.
 If any non-trivial loops are encountered in the execution of \textsc{stmts},
 \textsc{cfgToCf} is again called with the bodies of those loops as subgraphs.
 
-The following concepts elaborate on the notation used in the text of the algorithm.
+The following paragraphs elaborate on the notation and functions
+used in the text of the algorithm.
+Functions \textsc{pre} and \textsc{post} (\cref{line:prepost,line:post})
+return the parent and child blocks of the block vertex that is their argument.
+% \bot explained in Nomenclature, no need to do so here
+The helper function \textsc{sccs} (\cref{line:scc1,line:scc2})
+returns the \acp{scc} of the subgraph supplied to it,
+the subgraphs of that subgraph that are all strongly connected
+(every vertex is reachable from every other vertex).
+\Iac{scc} is trivial if it consists of only one element and is not a loop.
+The \acp{scc} are stored as a mapping from blocks to subgraphs.
+If block~$b$ is not in subgraph~$\var{sg}$,
+then \textsc{sccs}$(\var{sg})(b)$ returns~$\bot$.
+Function \textsc{exit}$(b_0,b_1,\var{sg})$ checks if~$b_1$ is an \emph{exit child}
+\index{exit child}
+of~$b_0$; that is, it checks if~$b_1$ is a child of $b_0$,
+that~$b_0$ is in $\var{sg}$, and that~$b_1$ is not.
 
 
 
-\subsubsection{Syntactic Control Flow in Isabelle/HOL}
-\index{Isabelle/HOL}
-% TODO: mention that the CFGs are preprocessed so that calls are split into single-instruction blocks
-% For Isabelle version:     \bnfor\bnfts{Call}\bnfsp\bnftd{f}
 
-% TODO: more
 
 \subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
 This process primarily relies on unverified symbolic execution in the generation code.
