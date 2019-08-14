@@ -41,7 +41,7 @@
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
-%\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -196,7 +196,7 @@
 \DeclareMathOperator{\exit}{exit}
 \DeclareMathOperator{\sccs}{SCCS}
 \DeclareMathOperator{\sem}{sem}
-\DeclareMathOperator{\takeuntil}{takeuntil}
+\DeclareMathOperator{\takeuntil}{take\_until}
 \DeclareMathOperator{\subst}{subst}
 
 \DeclarePairedDelimiter{\takebits}{\langle}{\rangle}
@@ -248,7 +248,7 @@
 \degree{Doctor of Philosophy}
 
 % This should be your defense date: (update when settled)
-\submitdate{\DTMdate{2019-09-01}}
+\submitdate{\DTMdate{2019-09-02}}
 
 \principaladvisor{Binoy Ravindran}
 \firstreader{Freek Verbeek}
