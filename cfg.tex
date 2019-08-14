@@ -38,7 +38,9 @@ identified by a Python script that relies on
 angr's \lstinline|CFGEmulated| control flow analysis.%
 \index{angr!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
-Basic starting predicates for those preconditions and postconditions
+Basic starting predicates for those preconditions and postconditions%
+\index{precondition}%
+\index{postcondition}
 as well as the cutpoints are generated,
 but the bulk of the information must be added manually.
 Larger-scale scalability is achieved by using function-level compositionality.
@@ -145,7 +147,9 @@ functions as an \emph{invariant} for that loop.%
 Such invariants hold for every iteration of the loop,
 allowing a symbolic description of the loop's behavior.
 When combined with a general methodology
-of structured preconditions and postconditions that show,
+of structured preconditions and postconditions that show,%
+\index{precondition}%
+\index{postcondition}
 for each annotated state, the succeeding annotated state satisfies its state predicate,
 a Hoare triple can be inferred for the program as a whole.%
 \index{Hoare!triple}
@@ -274,7 +278,8 @@ but those are not the norm.
   and the stack pointer will have some value $\rspo$.
   In order to apply compositionality to function calls,
   the pre- and postcondition have to meet the following requirements.
-  First, the precondition must imply that the return address is pushed on the stack
+  First, the precondition must imply that the return address is pushed on the stack%
+  \index{precondition}
   (a task performed by \lstinline{call}):
   $\readmem{\rspo}{8}=l_\var{call}+5\wedge\mathrsp=\rspo$.
   Second, the postcondition must imply that after \lstinline{ret},
@@ -602,7 +607,8 @@ A Hoare triple can now be derived from the the Floyd invariant.%
 \index{Floyd!invariant}%
 \index{Hoare!triple}
 This is done by instantiating variable~$n$ with \lstinline|dil|.
-Doing so simplifies the precondition,
+Doing so simplifies the precondition,%
+\index{precondition}
 as initially, no values or return addresses are pushed
 other than the upmost return address. The resulting Hoare triple becomes:
 \begin{equation}
@@ -818,7 +824,8 @@ and all return addresses must be properly pushed on and popped off the stack as 
 
 Another aspect of Floyd invariant development%
 \index{Floyd!invariant}
-that is not easily determined ahead of time is strengthening of the precondition.
+that is not easily determined ahead of time is strengthening of the precondition.%
+\index{precondition}
 Making reasoned guesses about the necessary precondition clauses is one way to proceed,
 and source code annotations as well as reference documentation
 may provide additional help,
@@ -826,7 +833,8 @@ but sometimes it is necessary to just symbolically execute
 until non-determinism is encountered.%
 \index{non-determinism}
 At that point, the cause of the non-determinism can be identified
-and the precondition can be strengthened in such a way so as to eliminate
+and the precondition can be strengthened in such a way so as to eliminate%
+\index{precondition}
 that non-determinism.
 Because this proof methodology works on the assembly level,
 it may well expose implicit or undocumented preconditions.
@@ -862,7 +870,9 @@ it requires setting up an invariant, which traditionally is a hard problem in it
 Requirements for memory preservation invariants are provided for several examples.
 For recursive functions, more involved invariants are required,
 along with \ac{itp} to show preservation of the stack and frame pointers.
-Invariants may include preconditions necessary for excluding exceptional behavior.
+Invariants may include preconditions necessary for excluding exceptional behavior.%
+\index{Floyd!invariant}%
+\index{precondition}
 Such preconditions are exposed by applying the methodology to a disassembled binary,
 instead of deriving them from documents or source code annotations.
 

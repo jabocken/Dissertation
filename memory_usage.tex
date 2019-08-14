@@ -12,11 +12,11 @@ A block always terminates and has no loops.
 This definition differs slightly from the definition used by compilers such as LLVM,
 in which basic blocks also do not contain any internal branching.
 
-\subsection{Memory Regions}\label{sse:memory_regions}
+\subsection{Memory Regions}\label{memory_regions}
 %
 \index{memory!region|textit}
 
-\section{Memory Region Relations}
+\section{Memory Region Relations}\label{mem_reg_rel}
 %
 \index{memory!region!relation|textit}
 
@@ -54,11 +54,16 @@ Memory preservation can serve as a foundation for formal security analyses%
 \index{memory!preservation}
 that could be used to expose vulnerabilities involving malicious writes.
 
-\subsubsection{Composition}
-Scalability in verification is only feasible with composition.
+\subsubsection{Composition}\label{sse:composition}
+Scalability in verification is only feasible with composition.%
+\index{scalability}%
+\index{formal!verification}
 Proofs of functional correctness over a large suite of software
 require decomposing that suite into manageable chunks.
-Separation logic provides a \emph{frame rule} that supports such decomposition\cite{reynolds2002separation}.
+Separation logic provides a \emph{frame rule} that supports such%
+\index{separation logic}%
+\index{separation logic!frame rule}
+decomposition~\citep{o2001local,reynolds2002separation,krebbers2017essence}.
 In words, the frame rule states that,
 if a program or program fragment can be confined to a certain part of a state,
 properties of that program or program fragment carry over
@@ -233,20 +238,25 @@ using \cref{algo:mem_read} as our guide.
   \caption{Symbolically reading from memory}\label{algo:mem_read}
   \begin{algorithmic}
     \Require{A symbolic region $\region{a}{s}$}
-    \Ensure{A symbolic value}\Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
+    \Ensure{A symbolic value}
+      \Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
     \Function{read\_mem}{$\region{a}{s}$}
-    \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
-    \State\Return $v$
-    \Else
-    \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in\alpha\mid\region{a'}{s'}\not\bowtie\region{a}{s}\}$
-    \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in\alpha\mid\region{a'}{s'}\bowtie\region{a}{s}\}$
-    \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets\text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
-    \State $r\gets\region{a_l}{a_r-a_l+s_r}$
-    \State $\region{a'}{s'}\coloneqq v'\gets\var{ovl}_0\mmerge\var{ovl}_1\mmerge\ldots\mmerge(r\coloneqq *r)$
-    \State $\alpha\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
-    \State $a''\gets8(a-a')-1$
-    \State\Return $\takebits{s+a'',a''}v'$
-    \EndIf
+      \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
+        \State\Return $v$
+      \Else
+        \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
+          \alpha\mid\region{a'}{s'}\not\bowtie\region{a}{s}\}$
+        \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in
+          \alpha\mid\region{a'}{s'}\bowtie\region{a}{s}\}$
+        \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets
+        \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
+        \State $r\gets\region{a_l}{a_r-a_l+s_r}$
+        \State $\region{a'}{s'}\coloneqq v'\gets
+          \var{ovl}_0\mmerge\var{ovl}_1\mmerge\ldots\mmerge(r\coloneqq *r)$
+        \State $\alpha\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
+        \State $a''\gets8(a-a')-1$
+        \State\Return $\takebits{s+a'',a''}v'$
+      \EndIf
     \EndFunction
   \end{algorithmic}
 \end{algorithm}
