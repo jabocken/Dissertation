@@ -1,26 +1,26 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-Symbolic execution, in a sense,
+Symbolic execution, in a sense,%
 \index{symbolic execution}
 is an extension of symbolic manipulation of mathematical equations.
 It involves executing a program with a set of symbolic inputs
 rather than concrete values~\citep{king1976symbolic}.
-The individual steps of execution are implemented as \emph{rewrite rules}
+The individual steps of execution are implemented as \emph{rewrite rules}%
 \index{symbolic execution!rewrite rule}
 over the state.
-When used in a theorem prover such as Isabelle/HOL,
+When used in a theorem prover such as Isabelle/HOL,%
 \index{Isabelle/HOL}
 those rules are ideally proven to be correct.
 
 %TODO: more
 
 \section{Machine Model}
-The machine model used in this dissertation takes the following general form.
+The machine model used in this dissertation takes the following general form.%
 \index{symbolic execution!machine model}
-There exists some symbolic \emph{state} defined as a record
+There exists some symbolic \emph{state} defined as a record%
 \index{state!symbolic}
 that stores registers, flags, and 64-bit addressable byte-level memory.
 The instructions to be executed are stored in that memory.
-Each instruction is executed by a \emph{step} function having the type
+Each instruction is executed by a \emph{step} function having the type%
 \index{symbolic execution!step function}
 $A\times S\mapsto(S\mid\bot_E)$.%
 \nomenclature{$A$}{Type of assembly instructions}%
@@ -32,27 +32,27 @@ If some sort of exception, such as a divide by zero, occurs,
 the function returns $\bot_E$ instead.
 % TODO: rework this? Only the SAFECOMP step possibly returns $\bot_E$, I think.
 
-The semantics of the instructions as executed by the step function
+The semantics of the instructions as executed by the step function%
 \index{semantics}
 are those produced by Roessle et al.~\citep{roessle2019},
 which built upon the work of Heule et al.~\citep{heule2016}.
 Heule et al.\ used machine learning to derive semantics
 by executing instructions on an actual x86-64 machine.
 Their semantics were validated against the Intel reference manual.
-The formal model was obtained by embedding those semantics into Isabelle/HOL.
+The formal model was obtained by embedding those semantics into Isabelle/HOL.%
 \index{Isabelle/HOL}
 It has been tested against an actual x86-64 machine, increasing the model's reliability.
 The model provides a formalization of large parts of the x86-64 \ac{isa},
 including several modern instruction set extensions such as the \ac{sse} family.
 Concurrency is not included in the model.
 
-From the machine model, we manually derive a run function
+From the machine model, we manually derive a run function%
 \index{symbolic execution!run function}
 $\run:(S\mapsto\mathbb{B})\times S\mapsto(S\mid\bot_E\mid\bot_\var{NT})$.%
 \nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
-This partial function takes as input a state predicate~$H$ and a state~$\sigma$.
+This partial function takes as input a state predicate~$H$ and a state~$\sigma$.%
 \index{state!predicate}
-Predicate~$H$ denotes the \emph{halting condition}.
+Predicate~$H$ denotes the \emph{halting condition}.%
 \index{symbolic execution!halting condition}
 Typically, the halting condition instructs the run function to stop
 at a certain instruction, such as \lstinline{ret}.
@@ -68,25 +68,25 @@ Formally, this is achieved by a standard least-fixed-point construction.
 
 % TODO
 
-As the x86-64 \ac{isa} is a little-endian architecture,
+As the x86-64 \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation are designed with that in mind.
 \begin{example}
   Given the state $\{\region{a}{2}\coloneqq\mathtt{0xEEFF}\}$,
   a read of region $\region{a}{1}$ would produce $\mathtt{0xFF}$.
 \end{example}
-Support for big-endian architectures would require changing how reads and writes
+Support for big-endian architectures would require changing how reads and writes%
 \index{endianness!big}
 are performed. For every read and write, the bytes would need to be reversed
 in order to use them appropriately.
-Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian
+Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 \index{endianness!bi}
 memory operations. These include modern versions of ARM, PowerPC, SPARC, and MIPS.
 Supporting bi-endianness would require additional complexity in memory handling.
 
 \section{Symbolic Execution and Memory Usage}
 % TODO: probably need more here
-Symbolic execution in Haskell keeps track of all used memory regions,
+Symbolic execution in Haskell keeps track of all used memory regions,%
 \index{symbolic execution}
 both the actual regions used by instructions as well as merged regions.
 \begin{example}\label{ex:simple}
@@ -108,7 +108,7 @@ both the actual regions used by instructions as well as merged regions.
   The aggregated assignment is then
   \begin{equation*}
     \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
-    \takebits{31,16}\region{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
+    \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
   \end{equation*}
   The set~$M$ of memory regions for the given block of assembly is ultimately
   \begin{equation*}
@@ -120,11 +120,11 @@ both the actual regions used by instructions as well as merged regions.
 \end{example}
 
 \section{Hoare Logic and Symbolic Execution}
-Unlike the usual formulation of Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},
-\index{Hoare!logic}
-Hoare triples as defined for the first contribuation of this dissertation
+Unlike the usual formulation of
+Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},\index{Hoare!logic}
+Hoare triples as defined for the first contribuation of this dissertation%
 \index{Hoare!triple}
-take a halting condition
+take a halting condition%
 \index{symbolic execution!halting condition}
 as their middle input rather than a program statement.
 The program statement is instead characterized by the addresses of its initial
@@ -146,7 +146,7 @@ Thus, we have the following definition:
 % TODO: may not need the explicit $\sigma'\neq\bot_E$
  
 Standard composition does not apply to such Hoare triples.
-Consider a symbolic run that executes until halting condition~$H'$.
+Consider a symbolic run that executes until halting condition~$H'$.%
 \index{symbolic execution!halting condition}
 It is possible to break this run into two parts
 by first running until a halting condition~$H$ and then until~$H'$.
@@ -168,7 +168,7 @@ This ensures that the run first stops at~$H$ before it stops at~$H'$.
 
 \section{Hoare Triples for Memory Usage}\label{se:hoare2}
 This formulation, $\htriple*{P}{f}{Q}{M}$,
-resembles traditional Hoare triples a bit more,
+resembles traditional Hoare triples a bit more,%
 \index{Hoare!triple}
 as rather than a halting condition
 it takes a syntactic representation of the program,~$f$, known as \emph{\ac{scf}}.
@@ -185,11 +185,11 @@ Syntactic structure is required because Hoare logic is a syntax-guided approach.
 
 \begin{definition}\label{def:usage}
   A memory usage Hoare triple is defined as
-  \begin{equation*}
+  \begin{equation}
     \htriple*{P}{f}{Q}{M}\equiv
     \forall\sigma~\sigma'\cdot P(\sigma)\wedge\exec(f,\sigma,\sigma')\longrightarrow
     Q(\sigma')\wedge\usage(M,\sigma,\sigma')
-  \end{equation*}
+  \end{equation}
   The above equation states the following:
   if precondition~$P$ holds on the initial state~$\sigma$
   and~$\sigma'$ can be obtained by executing~$f$,

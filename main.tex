@@ -154,6 +154,12 @@
 %% Math commands
 \newcommand{\letin}[2]{\textbf{let} \(#1\) \textbf{such that} \(#2\)}
 \newcommand{\ind}[1]{\hspace{#1}}
+\newcommand*{\splitsetfix}{\mathrel{\phantom{=}}\phantom{\{}}
+\newcommand*{\alignsetfix}{\mathrel{\phantom{\equiv}}\phantom{\{}}
+
+\newcommand{\asp}{A_\mathrm{SP}}
+\newcommand{\esp}{E_\mathrm{SP}}
+\newcommand{\bop}{\mathbin{\Box}}
 
 \newcommand{\true}{\mathrm{T}}
 \newcommand{\false}{\mathrm{F}}
@@ -176,17 +182,19 @@
 \DeclareMathOperator{\usage}{usage}
 \DeclareMathOperator{\exec}{exec\_scf}
 
-\newcommand{\AWhile}{\mathtt{Loop}}
-\newcommand{\AOd}{\mathtt{Pool}}
-\newcommand{\AIf}{\mathtt{If}}
-\newcommand{\AThen}{\mathtt{Then}}
-\newcommand{\AElse}{\mathtt{Else}}
-\newcommand{\AFi}{\mathtt{Fi}}
+\newcommand*{\ASeq}{\mathrel{\mathtt{;}}}
+\WithSuffix{\newcommand*}\ASeq*{\mathtt{;}}
+\newcommand*{\AWhile}{\mathtt{Loop}}
+\newcommand*{\AOd}{\mathtt{Pool}}
+\newcommand*{\AIf}{\mathtt{If}}
+\newcommand*{\AThen}{\mathtt{Then}}
+\newcommand*{\AElse}{\mathtt{Else}}
+\newcommand*{\AFi}{\mathtt{Fi}}
 \DeclareMathOperator{\ABB}{\mathtt{Block}}
-\newcommand{\ASkip}{\mathtt{Skip}}
+\newcommand*{\ASkip}{\mathtt{Skip}}
 \DeclareMathOperator{\ACall}{\mathtt{Call}}
 \DeclareMathOperator{\ABreak}{\mathtt{Break}}
-\newcommand{\AContinue}{\mathtt{Continue}}
+\newcommand*{\AContinue}{\mathtt{Continue}}
 \DeclareMathOperator{\AWhileResume}{\mathtt{Resume}}
 
 \DeclareMathOperator{\scf}{scf}

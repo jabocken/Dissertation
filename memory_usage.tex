@@ -1,11 +1,11 @@
 \chapter{Memory Usage}\label{ch:memory}
 
-Something something \emph{memory usage}.
+Something something \emph{memory usage}.%
 \index{memory!usage|textit}
 
 \section{Definitions}
-Much of the memory work in this document relates to the concept of \emph{basic blocks}.
-\index{basic block}
+Much of the memory work in this document relates to the concept of
+\emph{basic blocks}.\index{basic block}
 A basic block is defined here as a sequence of assembly instructions
 whose behavior can be described using only state transitions and branches.
 A block always terminates and has no loops.
@@ -13,22 +13,24 @@ This definition differs slightly from the definition used by compilers such as L
 in which basic blocks also do not contain any internal branching.
 
 \subsection{Memory Regions}\label{sse:memory_regions}
-\index{memory!region}
+%
+\index{memory!region|textit}
 
 \section{Memory Region Relations}
-\index{memory!region relation}
+%
+\index{memory!region!relation|textit}
 
 \section{Memory Preservation}\label{se:memory_preservation}
 As an extension of memory usage,
-memory preservation shows that the values written by a program
+memory preservation shows that the values written by a program%
 \index{memory!preservation}
 are restrained to specified regions in memory.
 Those regions cannot be fully identified when working with source code alone,
 particularly when the end result is optimized.
 Memory may be laid out differently depending on the \ac{isa} and \ac{abi} targeted,
 as well as on the compiler used.
-This can include positioning of global variables as well as the layout of stack frames.
-\index{stack!frame}
+This can include positioning of global variables
+as well as the layout of stack frames.\index{stack!frame}
 While one way of resolving that issue would be to choose a specific compiler
 and provide a formal analysis of how it arranges memory, that method is not flexible.
 It may instead be better to target assembly or machine code directly,
@@ -48,7 +50,7 @@ This, combined with a custom memory manager
 that also had no security protections against out-of-bounds memory accesses,
 lead to potential leakage of sensitive data such as passwords and encryption keys.
 % TODO: need another, better example that involves data modification too
-Memory preservation can serve as a foundation for formal security analyses
+Memory preservation can serve as a foundation for formal security analyses%
 \index{memory!preservation}
 that could be used to expose vulnerabilities involving malicious writes.
 
@@ -86,8 +88,8 @@ Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
 \subsection{Formal Definition}
-The formal definition of memory preservation takes the form of a Hoare triple.
-\index{memory!preservation}
+The formal definition of memory preservation takes the form of a Hoare triple.%
+\index{memory!preservation}%
 \index{Hoare!triple}
 Assume some predicate~$P$ that characterizes the initial state, at a minimum
 by setting the instruction pointer to the first instruction of a function body.
@@ -121,14 +123,14 @@ First, we define the notion of memory usage with respect to a certain state chan
 \end{definition}
 
 \subsection{Memory Aliasing}\label{sse:memory_aliasing}
-This section provides a deeper view on the issue of \emph{memory aliasing}.
+This section provides a deeper view on the issue of \emph{memory aliasing}.%
 \index{memory!aliasing}
 For example, consider a write to memory region $\region{a_1}{s_1}$
 using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
 The aggregated result of that set of assignments
 depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
-overlap, are \emph{separate}, or have an \emph{enclosure} relation.
-\index{memory!region!separation}
+overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
+\index{memory!region!separation}%
 \index{memory!region!enclosure}
 \begin{definition}
   Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
@@ -191,7 +193,7 @@ using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
 
 An additional problem is when a region that overlaps with at least one other region
 that has been modified is written to.
-To combine those writes, the regions must be \emph{merged}.
+To combine those writes, the regions must be \emph{merged}.%
 \index{memory!merging}
 \begin{definition}
   The \emph{merge} of two symbolic assignments
@@ -229,7 +231,7 @@ Consider reading from the region $\region{a}{s}$ given a set of assignments~$\al
 using \cref{algo:mem_read} as our guide.
 \begin{algorithm}
   \caption{Symbolically reading from memory}\label{algo:mem_read}
-  \begin{algorithmic}[1]
+  \begin{algorithmic}
     \Require{A symbolic region $\region{a}{s}$}
     \Ensure{A symbolic value}\Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
     \Function{read\_mem}{$\region{a}{s}$}
