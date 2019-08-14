@@ -174,7 +174,23 @@
   numbersep=5pt,
   tabsize=2, %set tabs to two spaces
   basicstyle=\ttfamily, % typewriter type for code
-  keywordstyle=\bfseries % green keywords
+  keywordstyle=\bfseries, % green keywords
+%  keepspaces, % So literate mappings don't gobble the following space
+  literate= % For Isabelle notation
+    {\\<times>}{$\times$}1
+    {\\<open>}{\guilsinglleft}1
+    {\\<close>}{\guilsinglright}1
+    {\\<sigma>}{$\sigma$}1
+    {\\<triangleq>}{$\triangleq$}1
+    {\\<and>}{$\wedge$}1
+    {\\<forall>}{$\forall$}1
+    {\\<langle>}{$\langle$}1
+    {\\<rangle>}{$\rangle$}1
+    {\\<^sub>0}{$_0$}1
+    {\\<longrightarrow>}{$\longrightarrow$}2
+%    
+    {P_123e}{${P_\mathtt{123e}}$}3
+    {P_1246}{${P_\mathtt{1246}}$}3
 }
 
 % \author,\title are defined in book; here are the rest of the front matter defining macros:

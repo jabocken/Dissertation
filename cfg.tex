@@ -68,14 +68,18 @@ but only when it is supported by the compiler in use\footnote{%
 } and is applicable to the functions under consideration
 (which is not the case for the examples presented in this paper).
 
-The process that selects cutpoints
+The process that selects cutpoints%
+\index{cutpoint}
 also generates skeleton memory preservation theories for every function analyzed.
 The theory files can then be opened in the theorem prover Isabelle
 and the assembly loaded using the methodology described in \cref{sse:loading_assembly}.
-Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
-and add the necessary sets of memory regions
-that the functions write to (\cref{sse:memory_regions})
-in order to complete the proofs of memory preservation.
+Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})%
+\index{Floyd!invariant}
+and add the necessary sets of memory regions%
+\index{memory!region}
+that the functions write to (\cref{memory_regions})
+in order to complete the proofs of memory preservation.%
+\index{memory!preservation}
 Defining the necessary invariants for functions with complex control flow
 is generally a hard task,
 but targeting a property such as memory preservation
@@ -550,11 +554,13 @@ from~$\rspo$ due to the function's recursive nature.
   \label{fig:factcfg}
 \end{figure*}
 The set~$R$ of separated parent regions is characterized by the following assumptions:
-\begin{align}
-  \forall m\le n\cdot(i_m,\region{\rspo+48*m-(n*48)-40}{40}) &\in R \\
-  \forall m\le n\cdot(i'_m,\region{\rspo+48*m-(n*48)}{8}) &\in R \\
-  (i_a,\region{a}{1}) &\in R
-\end{align}
+\begin{subequations}
+  \begin{align}
+    \forall m\le n\cdot(i_m,\region{\rspo+48*m-(n*48)-40}{40}) &\in R \\
+    \forall m\le n\cdot(i'_m,\region{\rspo+48*m-(n*48)}{8}) &\in R \\
+    (i_a,\region{a}{1}) &\in R
+  \end{align}
+\end{subequations}
 The first assumption models all stack frames of size~40.
 The second models the parts of the stack where return addresses are pushed.
 The parent relations are defined in a similar way.
@@ -819,7 +825,7 @@ due to the flat, non-abstract memory model used in this work
 requiring manual reasoning over stack frames.
 Both the stack and frame pointers must be preserved throughout the recursion,%
 \index{stack!pointer}%
-\index{stack!frame pointer}
+\index{frame!pointer}
 and all return addresses must be properly pushed on and popped off the stack as needed.
 
 Another aspect of Floyd invariant development%

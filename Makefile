@@ -8,4 +8,6 @@ mk:
 	latexmk -xelatex -shell-escape $(PAPER)
 
 clean:
-	rm -f *.aux *.bbl *.blg *.log *.lof *.lot *.nlo *.nls *.fls *.out *.fdb_latexmk *.toc *.xdv $(PAPER).pdf extern/*
+	rm -f *.aux *.auxlock *.bbl *.blg *.log *.loa *.lof *.lol *.lot *.nlo \
+		*.nls *.fls *.ind *.ilg *.out \
+		*.fdb_latexmk *.toc *.xdv $(PAPER).pdf extern/*

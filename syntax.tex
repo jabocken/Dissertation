@@ -49,7 +49,7 @@ The associated \ac{fmuc} provides preconditions to prevent such cases%
 \index{precondition}
 along with a formal proof of return address preservation under those conditions.
 
-Following the more full example in \cref{se:syntax_example} is a full case study
+Following the full example in \cref{se:syntax_example} is an in-depth case study
 on the Xen Project hypervisor~\citep{chisnall2008definitive} in \cref{se:xen}.%
 \index{Xen}
 Unlike the HermitCore work in \cref{se:cfg_application},%
@@ -107,26 +107,28 @@ the usage of which is described in \cref{sse:fmuc_comp}.
       \text{\bfseries Proof: } & \ldots
     \end{align*}
     where
-    \begin{align*}
-      f &\equiv\ABB~\Block{4f0}{4fb} \\
+    \begin{subequations}
+    \begin{align}
+      f &\equiv\ABB~\Block{4f0}{4fb} \notag \\
       P &\equiv\mathrip=
-      \mathtt{4f0}\wedge\mathrsp=\rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \\
+      \mathtt{4f0}\wedge\mathrsp=\rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \notag \\
       Q &\equiv\begin{multlined}[t]
-        \mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge \\
+        \mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge \notag \\
         \takebits{31,0}\rangle\mathrax=
         \sextend(\readmem{\readmem{\rsio+
             \sextend(\takebits{31,0}\rangle\rdio)*8-8}{8}}{1})
-      \end{multlined} \\
-      M &\equiv\{\region{\rspo}{8}, \tag{a}\label{m:a} \\
-        &\alignsetfix\region{\rsio+\sextend(\takebits{31,0}\rdio)*8-8}{8},
-            \tag{b}\label{m:b} \\
-        &\alignsetfix\region{\readmem{\rsio+
-            \sextend(\takebits{31,0}\rdio)*8-8}{8}}{1}\} \tag{c}\label{m:c} \\
+        \end{multlined} \notag \\
+      M &\equiv\{\region{\rspo}{8}, \label{m:a} \\
+        &\equivsetfix\region{\rsio+\sextend(\takebits{31,0}\rdio)*8-8}{8},
+            \label{m:b} \\
+        &\equivsetfix\region{\readmem{\rsio+
+            \sextend(\takebits{31,0}\rdio)*8-8}{8}}{1}\} \label{m:c} \\
       \var{MRR} &\equiv\begin{aligned}
         \not\bowtie &= \{\} \\
         \sqsubseteq &= \{\}
-      \end{aligned}
-    \end{align*}
+      \end{aligned} \notag
+    \end{align}
+    \end{subequations}
     \caption{\Acl*{fmuc}\footnote{%
       $\sextend$ indicates sign extension,
       $\takebits{h,l}w$ indicates taking bits~$l$ through~$h$ of word~$w$,
@@ -134,7 +136,7 @@ the usage of which is described in \cref{sse:fmuc_comp}.
       starting at address~$a$.
     }}\label{fig:fmuc-thm}
   \end{subfigure}
-  \caption{Example \ac{fmuc}}\label{fig:fmuc}
+  \caption{Example \acl*{fmuc}}\label{fig:fmuc}
 \end{figure*}
 
 The small program shown in \cref{fig:example-src} provides a simple example
@@ -205,7 +207,7 @@ greatly reducing automation.
 To avoid such issues, the \ac{fmuc} generation methodology
 produces the aforementioned \acp{mrr} proof ingredient,%
 \index{proof!ingredient}
-the production of which is detailed in \cref{se:mem_reg_rel}.
+the production of which is detailed in \cref{mem_reg_rel}.
 \Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)%
 \index{memory!region!separation}
 as well as which regions are enclosed within one another ($\sqsubseteq$).%
@@ -413,8 +415,8 @@ in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function cal
       \EndIf
       \State \letin{[\var{entry},b_1,\dotsc,b_k]}
       {\var{entry}\ll b_1\ll\dotsb\ll b_k\ll\bot}%
-      \nomenclature{$\ll$}{Indicates post-dominance; in this dissertation,
-        it is restricted to immediate post-dominance}
+      \nomenclature{$\ll$}{Indicates post-dominance when used with blocks/nodes;
+        in this dissertation, it is restricted to immediate post-dominance}
       \label{line:ipdoms}
       \State\Return $\Call{stmts}{\var{entry},b_1,\true}\ASeq
       \Call{stmts}{b_1,b_2,\false}\ASeq\dotsb\ASeq
@@ -424,9 +426,9 @@ in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function cal
       \State\Return $\begin{cases}
         \ASkip & \text{if }b=b_j \\
         \AContinue & \text{if }b=\var{entry}\wedge\neg\var{first} \\
-        \ABreak(\ID(\Call{pre}{b})) & \text{if }\var{sccs}(b)=\bot \\
-        \ABB b & \text{if }\abs{\Call{post}{b}}=0 \\
-        \AWhile~\ABB b~\AOd & \text{if }\Call{post}{b}=\{b\}
+        \ABreak~\ID(\Call{pre}{b}) & \text{if }\var{sccs}(b)=\bot \\
+        \ABB~b & \text{if }\abs{\Call{post}{b}}=0 \\
+        \AWhile~\ABB~b~\AOd & \text{if }\Call{post}{b}=\{b\}
       \end{cases}$\label{line:prepost}
       \State \letin{b'}{b\ll b'}\Comment{$b'$ may be~$b_j$}
       \State $a_0\gets\begin{cases}
@@ -442,11 +444,11 @@ in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function cal
       \State\Return $a_0\ASeq a_1$
     \EndFunction
     \Function{singleLoop}{$b,b_e$}
-      \State\Return $\AWhile~\ABB b\ASeq
+      \State\Return $\AWhile~\ABB~b\ASeq
       \AIf~L(b,b_e)~\AThen~\ABreak(\ID b)~\AElse~\ASkip~\AFi~\AOd$
     \EndFunction
     \Function{ite}{$b,b_0,b_1,b'$}
-        \State\Return $\ABB b\ASeq\AIf~L(b,b_0)~\AThen~
+        \State\Return $\ABB~b\ASeq\AIf~L(b,b_0)~\AThen~
         \Call{stmts}{b_0,b',\false}~\AElse~\Call{stmts}{b_1,v',\false}~\AFi$
     \EndFunction
     \Function{loop}{$b,b'$}\label{line:loop}
@@ -455,7 +457,7 @@ in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function cal
       \State $\var{resumes}\gets\{(i,a')\mid
       \exists b_0~b_e\cdot i=\ID b_0\wedge
       \Call{exit}{b_0,b_e,\var{scc}}\wedge a'=\Call{stmts}{b_e,b',\false}\}$
-      \State\Return $\AWhile~a~\AOd~\AWhileResume\var{resumes}$
+      \State\Return $\AWhile~a~\AOd~\AWhileResume~\var{resumes}$
     \EndFunction
   \end{algorithmic}
 \end{algorithm}
@@ -613,7 +615,7 @@ for all exit points of the loop.
   The loop body in~$a_0$ is extracted from subgraph $\{1,2\}$,%
   \index{loop}
   while the paths from~$4$ to~$5$ and~$3$ to~$5$ continue after the loop.
-  Term~$a_1$ is simply $\ABB 5$.
+  Term~$a_1$ is simply $\ABB!5$.
 \end{example}
 
 \begin{figure*}
@@ -650,21 +652,24 @@ for all exit points of the loop.
   \hfill
   \subcaptionbox{Syntactic Control Flow}{
     \(\begin{array}{l}
-      \ABB 0\ASeq* \\
+      \ABB~0\ASeq* \\
       \AIf~f_0~\AThen \\
-      \ind{2ex}\AWhile \\
-      \ind{4ex}\ABB 1\ASeq* \\
-      \ind{4ex}\AIf~f_1~\AThen \\
-      \ind{6ex}\ABB 2\ASeq\AIf~f_2~\AThen~\AContinue~\AElse~\ABreak 2~\AFi \\
-      \ind{4ex}\AElse~\ABreak~1~\AFi \\
-      \ind{2ex}\AOd~\AWhileResume\{(2,\ABB 3), (1,\ABB 4)\} \\
-      \ind{2ex}\ABB 5 \\
+      \ind{4ex}\AWhile \\
+      \ind{8ex}\ABB~1\ASeq* \\
+      \ind{8ex}\AIf~f_1~\AThen \\
+      \ind{12ex}\ABB~2\ASeq* \\
+      \ind{12ex}\AIf~f_2~\AThen~\AContinue~\AElse~\ABreak~2~\AFi \\
+      \ind{8ex}\AElse \\
+      \ind{12ex}\ABreak~1 \\
+      \ind{8ex}\AFi \\
+      \ind{4ex}\AOd~\AWhileResume~\{(2,\ABB~3),(1,\ABB~4)\} \\
+      \ind{4ex}\ABB~5 \\
       \AElse \\
-      \ind{2ex}\ABB 7\ASeq* \\
-      \ind{2ex}\AIf~f_7~\AThen~\ASkip~\AElse~\ABB 8~\AFi\ASeq* \\
-      \ind{2ex}\ABB~9 \\
+      \ind{4ex}\ABB~7\ASeq* \\
+      \ind{4ex}\AIf~f_7~\AThen~\ASkip~\AElse~\ABB~8~\AFi\ASeq* \\
+      \ind{4ex}\ABB~9 \\
       \AFi\ASeq* \\
-      \ABB 6
+      \ABB~6
     \end{array}\)
   }
   \hspace*{\fill}
@@ -821,7 +826,7 @@ The more common situation, by contrast, involves complex conditional branching
 that can occur even without loops.
 \begin{example}
   \Cref{fig:ex_nonopt} shows a small example of branching control flow
-  that results in $\ABB 3$ being duplicated.
+  that results in $\ABB~3$ being duplicated.
   That block could itself be an even more complicated subgraph,
   possibly leading to exponential code duplication.
 \end{example}
@@ -847,14 +852,14 @@ that can occur even without loops.
   \hfill
   \subcaptionbox{\acs*{scf}}{
     \(\begin{array}{l}
-      \ABB 0; \\
-      \AIf~f_0~\AThen~\ABB 1; \\
-      \ind{2ex}\AIf~f_1~\AThen~\ABB 2; \\
-      \ind{4ex}\AIf~f_2~\AThen~\ABB 3 \\
-      \ind{4ex}\AElse~\ASkip~\AFi \\
-      \ind{2ex}\AElse~\ABB 3~\AFi \\
+      \ABB~0; \\
+      \AIf~f_0~\AThen~\ABB~1; \\
+      \ind{4ex}\AIf~f_1~\AThen~\ABB~2; \\
+      \ind{8ex}\AIf~f_2~\AThen~\ABB~3 \\
+      \ind{8ex}\AElse~\ASkip~\AFi \\
+      \ind{4ex}\AElse~\ABB~3~\AFi \\
       \AElse~\ASkip~\AFi; \\
-      \ABB 4
+      \ABB~4
     \end{array}\)
   }
   \hspace*{\fill}
@@ -899,15 +904,17 @@ Propagation requires performing \emph{substitution},%
 \index{invariant!substitution}
 which is defined over assignments, state parts, and expressions,
 all with respect to invariant~$\phi$.
-\begin{align}
-  \subst(\phi,\var{sp}\coloneqq v) &= \subst(\phi,\var{sp})\coloneqq\subst(\phi,v) \\
-  \subst(\phi,\var{sp}) &= \text{if }\exists v\cdot(\var{sp},v)\in\phi
-  \text{ then }v\text{ else }\var{sp} \\
-  \subst(\phi,e_0\bop e_1) &= \text{if }\exists v\cdot(e_0\bop e_1,v)\in\phi
-  \text{ then }v\text{ else }\subst(\phi,e_0)~\Box~\subst(\phi,e_1) \\
-  \text{unary ops} &= \dotso \notag \\
-  \text{ternary ops} &= \dotso \notag
-\end{align}%
+\begin{subequations}
+  \begin{align}
+    \subst(\phi,\var{sp}\coloneqq v) &= \subst(\phi,\var{sp})\coloneqq\subst(\phi,v)\\
+    \subst(\phi,\var{sp}) &= \text{if }\exists v\cdot(\var{sp},v)\in\phi
+    \text{ then }v\text{ else }\var{sp} \\
+    \subst(\phi,e_0\bop e_1) &= \text{if }\exists v\cdot(e_0\bop e_1,v)\in\phi
+    \text{ then }v\text{ else }\subst(\phi,e_0)~\Box~\subst(\phi,e_1) \\
+    \text{unary ops} &= \dotso \notag \\
+    \text{ternary ops} &= \dotso \notag
+  \end{align}
+\end{subequations}%
 \nomenclature{$\bop$}{Denotes an arbitrary binary operator}
 
 \Cref{algo:prop} performs invariant propagation.
@@ -935,10 +942,10 @@ that were completely unmodified by any assignment in~$\alpha$:
   \begin{equation}
     \begin{split}
       \phi &=\{\mathrip\coloneqq\retaddr, \\
-      &\splitsetfix\mathrsp\coloneqq\rspo+8, \\
-      &\splitsetfix\region{\rspo-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
+      &\eqsetfix\mathrsp\coloneqq\rspo+8, \\
+      &\eqsetfix\region{\rspo-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
       \takebits{31,16}v_0\concat\mathtt{0xEEFF}, \\
-      &\splitsetfix\region{\rspo}{8}\coloneqq\retaddr\}
+      &\eqsetfix\region{\rspo}{8}\coloneqq\retaddr\}
     \end{split}
   \end{equation}
 \end{example}
@@ -949,9 +956,9 @@ that were completely unmodified by any assignment in~$\alpha$:
     \Ensure{Output is a tuple of possibly-updated~$\phi$
       and \ac{scf} updated with current~$\phi$:
       $\asp\times\scf(\powerset(\asp),\esp)$}
-    \Function{prop}{$\phi,\ABB\alpha$}
+    \Function{prop}{$\phi,\ABB~\alpha$}
       \State $\phi'\gets\post(\phi,\subst(\phi,\alpha))$
-      \State\Return $(\phi',\ABB(\alpha\text{ annotated with }\phi))$
+      \State\Return $(\phi',\ABB~(\alpha\text{ annotated with }\phi))$
     \EndFunction
     \Function{prop}{$\phi,\alpha_0\ASeq \alpha_1$}
       \State $(\phi',\alpha_0')\gets\Call{prop}{\phi,\alpha_0}$
@@ -974,12 +981,12 @@ that were completely unmodified by any assignment in~$\alpha$:
         \State\Return $\Call{prop}{\phi\cap\phi',\AWhile~\alpha~\AOd}$
       \EndIf
     \EndFunction
-    \Function{prop}{$\phi,\AWhileResume\var{resumes}$}
+    \Function{prop}{$\phi,\AWhileResume~\var{resumes}$}
       \ForAll{$\alpha_i\in\var{resumes}$}
         \State $(\phi'_i,\alpha'_i)\gets\Call{prop}{\phi,\alpha_i}$
       \EndFor
       \State $\phi''\gets\bigcap\phi'$
-      \State\Return $(\phi'',\AWhileResume\Call{zip}{i,\alpha'})$
+      \State\Return $(\phi'',\AWhileResume~\Call{zip}{i,\alpha'})$
     \EndFunction
     \Function{prop}{$\phi,\alpha$}\Comment{Default case}
       \State\Return $(\phi,\alpha)$
@@ -1039,7 +1046,7 @@ $P$ and~$Q$ are the pre- and postconditions just before executing \inlineasm{cal
 and just after it returns.
 $P$ contains the equality $\readmem{\rspo^g-8}{8}=\rbpo^g$,
 expressing that~$g$ has pushed the frame pointer \inlineasm{rbp}%
-\index{stack!frame pointer}
+\index{frame!pointer}
 into its own local stack frame.%
 \index{stack!frame}
 The ultimate postcondition of~$g$
@@ -1066,8 +1073,8 @@ Thus, to be able to verify function~$f$ once
 but reuse its verification effort for each call,%
 \index{formal!verification!effort}
 the verification effort must at least contain an overapproximation of the memory written to by function $f$.
-This is exactly what\emph{separation
-logic}~\citep{o2001local,reynolds2002separation,krebbers2017essence}.%
+This is exactly what \emph{separation
+logic}~\citep{o2001local,reynolds2002separation,krebbers2017essence}%
 \index{separation logic}
 requires.
 As described in \cref{sse:composition},
@@ -1103,10 +1110,10 @@ Fourth and finally,~$\psep$ and~$Q_f$ should imply postcondition$~Q$.
   \begin{prooftree}
     \AxiomC{$\htriple*{P_f}{f}{Q_f}{M_f}$}
     \AxiomC{$P\longrightarrow P_f\wedge\psep$}
-    \AxiomC{$\begin{multlined}
-      \forall s~s'\cdot\usage(M_f,s,s')\wedge{} \\
+    \AxiomC{$\forall s~s'\cdot\begin{array}{l}
+      \usage(M_f,s,s')\wedge{} \\
       \psep(s)\longrightarrow\psep(s')
-    \end{multlined}$}
+    \end{array}$}
     \AxiomC{$Q_f\wedge\psep\longrightarrow Q$}
     \QuaternaryInfC{$\htriple*{P}{\ACall f}{Q}{M_f}$}
   \end{prooftree}
@@ -1130,7 +1137,148 @@ postcondition~$Q$.%
 \index{postcondition}
 
 \section{Full Example}\label{se:syntax_example}
-% TODO
+This section presents an execution of the entire toolchain
+on the example given in \cref{fig:example2-c}
+as a summary of \cref{se:fmuc_gen,se:fmuc_ver}.
+The~C code is provided solely for presentation,
+as the only inputs to the \ac{fmuc} generation
+are the assembly created by disassembling the corresponding binary%
+\index{assembly}%
+\index{assembly!dis-}%
+\index{binary}
+and a basic configuration file indicating which functions to analyze.
+\Cref{fig:example2-scf} presents the generated \ac{scf}.
+The example has one loop, which starts at instruction \texttt{0x120}.%
+\index{loop}
+\begin{figure}
+  \begin{subfigure}[b]{.53\linewidth}
+    \begin{lstlisting}[language=C, gobble=6]
+      int main(int argc, char* argv[]) {
+          int* a = (int*)argv;
+          int* b = (int*)(argv + 4);
+          *(int*)(argv + 2) = *a + *b;
+          *(char*)argv = 'a';
+
+          int array[argc];
+          for (int i = 0; i < argc; i++)
+              array[i] = argv[i][0] * 2;
+
+          if (is_even(argc))
+              return array[argc];
+          return array[0];
+      }
+    \end{lstlisting}
+    \caption{C code}\label{fig:example2-c}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{.46\linewidth}
+    \begin{equation*}
+      \begin{array}{l}
+        \ABB~\Block{1149}{120b}\ASeq* \\
+        \AWhile \\
+        \ind{2ex}\ABB~\Block{123e}{1244}\ASeq* \\
+        \ind{2ex}\AIf~\var{SF}\neq\var{OF}~\AThen~\ABB~\Block{120d}{123a} \\
+        \ind{4ex}\AElse~\ABreak~\AFi \\
+        \AOd\ASeq* \\
+        \ABB~\Block{1246}{1249}\ASeq* \\
+        \ABB~\Block{124b}{124b}\ASeq* \\
+        \ABB~\Block{1250}{1252}\ASeq* \\
+        \AIf~\var{ZF}~\AThen~\ABB~\Block{1263}{1267} \\
+        \ind{2ex}\AElse~\ABB~\Block{1254}{1261}~\AFi\ASeq* \\
+        \ABB~\Block{1269}{1279}\ASeq* \\
+        \AIf~\var{ZF}~\AThen~\ABB~\Block{1280}{1285} \\
+        \ind{2ex}\AElse~\ABB~\Block{127b}{127b}~\AFi
+      \end{array}
+    \end{equation*}
+    \caption{Syntactic control flow for the assembly}\label{fig:example2-scf}
+  \end{subfigure}
+  \begin{subfigure}{\linewidth}
+    \begin{align*}
+      M &=\{r_0=\region{\rspo}8, r_1=\region{\fso+40}8, r_2=\region{\rsio+36}4,
+            r_3=\region{\rspo-8}8,\dotsc\} \\
+      \var{MRR} &= \{r_0,r_1,r_2,r_3,\dotsc,r_{12}\}\text{ are separate}
+    \end{align*}
+    \caption{Some memory regions and their relations for block $\Block{123e}{1244}$}
+  \end{subfigure}
+  \begin{subfigure}{\linewidth}
+    \begin{equation*}
+      P_\mathtt{123e}(\sigma)=\begin{aligned}
+        \mathrip            &= \mathtt{0x123e} \\
+        \mathrbp            &= \rspo-8 \\
+        \mathrdi            &= \rdio \\
+        \mathrsp            &= \rspo-(88+16*((15+4*
+          \sextend(\takebits{31,0}\rdio)/16)) \\
+        \readmem{\rspo-40}8 &= \rspo-(85+16*((15+4*
+          \sextend(\takebits{31,0}\rdio))/16))\gg 2\ll 2 \\
+        \readmem{\rspo-48}8 &= \sextend(\takebits{31,0}\rdio)-1 \\
+        \readmem{\rspo-56}8 &= \rsio+32
+      \end{aligned}
+    \end{equation*}%
+    \nomenclature{$\gg$}{Performs unsigned right shift when used with word values}%
+    \nomenclature{$\ll$}{Performs left shift when used with word values}
+    \caption{Invariant at instruction \texttt{0x123e}
+      (only 7 out of 23 equations shown)}\label{fig:example2-inv}
+  \end{subfigure}
+  \\[1em]
+  \begin{subfigure}[b]{.38\linewidth}
+    \begin{equation*}
+      \htriple*{P_\mathtt{124b}}{\fbox{\texttt{is\_even}}}
+      {P_\mathtt{1250}}{M_\mathtt{is\_even}}
+    \end{equation*}
+    \caption{Assumption due to call of \lstinline|is_even|}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{.56\linewidth}
+    \begin{lstlisting}[gobble=6]
+      apply check_scf_step+
+      apply (check_scf_while \<open>P_123e || P_1246\<close>)
+      apply check_scf_step+
+    \end{lstlisting}
+    \caption{Isabelle proof code (manual effort)}\label{fig:manual}
+  \end{subfigure}
+  \caption{Application of entire methodology on example}
+\end{figure}
+Zooming in on block $\Block{123e}{1244}$, we see from \cref{fig:example2-inv}
+that the \ac{fmuc} provides 13 regions, of which four are shown.
+Region~$r_0$ stores the return address
+while Region~$r_1$ depends on the segment register~\inlineasm{fs}
+and stores the canary value\index{stack!canary}
+used to detect stack buffer overflows~\citep{cowan1998stackguard}.%
+\index{stack!buffer overflow}
+Region~$r_2$ is based on the pointer passed as the second argument to the function,
+and region~$r_3$ is part of the stack frame.
+The generated \acp{mrr} assume that all these regions are separate.
+
+The precondition assigned to block $\Block{123e}{1244}$%
+\index{precondition}
+is effectively a loop invariant (see \cref{fig:example2-inv}).%
+\index{loop!invariant}
+The frame pointer \lstinline|rbp|%
+\index{frame!pointer}
+is equal to the original stack pointer minus eight.%
+\index{stack!pointer}
+Register \lstinline|rdi| has not been touched.
+Some of the more complex assignments are also shown,
+such as the current value of the stack pointer.
+In total, the loop invariant provides information
+on 11 registers and 12 memory locations for this basic block.%
+\index{basic block}
+The process of verification shows that,
+for any state satisfying this invariant,
+executing one iteration of the loop body
+will result in a state that again satisfies the loop invariant.
+The only interactions required in verifying the \ac{fmuc} of the entire function are:
+\begin{enumerate*}
+  \item showing that the postcondition after block $\Block{1149}{120b}$%
+  \index{postcondition}
+  implies the loop invariant, and
+  \item showing that, in the case of a break, the postcondition of the loop body%
+  \index{loop!body}
+  implies the precondition of block $\Block{1246}{1249}$.
+\end{enumerate*}
+This amounts to two manually written lines of Isabelle proof code.  
+
+
 
 
 
@@ -1161,10 +1309,10 @@ that contain functions not present in the Xen source itself.
 This is due to the inclusion of external static libraries and programs.
 Xen version 4.12 was compiled with \ac{gcc} 8.2 via the standard Xen build process.
 This build process uses various optimization levels,
-ranging from \texttt{O1} to \texttt{O3}.
-The version of \texttt{objdump} used to disassemble the compiled binaries
-was 2.31.1.%
-\index{objdump}
+ranging from~\texttt{O1} to~\texttt{O3}.
+The version of \texttt{objdump} used to disassemble the compiled binaries was 2.31.1.%
+\index{\texttt{objdump}}%
+\index{assembly!dis-}
 
 The verification effort presented here
 covered three of the binaries produced by the Xen build process:
