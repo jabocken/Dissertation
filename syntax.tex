@@ -1,17 +1,12 @@
-\chapter{Syntax-Driven Verification} % compare to CFG-driven
-
-This chapter presents several things,
-the content 
-
-% Need to do: less focus 
-
-% Overview (formerly introduction)
+\chapter{Syntax-Driven Verification}
+% Overview/preamble
 % Binary -> Abstract code (Freek's, reference POPL paper in review anonymously)
 % Abstract Code -> Isabelle
 % Isabelle -> Verification
-% - 
+% - etc.
 
-\section{Introduction}
+% TODO: clarify which are my contributions and what comes from elsewhere
+
 While the methodology presented in the previous chapter
 for verifying memory preservation works well, it is not ideal.%
 \index{memory!preservation}
@@ -39,6 +34,8 @@ as well as how symbolic execution is used%
 to produce the preconditions and proof ingredients.%
 \index{precondition}
 
+% Need to do: less focus on Freek work (take out in-depth explanations of algorithms?)
+
 Once generation is complete, the certificate and the original assembly%
 \index{certificate}
 can then be loaded into an interactive theorem prover.
@@ -53,7 +50,7 @@ further information on the structure of \acp{fmuc} can be found in \cref{se:fmuc
 After going into further detail on \acp{fmuc} verification in \cref{se:fmuc_ver},
 \cref{se:syntax_example} provides an example to illustrate the generation
 and verification process.
-On its own, that example could theoretically overwrite its own return address
+By itself, that example could theoretically overwrite its own return address
 due to its pointer arguments, causing \ac{cfi} issues.
 The associated \ac{fmuc} provides preconditions to prevent such cases%
 \index{precondition}
@@ -1028,7 +1025,34 @@ are intersected to produce a singular invariant for all resumes,
 which is then returned along with all of the propagated resumes.
 
 \section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
-% TODO
+\begin{figure*}
+  \centering
+  \begin{tikzpicture}[->, >=stealth, every node/.style={
+    draw,
+    rounded corners,
+    text width=3cm,
+    text centered,
+    minimum height=1.5cm
+  }]
+    \node (a) {Isabelle/HOL};
+    \node[above left=of a] (b) {Assembly};
+    \node[below left=of a] (c) {Certificate};
+    \node[right=1.5cm of a] (d) {OK/unproven};
+    
+    \draw (b) -- (a.north west);
+    \draw (c) -- (a.south west);
+    \draw (a) -- (d);
+  \end{tikzpicture}
+  \caption{Overview of \acs*{fmuc} Verification}\label{fig:verify}
+\end{figure*}
+
+
+
+
+
+
+
+
 
 
 \subsection{Composition}\label{sse:fmuc_comp}
@@ -1511,4 +1535,4 @@ The vast majority of those manual proof lines were related to the loop count.
 Meanwhile, a comparison with those functions not verified
 can be found in \cref{fig:unverified}.
 
-\section{Conclusion}
+\section{Summary}

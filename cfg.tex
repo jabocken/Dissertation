@@ -1,5 +1,9 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
 
+%need preamble!
+
+% Get rid of introduction somehow (move some to preamble, change section name to overview?)
+
 \section{Introduction}\label{se:cfg_intro}
 The memory usage analysis approach presented in this chapter
 features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
@@ -89,22 +93,23 @@ The work is still not trivial, however.
 
 \begin{figure}
   \centering
-  \begin{tikzpicture}[node distance=4.5cm, auto, >=stealth, ->, myblock/.style={
+  \begin{tikzpicture}[node distance=4.5cm, auto, ->, >=stealth, myblock/.style={
     draw,
     text width=2.5cm,
     text centered,
     rounded corners,
     minimum height=2cm
   }]
-    \node [myblock] (binary) {x86-64 binary};
-    \node [myblock, right of=binary, minimum height=1cm] (cfg) {Python script};
-    \node [myblock, right of=cfg] (isa) {Isabelle};
-    \node [myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
-    \draw [transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
+    \node[myblock] (binary) {x86-64 binary};
+    \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python script};
+    \node[myblock, right of=cfg] (isa) {Isabelle};
+    \node[myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
+
+    \draw[transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
     \draw (binary) -- (cfg);
-    \draw [transform canvas={yshift=-.5em}] (cfg) -- node[above] {\footnotesize generate} node[below] {\footnotesize theories}(isa);
-    \draw [transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
-    \draw [transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
+    \draw[transform canvas={yshift=-.5em}] (cfg) -- node[above] {\footnotesize generate} node[below] {\footnotesize theories}(isa);
+    \draw[transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
+    \draw[transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
   \caption{Overview of Methodology}\label{fig:cfg_overview}
 \end{figure}
@@ -409,7 +414,7 @@ the function is also shown to preserve the value of the stack pointer.
   \begin{tikzpicture}[>={stealth}]
     \graph[math nodes, grow down=2.2cm]{
       "1:\begin{array}{l}
-        \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
+        \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\
         \readmem{\rspo}{8}=\retaddr
       \end{array}" ->[
         align=left,
@@ -513,10 +518,10 @@ from~$\rspo$ due to the function's recursive nature.
   \begin{tikzpicture}[>=stealth]
     \graph[math nodes, grow down=3.5cm]{
       a/"1:\begin{array}{l}
-        \readmem{a}{1}=v_0\wedge\mathdil\le n\wedge~\\
-        \mathrsp=\rspo-48*(n-\mathdil)\wedge~\\
-        (\mathdil\not=n\longrightarrow\mathrbx=\mathdil+1)\wedge~\\
-        \rbxpops(32,\rspo,n,\mathdil)\wedge~\\
+        \readmem{a}{1}=v_0\wedge\mathdil\le n\wedge{} \\
+        \mathrsp=\rspo-48*(n-\mathdil)\wedge{} \\
+        (\mathdil\not=n\longrightarrow\mathrbx=\mathdil+1)\wedge{} \\
+        \rbxpops(32,\rspo,n,\mathdil)\wedge{} \\
         \retsites(0,\rspo,n,\mathdil)
       \end{array}" ->[
         align=left,
@@ -525,9 +530,9 @@ from~$\rspo$ due to the function's recursive nature.
           \mathrsp\coloneqq\mathrsp+8
         \end{array}$"
       ] b/"15:\begin{array}{c}
-        \readmem{a}{1}=v_0\wedge\mathrbx>0\wedge\mathrbx\le n\wedge~\\
-        \mathrsp=\rspo-48*(n-\mathrbx+1)+8\wedge~\\
-        \rbxpops(24,\rspo,n,\mathrbx-1)\wedge~\\
+        \readmem{a}{1}=v_0\wedge\mathrbx>0\wedge\mathrbx\le n\wedge{} \\
+        \mathrsp=\rspo-48*(n-\mathrbx+1)+8\wedge{} \\
+        \rbxpops(24,\rspo,n,\mathrbx-1)\wedge{} \\
         \retsites(8,\rspo,n,\mathrbx-1)
       \end{array}" ->[
         align=left,
@@ -756,14 +761,14 @@ requires a loop invariant in addition to the pre- and postconditions.
     \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=2.5cm]{
         "129:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
-          \mathrbp=\rbpo\wedge\mathrdi=\deqptr\wedge~\\
+          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\
+          \mathrbp=\rbpo\wedge\mathrdi=\deqptr\wedge{} \\
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           "\dots"
         ] "\retaddr:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge~\\
-          \mathrsp=\rspo+8\wedge~\\
+          \readmem{a}{1}=v_0\wedge{} \\
+          \mathrsp=\rspo+8\wedge{} \\
           \mathrbp=\rbpo
         \end{array}"
       };
@@ -774,7 +779,7 @@ requires a loop invariant in addition to the pre- and postconditions.
     \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=3cm]{
         "0:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge~\\
+          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\
           \mathrbp=\rbpo\wedge
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
@@ -782,17 +787,17 @@ requires a loop invariant in addition to the pre- and postconditions.
           "$\mathrsp\coloneqq\mathrsp-8$\\
           $\mathrbp\coloneqq\mathrsp$"
         ] b/"21:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo-8\wedge~\\
-          \mathrbp =\rspo-8\wedge~\\
-          \readmem{\rspo-8}{8}=\rbpo\wedge~\\
+          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo-8\wedge{} \\
+          \mathrbp =\rspo-8\wedge{} \\
+          \readmem{\rspo-8}{8}=\rbpo\wedge{} \\
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           align=left,
           "$\mathrbp\coloneqq\readmem{\mathrsp}{8}$\\
           $\mathrsp\coloneqq\mathrsp+16$"
         ] "\retaddr:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge~\\
-          \mathrsp=\rspo+8\wedge~\\
+          \readmem{a}{1}=v_0\wedge{} \\
+          \mathrsp=\rspo+8\wedge{} \\
           \mathrbp=\rbpo
         \end{array}";
         b ->[out=-15, in=15, looseness=1] b;
@@ -863,7 +868,7 @@ Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation
 requiring significant interactive theorem proving over word arithmetic.
 
-\section{Conclusion}
+\section{Summary}
 This chapter covered one method for formal verification%
 \index{formal!verification}
 of memory preservation in x86-64 binaries,%
@@ -889,6 +894,7 @@ Memory preservation was formally proven for functions with loops, recursion,
 C structs and unions, and dynamic memory operations.
 Both optimized and non-optimized versions were verified.
 
+% TODO: move to dissertation conclusions?
 Some major additions to the framework in this chapter
 would be handling of concurrency and related instruction variants.
 Additionally, proper modeling of \ac{vm} and hypervisor calls in logic%
