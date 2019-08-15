@@ -1,5 +1,15 @@
 \chapter{Syntax-Driven Verification} % compare to CFG-driven
-% TODO: mention that recursion is not covered here
+
+This chapter presents several things,
+the content 
+
+% Need to do: less focus 
+
+% Overview (formerly introduction)
+% Binary -> Abstract code (Freek's, reference POPL paper in review anonymously)
+% Abstract Code -> Isabelle
+% Isabelle -> Verification
+% - 
 
 \section{Introduction}
 While the methodology presented in the previous chapter
@@ -169,7 +179,7 @@ the \acp{mrr} required to ensure successful proof completion (detailed below),
 are included as assumptions on the theorem.
 The control flow ingredient,
 represented as the \ac{scf} variable~$f$, is a single basic block for this function
-starting at instruction \inlineasm{4f0} and going to instruction \inlineasm{4fb}.
+starting at instruction address \inlineasm{4f0} and going to address \inlineasm{4fb}.
 Following that,
 the precondition~$P$ provides the starting conditions for the function,%
 \index{precondition}
@@ -910,7 +920,7 @@ all with respect to invariant~$\phi$.
     \subst(\phi,\var{sp}) &= \text{if }\exists v\cdot(\var{sp},v)\in\phi
     \text{ then }v\text{ else }\var{sp} \\
     \subst(\phi,e_0\bop e_1) &= \text{if }\exists v\cdot(e_0\bop e_1,v)\in\phi
-    \text{ then }v\text{ else }\subst(\phi,e_0)~\Box~\subst(\phi,e_1) \\
+    \text{ then }v\text{ else }\subst(\phi,e_0)\bop\subst(\phi,e_1) \\
     \text{unary ops} &= \dotso \notag \\
     \text{ternary ops} &= \dotso \notag
   \end{align}
@@ -1148,7 +1158,7 @@ are the assembly created by disassembling the corresponding binary%
 \index{binary}
 and a basic configuration file indicating which functions to analyze.
 \Cref{fig:example2-scf} presents the generated \ac{scf}.
-The example has one loop, which starts at instruction \texttt{0x120}.%
+The example has one loop, which starts at instruction address \texttt{0x120}.%
 \index{loop}
 \begin{figure}
   \begin{subfigure}[b]{.53\linewidth}
@@ -1216,7 +1226,7 @@ The example has one loop, which starts at instruction \texttt{0x120}.%
     \end{equation*}%
     \nomenclature{$\gg$}{Performs unsigned right shift when used with word values}%
     \nomenclature{$\ll$}{Performs left shift when used with word values}
-    \caption{Invariant at instruction \texttt{0x123e}
+    \caption{Invariant for address \texttt{0x123e}
       (only 7 out of 23 equations shown)}\label{fig:example2-inv}
   \end{subfigure}
   \\[1em]
@@ -1278,8 +1288,52 @@ The only interactions required in verifying the \ac{fmuc} of the entire function
 \end{enumerate*}
 This amounts to two manually written lines of Isabelle proof code.  
 
+To demonstrate the black-box functionality from \cref{sse:fmuc_comp},%
+\index{function!black box}
+\lstinline|is_even| was treated as external to the example's analysis.
+This resulted in the generation of an assumption
+stating that the memory usage of \lstinline|is_even| suffices to show that%
+\index{memory!usage}
+the invariant for the call site (instruction address $\mathtt{124b}$)%
+\index{invariant}
+implies the invariant for the instruction address immediately following,
+$\mathtt{1250}$.
+This means that $M_\mathtt{is\_even}$
+is assumed to not overlap with regions~$a$ through~$d$, among other things.
 
+\Cref{fig:manual} shows the sole manual effort required
+to prove the \ac{fmuc} for this function.
+All it involves is calling the proper predefined Eisbach~\citep{matichuk2016eisbach}%
+\index{Isabelle/HOL!Eisbach}
+proof strategies.
+The first proof strategy applied is \lstinline|check_scf_step|,
+which applies Hoare rules and proves correctness of all memory usage%
+\index{Hoare!rule}%
+\index{memory!usage}
+up until the loop.
+Following that, the proof strategy for dealing with loops
+is called with the invariant formed from the disjunction
+of the precondition of the loop's entry block%
+\index{precondition}%
+\index{loop!entry}
+and the precondition of the loop's exit block,%
+\index{loop!exit}
+both identified from the generated \ac{scf}.
+As the last manual step, \lstinline|check_scf_step| is once again called
+and is able to verify the remainder of the function.
 
+Finally, note that, without any assumptions,
+the function could overwrite its own return address at various places.
+The \acp{mrr} are strong enough to exclude this scenario.
+Those relations thus form the preconditions%
+\index{precondition}
+under which a return-address exploit is impossible.%
+\index{return-address exploit}
+For example, they assume that regions~$a$ and~$c$ are separate.
+This means that the address stored in argument \lstinline[language=C]|argv|
+(mapped to $\rsio$ on the assembly level)
+is not allowed to point to a region
+within the stack frame of the \lstinline[language=C]|main| function.
 
 
 

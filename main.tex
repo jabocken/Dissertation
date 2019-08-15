@@ -159,7 +159,7 @@
 
 \newcommand{\asp}{A_\mathrm{SP}}
 \newcommand{\esp}{E_\mathrm{SP}}
-\newcommand{\bop}{\mathbin{\Box}}
+\newcommand{\bop}{\mathbin{\bigcirc}}
 
 \newcommand{\true}{\mathrm{T}}
 \newcommand{\false}{\mathrm{F}}
@@ -297,7 +297,7 @@
   \maketitle
   \tableofcontents
 
-	\listoffigures
+  \listoffigures
   \listoftables
   \listofalgorithms
   \lstlistoflistings
@@ -305,7 +305,7 @@
   \printnomenclature
 
   % The following sets up the document for the main part of the thesis or dissertation. Do not comment out or remove this line.
-	\mainmatter
+  \mainmatter
 
   \input{introduction}
   \input{background}
@@ -315,13 +315,15 @@
   \section{Restrictions on Supported Features}
   \section{Previous Approaches to Assembly Verification}
 
-  \input{memory_usage}  
+  \input{memory_usage}
   \input{symbolic_execution}
   \input{cfg}
   \input{syntax}
 
-	\chapter{Conclusions}\label{ch:conclusions}
-	\chapter{Summary}\label{ch:summary} % keep?
+  \chapter{Conclusions}\label{ch:conclusions}
+  % summarize work
+  % re-highlight contributions
+  \section{Post-Preliminary Exam Work}
 
 	\bibliographystyle{plainnat}
 	\bibliography{bibliography}
