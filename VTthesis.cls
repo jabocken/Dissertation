@@ -62,16 +62,16 @@
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
 \RequirePackage[normalem]{ulem}
 \RequirePackage{enumerate}
-\RequirePackage[numbers,sort]{natbib}
+\RequirePackage[numbers,sort&compress]{natbib}
 \RequirePackage{paralist}
 \RequirePackage[titletoc,page]{appendix}
 
-% Proper chapter spacing in List of Algorithms (courtesy of https://tex.stackexchange.com/a/88563)
-\patchcmd{\@chapter}% <cmd>
-  {\chaptermark{#1}}% <search>
-  {\chaptermark{#1}%
-    \addtocontents{loa}{\protect\addvspace{10\p@}}}% replace
-{}{}% <success><failure>
+%% Proper chapter spacing in List of Algorithms (courtesy of https://tex.stackexchange.com/a/88563; no longer needed as now all the others are narrow)
+%\patchcmd{\@chapter}% <cmd>
+%  {\chaptermark{#1}}% <search>
+%  {\chaptermark{#1}%
+%    \addtocontents{loa}{\protect\addvspace{10\p@}}}% replace
+%{}{}% <success><failure>
 
 \RequirePackage[nottoc]{tocbibind}
 
@@ -106,13 +106,12 @@
 
 % Code formatting
 \RequirePackage{listings}
-%\RequirePackage{verbatim}
 
 \RequirePackage{algorithm} % For algorithm float
 \RequirePackage{algpseudocode} % algorithmicx pseudocode (needs to come before cleveref)
 
 % Fix for tocbibind from algorithms package docs (the \let is the important part, rest is standard)
-\renewcommand{\listofalgorithms}{\begingroup
+\renewcommand\listofalgorithms{\begingroup
   \tocfile{List of Algorithms}{loa}
 \endgroup}
 \let\l@algorithm\l@figure
@@ -273,75 +272,67 @@
 %\renewcommand{\chaptermark}[1]{ \markboth{\chaptername \ \thechapter.\ #1}{}}
 %\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
 %
-%%Revise frontmatter, mainmatter, backmatter...
-%%The formatting for these sections will be different.
-\renewcommand\frontmatter{
-  \ifbool{@nopgskip}\cleardoublepage\clearpage
+%%Revised frontmatter, mainmatter, backmatter with nice formatting and nopgskip support
+\renewcommand\frontmatter{%
+  \ifbool{@nopgskip}%
+    \cleardoublepage
+    \clearpage
   \@mainmatterfalse
-  \pagenumbering{roman}
+  \pagenumbering{roman}%
 }
 %  \fancyhead[L,R]{}
 %  \ifbool{@dft}{\fancyhead[C]{\textbf{DRAFT}}}{\fancyhead[C]{}}
 %  \fancyfoot[C]{\thepage}
 %  \fancyfoot[L,R]{}
 %  \renewcommand\headrulewidth{0.0pt}}
-\renewcommand\mainmatter{
-  \ifbool{@nopgskip}\cleardoublepage\clearpage
+\renewcommand\mainmatter{%
+  \ifbool{@nopgskip}%
+    \cleardoublepage
+    \clearpage
   \@mainmattertrue
-  \pagenumbering{arabic}
+  \pagenumbering{arabic}%
 }
 %  \fancyhead[LE,RO]{\thepage}
 %  \fancyhead[RE]{\sc \leftmark}
 %  \fancyhead[LO]{\sc \rightmark}
 %  \ifbool{@dft}{\fancyfoot[C]{\textbf{DRAFT}}}{\fancyfoot[C]{}}
 %  \renewcommand\headrulewidth{0.0pt}}
-%\newcommand{\biblio}{
+%\newcommand{\biblio}{%
 %  \fancyhead[C]{\bibname}}
-%\renewcommand\backmatter{
-%  \ifbool{@nopgskip}
-%    \cleardoublepage
-%    \clearpage
-%  \addappheadtotoc
-%  \renewcommand\chaptername\appendixname
-%}
-
-%\apptocmd{\appendix}{\backmatter}{}{}
-
 
 \newenvironment{frontpage}[1]{%
   \clearpage\thispagestyle{empty}%
-  \addcontentsline{toc}{chapter}{#1}
-  \center
+  \addcontentsline{toc}{chapter}{#1}%
+  \center%
 }{\endcenter}
-\newcommand\frontpagesimple[3]{\begin{frontpage}{#1}
+\newcommand\frontpagesimple[3]{\begin{frontpage}{#1}%
     {\Large \@title}
     \vfill
     \@author
     \vfill
     #2
-  \end{frontpage}
+  \end{frontpage}%
   #3
 }
 
 %Set up title page, abstract page, dedication page, and acknowledgement page
 \def\titlepage{%
-  \ifbool{@nopgskip}\cleardoublepage{}
-  \newpage%
+  \ifbool{@nopgskip}\cleardoublepage{}%
+  \newpage
   \thispagestyle{empty}%
   \setcounter{page}\@ne%
-  \addcontentsline{toc}{chapter}{Title}
-  \begin{center}
+  \addcontentsline{toc}{chapter}{Title}%
+  \begin{center}%
     {\Large \@title}
     \vfill
     \@author
     \vfill
-    \ifbool{@proposal}{
-      Thesis proposal for}
+    \ifbool{@proposal}{Thesis proposal for}
       {\ifbool{@prelim}
         {Preliminary Exam}
         {Dissertation submitted to the Faculty of the \\
           \@institution \\
-          in partial fulfillment of the requirements for the degree of}
+          in partial fulfillment of the requirements for the degree of}%
       }
     \vfill
     \@degree \\
@@ -374,8 +365,8 @@
 \def\dedpage{%
   \chapter{Dedication}
   \vspace*\fill
-  \begin{center}
-    \emph\@dedication
+  \begin{center}%
+    \emph\@dedication%
   \end{center}
   \vspace*\fill
 }

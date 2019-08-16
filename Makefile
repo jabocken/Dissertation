@@ -9,5 +9,5 @@ mk:
 
 clean:
 	rm -f *.aux *.auxlock *.bbl *.blg *.log *.loa *.lof *.lol *.lot *.nlo \
-		*.nls *.fls *.ind *.ilg *.out \
+		*.nls *.fls *.idx *.ind *.ilg *.out \
 		*.fdb_latexmk *.toc *.xdv $(PAPER).pdf extern/*

@@ -271,7 +271,6 @@
 \secondreader{Patrick R. Schaumont}
 \thirdreader{Michael S. Hsiao}
 \fourthreader{Changhee Jung}
-%\fifthreader{}
 
 % The dedication and acknowledgement pages are optional. Comment them out to remove them.
 \dedication{This is where you put your dedications.}
@@ -351,109 +350,17 @@
       \clearpage
   		\section{Section a}
   \end{appendices}
-
 \end{document}
 
-
 %****************************************************************************
-% Below are some general suggestions for writing your dissertation:
-%
-% 1. Label everything with a meaningful prefix so that you
-%    can refer back to sections, tables, figures, equations, etc.
-%    Usage \label{<prefix>:<label_name>} where some suggested
-%    prefixes are:
-%			ch: Chapter
-%     		se: Section
-%     		ss: Subsection
-%     		sss: Sub-subsection
-%			app: Appendix
-%     		ase: Appendix section
-%     		tab: Tables
-%     		fig: Figures
-%     		sfig: Sub-figures
-%     		eq: Equations
-%
-% 2. The VTthesis class provides for natbib citations. You should upload
-%	 one or more *.bib bibtex files. Suppose you have two bib files: some_refs.bib and
-%    other_refs.bib.  Then your bibliography line to include them
-%    will be:
-%      \bibliography{some_refs, other_refs}
-%    where multiple files are separated by commas. In the body of
-%    your work, you can cite your references using natbib citations.
-%    Examples:
-%      Citation                     Output
+% 2.       Citation                     Output
 %      -------------------------------------------------------
-%      \cite{doe_title_2016}        [18]
+%      \citep{doe_title_2016}        [18]
 %      \citet{doe_title_2016}       Doe et al. [18]
 %      \citet*{doe_title_2016}      Doe, Jones, and Smith [18]
 %
 %    For a complete list of options, see
 %      https://www.ctan.org/pkg/natbib?lang=en
-%
-% 3. Here is a sample table. Notice that the caption is centered at the top. Also
-%    notice that we use booktabs formatting. You should not use vertical lines
-%    in your tables.
-%
-%				\begin{table}[htb]
-%					\centering
-%					\caption{Approximate computation times in hh:mm:ss for full order 						versus reduced order models.}
-%					\begin{tabular}{ccc}
-%						\toprule
-%						& \multicolumn{2}{c}{Computation Time}\\
-%						\cmidrule(r){2-3}
-%						$\overline{U}_{in}$ m/s & Full Model & ROM \\
-%						\midrule
-%						0.90 & 2:00:00 & 2:08:00\\
-%						0.88 & 2:00:00 & 0:00:03\\
-%						0.92 & 2:00:00 & 0:00:03\\
-%						\midrule
-%						Total & 6:00:00 & 2:08:06\\
-%						\bottomrule
-%					\end{tabular}
-%					\label{tab:time_rom}
-%				\end{table}
-%
-% 4. Below are some sample figures. Notice the caption is centered below the
-%    figure.
-%    a. Single centered figure:
-%					\begin{figure}[htb]
-%						\centering
-%						\includegraphics[scale=0.5]{my_figure.eps}
-%						\caption{Average outlet velocity magnitude given an average
-%				        input velocity magnitude of 0.88 m/s.}
-%						\label{fig:output_rom}
-%					\end{figure}
-%    b. Two by two grid of figures with subcaptions
-%					\begin{figure}[htb]
-%						\centering
-%						\begin{subfigure}[h]{0.45\textwidth}
-%							\centering
-%							\includegraphics[scale=0.4]{figure_1_1.eps}
-%							\caption{Subcaption number one}
-%							\label{sfig:first_subfig}
-%						\end{subfigure}
-%						\begin{subfigure}[h]{0.45\textwidth}
-%							\centering
-%							\includegraphics[scale=0.4]{figure_1_2.png}
-%							\caption{Subcaption number two}
-%							\label{sfig:second_subfig}
-%						\end{subfigure}
-%
-%						\begin{subfigure}[h]{0.45\textwidth}
-%							\centering
-%							\includegraphics[scale=0.4]{figure_2_1.pdf}
-%							\caption{Subcaption number three}
-%							\label{sfig:third_subfig}
-%						\end{subfigure}
-%						\begin{subfigure}[h]{0.45\textwidth}
-%							\centering
-%							\includegraphics[scale=0.4]{figure_2_2.eps}
-%							\caption{Subcaption number four}
-%							\label{sfig:fourth_subfig}
-%						\end{subfigure}
-%						\caption{Here is my main caption describing the relationship between the 4 subimages}
-%						\label{fig:main_figure}
-%					\end{figure}
 %
 %----------------------------------------------------------------------------
 %
