@@ -1,2 +1,82 @@
 \chapter{Attribution}
-Some of the work in this distribution
+The work presented in this dissertation is not solely my own,
+as the two papers involved were a significant collaborative effort.
+The sections below describe which components were primarily my work
+and which were primarily those of my compatriots.
+
+\section*{Formal Verification of Memory Preservation of x86-64 Binaries}
+The first paper, accepted for presentation this September,
+covers the control-flow-driven verification work described in \cref{ch:cfg}.
+I provided three main contributions to that work.
+The first was a Python package developed to interface with \texttt{angr}
+for cutpoint identification and skeleton proof generation,
+% TODO: still want to add glossary to explain terms like cutpoint that are more general.
+described in \cref{se:cfg_overview}.
+My second contribution was the development of structured proof strategies
+to flesh out and verify the skeleton proofs,
+including the necessary preconditions and postconditions to ensure
+the possibility of function-level composition (\cref{se:cfg_composition}).
+
+I did not contribute as much to the work on recursive verification, however;
+my focus was primarily on the non-recursive (but still potentially looping) functions.
+The two recursive functions handled in the process of validating the work,
+including the factorial function presented in \cref{sse:cfg_factorial},
+were primarily verified by Dr.~Freek Verbeek.
+This does lead to my third contribution to the work, however:
+the more than seventy functions that I selected and analyzed as suitable case studies.
+\cref{sse:pow2_example} presents one such function,
+and the rest of the verification effort is described in \cref{se:cfg_application}.
+
+As an additional note of attribution, the symbolic execution engine
+used in the work was initially provided and developed by Dr.~Peter Lammich.
+Also, while the machine model we ended up using in the work was provided to us,
+the semantics was not fully suitable for efficient formal verification
+due to their status as bitvector formulas,
+and so I also assisted in the development of simplification rules
+to enable higher-level reasoning on multiple instructions.
+The rules were implemented in Isabelle and formally proven correct.
+
+\section*{Highly Automated Formal Proofs over Memory Usage of Assembly Code}
+Following on from that work is a recently-submitted paper
+that builds on our experiences from the previous verification
+work~\citep{popl2019underreview}. That work,
+which introduces the generation and verification of
+\emph{formal memory usage certificates}, is described in \cref{ch:syntax}.
+Most of my primary contributions to this work were on the verification side of things.
+The first two big ones were application and development of syntactic rules
+for axiomatic reasoning over memory usage
+as applied to structured control flow (\cref{scf_hoare})
+as well as a method to automate the process of doing so, \iacf*{vcg} \cref{sse:vcg}.
+I also formulated a method of function-level compositionality for that approach
+(\cref{sse:fmuc_comp}).
+
+On the \ac{fmuc} generation side of things,
+I did most of the work on translating the informal \acp{fmuc}
+into the theorems and data types required to verify the \acp{fmuc} in Isabelle.
+
+The person who did most of the work on the \ac{fmuc} generation in general,
+however, was again Dr.~Verbeek.
+In order to properly generate \ac{fmuc} preconditions and postconditions,
+he formulated a symbolic execution machine model for many common x86-64 instructions
+as well as additional ones encountered in the course of our case studies.
+The general methodology used 
+
+Dr.~Verbeek also developed the Z3 interface
+for handling the memory region separation and enclosure decision problems,
+mentioned in \cref{se:fmuc_overview},
+and did most of the work for control flow extraction (\cref{sse:cfg_extract}.
+The more complex invariant generation work was also his responsibility,
+such as the development of the invariant propagation algorithm in \cref{sse:inv_gen}.
+
+I did assist in the development of the generation procedure for preconditions as well,
+however.
+I also contributed to adapting the syntactic control flow used in \ac{fmuc} generation
+into a form suitable for usage in the theorem prover we used (\cref{isabelle_scf}).
+
+While it was not a major contribution,
+I also produced and helped produce additional proven-correct simplification rules
+as well as implementing informal semantics for additional instructions encountered.
+The bulk of the work for that was done by a fellow student
+working on a tangential project.
+
+\todo{citation for all the work Abhijith did?}

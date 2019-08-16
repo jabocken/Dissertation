@@ -7,10 +7,6 @@
 % This template is designed to operate with XeLaTeX.
 %
 % All elements in the Title, Abstract, and Keywords MUST be formatted as text and NOT as math.
-%
-%Further instructions for using this template are embedded in the document. Additionally, there are comments at the end of the file that give suggestions on writing your thesis.
-%
-%In addition to the standard formatting options, the following options are defined for the VTthesis class: proposal, prelim, doublespace, draft.
 
 \documentclass[prelim,pageskip]{VTthesis}
 
@@ -99,6 +95,11 @@
   long             = operating system,
   long-indefinite  = an,
   short-plural     = es
+}
+\DeclareAcronym{rop}{
+  short            = ROP,
+  short-indefinite = an,
+  long             = return-oriented programming
 }
 \DeclareAcronym{qemu}{short=QEMU, long=Quick Emulator}
 \DeclareAcronym{scc}{
@@ -297,60 +298,58 @@
   \tocfile\lstlistlistingname{lol}
 \endgroup}
 
-\makeindex[intoc]
+%\newcommand*\fancyfix[1]{\markboth{\sc #1}{\sc #1}}
+
+%\makeindex[intoc]
+
 \begin{document}
   % Sets up the document for the front matter of the dissertation (all the stuff before the body)
-  \frontmatter
-  \maketitle
-  \tableofcontents
+%  \frontmatter
+%  \maketitle
+%  \tableofcontents
 
-  \listoffigures
-  \listoftables
-  \listofalgorithms
-  \lstlistoflistings
-  \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
-  \printnomenclature
+%  \listoffigures
+%  \listoftables
+%  \listofalgorithms
+%  \lstlistoflistings
+%  \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
+%  \printnomenclature
 
-  \input{attribution} % prefaces go in front matter
+%  \input{attribution} % prefaces go in front matter
 
   % Sets up the document for the main part of the dissertation.
-  \mainmatter
+%  \mainmatter
 
-  \input{introduction}
-  \input{background}
-
-  \chapter{Related Work}
-  % TODO: contrast with fully automated methods using \ac{smt} solvers\cite{de2008z3,barrett2011cvc4}.
-  \section{Restrictions on Supported Features}
-  \section{Previous Approaches to Assembly Verification}
-
-  \input{memory_usage}
-  \input{symbolic_execution}
-  \input{cfg}
-  \input{syntax}
-
-  \chapter{Conclusions}\label{ch:conclusions}
-  % summarize work
-  % re-highlight contributions
-  \section{Post-Preliminary Exam Work}
+%  \input{introduction}
+%  \input{background}
+%  \input{related}
+%  \input{memory_usage}
+%  \input{symbolic_execution}
+%  \input{cfg}
+%  \input{syntax}
+%  \input{conclusions}
 
   {% appendices don't work right with backmatter on its own due to the lack of counters
-    \backmatter
-	  \bibliographystyle{plainnat}
-	  \bibliography{bibliography}
-  
-    \printindex
+%    \backmatter
+
+%    \fancyfix\bibname
+%	  \bibliographystyle{plainnat}
+%	  \bibliography{bibliography}
+
+%    \fancyfix\indexname
+%    \printindex
   }
-  \begin{appendices}
-  	\chapter{First Appendix} \label{app:appendix_one}
-  		\section{Section one} \label{ase:app_one_sect_1}
-      \clearpage
-  		\section{Section two} \label{ase:app_one_sect_2}
-  	\chapter{Second Appendix} \label{app:appendix_two}
-      \clearpage
-  		\section{Section a}
-  \end{appendices}
-\end{document}
+%  \begin{appendices}
+%    \renewcommand*\chaptername\appendixname % find a better spot
+%  	\chapter{First Appendix} \label{app:appendix_one}
+%  		\section{Section one} \label{ase:app_one_sect_1}
+%      \clearpage
+%  		\section{Section two} \label{ase:app_one_sect_2}
+%  	\chapter{Second Appendix} \label{app:appendix_two}
+%      \clearpage
+%  		\section{Section a}
+%  \end{appendices}
+%\end{document}
 
 %****************************************************************************
 % 2.       Citation                     Output

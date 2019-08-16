@@ -1,7 +1,7 @@
 \chapter{Memory Usage}\label{ch:memory}
+This chapter provides an introduction to the concept of \emph{memory usage}.%
+\index{memory!usage}
 
-Something something \emph{memory usage}.%
-\index{memory!usage|textit}
 
 \section{Definitions}
 Much of the memory work in this document relates to the concept of
@@ -14,14 +14,16 @@ in which basic blocks also do not contain any internal branching.
 
 \subsection{Memory Regions}\label{memory_regions}
 %
-\index{memory!region|textit}
+\index{memory!region}
+
+
 
 \section{Memory Region Relations}\label{mem_reg_rel}
 %
-\index{memory!region!relation|textit}
+\index{memory!region!relation}
 
 \section{Memory Preservation}\label{se:memory_preservation}
-As an extension of memory usage,
+An application of memory usage analysis,
 memory preservation shows that the values written by a program%
 \index{memory!preservation}
 are restrained to specified regions in memory.
@@ -96,186 +98,72 @@ which is out of scope of this dissertation.
 The formal definition of memory preservation takes the form of a Hoare triple.%
 \index{memory!preservation}%
 \index{Hoare!triple}
-Assume some predicate~$P$ that characterizes the initial state, at a minimum
-by setting the instruction pointer to the first instruction of a function body.
-Moreover, let~$R$ be the set of regions that the function is allowed to write to.
-Set~$R$ includes the stack frame and utilized data sections from the source binary
-as well as any utilized heap memory.
-Memory preservation formulates that any byte not within any region in~$R$ has to remain unchanged throughout the execution of that function.
-This is formalized as follows.
-\begin{definition}
-  Let~$R$ be a set of regions, let~$P$ be a precondition and let~$H$ denote a halting condition.
-  A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$:
+Initially, there must be some predicate~$P$ that characterizes the initial state,
+at a minimum by setting the instruction pointer
+to the first instruction of the relevant function body.
+In addition, $M$ is the set of regions in memory
+that the function is allowed to write to.
+Set~$M$ includes the stack frame and any utilized data sections from the source binary,
+as well as whatever heap memory was supplied or allocated, if any.
+Memory preservation formulates that any byte not within any of the regions in~$M$
+has to remain unchanged throughout the execution of that function.
+The notation for this formulation is shown below.
+\begin{definition}\label{mem_pres_hoare}
+  Let~$M$ be a set of memory regions, let~$P$ be a precondition,
+  and let~$H$ denote a halting condition.
+  A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$, the following implication holds:
   \begin{equation}
   (\forall r\in R\cdot r\bowtie\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
   \end{equation}
 \end{definition}
-
+\begin{example}
+  \todo{Can't really give a good example without the rest of the information needed to describe this, will move it down}
+\end{example}
 
 \todo\dots
-% TODO: move to a proper location?
 
 
-First, we define the notion of memory usage with respect to a certain state change:
+To show the correctness of \cref{mem_pres_hoare},
+the concept of memory usage with respect to state changes must first be defined.
 \begin{definition}
-  The set of memory regions~$M$ represents \emph{memory usage} with respect to
-  the state change from $\sigma$ to $\sigma'$ if and only if
-  any byte at an address~$a$ not inside one of the regions is unchanged.
+  The set of memory regions~$M$ represents memory \emph{usage} with respect to
+  the state change from starting state~$\sigma$ to halting state~$\sigma'$
+  if and only if every byte outside of the prespecified regions in memory is unchanged.
+  Those bytes are associated with the variable~$a$.
   \begin{equation}
     \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}{1}\bowtie r)
-    \longrightarrow\readmemS{\sigma'}{a}{1}=\readmemS{\sigma}{a}{1}.
+    \longrightarrow\readmemS{\sigma'}a{1}=\readmemS{\sigma}a{1}.
   \end{equation}
 \end{definition}
+\begin{example}
+  \todo{This should actually come before the Hoare triple,
+    along with the stuff that leads up to it, to better explain things}
+\end{example}
 
-\subsection{Memory Aliasing}\label{sse:memory_aliasing}
-This section provides a deeper view on the issue of \emph{memory aliasing}.%
-\index{memory!aliasing}
-For example, consider a write to memory region $\region{a_1}{s_1}$
-using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
-The aggregated result of that set of assignments
-depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
-overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
-\index{memory!region!separation}%
-\index{memory!region!enclosure}
-\begin{definition}
-  Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
-  notation $r_0\bowtie r_1$, if and only if
-  \begin{equation*}
-  s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
-  \end{equation*}
-  If those regions are not separate, they \emph{overlap}.
-\end{definition}
-\begin{definition}
-  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\sqsubseteq r_1$,
-  if and only if
-  \begin{equation*}
-  a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
-  \end{equation*}
-\end{definition}
-Because the methodology in this chapter uses symbolic execution,
-the above properties must be determined for symbolic expressions.
-Unfortunately, there is no single solution, no one decision procedure,
-that can determine these properties for all symbolic expressions.
-As an example of the potential issues that can occur,
-take the aforementioned completely symbolic regions $r_0$ and $r_1$.
-Without additional information, we cannot determine any relations for these regions.
-If they are \emph{possibly} different then they must be treated as different regions,
-while if they \emph{necessarily} overlap
-then they must be treated as a single merged region.
+\todo\dots
 
-To deal with such symbolic issues,
-the three aforementioned properties of enclosure, separation, and overlapping
-are formulated as \ac{smt} problems.
-\Ac{smt} formulations generally require inverting the desired condition
-and then proving that the resultant problem is unsatisfiable.
-Thus, for separation, we have the below definition.
-\begin{definition}
-  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
-  are necessarily separate if and only if, for any address~$a$,
-  the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
-  \end{equation*}
-\end{definition}
-Overlap may occur if two regions are not necessarily separate.
-\begin{definition}
-  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
-  the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
-  \end{equation*}
-\end{definition}
-\begin{definition}
-  Region $r_0$ is enclosed by $r_1$ if and only if,
-  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
-  \end{equation*}
-\end{definition}
-These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
-for a wide range of expressions over bitvectors
-using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
+\section{Limitations}\label{mem_use_limits}
+\todo\dots
 
-An additional problem is when a region that overlaps with at least one other region
-that has been modified is written to.
-To combine those writes, the regions must be \emph{merged}.%
-\index{memory!merging}
-\begin{definition}
-  The \emph{merge} of two symbolic assignments
-  $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
-  where the write to~$r_1$ occurs before the write to~$r_0$,
-  is defined as $r=\region{a}{s}\coloneqq b_0\concat b_1\concat b_2$, where:
-  \nomenclature{$\bullet$}{Indicates bitstring concatenation}
-  \begin{align*}
-  i_0 &= a_0 - a_1 \\
-  i_1 &= a_1 + s_1 - (a_0 + s_0) \\
-  a   &= \text{if } i_0 < 0 \text{ then } a_0 \text{ else } a_1 \\
-  s   &= s_0 + \max(i_0, 0) + \max(i_1, 0) \\
-  b_0 &= \text{if } i_1 > 0 \text{ then } \takebits{8 s_1-1,8 s_1 - 8 i_1}v_1 \text{ else } 0_0 \\
-  b_1 &= \takebits{8 s-1, 0} v_0 \\
-  b_2 &= \text{if } i_0 > 0 \text{ then } \takebits{8 i_0-1, 0}v_1 \text{ else } 0_0
-  \end{align*}
-\end{definition}
-As the merged region must encompass both original regions,
-its address~$a$ is the minimum of~$a_0$ and~$a_1$.
-The value stored in the merged region consists of three parts:
-whatever portion of~$v_1$, if any, is below~$a_0$;
-a possibly zero-extended~$v_0$;
-and the part of~$v_1$ above $a_0+s_0$ (the upper bound of~$r_0$),
-if there are any bits in~$r_1$ above that address.
-As the signs of values~$i_0$ and~$i_1$ are necessary factors
-in determining the result of the region merge,
-Z3 is again used to evaluate those symbolic expressions.
-For sets of assignments such as those mentioned above,
-merge is used as an infix operator, with order being important
-(the first assignment overwrites [parts of] the second as shown above).
+\subsection{Overapproximation}\label{mem_use_over}
+As a formal property, memory usage has been proven to never miss any memory regions
+written to, assuming the correctness of the semantics and model it is applied
+to~\citep{bockenek2019preservation,popl2019underreview}.
+Put another way, however, this means that the methodology \emph{must} be conservative.
+If it cannot make a determination about the usage status of some part of memory,
+either due to an underdeveloped state or too large of one to easily reason about,
+it must assume that that region is used. It must \emph{overapproximate}.%
+\index{overapproximation}
+This sort of false positive can be an issue in the field of formal verification,
+as it can make the property under consideration weaker despite being correct.
 
-Writing to and reading from memory in the process of symbolic execution
-requires utilizing decision procedures for separation and merging.
-Consider reading from the region $\region{a}{s}$ given a set of assignments~$\alpha$,
-using \cref{algo:mem_read} as our guide.
-\begin{algorithm}
-  \caption{Symbolically reading from memory}\label{algo:mem_read}
-  \begin{algorithmic}
-    \Require{A symbolic region $\region{a}{s}$}
-    \Ensure{A symbolic value}
-      \Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
-    \Function{read\_mem}{$\region{a}{s}$}
-      \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
-        \State\Return $v$
-      \Else
-        \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
-          \alpha\mid\region{a'}{s'}\not\bowtie\region{a}{s}\}$
-        \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in
-          \alpha\mid\region{a'}{s'}\bowtie\region{a}{s}\}$
-        \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets
-        \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
-        \State $r\gets\region{a_l}{a_r-a_l+s_r}$
-        \State $\region{a'}{s'}\coloneqq v'\gets
-          \var{ovl}_0\mmerge\var{ovl}_1\mmerge\ldots\mmerge(r\coloneqq *r)$
-        \State $\alpha\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
-        \State $a''\gets8(a-a')-1$
-        \State\Return $\takebits{s+a'',a''}v'$
-      \EndIf
-    \EndFunction
-  \end{algorithmic}
-\end{algorithm}
-If an assignment to $\region{a}{s}$ exactly exists in the current set of assignments,
-then the value assigned to that region,~$v$, is returned.
-Otherwise, the algorithm must consider the set of assignments
-for all possibly overlapping and necessarily separated regions.
-One single assignment that accounts for all overlapping regions must be developed.
-To do this, the leftmost and rightmost overlapping regions are considered.
-These regions are defined as the regions that start at the smallest address~$a_l$
-and end at the greatest upper bound $a_r+s_r$, respectively.
-The new region~$r$ has address~$a_l$ and size $a_r-a_l+s_r$.
-All of the overlapping regions are then merged into one single assignment based on~$r$,
-starting with the trivial assignment $r\coloneqq *r$.
-This assignment does nothing but set up the merging,
-as it writes the value read from region~$r$ back to that same region.
-After merging, the current set of assignments is updated to be the merged region
-and assignment combined with all separate assignments.
-The final value read from memory is extracted from the merged assignment.
-Writing to memory occurs in a similar fashion.
+One way to shrink such overapproximations is to increase the
+\emph{context sensitivity}\index{context sensitivity}
+of the approach, such as performing the analysis over the full program at once
+rather than individual components, but that can involve
+a significant increase in time and verification effort.
 
-% Summary?
+\todo{Want talk about the usage of SMT solvers/etc., increase in automation in general
+  as one way of mitigating increased verification effort somewhere}
+
+\section{Summary}

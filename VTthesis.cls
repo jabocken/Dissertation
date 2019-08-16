@@ -129,9 +129,8 @@
 \RequirePackage{tikz}
 \usetikzlibrary{shapes,arrows}
 
-% Packages required for subfigures
-\usepackage{caption}
-\usepackage{subcaption}
+% Useful package for subfigures
+\RequirePackage[hypcap]{subcaption}
 
 % Place a Draft Watermark, if a draft document
 \ifbool{@dft}{
@@ -265,40 +264,55 @@
 \newcommand\@vtcopyright{Copyright \@copyrightyear, \@author}
 
 %% Set up the header and footer
-%\RequirePackage{fancyhdr}
-%\setlength{\headheight}{15pt}
-%\pagestyle{fancy}
-%
-%\renewcommand{\chaptermark}[1]{ \markboth{\chaptername \ \thechapter.\ #1}{}}
-%\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
-%
-%%Revised frontmatter, mainmatter, backmatter with nice formatting and nopgskip support
+\RequirePackage{fancyhdr}
+\setlength\headheight{15pt}
+
+% initial setup (trying to update the defaults on fancy itself didn't work, oh well))
+\pagestyle{fancy}
+\renewcommand\headrulewidth{0.0pt}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]\thepage
+  \setlength\headheight{12pt} % Doesn't seem to help that much with the chapter head positioning
+}
+
+% Helpers
+\newcommand*\fancydraft[1]{%
+  \renewcommand\headrulewidth{0.0pt}%
+  \ifbool{@dft}
+    {#1[C]{\textbf{DRAFT}}}
+    {#1[C]{}}}
+\renewcommand\chaptermark[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
+\renewcommand\sectionmark[1]{\markright{\thesection.\ #1}}
+
+%%Revised frontmatter, mainmatter with nice formatting and nopgskip support
+% (backmatter headers are trickier to handle but that's not it's fault, it's the fault of the LaTeX designers who didn't think far enough ahead when they were making compromises over limited computational ability back in the 90s.)
+\fancypagestyle{front}{
+  \fancyhf{}
+  \fancydraft\fancyhead
+  \fancyfoot[C]\thepage
+}
+\fancypagestyle{main}{
+  \fancyhf{}
+  \fancyhead[LE,RO]\thepage
+  \fancyhead[RE]{\sc\leftmark}
+  \fancyhead[LO]{\sc\rightmark}
+  \fancydraft\fancyhead
+}
+
 \renewcommand\frontmatter{%
-  \ifbool{@nopgskip}%
-    \cleardoublepage
-    \clearpage
+  \ifbool{@nopgskip}\cleardoublepage\clearpage
   \@mainmatterfalse
   \pagenumbering{roman}%
+  \pagestyle{front}%
 }
-%  \fancyhead[L,R]{}
-%  \ifbool{@dft}{\fancyhead[C]{\textbf{DRAFT}}}{\fancyhead[C]{}}
-%  \fancyfoot[C]{\thepage}
-%  \fancyfoot[L,R]{}
-%  \renewcommand\headrulewidth{0.0pt}}
 \renewcommand\mainmatter{%
-  \ifbool{@nopgskip}%
-    \cleardoublepage
-    \clearpage
+  \ifbool{@nopgskip}\cleardoublepage\clearpage
   \@mainmattertrue
   \pagenumbering{arabic}%
+  \pagestyle{main}%
 }
-%  \fancyhead[LE,RO]{\thepage}
-%  \fancyhead[RE]{\sc \leftmark}
-%  \fancyhead[LO]{\sc \rightmark}
-%  \ifbool{@dft}{\fancyfoot[C]{\textbf{DRAFT}}}{\fancyfoot[C]{}}
-%  \renewcommand\headrulewidth{0.0pt}}
-%\newcommand{\biblio}{%
-%  \fancyhead[C]{\bibname}}
 
 \newenvironment{frontpage}[1]{%
   \clearpage\thispagestyle{empty}%
@@ -387,3 +401,21 @@
 % dunno if actually needed
 %%%%%\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}  %% for numbered chapters \chapter{...}
 %%%%%\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{} %% for unnumbered chapters \chapter*{...}
+
+
+% If I try the proper book look but don't like the headers/footers on the pages:
+%\makeatletter
+%\def\cleardoublepage{\clearpage
+%  \if@twoside
+%    \ifodd
+%      \c@page
+%    \else
+%      \hbox{}\vspace*\fill\begin{center}%
+%        This page intentionally left blank.%
+%      \end{center}
+%      \vspace\fill
+%      \thispagestyle{empty}\newpage
+%      \if@twocolumn\hbox{}\newpage\fi
+%    \fi
+%  \fi}
+%\makeatother

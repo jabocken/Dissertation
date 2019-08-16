@@ -2,9 +2,9 @@
 
 %need preamble!
 
-% Get rid of introduction somehow (move some to preamble, change section name to overview?)
+% Get rid of introduction somehow (move some to preamble?)
 
-\section{Introduction}\label{se:cfg_intro}
+\section{Overview}\label{se:cfg_overview}
 The memory usage analysis approach presented in this chapter
 features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
 This methodology allows for minimization of symbolic execution%
@@ -29,14 +29,14 @@ The first step is disassembly of an x86-64 binary using%
 \index{x86-64}
 a tweaked version of the angr
 \lstinline|reassembly| analysis~\citep{wang2017ramblr}
-provided by Roessle et al.~\citep{roessle2019}.%
+provided by \citet{roessle2019}.%
 \index{angr!reassembly}
 More detail on why this specific disassembler was chosen
 can be found previously in \cref{sse:loading_assembly}; in short,
 the Isabelle parser relies on specific size annotations the tweaked analysis generates.
 
 To achieve minimal symbolic execution,
-it features automatically-selected cutpoints%
+it features automatically-selected \emph{cutpoints}%
 \index{cutpoint}
 identified by a Python script that relies on
 angr's \lstinline|CFGEmulated| control flow analysis.%
@@ -52,9 +52,7 @@ Even recursive functions are supported, albeit with a caveat.%
 \index{recursion}
 
 The caveat on recursion is that it requires a significant amount of work,
-much greater than that needed for loops or function calls alone.%
-\index{loop}%
-\index{function!call}
+much greater than that needed for loops or function calls alone.
 Recursive functions are equivalent to one or more loops that utilize a stack,
 which significantly complicates the necessary invariants
 due to the fact that program stacks, when used with most modern \acp{isa},
@@ -101,7 +99,7 @@ The work is still not trivial, however.
     minimum height=2cm
   }]
     \node[myblock] (binary) {x86-64 binary};
-    \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python script};
+    \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python package};
     \node[myblock, right of=cfg] (isa) {Isabelle};
     \node[myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
 
@@ -128,7 +126,55 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 \index{function!call}%
 \index{recursion}
 
-\section{Floyd Invariant Foundation}\label{se:cfg_invariant}
+\section{Formal Definition}
+A formal definition of memory preservation requires a formal basis to work with,
+and this definition started with the machine model from \cref{se:machine_model}.
+
+\subsection{Symbolic Execution for \ac{cfg}-Driven Verification}\label{cfg_symb_exec}
+While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
+The step function for this methodology took the form
+$\step:A\times S\rightarrow(S\mid\bot_E)$.%
+\nomenclature{$A$}{Type of assembly instructions}%
+\nomenclature{$S$}{Type representing program state; an Isabelle record}%
+\nomenclature{$\bot_E$}{Indicates exceptional state}
+It takes a tuple of instruction to execute and current state~$\sigma$,
+returning the state~$\sigma'$ after execution of that instruction.
+If some sort of exception, such as a divide by zero, occurs,
+the function returns $\bot_E$ instead.
+
+From the machine model, we manually derive a run function%
+\index{symbolic execution!run function}
+$\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\bot_E\mid\bot_\var{NT})$.%
+\nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
+This partial function takes as input a state predicate~$H$ and a state~$\sigma$.%
+\index{state!predicate}
+Predicate~$H$ denotes the \emph{halting condition}.%
+\index{symbolic execution!halting condition}
+Typically, the halting condition instructs the run function to stop
+at a certain instruction, such as \lstinline{ret}.
+The run function iteratively fetches the current instruction
+via the current value of the instruction pointer
+and uses the machine model to execute it.
+Whenever an exception occurs, it stops and returns~$\bot_E$.
+If the execution were to continue forever
+without an exception or reaching the halting condition
+(e.g.\ due to an infinite loop),
+the function returns $\bot_\var{NT}$.
+Formally, this is achieved by a standard least-fixed-point construction.
+
+% TODO!!!
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Floyd Invariant Foundation}\label{se:cfg_invariant}
 Loops pose a significant problem when using symbolic execution to analyze code.%
 \index{loop}
 One of the major issues is that they result in significant path explosion.
@@ -186,11 +232,10 @@ by placing a cutpoint at the start of each block where control flow converges,%
 \index{cutpoint}
 resulting in all instructions being symbolically executed only once each.
 Each cutpoint, however, requires a state predicate contained
-in a \emph{Floyd invariant}.%
-\index{Floyd!invariant}
+in a \emph{Floyd invariant}.
 
 The Floyd invariant for a function is a partial function
-that take the form $I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
+that takes the form $I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
 \nomenclature{$L$}{Type of instruction addresses in a program; a 64-bit word}%
 \nomenclature{$\mathbb{B}$}{Type of boolean values, True and False}
 This function maps from instruction addresses with invariants
@@ -218,8 +263,7 @@ The following theorem states that a Floyd invariant
 can be used to prove properties over its corresponding program or function
 as a whole:
 \begin{theorem}
-  Assume that Floyd invariant~$I$ holds and provides annotations for locations~$l_0$ and~$l_f$ (the initial and final location).%
-  \index{Floyd!invariant}
+  Assume that Floyd invariant~$I$ holds and provides annotations for locations~$l_0$ and~$l_f$ (the initial and final location).
   Let halting condition~$H$ stop at location~$l_f$;%
   \index{halting condition}
   that is, $H(\sigma)\longrightarrow\loc\sigma=l_f$.
@@ -264,7 +308,53 @@ Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg
 \index{Floyd!verification}
 In that \ac{cfg}, each edge can be seen as an implication.
 
-\section{Function-level Composition}\label{se:composition}
+Unlike the usual formulation of
+Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},\index{Hoare!logic}
+Hoare triples as defined for this work take a \emph{halting condition}%
+\index{Hoare!triple}%
+\index{symbolic execution!halting condition}
+as their middle input rather than a program statement.
+The result is that the program statement is
+characterized by the addresses of its initial
+and ending instructions, defined in~$P$ and~$H$, rather than a specific syntax.
+Thus, we have the following definition:
+\begin{definition}\label{def:htriple}
+  $\htriple{P}{H}{Q}$
+  denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
+  $\run(H,\sigma)$ produces a non-exceptional state that satisfies postcondition~$Q$.
+  
+  Formally,
+  \begin{equation}
+    \htriple{P}{H}{Q}\equiv\forall\sigma\cdot
+    P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+    \sigma'\neq\bot_E\wedge Q(\sigma'),
+  \end{equation}
+  where $\sigma'=\run(H,\sigma)$.
+\end{definition}
+% TODO: may not need the explicit $\sigma'\neq\bot_E$
+
+Standard composition does not apply to such Hoare triples.
+Consider a symbolic run that executes until halting condition~$H'$.%
+\index{symbolic execution!halting condition}
+It is possible to break this run into two parts
+by first running until a halting condition~$H$ and then until~$H'$.
+This requires that~$H'$ is \emph{stronger} than~$H$; that is, $H'$ implies~$H$.
+This ensures that the run first stops at~$H$ before it stops at~$H'$.
+%\refstepcounter{equation}
+\begin{theorem}\label{thm:comp}
+  Hoare triples are compositional with respect to stronger halting conditions:
+  %  \def\labelSpacing{24.574 pt}
+  \begin{prooftree}
+    \AxiomC{$\htriple{P}{H}{Q}$}
+    \AxiomC{$\htriple{Q}{H'}{R}$}
+    \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
+    %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
+    %    \RightLabel{\textnormal{(\theequation)}}
+    \TrinaryInfC{$\htriple{P}{H'}{R}$}
+  \end{prooftree}
+\end{theorem}
+
+\section{Function-level Composition}\label{se:cfg_composition}
 As stated above, composition is crucial for scalability.%
 \index{composition}
 On the function call level, compositionality ensures that, when a function is called,
@@ -278,7 +368,7 @@ There are some exceptions for optimized tail calls
 in which a called function returns to the caller of its callee,
 but those are not the norm.
 \begin{example}
-  consider a function~$f$ starting in a text section at location~$l_0$.
+  Consider a function~$f$ starting in a text section at location~$l_0$.
   The function is called from a different text section
   by the instruction \lstinline{call f} at location~$l_\var{call}$.
   This means the return address for the call is $l_\var{call}+5$%
@@ -323,16 +413,14 @@ External functions are simply assumed to have correct behavior
 and are thus left out of the existing analysis,
 leaving those functions in the \ac{tcb}.
 
-%TODO: more?
-
 \section{Examples}\label{se:cfg_examples}
-\subsection{Non-recursive example: \texttt{pow2}}
+\subsection{Non-recursive example: \texttt{pow2}}\label{sse:pow2_example}
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
 The assembly code was obtained by compiling a C program containing the function
 with \ac{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
-mentioned in \cref{se:cfg_intro}. The input is stored in \lstinline{edi}.
+mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
 \begin{lstlisting}[
   gobble=2,
   float=*,
@@ -401,8 +489,7 @@ For the memory preservation proof of this function, we chose to associate annota
 at the start of the function, an instruction that broke the loop,
 and the return address of the function
 (a logical variable, as the caller of the function is unspecified for this proof).
-\Cref{fig:pow2cfg} shows the Floyd invariant in \ac{cfg} form for this function.%
-\index{Floyd!invariant}
+\Cref{fig:pow2cfg} shows the Floyd invariant in \ac{cfg} form for this function.
 The invariant carries through the preservation of memory,
 showing that region $\region{a}{1}$ maintains its value throughout.
 The equalities over \inlineasm{rbp} and \inlineasm{rsp}
@@ -435,8 +522,8 @@ Given the parent regions presented above, the proof that the Floyd invariant hol
 is executed automatically using the symbolic execution engine
 described in \cref{ch:symbolic_execution}.
 
-\subsection{Recursion: Factorial}
-The factorial operation can provide a simple example of recursion.%
+\subsection{Recursion: Factorial}\label{sse:cfg_factorial}
+The factorial operation provides a simple example of recursion.%
 \index{factorial}%
 \index{recursion}
 The basic definition of factorial is $n!=\prod_{i=1}^n i$.%
@@ -601,8 +688,7 @@ the initial return address must also be properly stored.
   \label{eq:retsites}
 \end{multline}
 
-The Floyd invariant for the factorial function is shown in%
-\index{Floyd!invariant}
+The Floyd invariant for the factorial function is shown in
 \cref{fig:factcfg,eq:rbxpops,eq:ret_address,eq:retsites}.
 The first loop, from location~1 back to~1, goes deeper into recursion,
 pushing values onto the stack until \inlineasm{dil} becomes~0.
@@ -614,9 +700,7 @@ The second loop then pops values of the stack until $n=\mathrbx$,
 at which point there are no more recursive stack frames to pop
 and the final result of the factorial operation can be returned.
 
-A Hoare triple can now be derived from the the Floyd invariant.%
-\index{Floyd!invariant}%
-\index{Hoare!triple}
+A Hoare triple can now be derived from the the Floyd invariant.
 This is done by instantiating variable~$n$ with \lstinline|dil|.
 Doing so simplifies the precondition,%
 \index{precondition}
@@ -811,9 +895,9 @@ requires a loop invariant in addition to the pre- and postconditions.
 \section{On Usability}
 The three main aspects of per-function user interaction for this methodology are
 \begin{enumerate*}
-  \item defining a Floyd invariant,\index{Floyd!invariant}
+  \item defining a Floyd invariant,
   \item defining memory region set~$R$, and
-  \item proving memory preservation.\index{memory!preservation}
+  \item proving memory preservation.
 \end{enumerate*}
 While restricting the verification effort to memory preservation
 does reduce the effort required to provide Floyd invariants, it does not eliminate it.
@@ -833,8 +917,7 @@ Both the stack and frame pointers must be preserved throughout the recursion,%
 \index{frame!pointer}
 and all return addresses must be properly pushed on and popped off the stack as needed.
 
-Another aspect of Floyd invariant development%
-\index{Floyd!invariant}
+Another aspect of Floyd invariant development
 that is not easily determined ahead of time is strengthening of the precondition.%
 \index{precondition}
 Making reasoned guesses about the necessary precondition clauses is one way to proceed,
@@ -866,7 +949,7 @@ either ones included with Isabelle or ones from the \ac{afp}~\citep{afp}
 (though not necessarily efficiently).
 Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation
-requiring significant interactive theorem proving over word arithmetic.
+requiring significant \ac{itp} over word arithmetic.
 
 \section{Summary}
 This chapter covered one method for formal verification%
@@ -881,9 +964,7 @@ it requires setting up an invariant, which traditionally is a hard problem in it
 Requirements for memory preservation invariants are provided for several examples.
 For recursive functions, more involved invariants are required,
 along with \ac{itp} to show preservation of the stack and frame pointers.
-Invariants may include preconditions necessary for excluding exceptional behavior.%
-\index{Floyd!invariant}%
-\index{precondition}
+Invariants may include preconditions necessary for excluding exceptional behavior.
 Such preconditions are exposed by applying the methodology to a disassembled binary,
 instead of deriving them from documents or source code annotations.
 

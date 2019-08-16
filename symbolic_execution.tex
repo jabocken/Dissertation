@@ -26,58 +26,37 @@ those rules are ideally proven to be correct.
 
 %TODO: more
 
-\section{Machine Model}
-The machine model used in this dissertation takes the following general form.%
+\section{Machine Model}\label{se:machine_model}
+The machine model used in this dissertation%
 \index{symbolic execution!machine model}
-There exists some symbolic \emph{state} defined as a record%
+is an extension of the work of \citet{roessle2019}.
+They embedded bitvector-based, machine-learned semantics
+\index{semantics}
+of a modern version of the x86-64 \ac{isa},
+which includes instruction set extensions such as the \ac{sse} family, in Isabelle/HOL.
+\index{Isabelle/HOL}
+To improve reliability of their work,
+it was tested against an actual, live x86-64 machine to prove semantic equivalence.
+The semantics they used was an extension of that
+provided by \citet{heule2016stratified},
+who applied machine learning to derive semantics from a physical machine as well.
+This produced highly reliable semantics:
+they formally compared a subset of their automatically-generated semantics
+to manually written rules based on the Intel reference manuals
+and found that in the few cases where they differed, the Intel manuals were wrong.
+Note that this model does not include concurrency.
+
+The model is structured as follows.
+It has some symbolic \emph{state} defined as an Isabelle record%
 \index{state!symbolic}
 that stores registers, flags, and 64-bit addressable byte-level memory.
-The instructions to be executed are stored in that memory.
-Each instruction is executed by a \emph{step} function having the type%
+The memory holds both instructions and data, as in the standard von Neumann model.%
+\index{von Neumann model}
+Each instruction is executed by a \emph{step} function,%
 \index{symbolic execution!step function}
-$A\times S\mapsto(S\mid\bot_E)$.%
-\nomenclature{$A$}{Type of assembly instructions}%
-\nomenclature{$S$}{Type representing program state; an Isabelle record}%
-\nomenclature{$\bot_E$}{Indicates exceptional state}
-This function takes a tuple of instruction to execute and current state~$\sigma$,
-returning the state~$\sigma'$ after execution of that instruction.
-If some sort of exception, such as a divide by zero, occurs,
-the function returns $\bot_E$ instead.
-% TODO: rework this? Only the SAFECOMP step possibly returns $\bot_E$, I think.
 
-The semantics of the instructions as executed by the step function%
-\index{semantics}
-are those produced by Roessle et al.~\citep{roessle2019},
-which built upon the work of Heule et al.~\citep{heule2016}.
-Heule et al.\ used machine learning to derive semantics
-by executing instructions on an actual x86-64 machine.
-Their semantics were validated against the Intel reference manual.
-The formal model was obtained by embedding those semantics into Isabelle/HOL.%
-\index{Isabelle/HOL}
-It has been tested against an actual x86-64 machine, increasing the model's reliability.
-The model provides a formalization of large parts of the x86-64 \ac{isa},
-including several modern instruction set extensions such as the \ac{sse} family.
-Concurrency is not included in the model.
 
-From the machine model, we manually derive a run function%
-\index{symbolic execution!run function}
-$\run:(S\mapsto\mathbb{B})\times S\mapsto(S\mid\bot_E\mid\bot_\var{NT})$.%
-\nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
-This partial function takes as input a state predicate~$H$ and a state~$\sigma$.%
-\index{state!predicate}
-Predicate~$H$ denotes the \emph{halting condition}.%
-\index{symbolic execution!halting condition}
-Typically, the halting condition instructs the run function to stop
-at a certain instruction, such as \lstinline{ret}.
-The run function iteratively fetches the current instruction
-via the current value of the instruction pointer
-and uses the machine model to execute it.
-Whenever an exception occurs, it stops and returns~$\bot_E$.
-If the execution were to continue forever
-without an exception or reaching the halting condition
-(e.g.\ due to an infinite loop),
-the function returns $\bot_\var{NT}$.
-Formally, this is achieved by a standard least-fixed-point construction.
+
 
 % TODO
 
@@ -96,6 +75,16 @@ Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 \index{endianness!bi}
 memory operations. These include modern versions of ARM, PowerPC, SPARC, and MIPS.
 Supporting bi-endianness would require additional complexity in memory handling.
+
+\subsection{Restrictions of the Model}
+The usage of a shared data space for instructions and data, though very common,
+does involve some issues for verification.
+The model does not currently provide any memory protection schemes,%
+\index{memory!protection}
+such as those used in modern hardware,
+and there is nothing to prevent a write from overwriting the program itself.
+For that reason,
+the works presented in this document assume that the loaded assembly is never modified.
 
 \section{Symbolic Execution and Memory Usage}
 % TODO: probably need more here
@@ -132,93 +121,165 @@ both the actual regions used by instructions as well as merged regions.
   to the Z3 decision procedure mentioned in \cref{sse:memory_aliasing}.
 \end{example}
 
-\section{Hoare Logic and Symbolic Execution}
-Unlike the usual formulation of
-Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},\index{Hoare!logic}
-Hoare triples as defined for the first contribuation of this dissertation%
-\index{Hoare!triple}
-take a halting condition%
-\index{symbolic execution!halting condition}
-as their middle input rather than a program statement.
-The program statement is instead characterized by the addresses of its initial
-and ending instructions, defined in~$P$ and~$H$.
-Thus, we have the following definition:
-\begin{definition}\label{def:htriple}
-  $\htriple{P}{H}{Q}$
-  denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
-  $\run(H,\sigma)$ produces a non-exceptional state that satisfies postcondition~$Q$.
+\subsection{Memory Aliasing}\label{sse:memory_aliasing}
+This section provides a deeper view on the issue of \emph{memory aliasing}.%
+\index{memory!aliasing}
+For example, consider a write to memory region $\region{a_1}{s_1}$
+using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
+The aggregated result of that set of assignments
+depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
+overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
+\index{memory!region!separation}%
+\index{memory!region!enclosure}
+\begin{definition}
+  Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
+  notation $r_0\bowtie r_1$, if and only if
+  \begin{equation*}
+  s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
+  \end{equation*}
+  If those regions are not separate, they \emph{overlap}.
+\end{definition}
+\begin{example}
   
-  Formally,
-  \begin{equation}
-    \htriple{P}{H}{Q}\equiv\forall\sigma\cdot
-    P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
-    \sigma'\neq\bot_E\wedge Q(\sigma'),
-  \end{equation}
-  where $\sigma'=\run(H,\sigma)$.
+\end{example}
+
+\begin{definition}
+  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\sqsubseteq r_1$,
+  if and only if
+  \begin{equation*}
+  a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
+  \end{equation*}
 \end{definition}
-% TODO: may not need the explicit $\sigma'\neq\bot_E$
- 
-Standard composition does not apply to such Hoare triples.
-Consider a symbolic run that executes until halting condition~$H'$.%
-\index{symbolic execution!halting condition}
-It is possible to break this run into two parts
-by first running until a halting condition~$H$ and then until~$H'$.
-This requires that~$H'$ is \emph{stronger} than~$H$; that is, $H'$ implies~$H$.
-This ensures that the run first stops at~$H$ before it stops at~$H'$.
-%\refstepcounter{equation}
-\begin{theorem}\label{thm:comp}
-  Hoare triples are compositional with respect to stronger halting conditions:
-  %  \def\labelSpacing{24.574 pt}
-  \begin{prooftree}
-    \AxiomC{$\htriple{P}{H}{Q}$}
-    \AxiomC{$\htriple{Q}{H'}{R}$}
-    \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
-    %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
-    %    \RightLabel{\textnormal{(\theequation)}}
-    \TrinaryInfC{$\htriple{P}{H'}{R}$}
-  \end{prooftree}
-\end{theorem}
+Because the methodology in this chapter uses symbolic execution,
+the above properties must be determined for symbolic expressions.
+Unfortunately, there is no single solution, no one decision procedure,
+that can determine these properties for all symbolic expressions.
+As an example of the potential issues that can occur,
+take the aforementioned completely symbolic regions $r_0$ and $r_1$.
+Without additional information, we cannot determine any relations for these regions.
+If they are \emph{possibly} different then they must be treated as different regions,
+while if they \emph{necessarily} overlap
+then they must be treated as a single merged region.
 
-\section{Hoare Triples for Memory Usage}\label{se:hoare2}
-This formulation, $\htriple*{P}{f}{Q}{M}$,
-resembles traditional Hoare triples a bit more,%
-\index{Hoare!triple}
-as rather than a halting condition
-it takes a syntactic representation of the program,~$f$, known as \emph{\ac{scf}}.
-Unlike traditional Hoare triples, however,
-it also explicitly contains the set of memory regions,~$M$,
-that enumerate the areas of memory read and written by the program
-the \ac{scf} encodes.
-\Ac{scf} is a representation of the control flow of a function
-in terms of syntactic structures such as basic blocks,
-loops, and if-then-else statements.
-Syntactic structure is required because Hoare logic is a syntax-guided approach.
-
-\todo\dots
-
-\begin{definition}\label{def:usage}
-  A memory usage Hoare triple is defined as
-  \begin{equation}
-    \htriple*{P}{f}{Q}{M}\equiv
-    \forall\sigma~\sigma'\cdot P(\sigma)\wedge\exec(f,\sigma,\sigma')\longrightarrow
-    Q(\sigma')\wedge\usage(M,\sigma,\sigma')
-  \end{equation}
-  The above equation states the following:
-  if precondition~$P$ holds on the initial state~$\sigma$
-  and~$\sigma'$ can be obtained by executing~$f$,
-  postcondition~$Q$ holds on the produced state
-  and the values stored in all memory regions outside set~$M$ are preserved.
+To deal with such symbolic issues,
+the three aforementioned properties of enclosure, separation, and overlapping
+are formulated as \ac{smt} problems.
+\Ac{smt} formulations generally require inverting the desired condition
+and then proving that the resultant problem is unsatisfiable.
+Thus, for separation, we have the below definition.
+\begin{definition}
+  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
+  are necessarily separate if and only if, for any address~$a$,
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
+  \end{equation*}
 \end{definition}
-While \cref{def:usage} focuses on the regions written to,
-the regions read must also be included as symbolic execution
-relies on those regions being included.
-Without them, proofs involving symbolic execution
-of the related instructions will not complete.
+Overlap may occur if two regions are not necessarily separate.
+\begin{definition}
+  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
+  \end{equation*}
+\end{definition}
+\begin{definition}
+  Region $r_0$ is enclosed by $r_1$ if and only if,
+  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
+  \end{equation*}
+\end{definition}
+These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
+for a wide range of expressions over bitvectors
+using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
 
-\todo{Discuss how it can be an overapproximation
-  due to necessities of loops/etc.\ in Hoare triples/etc.}
+An additional problem is when a region that overlaps with at least one other region
+that has been modified is written to.
+To combine those writes, the regions must be \emph{merged}.%
+\index{memory!merging}
+\begin{definition}
+  The \emph{merge} of two symbolic assignments
+  $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
+  where the write to~$r_1$ occurs before the write to~$r_0$,
+  is defined as $r=\region{a}{s}\coloneqq b_0\concat b_1\concat b_2$, where:
+  \nomenclature{$\bullet$}{Indicates bitstring concatenation}
+  \begin{align*}
+  i_0 &= a_0 - a_1 \\
+  i_1 &= a_1 + s_1 - (a_0 + s_0) \\
+  a   &= \text{if } i_0 < 0 \text{ then } a_0 \text{ else } a_1 \\
+  s   &= s_0 + \max(i_0, 0) + \max(i_1, 0) \\
+  b_0 &= \text{if } i_1 > 0 \text{ then } \takebits{8 s_1-1,8 s_1 - 8 i_1}v_1 \text{ else } 0_0 \\
+  b_1 &= \takebits{8 s-1, 0} v_0 \\
+  b_2 &= \text{if } i_0 > 0 \text{ then } \takebits{8 i_0-1, 0}v_1 \text{ else } 0_0
+  \end{align*}
+\end{definition}
+As the merged region must encompass both original regions,
+its address~$a$ is the minimum of~$a_0$ and~$a_1$.
+The value stored in the merged region consists of three parts:
+whatever portion of~$v_1$, if any, is below~$a_0$;
+a possibly zero-extended~$v_0$;
+and the part of~$v_1$ above $a_0+s_0$ (the upper bound of~$r_0$),
+if there are any bits in~$r_1$ above that address.
+As the signs of values~$i_0$ and~$i_1$ are necessary factors
+in determining the result of the region merge,
+Z3 is again used to evaluate those symbolic expressions.
+For sets of assignments such as those mentioned above,
+merge is used as an infix operator, with order being important
+(the first assignment overwrites [parts of] the second as shown above).
 
-\section{Hoare Rules for Memory Usage}\label{se:hoare_rules}
-% TODO: mention \acp{vcg} that apply the rules
+Writing to and reading from memory in the process of symbolic execution
+requires utilizing decision procedures for separation and merging.
+Consider reading from the region $\region{a}{s}$ given a set of assignments~$\alpha$,
+using \cref{algo:mem_read} as our guide.
+\begin{algorithm}
+  \caption{Symbolically reading from memory}\label{algo:mem_read}
+  \begin{algorithmic}
+    \Require{A symbolic region $\region{a}{s}$}
+    \Ensure{A symbolic value}
+    \Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
+    \Function{read\_mem}{$\region{a}{s}$}
+      \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
+        \State\Return $v$
+      \Else
+        \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
+        \alpha\mid\region{a'}{s'}\not\bowtie\region{a}{s}\}$
+        \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in
+        \alpha\mid\region{a'}{s'}\bowtie\region{a}{s}\}$
+        \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets
+        \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
+        \State $r\gets\region{a_l}{a_r-a_l+s_r}$
+        \State $\region{a'}{s'}\coloneqq v'\gets
+        \var{ovl}_0\mmerge\var{ovl}_1\mmerge\ldots\mmerge(r\coloneqq *r)$
+        \State $\alpha\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
+        \State $a''\gets8(a-a')-1$
+        \State\Return $\takebits{s+a'',a''}v'$
+      \EndIf
+    \EndFunction
+  \end{algorithmic}
+\end{algorithm}
+If an assignment to the exact region $\region{a}{s}$
+exists in the current set of assignments,
+then the value assigned to that region,~$v$, is returned.
+Otherwise, the algorithm must consider the set of assignments
+for all possibly overlapping and necessarily separated regions.
+One single assignment that accounts for all overlapping regions must be developed.
+To do this, the leftmost and rightmost overlapping regions are considered.
+These regions are defined as the regions that start at the smallest address~$a_l$
+and end at the greatest upper bound $a_r+s_r$, respectively.
+The new region~$r$ has address~$a_l$ and size $a_r-a_l+s_r$.
+All of the overlapping regions are then merged into one single assignment based on~$r$,
+starting with the trivial assignment $r\coloneqq *r$.
+This assignment does nothing but set up the merging,
+as it writes the value read from region~$r$ back to that same region.
+After merging, the current set of assignments is updated to be the merged region
+and assignment combined with all separate assignments.
+The final value read from memory is extracted from the merged assignment.
+Writing to memory occurs in a similar fashion.
 
-% Summary?
+
+
+
+
+
+\section{Summary}
