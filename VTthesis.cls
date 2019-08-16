@@ -32,8 +32,6 @@
 \ProvidesClass{VTthesis}[2017/05/02 v1.5 Virginia Tech Proposal and Thesis Class]
 \RequirePackage{etoolbox}
 %Declaration of options
-\newbool{@sig}
-\boolfalse{@sig}
 \newbool{@proposal}
 \boolfalse{@proposal}
 \newbool{@prelim}
@@ -43,24 +41,22 @@
 \newbool{@dft}
 \boolfalse{@dft}
 \newbool{@nopgskip}
-\boolfalse{@nopgskip}
+\booltrue{@nopgskip}
 
-\DeclareOption{sig}{\booltrue{@sig}}
-\DeclareOption{nosig}{\boolfalse{@sig}}
 \DeclareOption{proposal}{\booltrue{@proposal}}
 \DeclareOption{prelim}{\booltrue{@prelim}}
 \DeclareOption{doublespace}{\booltrue{@dbl}}
 \DeclareOption{draft}{\booltrue{@dft}}
-\DeclareOption{nopageskip}{\booltrue{@nopgskip}}
-%%% EXECUTION OF OPTIONS --------------------------------------------------
+\DeclareOption{pageskip}{\boolfalse{@nopgskip}}  % Skips blank pages.
+%%% EXECUTION OF OPTIONS -------------------------------------------------
 %% default to:
-\ExecuteOptions{nosig}
+\ExecuteOptions{}
 
 \ProcessOptions
 
 %%% PACKAGE LOADING -------------------------------------------------------
-%% based on std report class
-\LoadClass[12pt,letterpaper,twoside]{report}
+%% based on standard book class
+\LoadClass[12pt,letterpaper,\ifbool{@nopgskip}{}{openany}]{book}
 
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
@@ -72,47 +68,45 @@
 
 % Proper chapter spacing in List of Algorithms (courtesy of https://tex.stackexchange.com/a/88563)
 \patchcmd{\@chapter}% <cmd>
-{\chaptermark{#1}}% <search>
-{\chaptermark{#1}%
-  \addtocontents{loa}{\protect\addvspace{10\p@}}}% replace
+  {\chaptermark{#1}}% <search>
+  {\chaptermark{#1}%
+    \addtocontents{loa}{\protect\addvspace{10\p@}}}% replace
 {}{}% <success><failure>
 
 \RequirePackage[nottoc]{tocbibind}
 
-%Use the following code to configure fonts:
-\usepackage{fontspec}
-\setmainfont[
-  Ligatures=TeX,
-  SmallCapsFont={* Caps}
-]{Latin Modern Roman} %Set your font type here. The default font for this document class is Latin Modern Roman.
+\RequirePackage{fontspec}
+\setmainfont{Latin Modern Roman}[SmallCapsFont={* Caps}]
 
-%package required for abbreviations page
-\usepackage[intoc,refpage]{nomencl}
+%package required for nomenclature entry
+\RequirePackage[intoc]{nomencl}
 \makenomenclature
 
+% Official format doesn't look as good as in book form but that can always be changed
 \setlength{\textwidth}{6.5in}
 \setlength{\textheight}{8.5in}
 \setlength{\evensidemargin}{0in}
 \setlength{\oddsidemargin}{0in}
 \setlength{\topmargin}{0in}
 
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.1in}
+\RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
 
 % double space option
 \RequirePackage{setspace}
-\ifbool{@dbl}{\doublespace}{}
+\ifbool{@dbl}\doublespace{}
+
+% Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally, though it must come before hyperref for usage with it
+\RequirePackage{imakeidx}
 
 % links for references
 \RequirePackage[final,colorlinks=true,allcolors=blue]{hyperref}
 
 % For including pdf images:
 %\RequirePackage[final]{graphicx}
-%\RequirePackage{float}
 
-% MATLAB Code formatting
+% Code formatting
 \RequirePackage{listings}
-\RequirePackage{verbatim}
+%\RequirePackage{verbatim}
 
 \RequirePackage{algorithm} % For algorithm float
 \RequirePackage{algpseudocode} % algorithmicx pseudocode (needs to come before cleveref)
@@ -124,7 +118,7 @@
 \let\l@algorithm\l@figure
 
 % So algorithm numbering matches other floats (doesn't work with acmart class, but that doesn't use chapters anyway)
-\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}}
+\renewcommand\thealgorithm{\arabic{chapter}.\arabic{algorithm}}
 % Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
 \renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
 
@@ -143,7 +137,7 @@
 % Place a Draft Watermark, if a draft document
 \ifbool{@dft}{
   % \cofeAm{0.7}{0.75}{2}{0}{0}
-  \usepackage[firstpage]{draftwatermark}
+  \RequirePackage[firstpage]{draftwatermark}
   \SetWatermarkScale{1} %Smaller numbers decrease the size of the text. Originally set to 6.
   \SetWatermarkLightness{0.7}
 }
@@ -194,8 +188,6 @@
 }
 
 % \author,\title are defined in book; here are the rest of the front matter defining macros:
-\def\@title{}
-\def\@author{}
 \def\@degree{Doctor of Philosophy}
 \def\@program{Mathematics}
 \def\@institution{Virginia Polytechnic Institute and State University}
@@ -271,168 +263,136 @@
 \def\dedication#1{\booltrue{@ded} \gdef\@dedication{#1}}
 \def\keywords#1{\booltrue{@key} \gdef\@keywords{#1}}
 
-\newcommand{\@vtcopyright}{Copyright \@copyrightyear, \@author}
+\newcommand\@vtcopyright{Copyright \@copyrightyear, \@author}
 
-% Set up the header and footer
-\RequirePackage{fancyhdr}
-\setlength{\headheight}{15pt}
-\pagestyle{fancy}
-
-\renewcommand{\chaptermark}[1]{ \markboth{\chaptername \ \thechapter.\ #1}{}}
-\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
-
-%Set up up frontmatter, mainmatter, backmatter...
-%The formatting for these sections will be different.
-\newcommand{\frontmatter}{
-  \ifbool{@nopgskip}
-    {\clearpage}
-    {\cleardoublepage}
-  \clearpage
+%% Set up the header and footer
+%\RequirePackage{fancyhdr}
+%\setlength{\headheight}{15pt}
+%\pagestyle{fancy}
+%
+%\renewcommand{\chaptermark}[1]{ \markboth{\chaptername \ \thechapter.\ #1}{}}
+%\renewcommand{\sectionmark}[1]{\markright{\thesection.\ #1}}
+%
+%%Revise frontmatter, mainmatter, backmatter...
+%%The formatting for these sections will be different.
+\renewcommand\frontmatter{
+  \ifbool{@nopgskip}\cleardoublepage\clearpage
+  \@mainmatterfalse
   \pagenumbering{roman}
-  \fancyhead[L,R]{}
-  \ifbool{@dft}{\fancyhead[C]{\textbf{DRAFT}}}{\fancyhead[C]{}}
-  \fancyfoot[C]{\thepage}
-  \fancyfoot[L,R]{}
-  \renewcommand\headrulewidth{0.0pt}}
-\newcommand{\mainmatter}{
-  \ifbool{@nopgskip}
-    {\clearpage}
-    {\cleardoublepage}
-  \pagenumbering{arabic}
-  \fancyhead[LE,RO]{\thepage}
-  \fancyhead[RE]{\sc \leftmark}
-  \fancyhead[LO]{\sc \rightmark}
-  \ifbool{@dft}{\fancyfoot[C]{\textbf{DRAFT}}}{\fancyfoot[C]{}}
-  \renewcommand\headrulewidth{0.0pt}}
-\newcommand{\biblio}{
-  \fancyhead[C]{\bibname}}
-\newcommand{\backmatter}{
-  \ifbool{@nopgskip}
-    {\clearpage}
-    {\cleardoublepage}
-  \addappheadtotoc
-  \renewcommand{\chaptername}{\appendixname}
 }
+%  \fancyhead[L,R]{}
+%  \ifbool{@dft}{\fancyhead[C]{\textbf{DRAFT}}}{\fancyhead[C]{}}
+%  \fancyfoot[C]{\thepage}
+%  \fancyfoot[L,R]{}
+%  \renewcommand\headrulewidth{0.0pt}}
+\renewcommand\mainmatter{
+  \ifbool{@nopgskip}\cleardoublepage\clearpage
+  \@mainmattertrue
+  \pagenumbering{arabic}
+}
+%  \fancyhead[LE,RO]{\thepage}
+%  \fancyhead[RE]{\sc \leftmark}
+%  \fancyhead[LO]{\sc \rightmark}
+%  \ifbool{@dft}{\fancyfoot[C]{\textbf{DRAFT}}}{\fancyfoot[C]{}}
+%  \renewcommand\headrulewidth{0.0pt}}
+%\newcommand{\biblio}{
+%  \fancyhead[C]{\bibname}}
+%\renewcommand\backmatter{
+%  \ifbool{@nopgskip}
+%    \cleardoublepage
+%    \clearpage
+%  \addappheadtotoc
+%  \renewcommand\chaptername\appendixname
+%}
 
-\apptocmd{\appendix}{\backmatter}{}{}
+%\apptocmd{\appendix}{\backmatter}{}{}
+
+
+\newenvironment{frontpage}[1]{%
+  \clearpage\thispagestyle{empty}%
+  \addcontentsline{toc}{chapter}{#1}
+  \center
+}{\endcenter}
+\newcommand\frontpagesimple[3]{\begin{frontpage}{#1}
+    {\Large \@title}
+    \vfill
+    \@author
+    \vfill
+    #2
+  \end{frontpage}
+  #3
+}
 
 %Set up title page, abstract page, dedication page, and acknowledgement page
 \def\titlepage{%
-  \thispagestyle{empty}
+  \ifbool{@nopgskip}\cleardoublepage{}
+  \newpage%
+  \thispagestyle{empty}%
+  \setcounter{page}\@ne%
+  \addcontentsline{toc}{chapter}{Title}
   \begin{center}
-  {\Large \@title}\\
-  \vfill
-  \rm \@author\\
-  \vfill
+    {\Large \@title}
+    \vfill
+    \@author
+    \vfill
+    \ifbool{@proposal}{
+      Thesis proposal for}
+      {\ifbool{@prelim}
+        {Preliminary Exam}
+        {Dissertation submitted to the Faculty of the \\
+          \@institution \\
+          in partial fulfillment of the requirements for the degree of}
+      }
+    \vfill
+    \@degree \\
+    in \\
+    \@program
+    \vfill
+    \@principaladvisor, \ifbool{@coad}{Co-c}{C}hair \\
+    \ifbool{@coad}{\@coadvisor, Co-chair\\}{}
+    \ifbool{@1st}{\@firstreader\\}{}
+    \ifbool{@2nd}{\@secondreader\\}{}
+    \ifbool{@3rd}{\@thirdreader\\}{}
+    \ifbool{@4th}{\@fourthreader\\}{}
+    \ifbool{@5th}{\@fifthreader\\}{}
+    \vfill
+    \@submitdate \\
+    \@instaddress
+    \ifbool{@key}{\vfill
+      Keywords: \@keywords}{}
 
-  \ifbool{@proposal}{
-    \noindent Thesis proposal for}
-    {\ifbool{@prelim}
-      {\noindent Preliminary Exam}
-      {\noindent Dissertation submitted to the Faculty of the \\
-        \@institution \\
-        in partial fulfillment of the requirements for the degree of \\}
-    }
-
-  \vfill
-  \@degree \\
-  in \\
-  \@program \\
-  \vfill
-
-  \noindent \@principaladvisor, \ifbool{@coad}{Co-c}{C}hair \\
-  \ifbool{@coad}{\@coadvisor, Co-chair\\}{}
-  \ifbool{@1st}{\@firstreader\\}{}
-  \ifbool{@2nd}{\@secondreader\\}{}
-  \ifbool{@3rd}{\@thirdreader\\}{}
-  \ifbool{@4th}{\@fourthreader\\}{}
-  \ifbool{@5th}{\@fifthreader\\}{}
-  \vfill
-
-  \@submitdate\\
-  \@instaddress\\
-
-  \ifbool{@key}{\vfill
-    Keywords: \@keywords\\}{}
-
-  \@vtcopyright \\
-
+    \@vtcopyright
   \end{center}
-
-  \newpage
-  \addtocounter{page}{1}
+  \newpage%
+  \if@twoside
+    \ifbool{@nopgskip}{}{\setcounter{page}\@ne}
+  \else
+    \setcounter{page}\@ne
+  \fi
 }
 
-\def\abspage{
-  \thispagestyle{empty}
+\def\dedpage{%
+  \chapter{Dedication}
+  \vspace*\fill
   \begin{center}
-  \noindent {\Large \@title} \\
-
-  \vfill
-  \noindent  \@author \\
-  \vfill
-
-  (ABSTRACT)
+    \emph\@dedication
   \end{center}
-  \vfill
-
-  \@abstract
-  \newpage
-}
-
-\def\absgapage{
-  \thispagestyle{empty}
-  \begin{center}
-  \noindent {\Large \@title} \\
-
-  \vfill
-  \noindent  \@author \\
-  \vfill
-
-  (GENERAL AUDIENCE ABSTRACT)
-  \end{center}
-  \vfill
-
-  \@abstractgenaud
-  \newpage
-}
-
-\def\ackpage{
-  \chapter*{Acknowledgments}
-  \@acknowledge
-  \newpage
-}
-
-\def\dedpage{
-\chapter*{Dedication}
-  \vspace*{\fill}
-  \begingroup
-  \begin{center}
-    \emph{\@dedication}
-  \end{center}
-  \endgroup
-  \vspace*{\fill}
-  \newpage
+  \vspace*\fill
 }
 
 %This is where the main magic happens
-\renewcommand\maketitle{
-  \setcounter{page}{0}
-  \pdfbookmark[1]{Titlepage}{titlepage}
+\renewcommand\maketitle{%
   \titlepage
-  \ifbool{@abs}{
-    \pdfbookmark[1]{Abstract}{abstract}
-    \abspage}{}
+  \ifbool{@abs}{\frontpagesimple{Abstract}{(ABSTRACT)}{\vfill\@abstract}}{}
   \ifbool{@gaa}{
-    \pdfbookmark[1]{General Audience Abstract}{abstractgenaud}
-    \absgapage}{}
-  \ifbool{@ded}{
-    \pdfbookmark[1]{Dedication}{dedication}
-    \dedpage}{}
-  \ifbool{@ack}{
-    \pdfbookmark[1]{Acknowledgements}{acknowledgements}
-    \ackpage}{}
+    \frontpagesimple{General Audience Abstract}
+    {(GENERAL AUDIENCE ABSTRACT)}
+    {\vfill\@abstractgenaud}
+  }{}
+  \ifbool{@ded}\dedpage{}
+  \ifbool{@ack}{\chapter{Acknowledgments}\@acknowledge}{}
 }
 
-\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}  %% for numbered chapters \chapter{...}
-\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{} %% for unnumbered chapters \chapter*{...}
+% dunno if actually needed
+%%%%%\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}  %% for numbered chapters \chapter{...}
+%%%%%\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{} %% for unnumbered chapters \chapter*{...}

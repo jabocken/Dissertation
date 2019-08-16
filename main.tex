@@ -12,7 +12,7 @@
 %
 %In addition to the standard formatting options, the following options are defined for the VTthesis class: proposal, prelim, doublespace, draft.
 
-\documentclass[nopageskip,prelim]{VTthesis} % nopageskip = Removes arbitrary blank pages.
+\documentclass[prelim,pageskip]{VTthesis}
 
 \usepackage{suffix}                % For defining command versions with *s
 
@@ -31,7 +31,6 @@
 \usepackage[inline]{enumitem}
 
 \usepackage[index,single]{acro}                  % For acronyms; hyperref option changes acro colors but doesn't actually link to the list so not using it right now
-\usepackage{makeidx}               % For indices!
 
 \usepackage{pgfplots}               % For plots
 
@@ -41,7 +40,7 @@
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
-\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+%\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -81,6 +80,11 @@
   short-indefinite = an,
   long             = instruction set architecture,
   long-indefinite  = an
+}
+\DeclareAcronym{isar}{
+  short            = Isar,
+  short-indefinite = an,
+  long             = intelligible semi-automated reasoning
 }
 \DeclareAcronym{itp}{
   short            = ITP,
@@ -181,6 +185,7 @@
 \DeclareMathOperator{\sextend}{sextend}
 \DeclareMathOperator{\usage}{usage}
 \DeclareMathOperator{\exec}{exec\_scf}
+\DeclareMathOperator{\execblock}{symb\_exec}
 
 \newcommand*{\ASeq}{\mathrel{\texttt{;}}}
 \WithSuffix{\newcommand*}\ASeq*{\texttt{;}}
@@ -254,7 +259,7 @@
 % You should include 3-5 keywords, separated by commas
 \keywords{Some Keywords, Subject matter, etc.}
 
-\author{Joshua A. Bockenek}
+\author{Joshua Alexander Bockenek}
 \program{Electrical and Computer Engineering}
 \degree{Doctor of Philosophy}
 
@@ -273,7 +278,9 @@
 \acknowledge{This is where you put your acknowledgments.}
 
 % The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
-\abstract{Give a brief description of your thesis here. Max of 250 words for a master's thesis and 350 words for a PhD dissertation, according to the VT ETD standards.}
+\abstract{%
+  Give a brief description of your thesis here. Max of 250 words for a master's thesis and 350 words for a PhD dissertation, according to the VT ETD standards.
+}
 
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{You are also required as of Spring 2016 to include a general audience abstract. This should be geared towards individuals outside of your field that may be reading seeking information about your work. You should avoid language that is particular to your field and clearly define any terms that may have special meaning in your discipline.}
@@ -288,11 +295,12 @@
 % Listings properly in TOC
 \renewcommand\lstlistlistingname{List of Listings}
 \renewcommand{\lstlistoflistings}{\begingroup
-  \tocfile{\lstlistlistingname}{lol}
+  \tocfile\lstlistlistingname{lol}
 \endgroup}
 
-\makeindex
+\makeindex[intoc]
 \begin{document}
+  % Sets up the document for the front matter of the dissertation (all the stuff before the body)
   \frontmatter
   \maketitle
   \tableofcontents
@@ -304,7 +312,9 @@
   \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
   \printnomenclature
 
-  % The following sets up the document for the main part of the thesis or dissertation. Do not comment out or remove this line.
+  \input{attribution} % prefaces go in front matter
+
+  % Sets up the document for the main part of the dissertation.
   \mainmatter
 
   \input{introduction}
@@ -325,22 +335,22 @@
   % re-highlight contributions
   \section{Post-Preliminary Exam Work}
 
-	\bibliographystyle{plainnat}
-	\bibliography{bibliography}
-
-  \clearpage\phantomsection % Getting hyperref to link to the right page
-  \printindex
-
-	% This formats the chapter name to appendix to properly define the headers:
-%	\appendix
-
-	% Add your appendices here. You must leave the appendices enclosed in the appendices environment in order for the table of contents to be correct.
-%	\begin{appendices}
-%		\chapter{First Appendix} \label{app:appendix_one}
-%			\section{Section one} \label{ase:app_one_sect_1}
-%			\section{Section two} \label{ase:app_one_sect_2}
-%		\chapter{Second Appendix} \label{app:appendix_two}
-%	\end{appendices}
+  {% appendices don't work right with backmatter on its own due to the lack of counters
+    \backmatter
+	  \bibliographystyle{plainnat}
+	  \bibliography{bibliography}
+  
+    \printindex
+  }
+  \begin{appendices}
+  	\chapter{First Appendix} \label{app:appendix_one}
+  		\section{Section one} \label{ase:app_one_sect_1}
+      \clearpage
+  		\section{Section two} \label{ase:app_one_sect_2}
+  	\chapter{Second Appendix} \label{app:appendix_two}
+      \clearpage
+  		\section{Section a}
+  \end{appendices}
 
 \end{document}
 
