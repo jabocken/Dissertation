@@ -286,8 +286,7 @@
 \renewcommand\chaptermark[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
 \renewcommand\sectionmark[1]{\markright{\thesection.\ #1}}
 
-%%Revised frontmatter, mainmatter with nice formatting and nopgskip support
-% (backmatter headers are trickier to handle but that's not it's fault, it's the fault of the LaTeX designers who didn't think far enough ahead when they were making compromises over limited computational ability back in the 90s.)
+%%Revised frontmatter, mainmatter, and backmatter with nice formatting and nopgskip support
 \fancypagestyle{front}{
   \fancyhf{}
   \fancydraft\fancyhead
@@ -313,6 +312,8 @@
   \pagenumbering{arabic}%
   \pagestyle{main}%
 }
+% probably good to use this in restricted environments, which I'm doing anyway because of the appendix
+\apptocmd\backmatter{\let\MakeUppercase=\relax}{}{}
 
 \newenvironment{frontpage}[1]{%
   \clearpage\thispagestyle{empty}%

@@ -298,46 +298,41 @@
   \tocfile\lstlistlistingname{lol}
 \endgroup}
 
-%\newcommand*\fancyfix[1]{\markboth{\sc #1}{\sc #1}}
-
-%\makeindex[intoc]
-
+\makeindex[intoc]
 \begin{document}
   % Sets up the document for the front matter of the dissertation (all the stuff before the body)
-%  \frontmatter
-%  \maketitle
-%  \tableofcontents
+  \frontmatter
+  \maketitle
+  \tableofcontents
 
-%  \listoffigures
-%  \listoftables
-%  \listofalgorithms
-%  \lstlistoflistings
-%  \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
-%  \printnomenclature
+  \listoffigures
+  \listoftables
+  \listofalgorithms
+  \lstlistoflistings
+  \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
+  \printnomenclature
 
-%  \input{attribution} % prefaces go in front matter
+  \input{attribution} % prefaces go in front matter
 
   % Sets up the document for the main part of the dissertation.
-%  \mainmatter
+  \mainmatter
 
-%  \input{introduction}
-%  \input{background}
-%  \input{related}
-%  \input{memory_usage}
-%  \input{symbolic_execution}
-%  \input{cfg}
+  \input{introduction}
+  \input{background}
+  \input{related}
+  \input{memory_usage}
+  \input{symbolic_execution}
+  \input{cfg}
 %  \input{syntax}
-%  \input{conclusions}
+  \input{conclusions}
 
   {% appendices don't work right with backmatter on its own due to the lack of counters
-%    \backmatter
+    \backmatter
 
-%    \fancyfix\bibname
-%	  \bibliographystyle{plainnat}
-%	  \bibliography{bibliography}
+    \bibliographystyle{plainnat}
+    \bibliography{bibliography}
 
-%    \fancyfix\indexname
-%    \printindex
+    \printindex
   }
 %  \begin{appendices}
 %    \renewcommand*\chaptername\appendixname % find a better spot
@@ -349,7 +344,7 @@
 %      \clearpage
 %  		\section{Section a}
 %  \end{appendices}
-%\end{document}
+\end{document}
 
 %****************************************************************************
 % 2.       Citation                     Output
