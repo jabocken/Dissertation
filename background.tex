@@ -1,33 +1,25 @@
 \chapter{Background}\label{ch:background}
-
+This part of my dissertation provides domain-specific information necessary to understand
+the work presented in it.
 
 \section{Formal Methods}
 To quote \citet{butler:fm},
 \begin{quote}
-  ``Formal Methods'' refers to mathematically rigorous techniques and tools
+  ``Formal Methods''%
+  \index{formal!methods}
+  refers to mathematically rigorous techniques and tools
   for the specification, design and verification of software and hardware systems.
 \end{quote}
 
-\section{Floyd-Style Verification}\label{ch:floyd}
-%
+\section{Floyd-Style Verification}\label{ch:floyd}%
 \index{Floyd!verification}
-Used in \cref{se:cfg_invariant},
+Used in \cref{ch:cfg},
 \dots
 
 \section{Formal Verification}
-An application of formal methods is the field of \emph{formal verification},%
-\index{formal!methods}%
+One application of formal methods is the field of \emph{formal verification},%
 \index{formal!verification}
 which 
-\section{Hoare Logic}
-Stuff\dots~\citep{hoare1969axiomatic,myreen2007hoare}%
-\index{Hoare!logic}
-
-A \emph{Hoare triple} denotes a pre- and postcondition for a certain program.%
-\index{Hoare!triple}%
-\index{precondition}%
-\index{postcondition}
-Let~$P$ and~$Q$ be state predicates.
 
 \section{Theorem Proving}
 %
@@ -37,16 +29,32 @@ Let~$P$ and~$Q$ be state predicates.
 \index{theorem prover!interactive}
 
 \subsection{Isabelle/HOL}
-\index{Isabelle/HOL}%
+The theorem prover utilized in this work
+was Isabelle 2018\fturl{https://isabelle.in.tum.de/}~\citep{nipkow2002isabelle}.%
+\index{Isabelle/HOL}
+It is a generic tool with a flexible, extensible syntactic framework.
+Isabelle also utilizes a powerful proof language
+known as \ac{isar}~\citep{wenzel2007isabelle}
+and a proof method language called Eisbach~\citep{matichuk2016eisbach}.
+We made heavy use of Isabelle's Word library~\citep{isabelle-word-session}
+for the work presented in this dissertation.
+This library provides a limited-precision integer type, \lstinline|'a word|,
+where \lstinline|'a| is the number of bits in the integer.
+Various operations are provided for manipulation of and arithmetic involving formal words,
+including bit indexing, bit shifting, setting specific bits,
+and signed and unsigned arithmetic.
+Operators for inequality are also included,
+as well as operations for converting between word sizes.
 
 
-\todo{this is redundant with the info presented in symb exec}
-In order to perform symbolic execution of assembly instructions in Isabelle,
-the instructions must somehow be embedded in the theorem prover.
-This is done using the symbolic execution toolchain
-of \citet{roessle2019},
-the machine model of which is based on the work of \citet{heule2016}.%
-\index{symbolic execution!machine model}
+
+%\todo{this is redundant with the info presented in symb exec}
+%In order to perform symbolic execution of assembly instructions in Isabelle,
+%the instructions must somehow be embedded in the theorem prover.
+%This is done using the symbolic execution toolchain
+%of \citet{roessle2019},
+%the \emph{machine model} of which is based on the work of \citet{heule2016}.%
+%\index{symbolic execution!machine model}
 
 %
 \index{embedding!shallow}%
@@ -63,16 +71,25 @@ bypassing the Isabelle parser.
 \section{Tools}
 This section describes the tools and 
 
-\subsubsection{Isabelle/HOL}
-The theorem prover utilized in this work was Isabelle 2018\fturl{https://isabelle.in.tum.de/} \cite{nipkow2002isabelle}.
-It is a generic tool with a flexible, extensible syntactic framework.
-Isabelle also utilizes a powerful proof language known as \ac{isar} \cite{wenzel2007isabelle} and a proof strategy language called Eisbach \cite{matichuk2016eisbach}.
-We made heavy use of Word library \cite{isabelle-word-session}.
-This library provides a limited-precision integer type, \lstinline|'a word|,
-where \lstinline|'a| is the number of bits in the integer.
-Various operations are provided for manipulation of and arithmetic involving formal words,
-including bit indexing, bit shifting, setting specific bits, and signed and unsigned arithmetic.
-Operators for inequality are also included,
-as well as operations for converting between word sizes.
+% Probably don't need to talk about Python or Haskell as those were mainly used to generate textual information
+
+\section{Hoare Logic}\label{se:hoare}
+A form of \emph{axiomatic semantics},
+\index{semantics!axiomatic}
+Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare}%
+\index{Hoare!logic}
+describes the behavior of a program
+in terms of a set of rules that are applied iteratively
+in order to decompose the program into its constituent behaviors.
+
+A \emph{Hoare triple} denotes a pre- and postcondition for a certain program.%
+\index{Hoare!triple}%
+\index{precondition}%
+\index{postcondition}
+Let~$P$ and~$Q$ be state predicates.
+
+\todo{more}
+
+\section{Verification Condition Generation}
 
 \section{Summary}

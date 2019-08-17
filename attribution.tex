@@ -1,10 +1,10 @@
-\chapter{Attribution}
+\chapter{Attribution}\label{attribution}
 The work presented in this dissertation is not solely my own,
 as the two papers involved were a significant collaborative effort.
 The sections below describe which components were primarily my work
-and which were primarily those of my compatriots.
+and which were mainly those of my compatriots, as well as which were more joint efforts.
 
-\section*{Formal Verification of Memory Preservation of x86-64 Binaries}
+\section*{Formal Verification of Memory Preservation of x86-64 Binaries}\label{attribute1}
 The first paper, accepted for presentation this September,
 covers the control-flow-driven verification work described in \cref{ch:cfg}.
 I provided three main contributions to that work.
@@ -14,7 +14,7 @@ for cutpoint identification and skeleton proof generation,
 described in \cref{se:cfg_overview}.
 My second contribution was the development of structured proof strategies
 to flesh out and verify the skeleton proofs,
-including the necessary preconditions and postconditions to ensure
+including developing the necessary preconditions and postconditions to ensure
 the possibility of function-level composition (\cref{se:cfg_composition}).
 
 I did not contribute as much to the work on recursive verification, however;
@@ -36,7 +36,8 @@ and so I also assisted in the development of simplification rules
 to enable higher-level reasoning on multiple instructions.
 The rules were implemented in Isabelle and formally proven correct.
 
-\section*{Highly Automated Formal Proofs over Memory Usage of Assembly Code}
+\section*{Highly Automated Formal Proofs
+  over Memory Usage of Assembly Code}\label{attribute2}
 Following on from that work is a recently-submitted paper
 that builds on our experiences from the previous verification
 work~\citep{popl2019underreview}. That work,
@@ -44,11 +45,10 @@ which introduces the generation and verification of
 \emph{formal memory usage certificates}, is described in \cref{ch:syntax}.
 Most of my primary contributions to this work were on the verification side of things.
 The first two big ones were application and development of syntactic rules
-for axiomatic reasoning over memory usage
+for axiomatic reasoning over memory usageusage
 as applied to structured control flow (\cref{scf_hoare})
-as well as a method to automate the process of doing so, \iacf*{vcg} \cref{sse:vcg}.
-I also formulated a method of function-level compositionality for that approach
-(\cref{sse:fmuc_comp}).
+as well as a method to automate the process of doing so, \iacf*{vcg}
+as described in \cref{sse:vcg}.
 
 On the \ac{fmuc} generation side of things,
 I did most of the work on translating the informal \acp{fmuc}
@@ -59,7 +59,6 @@ however, was again Dr.~Verbeek.
 In order to properly generate \ac{fmuc} preconditions and postconditions,
 he formulated a symbolic execution machine model for many common x86-64 instructions
 as well as additional ones encountered in the course of our case studies.
-The general methodology used 
 
 Dr.~Verbeek also developed the Z3 interface
 for handling the memory region separation and enclosure decision problems,
@@ -71,7 +70,9 @@ such as the development of the invariant propagation algorithm in \cref{sse:inv_
 I did assist in the development of the generation procedure for preconditions as well,
 however.
 I also contributed to adapting the syntactic control flow used in \ac{fmuc} generation
-into a form suitable for usage in the theorem prover we used (\cref{isabelle_scf}).
+into a form suitable for usage in the theorem prover we used (\cref{isabelle_scf})
+and to the methodology of function-level compositionality for that approach
+(\cref{sse:fmuc_comp}).
 
 While it was not a major contribution,
 I also produced and helped produce additional proven-correct simplification rules
@@ -79,4 +80,4 @@ as well as implementing informal semantics for additional instructions encounter
 The bulk of the work for that was done by a fellow student
 working on a tangential project.
 
-\todo{citation for all the work Abhijith did?}
+\todo{citation for all the work Abhijith did on presimplification?}

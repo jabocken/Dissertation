@@ -1,8 +1,15 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
+As described in the preface,
+my two main contributions to the memory preservation work presented here
+were the development of a tool for producing proof skeletons
+for memory preservation, interfacing with the analysis tool \texttt{angr},
+and the development of structured proof strategies
+to flesh out and verify those skeleton proofs (\cref{se:cfg_overview}),
+along with the development of guidelines
+for invariants that provide for function-level composition
+(\cref{se:cfg_composition}).
 
-%need preamble!
-
-% Get rid of introduction somehow (move some to preamble?)
+\todo{describe layout? move stuff from overview maybe}
 
 \section{Overview}\label{se:cfg_overview}
 The memory usage analysis approach presented in this chapter
@@ -130,14 +137,15 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 A formal definition of memory preservation requires a formal basis to work with,
 and this definition started with the machine model from \cref{se:machine_model}.
 
-\subsection{Symbolic Execution for \ac{cfg}-Driven Verification}\label{cfg_symb_exec}
+\subsection{Symbolic Execution for \acs*{cfg}-Driven Verification}\label{cfg_symb_exec}
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
-The step function for this methodology took the form
+this chapter requires a more specific look.
+The step function for this methodology takes the form
 $\step:A\times S\rightarrow(S\mid\bot_E)$.%
 \nomenclature{$A$}{Type of assembly instructions}%
 \nomenclature{$S$}{Type representing program state; an Isabelle record}%
 \nomenclature{$\bot_E$}{Indicates exceptional state}
-It takes a tuple of instruction to execute and current state~$\sigma$,
+It requires a tuple of instruction to execute and current state~$\sigma$,
 returning the state~$\sigma'$ after execution of that instruction.
 If some sort of exception, such as a divide by zero, occurs,
 the function returns $\bot_E$ instead.

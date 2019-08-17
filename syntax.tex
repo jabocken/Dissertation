@@ -1,24 +1,30 @@
 \chapter{Syntax-Driven Verification}\label{ch:syntax}
 % Overview/preamble
-% Binary -> Abstract code (Freek's, reference POPL paper in review anonymously)
+% Binary -> Abstract code (Freek's)
 % Abstract Code -> Isabelle
 % Isabelle -> Verification
-% - etc.
+% - etc. <- will formulate it this way eventually, maybe
 
-% TODO: need another paragraph for the overview?
-
-My primary contributions presented in this chapter are the verification methodology
-for a specific form of generated certificate, presented in \cref{se:fmuc_ver},%
+Again as described in the preface,
+my primary contributions to the certificate generation and verification approach%
 \index{certificate}
-and an application of that methodology to a large case study,
+presented in this chapter include the Hoare rules we developed
+for memory usage (\cref{scf_hoare})
+as well as the \ac{vcg} used to apply those rules
+to \ac{scf} in Isabelle (\cref{sse:vcg}).
+I also wrote much of the code for full translation of the \acp{fmuc}
+into the Isabelle/HOL language
+and helped adapt the \ac{scf} into a form suitable for verification
+in Isabelle (\cref{isabelle_scf}).
+I also performed much of the verification work on our large case study,
 presented in \cref{se:xen}.
+
 The rest of the chapter provides some information
 on why such certificates are desirable (\cref{se:fmuc_motivation}),
 provides an overview of the certificates (\cref{se:fmuc_overview})
-and explains the process of generating them in \cref{se:fmuc_gen},
-the basics of which are not part of my contributions
-as they were mostly developed by others.
-The paper detailing the work as a whole~\citep{popl2019underreview}
+and explains the process of generating them in \cref{se:fmuc_gen}.
+As previously stated,
+the paper detailing the work as a whole~\citep{popl2019underreview}
 is currently under review.
 
 \section{Motivation}\label{se:fmuc_motivation}
@@ -40,10 +46,8 @@ generated to reduce the amount of work required from end users.
 Information on how these certificates are generated
 can be found in \cref{se:fmuc_gen}.
 This includes the algorithm for control flow information extraction
-as well as how symbolic execution is used%
-\index{symbolic execution}
-to produce the preconditions and proof ingredients.%
-\index{precondition}
+as well as how symbolic execution is used
+to produce the preconditions and proof ingredients.
 
 % Need to do: less focus on Freek work (take out in-depth explanations of algorithms?)
 
@@ -52,9 +56,9 @@ Once generation is complete, the certificate and the original assembly%
 can then be loaded into an interactive theorem prover.
 In the theorem prover,\index{theorem!prover}
 minimal user input is required for discharging \iac{fmuc}s lemmas and theorems
-via the proof ingredients and customized proof strategies.%
+via the proof ingredients and customized proof methods.%
 \index{proof!ingredient}%
-\index{proof!strategy}
+\index{proof!method}
 A simple example demonstrating usage along with 
 further information on the structure of \acp{fmuc} can be found in \cref{se:fmuc_ex}.
 
@@ -65,12 +69,11 @@ The associated \ac{fmuc} provides preconditions to prevent such cases%
 along with a formal proof of return address preservation under those conditions.
 
 Following the full example in \cref{se:syntax_example} is an in-depth case study
-on the Xen Project hypervisor~\citep{chisnall2008definitive} in \cref{se:xen}.%
-\index{Xen}
-Unlike the HermitCore work in \cref{se:cfg_application},%
-\index{HermitCore}
+on the Xen Project hypervisor~\citep{chisnall2008definitive} in \cref{se:xen}.
+Unlike the HermitCore work in \cref{se:cfg_application},
 no modifications were made to the Xen build process
-and the basic utility \texttt{objdump} was used for disassembly.
+and the basic utility \texttt{objdump} was used for disassembly
+rather than a tweaked version of a less-commonly-used utility.
 In total, \acp{fmuc} were generated and proofs discharged in Isabelle
 for 251 Xen functions.
 Minimal user interaction was required;
@@ -118,31 +121,33 @@ the usage of which is described in \cref{sse:fmuc_comp}.
   \begin{subfigure}{\linewidth}
     \centering
     \begin{align*}
-      \text{\bfseries Theorem: } & \var{MRR}\longrightarrow\htriple*{P}{f}{Q}{M} \\
+      \text{\bfseries Theorem: } & \var{MRR}\longrightarrow\htriple*{P}f{Q}{M} \\
       \text{\bfseries Proof: } & \ldots
     \end{align*}
     where
     \begin{subequations}
-    \begin{align}
-      f &\equiv\ABB~\Block{4f0}{4fb} \notag \\
-      P &\equiv\mathrip=
-      \mathtt{4f0}\wedge\mathrsp=\rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \notag \\
-      Q &\equiv\begin{multlined}[t]
-        \mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge \notag \\
-        \takebits{31,0}\rangle\mathrax=
-        \sextend(\readmem{\readmem{\rsio+
-            \sextend(\takebits{31,0}\rangle\rdio)*8-8}{8}}{1})
-        \end{multlined} \notag \\
-      M &\equiv\{\region{\rspo}{8}, \label{m:a} \\
-        &\equivsetfix\region{\rsio+\sextend(\takebits{31,0}\rdio)*8-8}{8},
-            \label{m:b} \\
-        &\equivsetfix\region{\readmem{\rsio+
-            \sextend(\takebits{31,0}\rdio)*8-8}{8}}{1}\} \label{m:c} \\
-      \var{MRR} &\equiv\begin{aligned}
-        \not\bowtie &= \{\} \\
-        \sqsubseteq &= \{\}
-      \end{aligned} \notag
-    \end{align}
+      \begin{align}
+        f &\equiv\ABB~\Block{4f0}{4fb} \notag \\
+        P &\equiv\mathrip=
+        \mathtt{4f0}\wedge\mathrsp=
+        \rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \notag \\
+        Q &\equiv\begin{multlined}[t]
+          \mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge \notag \\
+          \takebits{31,0}\rangle\mathrax=
+          \sextend(\readmem{\readmem{\rsio+
+              \sextend(\takebits{31,0}\rangle\rdio)*8-8}{8}}{1})
+          \end{multlined} \notag \\
+        M &\equiv\{\region{\rspo}{8}, \label{m:a} \\
+          &\equivsetfix\region{\rsio+\sextend(\takebits{31,0}\rdio)*8-8}{8},
+              \label{m:b} \\
+          &\equivsetfix\region{\readmem{\rsio+
+              \sextend(\takebits{31,0}\rdio)*8-8}{8}}{1}\} \label{m:c} \\
+        \var{MRR} &\equiv\begin{aligned}
+          \not\bowtie &= \varnothing \\
+          \sqsubseteq &= \varnothing
+        \end{aligned} \notag
+      \end{align}%
+      \nomenclature{$\varnothing$}{Represents an empty set}
     \end{subequations}
     \caption{\Acl*{fmuc}\footnote{%
       $\sextend$ indicates sign extension,
@@ -298,11 +303,11 @@ This is why the methodology relies on Z3 for \ac{mrr} generation;
 using a known-reliable tool greatly reduces the possibility of issues.
 
 \subsection{Control Flow Extraction}\label{sse:cfg_extract}
-As described in \cref{se:hoare2,se:hoare_rules},
+As described in \cref{se:hoare},
 in order to apply \iac{vcg} that utilizes Hoare rules to verify a Hoare triple,
 there must be some syntactic structure to apply those rules to.
 This chapter uses a syntactic representation of control flow called \ac{scf}
-for that purpose.
+in part for that purpose.
 \Ac{scf} expresses assembly programs as a combination of basic blocks,
 branches, loops, and function calls.
 The following grammar provides a description of \ac{scf}
@@ -1022,9 +1027,39 @@ the \ac{fmuc}'s memory usage Hoare triple can be verified.%
   \caption{Overview of \acs*{fmuc} verification}\label{fig:verify}
 \end{figure*}
 
-\subsection{Per-Block Verification}\index{syntax-per-block}
-% TODO
+\subsection{Per-Block Verification}\label{sse:per-block}
+The verification methodology presented here occurs 
+by first verifying the functionality of each basic block in the corresponding function.
+\Cref{fig:intro-rule} shows the introduction rule we used
+to establish Hoare triples over basic blocks.
+The first assumption requires the symbolic execution method be run from a universally quantified initial symbolic state~$\sigma$ that satisfies the precondition.
+As long as any resulting state~$\sigma'$ satisfies the postcondition~$Q$,
+the set of memory regions~$M$ generated for the block should be correct.
 
+The second assumption is required because of an important subtlety:
+the regions generated in the~\ac{fmuc} are state dependent.
+Consider the example in \cref{fig:fmuc}.
+Memory region set~$M$ is actually a function based on the initial state of the block: its regions depend on the values stored in memory.
+However, it makes no sense to express the regions used by individual blocks
+within a larger function in terms of their own individual initial state alone.
+If a region of a basic block somewhere within a function body depends on
+something such as the value of register $\mathrdi$ at the start of that block,
+then it would be unsound to express that memory region in terms of $\rdio$,
+the value of $\mathrdi$ at the start of the function.
+As such,
+the Hoare triples are defined over a state-independent set of memory regions,~$M'$.
+That set is obtained for each block by taking the generated state-dependent set of memory regions and applying that set to any state that satisfies the current invariant.
+
+We developed a proof strategy in Isabelle that takes the proof ingredients
+from the \ac{fmuc} and discharges this introduction rule.
+The proof strategy runs symbolic execution within Isabelle/HOL
+to prove the postcondition and thus prove the memory usage.
+The open variables $P$, $Q$, $a_0$, $a_1$ and $M$ are all provided by the \ac{fmuc}.
+No user interaction is required outside of cases where semantics
+for specific instructions are unavailable or the Isabelle libraries in use
+do not have the right simplification lemmas for automatic reasoning.
+Those cases are rare and become rarer as more relevant lemmas are developed,
+so for basic blocks, the proof is essentially automated.
 
 \subsubsection{Symbolic Execution}
 \Cref{cfg_symb_exec} previously presented a formal symbolic execution engine%
@@ -1049,7 +1084,6 @@ In case of loops the function is defined using a least fixed point construction.
 Thus, if the halting condition is never met,
 the function has no related successor states.
 
-% TODO: Need a good example!
 Consider a basic block with start and end addresses~$a_0$ and~$a_1$.
 Calling $\execblock(a_0,a_1,\sigma,\sigma')$ will return true
 if and only if state~$\sigma'$ is the result of
@@ -1057,24 +1091,27 @@ symbolically executing the block from state~$\sigma$.
 The underlying symbolic execution methodology
 is implemented fully in Isabelle/HOL,
 meaning that every rewrite rule has been formally proven correct.
-
-
-
-
-
+\begin{example}
+  \todo{Need a good/better example!}
+\end{example}
 
 \subsection{Function Body Verification}
-\todo{describe}
+While symbolic execution worked well for our purposes on the level of basic blocks,
+we also wanted a more structured way of composing those blocks
+for verification on the function level. This section describes that process,
+which occurs after the individual blocks have had their semantics
+and memory usage drived.
 
 \subsubsection{Syntactic Control Flow in Isabelle/HOL}\label{isabelle_scf}
+As described previousy, \acl{scf} is a representation of the control flow of a function
+in terms of syntactic structures such as basic blocks,
+loops, and if-then-else statements.
 While very similar to the \ac{scf} used when generating \acp{fmuc},
 there are some modifications that must be made when the generated \acp{scf}
-are to be loaded into Isabelle/HOL.%
-\index{Isabelle/HOL}
+are to be loaded into Isabelle/HOL.
 These modifications are required due to subtle differences in the semantics
 of the generating tool versus the verifying tool,
-and are required to properly support the Hoare rules%
-\index{Hoare!rule}
+and are required to properly support the Hoare rules
 described in \cref{scf_hoare} below.
 
 In the Isabelle/HOL representation,
@@ -1092,15 +1129,15 @@ This condition is simply the precondition of the entry block of the loop
 as generated using the methodology in \cref{sse:inv_gen}.
 
 Finally, to properly handle function calls in the Isabelle/HOL syntax,
-analyzed \acp{cfg} are preprocessed prior to performing extraction
-to isolate \inlineasm{call} instructions into their own basic blocks.
+the analyzed \acp{cfg} are preprocessed prior to performing extraction
+in order to isolate \inlineasm{call} instructions into their own basic blocks.
 % Freek did the preprocessing but I did all the rest.
 These single-instruction blocks are then translated into \texttt{Call}~$f$ entries
 in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function called.
 This allows for proper matching with the Hoare rules presented below.
 
 \subsubsection{Hoare Rules}\label{scf_hoare}
-The Hoare triple formulation used for this work, $\htriple*{P}{f}{Q}{M}$,
+The Hoare triple formulation used for this work, $\htriple*{P}f{Q}M$,
 resembles traditional Hoare triples a bit more,%
 \index{Hoare!triple}
 as rather than a halting condition
@@ -1109,9 +1146,6 @@ Unlike traditional Hoare triples, however,
 it also explicitly contains the set of memory regions,~$M$,
 that enumerate the areas of memory read and written by the program
 the \ac{scf} encodes.
-\Ac{scf} is a representation of the control flow of a function
-in terms of syntactic structures such as basic blocks,
-loops, and if-then-else statements.
 Syntactic structure is required because Hoare logic is a syntax-guided approach.
 \begin{definition}\label{def:usage}
   A memory usage Hoare triple is defined as
@@ -1134,32 +1168,27 @@ the regions read must also be included as symbolic execution
 relies on those regions being included.
 Without them, proofs that require symbolically executing
 the related instructions will not complete.
-
-% TODO
-
-
-
-
 \begin{figure*}
   \centering
+  \setlength\parskip{1em}
   \subcaptionbox{Introduction rule\label{fig:intro-rule}}{
-    \AxiomC{$\begin{array}{l}
-      \forall\sigma~\sigma'\cdot P(\sigma)\wedge\execblock(a_0,a_1,\sigma,\sigma') \\
-      \longrightarrow Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma') \\
+    \AxiomC{$\begin{multlined}
+      \forall\sigma~\sigma'\cdot P(\sigma)\wedge\execblock(a_0,a_1,\sigma,\sigma')\longrightarrow\\
+      Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma')
       M'=\{r\mid\exists\sigma\cdot P(\sigma)\wedge r\in M(\sigma)\}
-      \end{array}$}
+    \end{multlined}$}
     \UnaryInfC{$\htriple*{P}{\ABB~\Block{a_0}{a_1}}{Q}{M'}$}
     \DisplayProof
   }
-%  \\[1em]
+
   \subcaptionbox{Sequence rule}{
     \AxiomC{$\htriple*{P}f{Q}{M_1}$}
     \AxiomC{$\htriple*{Q}g{R}{M_2}$}
     \AxiomC{$M=M_1\cup M_2$}
-    \TrinaryInfC{$\htriple*{P}{f;g}{R}{M}$}
+    \TrinaryInfC{$\htriple*{P}{f\ASeq g}{R}{M}$}
     \DisplayProof
   }
-%  \\[1em]
+
   \subcaptionbox{Conditional rule}{
     \AxiomC{$\htriple*{P\wedge B}f{Q_1}{M_1}$}
     \AxiomC{$\htriple*{P\wedge\neg B}g{Q_2}{M_2}$}
@@ -1168,32 +1197,33 @@ the related instructions will not complete.
     \QuaternaryInfC{$\htriple*{P}{\AIf~B~\AThen~f~\AElse~g~\AFi}{Q}{M}$}
     \DisplayProof
   }
-%  \\[1em]
-  \subcaptionbox{While rule}{
+
+  \subcaptionbox{While rule\label{fig:hoare-loop}}{
     \AxiomC{$\htriple*{I\wedge B}f{I'}{M}$}
     \AxiomC{$I'\longrightarrow I$}
     \AxiomC{$I\wedge\neg b\longrightarrow Q$}
     \TrinaryInfC{$\htriple*{I}{\texttt{While}~B\texttt{ DO }f\texttt{ OD}}{Q}{M}$}
     \DisplayProof
-  }\hfill
+  }
+  \hfill
   \subcaptionbox{Skip rule}{
     \AxiomC{$M=\varnothing$}
     \AxiomC{$P\longrightarrow Q$}
     \BinaryInfC{$\htriple*{P}\ASkip{Q}{M}$}
     \DisplayProof
-  }
-%  \\[1em]
+  }\hspace*\fill
+
   \subcaptionbox{Resume rule}{
     \AxiomC{$\forall {0\leq j\leq n}\cdot\htriple*{P}{a_j}{Q_j}{M_j}$}
     \AxiomC{$(\bigvee_{0\leq j\leq n} Q_j)\longrightarrow Q$}
     \AxiomC{$M = \bigcup_{0\leq j\leq n}M_j$}
     \TrinaryInfC{$\htriple*{P}{\AWhileResume\{(i_0,a_0),\dotsc,(i_n, a_n)\}}{Q}{M}$}
     \DisplayProof
-  }
-%  \\[1em]
+  } 
+
   \hspace*\fill
-  \subcaptionbox{Precondition weakening}{
-    \AxiomC{$P \longrightarrow P'$}
+  \subcaptionbox{Precondition weakening\label{fig:hoare-weaken}}{
+    \AxiomC{$P\longrightarrow P'$}
     \AxiomC{$\htriple{P'}b{Q}{M}$}
     \BinaryInfC{$\htriple{P}b{Q}{M}$}
     \DisplayProof
@@ -1207,30 +1237,52 @@ the related instructions will not complete.
   }\hspace*\fill
   \caption{Hoare rules for memory usage}\label{fig:rules}
 \end{figure*}
+While the introduction rule for basic blocks
+is the ultimate target of our Hoare rule application process,
+the rest of the rules are required to decompose the syntax above the level of blocks.
+The remainder of \cref{fig:rules} describes those additional rules.
+The sequence, conditional, and resume-rules are straightforward:
+the ultimate memory usage is the union of the memory usage of their constituents.
+Note that the sequence rule is sound only because the memory predicates
+are independent of state as discussed in \cref{sse:per-block}.
 
-
-
-
-
-
-
-
+The while rule is based on a loop invariant,~$I$.
+If the memory usage of one iteration of loop body~$f$
+is constrained to set of memory regions~$M$,
+then so is the memory usage of every other iteration.
+This may sound counterintuitive,
+so consider a simple C-like loop that starts from $i=0$ and iterates while $i<10$.
+The body of this example loop contains single-byte array assignment operations
+along the lines of $a[i]=v$.
+Verification of the loop requires the loop invariant $I(\sigma)=i(\sigma)<10$.
+The \ac{fmuc} of the loop body will have, as a state-dependent set of memory regions, $M(\sigma)=\{\region{a+i(\sigma)}1\}$, which is a single region of one byte.
+If the Hoare logic introduction rule were to be applied to the block
+that is the body of the loop, the result would be as follows:
+\begin{subequations}
+  \begin{align}
+    M' &= \{r\mid\exists\sigma\cdot I(\sigma)\wedge r\in M(\sigma)\} \\
+    &= \{r\mid\exists\sigma\cdot i(\sigma)<10\wedge r=\region{a+i(\sigma)}1\} \\
+    &= \{\region{a'}1\mid a\leq a'\le a+10\}
+  \end{align}
+\end{subequations}
+The set~$M'$ contains the regions of memory used by the entire loop,
+not just one iteration.
+This is because the introduction rule applies the state-dependent set of memory regions
+to any state that satisfies the invariant.
+This shows that the strength of the generated invariants directly influences the tightness of the overapproximation of memory usage.
+A weaker invariant, such as $i<20$, would result in a larger set of memory regions.
 
 \subsubsection{Verification Condition Generation}\label{sse:vcg}
-The process
-
-
-
-
-
 The \ac{vcg} presented here is a set of proof methods
-implemented in Eisbach~\citep{matichuk2016eisbach},
+implemented in Eisbach~\citep{matichuk2016eisbach},%
+\index{Isabelle/HOL!Eisbach}
 Isabelle's proof automation language.
 It is designed to automatically apply the proper Hoare logic rules
 as much as possible,
-driven by the formal \ac{scf} provided by the \ac{fmuc}.
+driven by the formal \ac{scf} provided by the \ac{fmuc},
+though it does allow for additional user interaction as necessary.
 For function bodies without loops,
-my experience has been that no further interaction is required.
+however, my experience has been that minimal further interaction is required.
 For the case where loops are present,
 the \ac{vcg} has an alternate \lstinline|vcg_while| method
 that relies on the loop rule presented in \cref{fig:hoare-loop}.
@@ -1243,17 +1295,16 @@ presented in \cref{fig:hoare-weaken}
 to show that the postcondition of the block before entry implies the loop invariant.
 
 Without exception, each of the proofs we produced
-could be finished using standard, off-the-shelf Isabelle/HOL methods.
+could be finished using standard, off-the-shelf Isabelle/HOL methods,
+though finishing them was not always an automatic process.
 The part that is usually the most involved,
 defining the invariants (as seen in the previous chapter)
- is taken care of by the \ac{fmuc} generation.
-
-
-
-
-
+is taken care of by the \ac{fmuc} generation.
 
 \subsection{Composition}\label{sse:fmuc_comp}
+In order to achieve a scalable verification methodology,
+it must support some form of compositionality.
+
 Consider the body of an already-verified function~$f$
 with the following Hoare triple:%
 \index{Hoare!triple}
@@ -1522,21 +1573,17 @@ is assumed to not overlap with regions~$a$ through~$d$, among other things.
 
 \Cref{fig:manual} shows the sole manual effort required
 to prove the \ac{fmuc} for this function.
-All it involves is calling the proper predefined Eisbach~\citep{matichuk2016eisbach}%
-\index{Isabelle/HOL!Eisbach}
-proof strategies.
-The first proof strategy applied is \lstinline|check_scf_step|,
+All it involves is calling the proper predefined Eisbach~\citep{matichuk2016eisbach}
+proof methods.
+The first proof method applied is \lstinline|check_scf_step|,
 which applies Hoare rules and proves correctness of all memory usage%
 \index{Hoare!rule}%
 \index{memory!usage}
 up until the loop.
-Following that, the proof strategy for dealing with loops
+Following that, the proof method for dealing with loops
 is called with the invariant formed from the disjunction
-of the precondition of the loop's entry block%
-\index{precondition}%
-\index{loop!entry}
-and the precondition of the loop's exit block,%
-\index{loop!exit}
+of the precondition of the loop's entry block
+and the precondition of the loop's exit block,
 both identified from the generated \ac{scf}.
 As the last manual step, \lstinline|check_scf_step| is once again called
 and is able to verify the remainder of the function.
