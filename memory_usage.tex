@@ -5,8 +5,7 @@ This chapter provides an introduction to the concept of \emph{memory usage}.%
 \todo{more}
 
 \section{Definitions}
-Much of the memory work in this document relates to the concept of
-\emph{basic blocks}.\index{basic block}
+Much of the memory work in this document relates to the concept of \emph{basic blocks}.
 A basic block is defined here as a sequence of assembly instructions
 whose behavior can be described using only state transitions and branches.
 A block always terminates and has no loops.
@@ -19,11 +18,9 @@ in which basic blocks also do not contain any internal branching.
 
 
 
-\section{Memory Region Relations}\label{mem_reg_rel}
-%
-\index{memory!region!relation}
-
+% TODO: some should go in CFG section as the Hoare triple formulation is specifically for that
 \section{Memory Preservation}\label{se:memory_preservation}
+\todo{move to CFG section}
 An application of memory usage analysis,
 memory preservation shows that the values written by a program%
 \index{memory!preservation}
@@ -53,14 +50,11 @@ This, combined with a custom memory manager
 that also had no security protections against out-of-bounds memory accesses,
 lead to potential leakage of sensitive data such as passwords and encryption keys.
 % TODO: need another, better example that involves data modification too
-Memory preservation can serve as a foundation for formal security analyses%
-\index{memory!preservation}
+Memory preservation could serve as a foundation for formal security analyses
 that could be used to expose vulnerabilities involving malicious writes.
 
 \subsubsection{Composition}\label{sse:composition}
-Scalability in verification is only feasible with composition.%
-\index{scalability}%
-\index{formal!verification}
+Scalability in verification is only feasible with composition.
 Proofs of functional correctness over a large suite of software
 require decomposing that suite into manageable chunks.
 Separation logic provides a \emph{frame rule} that supports such%
@@ -95,7 +89,7 @@ to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
-\subsection{Formal Definition}
+\subsection{Formal Definition}\label{sse:mem_use_def}
 The formal definition of memory preservation takes the form of a Hoare triple.%
 \index{memory!preservation}%
 \index{Hoare!triple}
@@ -131,7 +125,7 @@ the concept of memory usage with respect to state changes must first be defined.
   if and only if every byte outside of the prespecified regions in memory is unchanged.
   Those bytes are associated with the variable~$a$.
   \begin{equation}
-    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}{1}\bowtie r)
+    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\bowtie r)
     \longrightarrow\readmemS{\sigma'}a{1}=\readmemS{\sigma}a{1}.
   \end{equation}
 \end{definition}

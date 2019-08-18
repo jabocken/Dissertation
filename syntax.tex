@@ -182,8 +182,7 @@ a theorem on memory usage and its associated proof ingredients,%
 the two of which are used in a theorem prover to prove the theorem.
 The \ac{fmuc} for the associated example can be seen in \cref{fig:fmuc-thm}.
 
-The theorem consists of a Hoare triple as defined in \cref{def:usage}.%
-\index{Hoare!triple}
+The theorem consists of a Hoare triple as defined in \cref{def:usage}.
 One set of proof ingredients,
 the \acp{mrr} required to ensure successful proof completion (detailed below),
 are included as assumptions on the theorem.
@@ -191,14 +190,12 @@ The control flow ingredient,
 represented as the \ac{scf} variable~$f$, is a single basic block for this function
 starting at instruction address \inlineasm{4f0} and going to address \inlineasm{4fb}.
 Following that,
-the precondition~$P$ provides the starting conditions for the function,%
-\index{precondition}
+the precondition~$P$ provides the starting conditions for the function,
 which include symbolic variables for initial register values,
 storage on the stack of the address to jump to after function execution,
 and the address of the instruction to start from
 (stored in the instruction pointer register, \inlineasm{rip}).
-Last of the traditional Hoare triple components is the postcondition~$Q$,%
-\index{postcondition}
+Last of the traditional Hoare triple components is the postcondition~$Q$,
 which indicates completion of function execution
 by showing that the instruction pointer is now set to the address to return to,
 the stack pointer \inlineasm{rsp} has been updated with an increment of eight,
@@ -208,15 +205,13 @@ All additional callee-saved registers are shown to retain their initial values%
 \index{register!callee-saved}
 as well.
 
-Following the traditional Hoare triple elements is the memory region set,~$M$.%
-\index{Hoare!triple}
+Following the traditional Hoare triple elements is the memory region set,~$M$.
 For the function under consideration, this set consists of three regions.
 The eight-byte location of the return address
 on the stack frame (\cref{m:a}),
 the location of the pointer \lstinline|argv[argc - 1]| (\cref{m:b}),
 and the first element of the array pointed to by that pointer (\cref{m:c}).
-Without additional assumptions, those regions may \emph{alias};%
-\index{memory!aliasing}
+Without additional assumptions, those regions may \emph{alias};
 they may overlap or even be the same.
 While that is not a problem for this specific example,
 as none of the regions are written to, in cases where writes do occur
@@ -228,19 +223,15 @@ To avoid such issues, the \ac{fmuc} generation methodology
 produces the aforementioned \acp{mrr} proof ingredient,%
 \index{proof!ingredient}
 the production of which is detailed in \cref{mem_reg_rel}.
-\Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)%
-\index{memory!region!separation}
-as well as which regions are enclosed within one another ($\sqsubseteq$).%
-\index{memory!region!enclosure}
+\Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)
+as well as which regions are enclosed within one another ($\sqsubseteq$).
 
 The \ac{fmuc} for a function as a whole is broken down by Hoare rules,
-as described in \cref{se:syntax_hoare_rules},
+as described in \cref{scf_hoare},
 to the level of basic blocks, each of which gets its own \ac{fmuc} of sorts.
 The generation of these per-block \acp{fmuc} involves generation of per-block
 pre- and postconditions as well; these conditions are treated as invariants.
-\index{invariant}
-Stronger invariants can lead to a tighter approximation of memory usage%
-\index{memory!usage}
+Stronger invariants can lead to a tighter approximation of memory usage
 (recall from \cref{mem_use_over} that memory usage as a property
 is an overapproximation of actual memory usage in a program).
 
@@ -653,6 +644,62 @@ for all exit points of the loop.
   \caption{Example of control flow extraction}\label{fig:ex_cf}
 \end{figure*}
 
+\subsubsection{Code Duplication}\label{sse:code_dup}
+The algorithm is not optimal in terms of generated \ac{scf} size
+as basic blocks may be duplicated.
+There are two situations where basic block duplication occurs,
+one less common and one more common.
+The less common situation is when \iac{scc} has multiple entry blocks.
+This corresponds to a loop having multiple entry points,
+which can occur in situations that involve less-structured control flow,
+such as a C program that jumps into a loop using \texttt{goto}.
+Such situations are relatively uncommon, even in optimized code.
+If it does happen, the entire loop must be duplicated.
+The more common situation, by contrast, involves complex conditional branching
+that can occur even without loops.
+\begin{example}
+  \Cref{fig:ex_nonopt} shows a small example of branching control flow
+  that results in $\ABB~3$ being duplicated.
+  That block could itself be an even more complicated subgraph,
+  possibly leading to exponential code duplication.
+\end{example}
+\begin{figure*}
+  \hspace*\fill
+  \subcaptionbox{\acs*{cfg}}{
+    \begin{tikzpicture}[>=stealth, ->, node distance=0.75cm]
+      \node[draw=none] (0) {0};
+      \node[draw=none] (1) [right=of 0] {1};
+      \node[draw=none] (2) [right=of 1] {2};
+      \node[draw=none] (3) [right=of 2] {3};
+      \node[draw=none] (4) [right=of 3] {4};
+      
+      \path (0) edge node[below]{$f_0$} (1);
+      \path (0) edge [bend left] node[above]{$\neg f_0$} (4);
+      \path (1) edge node[above]{$f_1$} (2);
+      \path (1) edge [bend right] node[below]{$\neg f_1$} (3);
+      \path (2) edge node[above]{$f_2$} (3);
+      \path (2) edge [bend right] node[below]{$\neg f_2$} (4);
+      \path (3) edge (4);
+    \end{tikzpicture}
+  }
+  \hfill
+  \subcaptionbox{\acs*{scf}}{
+    \(\begin{array}{l}
+      \ABB~0; \\
+      \AIf~f_0~\AThen~\ABB~1; \\
+      \ind{4ex}\AIf~f_1~\AThen~\ABB~2; \\
+      \ind{8ex}\AIf~f_2~\AThen~\ABB~3 \\
+      \ind{8ex}\AElse~\ASkip~\AFi \\
+      \ind{4ex}\AElse~\ABB~3~\AFi \\
+      \AElse~\ASkip~\AFi; \\
+      \ABB~4
+    \end{array}\)
+  }
+  \hspace*\fill
+  \caption{Example of code duplication}\label{fig:ex_nonopt}
+\end{figure*}
+
+\begin{comment}
 \subsection{Extraction Algorithm Analysis}
 The control flow extraction algorithm presented above
 does not necessarily need any formal reasoning as it is not included in the \ac{tcb}
@@ -783,61 +830,7 @@ is roughly as follows.
   Under that condition, the set of paths between~$b_e$ and the joint
   is exactly equal to the semantics of a loop.
 \end{proof}
-
-\subsubsection{Code Duplication}\label{sse:code_dup}
-The algorithm is not optimal in terms of generated \ac{scf} size
-as basic blocks may be duplicated.
-There are two situations where basic block duplication occurs,
-one less common and one more common.
-The less common situation is when \iac{scc} has multiple entry blocks.
-This corresponds to a loop having multiple entry points,
-which can occur in situations that involve less-structured control flow,
-such as a C program that jumps into a loop using \texttt{goto}.
-Such situations are relatively uncommon, even in optimized code.
-If it does happen, the entire loop must be duplicated.
-The more common situation, by contrast, involves complex conditional branching
-that can occur even without loops.
-\begin{example}
-  \Cref{fig:ex_nonopt} shows a small example of branching control flow
-  that results in $\ABB~3$ being duplicated.
-  That block could itself be an even more complicated subgraph,
-  possibly leading to exponential code duplication.
-\end{example}
-\begin{figure}
-  \hspace*\fill
-  \subcaptionbox{\acs*{cfg}}{
-    \begin{tikzpicture}[>=stealth, ->, node distance=0.75cm]
-      \node[draw=none] (0) {0};
-      \node[draw=none] (1) [right=of 0] {1};
-      \node[draw=none] (2) [right=of 1] {2};
-      \node[draw=none] (3) [right=of 2] {3};
-      \node[draw=none] (4) [right=of 3] {4};
-
-      \path (0) edge node[below]{$f_0$} (1);
-      \path (0) edge [bend left] node[above]{$\neg f_0$} (4);
-      \path (1) edge node[above]{$f_1$} (2);
-      \path (1) edge [bend right] node[below]{$\neg f_1$} (3);
-      \path (2) edge node[above]{$f_2$} (3);
-      \path (2) edge [bend right] node[below]{$\neg f_2$} (4);
-      \path (3) edge (4);
-    \end{tikzpicture}
-  }
-  \hfill
-  \subcaptionbox{\acs*{scf}}{
-    \(\begin{array}{l}
-      \ABB~0; \\
-      \AIf~f_0~\AThen~\ABB~1; \\
-      \ind{4ex}\AIf~f_1~\AThen~\ABB~2; \\
-      \ind{8ex}\AIf~f_2~\AThen~\ABB~3 \\
-      \ind{8ex}\AElse~\ASkip~\AFi \\
-      \ind{4ex}\AElse~\ABB~3~\AFi \\
-      \AElse~\ASkip~\AFi; \\
-      \ABB~4
-    \end{array}\)
-  }
-  \hspace*\fill
-  \caption{Example of code duplication}\label{fig:ex_nonopt}
-\end{figure}
+\end{comment}
 
 %\subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
 %This process primarily relies on unverified symbolic execution in the generated code.
@@ -846,6 +839,63 @@ that can occur even without loops.
 \subsection{Symbolic Execution}\label{sse:syntax_symb}
 In \cref{sse:cfg_extract}, the semantics of assembly were expressed
 in terms of control flow between basic blocks.
+%todo
+
+
+
+\subsubsection{Memory Aliasing}
+Because symbolic execution uses symbolic state,
+the relations enclosure, separation, and overlap,
+defined in \cref{sse:memory_aliasing}, must be determined for symbolic expressions.
+Unfortunately, there is no single solution, no one decision procedure,
+that can determine these properties for all symbolic expressions.
+
+As an example of the potential issues that can occur,
+take the completely symbolic regions $r_0=\region{a_0}{s_0}$
+and $r_1=\region{a_1}{s_1}$.
+Without additional information, we cannot determine any relations for these regions.
+If they are \emph{possibly} different then they must be treated as different regions,
+while if they \emph{necessarily} overlap
+then they must be treated as a single merged region.
+
+To deal with such symbolic issues,
+the three aforementioned relations of enclosure, separation, and overlap
+are formulated as \ac{smt} problems.
+\Ac{smt} formulations generally require inverting the desired condition
+and then proving that the resultant problem is unsatisfiable.
+Thus, for separation, we have the below definition.
+\begin{definition}
+  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
+  are necessarily separate if and only if, for any address~$a$,
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
+  \end{equation*}
+\end{definition}
+Overlap may occur if two regions are not necessarily separate.
+\begin{definition}
+  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
+  the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
+  \end{equation*}
+\end{definition}
+Enclosure is 
+\begin{definition}
+  Region $r_0$ is enclosed by $r_1$ if and only if,
+  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
+  \begin{equation*}
+  a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
+  \end{equation*}
+\end{definition}
+These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
+for a wide range of expressions over bitvectors
+using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
+Z3 is also used in this work for determining the sign of two values
+in the region merge algorithm, originally presented in \cref{def:merge}.
+Additionally, reads of overlapping regions may require merging
+and separation analysis as described in \cref{sse:memory_aliasing},
+so they also rely on Z3.
 
 \subsection{Invariant Generation}\label{sse:inv_gen}
 Invariants, formalized as sets of assignments of type~$\asp$,%
@@ -1085,9 +1135,9 @@ Thus, if the halting condition is never met,
 the function has no related successor states.
 
 Consider a basic block with start and end addresses~$a_0$ and~$a_1$.
-Calling $\execblock(a_0,a_1,\sigma,\sigma')$ will return true
-if and only if state~$\sigma'$ is the result of
-symbolically executing the block from state~$\sigma$.
+Calling the symbolic execution function $\execblock(a_0,a_1,\sigma,\sigma')$
+will return true if and only if state~$\sigma'$ is the result of
+symbolically executing the block starting from state~$\sigma$.
 The underlying symbolic execution methodology
 is implemented fully in Isabelle/HOL,
 meaning that every rewrite rule has been formally proven correct.
@@ -1274,17 +1324,16 @@ A weaker invariant, such as $i<20$, would result in a larger set of memory regio
 
 \subsubsection{Verification Condition Generation}\label{sse:vcg}
 The \ac{vcg} presented here is a set of proof methods
-implemented in Eisbach~\citep{matichuk2016eisbach},%
-\index{Isabelle/HOL!Eisbach}
+implemented in Eisbach~\citep{matichuk2016eisbach},
 Isabelle's proof automation language.
 It is designed to automatically apply the proper Hoare logic rules
 as much as possible,
-driven by the formal \ac{scf} provided by the \ac{fmuc},
-though it does allow for additional user interaction as necessary.
-For function bodies without loops,
-however, my experience has been that minimal further interaction is required.
+driven by the formal \ac{scf} provided by the \ac{fmuc}.
+While it does allow for additional user interaction as necessary,
+my experience with function bodies without loops
+has been that minimal further interaction is required.
 For the case where loops are present,
-the \ac{vcg} has an alternate \lstinline|vcg_while| method
+the \ac{vcg} provides an alternate \lstinline|vcg_while| method
 that relies on the loop rule presented in \cref{fig:hoare-loop}.
 That loop rule is structured such that
 the majority of work required to support the loops

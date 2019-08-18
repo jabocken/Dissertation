@@ -422,7 +422,9 @@ and are thus left out of the existing analysis,
 leaving those functions in the \ac{tcb}.
 
 \section{Examples}\label{se:cfg_examples}
-\subsection{Non-recursive example: \texttt{pow2}}\label{sse:pow2_example}
+The following sections present some basic explanation
+of the procedure used in this chapter, 
+\subsection{Non-recursive Loop Example: \texttt{pow2}}\label{sse:pow2_example}
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
 The assembly code was obtained by compiling a C program containing the function
@@ -479,21 +481,17 @@ These are expressed relative to the original value of the stack pointer $\rspo$:
   \item the counter variable at $\mathrbp-\mathtt{0xc}$ (four bytes);
   \item and the address of the location to return to at $\rspo$.
 \end{enumerate*}
-The memory region for this function is thus $r_s=\region{\rspo-28}{36}$.%
-\index{memory!region}
+The memory region for this function is thus $r_s=\region{\rspo-28}{36}$.
 Assigning region~$r_s$ with ID~$i_s$
 and the untouched region $\region{a}{1}$ with ID~$i_a$,
 parent relationships can then be established as shown below:
 \begin{align*}
-  & \parent{\region{\rspo}{8}}{i_s}{r_s} && \parent{\region{\rspo-20}{4}}{i_s}{r_s} \\
-  & \parent{\region{\rspo-8}{8}}{i_s}{r_s}
-  && \parent{\region{\rspo-28}{4}}{i_s}{r_s} \\
-  & \parent{\region{\rspo-16}{8}}{i_s}{r_s}
-  && \parent{\region{a}{1}}{i_a}{\region{a}{1}}
+  & \parent{\region{\rspo}8}{i_s}{r_s} && \parent{\region{\rspo-20}4}{i_s}{r_s} \\
+  & \parent{\region{\rspo-8}8}{i_s}{r_s} && \parent{\region{\rspo-28}4}{i_s}{r_s} \\
+  & \parent{\region{\rspo-16}8}{i_s}{r_s} && \parent{\region{a}1}{i_a}{\region{a}1}
 \end{align*}
 
-For the memory preservation proof of this function, we chose to associate annotations%
-\index{memory!preservation}
+For the memory preservation proof of this function, we chose to associate annotations
 at the start of the function, an instruction that broke the loop,
 and the return address of the function
 (a logical variable, as the caller of the function is unspecified for this proof).

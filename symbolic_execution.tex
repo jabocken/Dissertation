@@ -1,4 +1,4 @@
-\chapter{Symbolic Execution}\label{ch:symbolic_execution}
+\chapter{Memory Usage}\label{ch:symbolic_execution}
 
 % planning:
 % - Machine Model
@@ -20,21 +20,19 @@ rather than concrete values~\citep{king1976symbolic}.
 The individual steps of execution are implemented as \emph{rewrite rules}%
 \index{symbolic execution!rewrite rule}
 over the state.
-When used in a theorem prover such as Isabelle/HOL,%
-\index{Isabelle/HOL}
+When used in a theorem prover such as Isabelle/HOL,
 those rules are ideally proven to be correct.
 
-In order to perform symbolic execution, you must have some sort of \emph{machine model}.
+In order to perform symbolic execution, you must have some sort of \emph{machine model}.%
+\index{symbolic execution!machine model}
 
 \section{Machine Model}\label{se:machine_model}
 The machine model used in this dissertation%
 \index{symbolic execution!machine model}
 is an extension of the work of \citet{roessle2019}.
 They embedded bitvector-based, machine-learned semantics
-\index{semantics}
 of a modern version of the x86-64 \ac{isa},
 which includes instruction set extensions such as the \ac{sse} family, in Isabelle/HOL.
-\index{Isabelle/HOL}
 To improve reliability of their work,
 it was tested against an actual, live x86-64 machine to prove semantic equivalence.
 The semantics they used was an extension of that
@@ -47,8 +45,7 @@ and found that in the few cases where they differed, the Intel manuals were wron
 Note that this model does not include concurrency.
 
 The model is structured as follows.
-It has some symbolic \emph{state} defined as an Isabelle record%
-\index{state!symbolic}
+It has some symbolic \emph{state} defined as an Isabelle record
 that stores registers, flags, and 64-bit addressable byte-level memory.
 The memory holds both instructions and data, as in the standard von Neumann model.%
 \index{von Neumann model}
@@ -64,8 +61,8 @@ As the x86-64 \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation are designed with that in mind.
 \begin{example}
-  Given the state $\{\region{a}{2}\coloneqq\mathtt{0xEEFF}\}$,
-  a read of region $\region{a}{1}$ would produce $\mathtt{0xFF}$.
+  Given the state $\{\region{a}2\coloneqq\mathtt{0xEEFF}\}$,
+  a read of region $\region{a}1$ would produce $\mathtt{0xFF}$.
 \end{example}
 Support for big-endian architectures would require changing how reads and writes%
 \index{endianness!big}
@@ -99,14 +96,14 @@ both the actual regions used by instructions as well as merged regions.
     a2: mov    ax, word ptr [rsp-0x7]
     a3: mov    edi, dword ptr [rsp-0x6]
   \end{lstlisting}
-  The instructions at addresses \lstinline|a0| and \lstinline|a1|
+  The instructions at addresses~\lstinline|a0| and~\lstinline|a1|
   write to two separate regions in memory,
-  $r_0=\region{\mathrsp-8}{2}$ and $r_1=\region{\mathrsp-4}{4}$.
+  $r_0=\region{\mathrsp-8}2$ and $r_1=\region{\mathrsp-4}4$.
   Following the writes, the instruction at \lstinline|a2|
   reads from region $\region{\mathrsp-7}{2}$,
-  which is merged with~$r_0$ to obtain $r_2=\region{\mathrsp-8}{3}$.
-  Reading from region $\region{\mathrsp-6}{4}$
-  results in a merge with~$r_2$ and~$r_1$, producing region $\region{\mathrsp-8}{8}$.
+  which is merged with~$r_0$ to obtain $r_2=\region{\mathrsp-8}3$.
+  Reading from region $\region{\mathrsp-6}4$
+  results in a merge with~$r_2$ and~$r_1$, producing region $\region{\mathrsp-8}8$.
   The aggregated assignment is then
   \begin{equation*}
     \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
@@ -114,15 +111,13 @@ both the actual regions used by instructions as well as merged regions.
   \end{equation*}
   The set~$M$ of memory regions for the given block of assembly is ultimately
   \begin{equation*}
-    M\equiv\{\region{\rspo-8}{2},\region{\rspo-4}{4},\region{\rspo-7}{2},
-    \region{\rspo-6}{4},\region{\rspo-8}{8}\}.
+    M\equiv\{\region{\rspo-8}2,\region{\rspo-4}4,\region{\rspo-7}2,
+    \region{\rspo-6}4,\region{\rspo-8}8\}.
   \end{equation*}
-  The \acp{mrr} for~$M$ can be easily established by supplying each pair of regions
-  to the Z3 decision procedure mentioned in \cref{sse:memory_aliasing}.
 \end{example}
 
 \subsection{Memory Aliasing}\label{sse:memory_aliasing}
-This section provides a deeper view on the issue of \emph{memory aliasing}.%
+This section provides an insight into the issue of \emph{memory aliasing}.%
 \index{memory!aliasing}
 For example, consider a write to memory region $\region{a_1}{s_1}$
 using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
@@ -135,14 +130,13 @@ overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
   Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
   notation $r_0\bowtie r_1$, if and only if
   \begin{equation*}
-  s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
+    s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
   \end{equation*}
   If those regions are not separate, they \emph{overlap}.
 \end{definition}
 \begin{example}
-  
+  \todo{concrete example}
 \end{example}
-
 \begin{definition}
   Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\sqsubseteq r_1$,
   if and only if
@@ -150,66 +144,27 @@ overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
   a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
   \end{equation*}
 \end{definition}
-Because the methodology in this chapter uses symbolic execution,
-the above properties must be determined for symbolic expressions.
-Unfortunately, there is no single solution, no one decision procedure,
-that can determine these properties for all symbolic expressions.
-As an example of the potential issues that can occur,
-take the aforementioned completely symbolic regions $r_0$ and $r_1$.
-Without additional information, we cannot determine any relations for these regions.
-If they are \emph{possibly} different then they must be treated as different regions,
-while if they \emph{necessarily} overlap
-then they must be treated as a single merged region.
-
-To deal with such symbolic issues,
-the three aforementioned properties of enclosure, separation, and overlapping
-are formulated as \ac{smt} problems.
-\Ac{smt} formulations generally require inverting the desired condition
-and then proving that the resultant problem is unsatisfiable.
-Thus, for separation, we have the below definition.
-\begin{definition}
-  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
-  are necessarily separate if and only if, for any address~$a$,
-  the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
-  \end{equation*}
-\end{definition}
-Overlap may occur if two regions are not necessarily separate.
-\begin{definition}
-  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
-  the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
-  \end{equation*}
-\end{definition}
-\begin{definition}
-  Region $r_0$ is enclosed by $r_1$ if and only if,
-  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
-  \end{equation*}
-\end{definition}
-These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
-for a wide range of expressions over bitvectors
-using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
+\begin{example}
+  \todo{concrete example}
+\end{example}
 
 An additional problem is when a region that overlaps with at least one other region
 that has been modified is written to.
 To combine those writes, the regions must be \emph{merged}.%
 \index{memory!merging}
-\begin{definition}
+\begin{definition}\label{def:merge}
   The \emph{merge} of two symbolic assignments
   $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
   where the write to~$r_1$ occurs before the write to~$r_0$,
-  is defined as $r=\region{a}{s}\coloneqq b_0\concat b_1\concat b_2$, where:
+  is defined as $r=\region{a}s\coloneqq b_0\concat b_1\concat b_2$, where:
   \nomenclature{$\bullet$}{Indicates bitstring concatenation}
   \begin{align*}
   i_0 &= a_0 - a_1 \\
   i_1 &= a_1 + s_1 - (a_0 + s_0) \\
   a   &= \text{if } i_0 < 0 \text{ then } a_0 \text{ else } a_1 \\
   s   &= s_0 + \max(i_0, 0) + \max(i_1, 0) \\
-  b_0 &= \text{if } i_1 > 0 \text{ then } \takebits{8 s_1-1,8 s_1 - 8 i_1}v_1 \text{ else } 0_0 \\
+  b_0 &= \text{if } i_1 > 0 \text{ then }
+  \takebits{8 s_1-1,8 s_1 - 8 i_1}v_1 \text{ else } 0_0 \\
   b_1 &= \takebits{8 s-1, 0} v_0 \\
   b_2 &= \text{if } i_0 > 0 \text{ then } \takebits{8 i_0-1, 0}v_1 \text{ else } 0_0
   \end{align*}
@@ -221,15 +176,12 @@ whatever portion of~$v_1$, if any, is below~$a_0$;
 a possibly zero-extended~$v_0$;
 and the part of~$v_1$ above $a_0+s_0$ (the upper bound of~$r_0$),
 if there are any bits in~$r_1$ above that address.
-As the signs of values~$i_0$ and~$i_1$ are necessary factors
-in determining the result of the region merge,
-Z3 is again used to evaluate those symbolic expressions.
 For sets of assignments such as those mentioned above,
 merge is used as an infix operator, with order being important
 (the first assignment overwrites [parts of] the second as shown above).
 
 Writing to and reading from memory in the process of symbolic execution
-requires utilizing decision procedures for separation and merging.
+also requires analysis of separation and merging.
 Consider reading from the region $\region{a}{s}$ given a set of assignments~$\alpha$,
 using \cref{algo:mem_read} as our guide.
 \begin{algorithm}
