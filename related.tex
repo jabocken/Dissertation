@@ -4,6 +4,196 @@ or of historic interest to the body of the dissertation.
 
 % TODO: contrast with fully automated methods using \ac{smt} solvers\cite{de2008z3,barrett2011cvc4}.
 \section{Restrictions on Supported Features}
+
+Assembly verification has been an active research field for decades.
+\Cref{related-table} provides an inexhaustive overview of related work.
+We first address some formal verification efforts at the assembly level.
+Then we discuss work in which assembly verification played a role in a larger verification context. 
+Finally, verified compilation and static binary analysis tools are discussed.
+
 \section{Previous Approaches to Assembly Verification}
+\citet{clutterbuck1988verification} performed formal verification
+of assembly code using SPACE-8080, a verifiable subset of the Intel 8080 \ac{isa} that is analyzable and formally verifiable \citep{carre1986spade}.
+% Their approach uses Floyd-style verification~\cite{floyd1967assigning}.
+Not long after, Bevier et al. presented a systems approach to software verification \cite{bevier1989approach,boyer1979computational}.
+Their work laid out a methodology for verifying the correctness
+of all components necessary to execute a program correctly, including compiler, assembler and linker.
+%It was implemented in \ac{nqthm} \citep{boyer1979computational},
+%a precursor to the theorem prover ACL2 \citep{ACL2}.
+The methodology was applied to a small \ac{os} kernel, Kit \citep{bevier1989kit}.
+Similarly, Yu and Boyer \citep{yu1992automated,boyer1996automated}
+presented operational semantics and mechanized reasoning
+for approximately 80\% of the instructions of the MC68020 microprocessor,
+over 85 instructions.
+Their approach utilized symbolic execution of operational semantics.
+These early efforts required significant interaction.
+For example, the approach of Yu and Boyer required over 19,000 lines of manually written proof to verify approximately 900 assembly instructions.
+
+\citet{matthews2006verification} targeted a simple machine model called TINY
+as well as \ac{jvm} bitcode using the M5 operational model.
+Their approach utilizes symbolic execution of code annotated
+with manually written invariants.
+It also used verification condition generation to increase automation.
+This reduced the number of manually written invariants.
+Both of these assembly-style languages feature a stack
+for handling scratch variables rather than a register file
+as x86, ARM, and most other mainstream \acp{isa} do.
+
+Goel et al.\ presented an approach for modeling and verifying
+non-deterministic programs on the binary level~\citep{goel2014syscalls,goelphd}.
+As with \citet{matthews2006verification}, their work was implemented in ACL2.
+In addition to formulating the semantics of most user-mode x86 instructions,
+they provided semantics for common system calls.
+System call semantics increase the spread of programs that can be fully verified.
+Their work was applied to multiple small case studies,
+including a word count program and two kernel-mode memory copying examples.
+
+\begin{table*}
+  \centering
+  \caption{Overview of Related Work.}\label{related-table}
+  \begin{tabular}{l l l l l}
+    \toprule
+    Work & Target & Approach & Applications & Verified code\\
+    \midrule
+    Clutterbuck \& Carr\'e & SPACE-8080 & \acs{itp} & N/A & \\
+    Bevier et al. & PDP-11-like & \acs{itp} & Kit & \\
+    Yu \& Boyer & MC68020 & \acs{itp} & String functions & 863 insts \\
+    Matthews et al. & Tiny/JVM & \acs{itp}+\acs{vcg} & CBC enc/dec & 631 insts \\
+    Goel et al. & x86-64 & \acs{itp} & word-count  & 186 insts \\
+    Tan et al. & ARMv7 & ATP & String search & 983 insts \\
+    Myreen et al. & ARM/x86 & \acs{dil} & seL4 & 9,500 SLoC \\
+    Feng et al. & MIPS-like & \acs{itp} & Example functions & \\
+    This paper & x86-64 & \ac{itp}+CG & Xen & 12,252 insts \\
+    \midrule
+    Sewell et al. & C & \acs{tv}+\acs{dil} & seL4 & 9,500 SLoC \\
+    Shi et al. & C/ARM9 & \acs{atp}+\acs{mc} & ORIENTAIS & 8,000 SLoC, 60 insts \\
+    Dam et al. & ARMv7 & \acs{atp}+UC & PROSPER & 3,000 insts \\
+    \bottomrule
+    \multicolumn{5}{c}{
+      \small
+      \begin{tabular}{lcllcl}
+        VCG  &=& Verification Condition Generation	& DiL &=& Decompilation-into-Logic \\
+        SLoC &=& Source Lines of Code              & ATP &=& Automated Theorem Proving \\
+      UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
+      TV   &=& Translation Validation							& MC 	&=& Model Checking
+    \end{tabular}
+  }
+\end{tabular}
+\end{table*}
+
+The main difference between these existing approaches
+and the methodologies presented in this work concerns automation.
+Generally, interactive theorem proving over semantics of assembly instructions
+does not scale due to the amount of intricate user interaction involved.
+For example, \cref{fig:example2-inv} shows
+the complexity of defining an assembly-level invariant even for a small example.
+Fully automated approaches to formal verification, however, do not scale either.
+The recent automated approach AUSPICE takes about 6 hours
+for a 533-instruction string search algorithm~\citep{tan2015auspice}.
+To the best of my knowledge,
+the methodologies presented here are the first that are able to deal with
+optimized x86-64 binaries produced by production code,
+with a ``manual effort vs. instruction count ratio'' of roughly 1 to 11
+for the work presented in \cref{ch:syntax}.
+
+Myreen et al.\ developed \emph{decompilation-into-logic} \citep{myreen2007hoare,myreen2008decompilation,myreen2012decompilation}.
+That work, developed in the HOL4 theorem prover \citep{slind2008brief},
+uses operational semantics of machine code to lift programs into a functional form.
+That functional form can then be used in a Hoare logic framework for program analysis \citep{myreen2007hoare}.
+Decompilation-into-logic has been used for both ARM and x86 \ac{isa} machine models, and applied to various large examples, including benchmarks such as a garbage collector, and the Skein hash function.
+Decompilation-into-logic covers -- formally -- the gap between machine code
+and an HOL model.
+It can be used as a component
+in a binary-level verification methodology~\citep{sewell2013tvv}.
+In order to then verify properties over the HOL model,
+one could use interactive theorem proving.
+
+\citet{feng2006modular,feng2005sbca} presented stack abstractions
+for modular verification of assembly code. %  using Coq~\cite{chlipala2013certified}.
+Their work allows for integration
+of various proof-carrying code systems \citep{necula1997proof}.
+As with the work presented in \cref{ch:syntax},
+it utilizes a Hoare-style framework for its verification.
+The authors applied their work to multiple example functions,
+such as two factorial implementations
+aas well as \lstinline[language=C]|setjmp| and \lstinline[language=C]|longjmp|.
+In contrast to the approach presented in \cref{ch:syntax},
+though not that in \cref{ch:cfg},
+manual annotations are required to provide information regarding invariants and memory layout.
+
+\section{Integrated Assembly-Level Verification Efforts}
+A major verification effort, based on decompilation-into-logic,
+was the verification of the seL4 kernel~\citep{klein2009sel4,Klein_AEMSKH_14}.
+The seL4 project provides a microkernel written in formally proven correct C code.
+The tool AutoCorres~\citep{greenaway2012bridging} is used for C code verification.
+\citet{sewell2013tvv} verified a refinement relation between the C source code
+and an ARM binary for both non-optimized and optimized at \lstinline{O2}.
+The major differences with respect to our work
+is that our methodology targets existing production code,
+instead of code written with verification in mind.
+For example, the seL4 source code does not allow taking the addresses of stack variables
+(such as in \cref{fig:example2-c}):
+their approach requires a static separation of stack and heap instead.
+Neither the seL4 proof effort nor any of the methodologies presented here
+support function pointers.
+
+\citet{shi2012orientais} formally verified \iac{rtos} for automotive use
+called ORIENTAIS.
+Part of their approach involved source-level verification
+using a combination of Hoare logic
+and abstract \ac{csp} model analysis \citep{hoare1978csp}.
+Binary verification was done by lifting the \ac{rtos} binary to xBIL,
+a related hardware verification language \citep{shi2012xbil}.
+They translated requirements from the OSEK automotive industry standard to source code annotations.
+
+Targeting a similar case study as \cref{ch:syntax},
+Dam et al.\ formally verified a tiny ARMv7 hypervisor, PROSPER \citep{dam2013hypervisor,baumann2016high}.
+at the assembly level.
+Their methodology integrated HOL4 with the \ac{bap} \citep{brumley2011bap}.
+\Ac{bap} utilizes a custom intermediate language
+that provides an architecture-agnostic representation of machine instructions
+and their side effects.
+HOL4 was used to translate the ARM binary into \ac{bap}'s intermediate language,
+using the formal model of the ARM \ac{isa} by \citet{fox2010arm}.
+The SMT solver \ac{stp}~\citep{ganesh2007stp}
+was used to determine the targets of indirect branches
+and to discharge the generated verification conditions.
+While the approach was generally automated,
+user input was still required to describe the software contracts
+the hypervisor was verified against.
+
+\section{Verified Compilation}
+In contrast to directly verifying machine or assembly code, one can verify source code and then use \emph{verified compilation}.%
+\index{verified compilation}
+Verified compilation establishes a refinement relation between assembly and source code.
+The CompCert project~\citep{leroy:compcert} provides a compiler for a subset of C.
+Its output has been verified to have the same semantics as the C source code.
+The seL4 project used CompCert to reduce its trusted code base~\citep{Klein_AEMSKH_14}.
+Another example of verified compilation is CakeML~\citep{kumar2014cakeml}.
+It utilizes a subset of Standard ML modeled with big-step operational semantics.
+The main purpose of verified compilation, however, is not to verify properties over the code.
+For example, if the source code is vulnerable to \iac{rop} exploit,
+then the assembly code is vulnerable as well.
+Verified compilation is thus often accompanied by source code verification.
+This dissertation argues that for memory usage, assembly-level verification is necessary.
+
+\section{Static Analysis}
+Static analysis of binary code has been an active research field for decades~\cite{kruegel2005automating,brumley2011bap,wang2017angr}.
+The BitBlaze project~\citep{song2008bitblaze}
+provides a tool called Vine which constructs control flow graphs for supplied programs and lifts x86 instructions to its own \ac{il}.
+Though Vine itself is not formally verified, it does support interfacing with the SMT solver \ac{stp} as well as CVC~\citep{barrett2004cvcl,barrett2007cvc3}.
+The tool Infer~\citep{calcagno2011infer}, developed at Facebook, provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
+It utilizes separation logic~\citep{reynolds2002separation} and bi-abduction to perform its analyses in an automated fashion.
+It is designed to be integrated into compiler toolchains, in order to provide immediate feedback even in continuous integration scenarios.
+FindBugs is a static analysis tool for Java code~\citep{hovemeyer2004findbugs}.
+Rather than relying on formal methods, it uses searches for common (bad practice) code idioms to detect likely bugs.
+Common errors it highlights include null pointer dereferences,
+objects that compare equal not having equal hash codes,
+and inconsistent synchronization.
+The tool Splint~\citep{evans2002static} detects buffer overflows and similar potential security flaws in C code.
+It relies on annotated preconditions to derive postconditions based on the syntactic structure of the code.
+
+The main difference between these static analysis tools and formal verification is that these tools generally are highly suited to find bugs, but are not able to prove absence of them.
+They generally apply techniques that are formally unsound, such as depth-bounded searches.
 
 \section{Summary}
