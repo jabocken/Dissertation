@@ -13,15 +13,16 @@ Finally, verified compilation and static binary analysis tools are discussed.
 
 \section{Previous Approaches to Assembly Verification}
 \citet{clutterbuck1988verification} performed formal verification
-of assembly code using SPACE-8080, a verifiable subset of the Intel 8080 \ac{isa} that is analyzable and formally verifiable \citep{carre1986spade}.
+of assembly code using SPACE-8080, a verifiable subset of the Intel 8080 \ac{isa} that is analyzable and formally verifiable~\citep{carre1986spade}.
 % Their approach uses Floyd-style verification~\cite{floyd1967assigning}.
-Not long after, Bevier et al. presented a systems approach to software verification \cite{bevier1989approach,boyer1979computational}.
+Not long after, Bevier et al.\ presented a systems approach
+to software verification~\citep{bevier1989approach,boyer1979computational}.
 Their work laid out a methodology for verifying the correctness
 of all components necessary to execute a program correctly, including compiler, assembler and linker.
-%It was implemented in \ac{nqthm} \citep{boyer1979computational},
-%a precursor to the theorem prover ACL2 \citep{ACL2}.
-The methodology was applied to a small \ac{os} kernel, Kit \citep{bevier1989kit}.
-Similarly, Yu and Boyer \citep{yu1992automated,boyer1996automated}
+It was implemented in \ac{nqthm}~\citep{boyer1979computational},
+a precursor to the theorem prover ACL2~\citep{ACL2}.
+The methodology was applied to a small \ac{os} kernel, Kit~\citep{bevier1989kit}.
+Similarly, Yu and Boyer~\citep{yu1992automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
 for approximately 80\% of the instructions of the MC68020 microprocessor,
 over 85 instructions.
@@ -57,12 +58,12 @@ including a word count program and two kernel-mode memory copying examples.
     \midrule
     Clutterbuck \& Carr\'e & SPACE-8080 & \acs{itp} & N/A & \\
     Bevier et al. & PDP-11-like & \acs{itp} & Kit & \\
-    Yu \& Boyer & MC68020 & \acs{itp} & String functions & 863 insts \\
+    Yu \& Boyer & MC68020 & \acs{itp} & String funcs & 863 insts \\
     Matthews et al. & Tiny/JVM & \acs{itp}+\acs{vcg} & CBC enc/dec & 631 insts \\
     Goel et al. & x86-64 & \acs{itp} & word-count  & 186 insts \\
     Tan et al. & ARMv7 & ATP & String search & 983 insts \\
     Myreen et al. & ARM/x86 & \acs{dil} & seL4 & 9,500 SLoC \\
-    Feng et al. & MIPS-like & \acs{itp} & Example functions & \\
+    Feng et al. & MIPS-like & \acs{itp} & Example funcs & \\
     This paper & x86-64 & \ac{itp}+CG & Xen & 12,252 insts \\
     \midrule
     Sewell et al. & C & \acs{tv}+\acs{dil} & seL4 & 9,500 SLoC \\
@@ -73,12 +74,12 @@ including a word count program and two kernel-mode memory copying examples.
       \small
       \begin{tabular}{lcllcl}
         VCG  &=& Verification Condition Generation	& DiL &=& Decompilation-into-Logic \\
-        SLoC &=& Source Lines of Code              & ATP &=& Automated Theorem Proving \\
-      UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
-      TV   &=& Translation Validation							& MC 	&=& Model Checking
-    \end{tabular}
-  }
-\end{tabular}
+        SLoC &=& Source Lines of Code               & ATP &=& Automated Theorem Proving \\
+        UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
+        TV   &=& Translation Validation							& MC 	&=& Model Checking
+      \end{tabular}
+    }
+  \end{tabular}
 \end{table*}
 
 The main difference between these existing approaches
@@ -97,9 +98,10 @@ with a ``manual effort vs. instruction count ratio'' of roughly 1 to 11
 for the work presented in \cref{ch:syntax}.
 
 Myreen et al.\ developed \emph{decompilation-into-logic} \citep{myreen2007hoare,myreen2008decompilation,myreen2012decompilation}.
-That work, developed in the HOL4 theorem prover \citep{slind2008brief},
+That work, developed in the HOL4 theorem prover~\citep{slind2008brief},
 uses operational semantics of machine code to lift programs into a functional form.
-That functional form can then be used in a Hoare logic framework for program analysis \citep{myreen2007hoare}.
+That functional form can then be used in a Hoare logic framework
+for program analysis~\citep{myreen2007hoare}.
 Decompilation-into-logic has been used for both ARM and x86 \ac{isa} machine models, and applied to various large examples, including benchmarks such as a garbage collector, and the Skein hash function.
 Decompilation-into-logic covers -- formally -- the gap between machine code
 and an HOL model.
@@ -109,14 +111,15 @@ In order to then verify properties over the HOL model,
 one could use interactive theorem proving.
 
 \citet{feng2006modular,feng2005sbca} presented stack abstractions
-for modular verification of assembly code. %  using Coq~\cite{chlipala2013certified}.
+for modular verification of assembly code
+in the Coq theorem prover~\citep{chlipala2013certified}.
 Their work allows for integration
-of various proof-carrying code systems \citep{necula1997proof}.
+of various proof-carrying code systems~\citep{necula1997proof}.
 As with the work presented in \cref{ch:syntax},
 it utilizes a Hoare-style framework for its verification.
 The authors applied their work to multiple example functions,
 such as two factorial implementations
-aas well as \lstinline[language=C]|setjmp| and \lstinline[language=C]|longjmp|.
+as well as \lstinline[language=C]|setjmp| and \lstinline[language=C]|longjmp|.
 In contrast to the approach presented in \cref{ch:syntax},
 though not that in \cref{ch:cfg},
 manual annotations are required to provide information regarding invariants and memory layout.
@@ -141,15 +144,17 @@ support function pointers.
 called ORIENTAIS.
 Part of their approach involved source-level verification
 using a combination of Hoare logic
-and abstract \ac{csp} model analysis \citep{hoare1978csp}.
+and abstract \ac{csp} model analysis~\citep{hoare1978csp}.
 Binary verification was done by lifting the \ac{rtos} binary to xBIL,
-a related hardware verification language \citep{shi2012xbil}.
-They translated requirements from the OSEK automotive industry standard to source code annotations.
+a related hardware verification language~\citep{shi2012xbil}.
+They translated requirements from the OSEK automotive industry standard
+to source code annotations.
 
 Targeting a similar case study as \cref{ch:syntax},
-Dam et al.\ formally verified a tiny ARMv7 hypervisor, PROSPER \citep{dam2013hypervisor,baumann2016high}.
+Dam et al.\ formally verified a tiny ARMv7 hypervisor,
+PROSPER \citep{dam2013hypervisor,baumann2016high},
 at the assembly level.
-Their methodology integrated HOL4 with the \ac{bap} \citep{brumley2011bap}.
+Their methodology integrated HOL4 with the \ac{bap}~\citep{brumley2011bap}.
 \Ac{bap} utilizes a custom intermediate language
 that provides an architecture-agnostic representation of machine instructions
 and their side effects.
@@ -163,7 +168,8 @@ user input was still required to describe the software contracts
 the hypervisor was verified against.
 
 \section{Verified Compilation}
-In contrast to directly verifying machine or assembly code, one can verify source code and then use \emph{verified compilation}.%
+In contrast to directly verifying machine or assembly code,
+one can verify source code and then use \emph{verified compilation}.%
 \index{verified compilation}
 Verified compilation establishes a refinement relation between assembly and source code.
 The CompCert project~\citep{leroy:compcert} provides a compiler for a subset of C.
@@ -171,7 +177,8 @@ Its output has been verified to have the same semantics as the C source code.
 The seL4 project used CompCert to reduce its trusted code base~\citep{Klein_AEMSKH_14}.
 Another example of verified compilation is CakeML~\citep{kumar2014cakeml}.
 It utilizes a subset of Standard ML modeled with big-step operational semantics.
-The main purpose of verified compilation, however, is not to verify properties over the code.
+The main purpose of verified compilation, however,
+is not to verify properties over the code.
 For example, if the source code is vulnerable to \iac{rop} exploit,
 then the assembly code is vulnerable as well.
 Verified compilation is thus often accompanied by source code verification.
@@ -190,10 +197,14 @@ Rather than relying on formal methods, it uses searches for common (bad practice
 Common errors it highlights include null pointer dereferences,
 objects that compare equal not having equal hash codes,
 and inconsistent synchronization.
-The tool Splint~\citep{evans2002static} detects buffer overflows and similar potential security flaws in C code.
-It relies on annotated preconditions to derive postconditions based on the syntactic structure of the code.
+The tool Splint~\citep{evans2002static} detects buffer overflows
+and similar potential security flaws in C code.
+It relies on annotated preconditions to derive postconditions
+based on the syntactic structure of the code.
 
-The main difference between these static analysis tools and formal verification is that these tools generally are highly suited to find bugs, but are not able to prove absence of them.
+The main difference between these static analysis tools and formal verification
+is that these tools generally are highly suited to find bugs,
+but are not able to prove absence of them.
 They generally apply techniques that are formally unsound, such as depth-bounded searches.
 
 \section{Summary}

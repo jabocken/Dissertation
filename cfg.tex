@@ -29,25 +29,22 @@ This property has the potential to be used
 to prove the absence of common memory-related issues,
 such as buffer overflows or some forms of data leakage.
 
-By building on the binary analysis tool angr~\citep{shoshitaishvili2016state},%
-\index{angr}
+By building on the binary analysis tool \texttt{angr}~\citep{shoshitaishvili2016state},%
+\index{\texttt{angr}}
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
-The first step is disassembly of an x86-64 binary using%
-\index{x86-64}
-a tweaked version of the angr
-\lstinline|reassembly| analysis~\citep{wang2017ramblr}
-provided by \citet{roessle2019}.%
-\index{angr!reassembly}
-More detail on why this specific disassembler was chosen
-can be found previously in \cref{sse:loading_assembly}; in short,
-the Isabelle parser relies on specific size annotations the tweaked analysis generates.
+The first step is disassembly of an x86-64 binary using
+a tweaked version of the angr \lstinline|reassembly| analysis~\citep{wang2017ramblr}
+provided by \citet{roessle2019}\footnote{%
+  This is required to use the Isabelle parser provided by that work.%
+}.%
+\index{\texttt{angr}!\texttt{reassembly}}
 
 To achieve minimal symbolic execution,
 it features automatically-selected \emph{cutpoints}%
 \index{cutpoint}
 identified by a Python script that relies on
-angr's \lstinline|CFGEmulated| control flow analysis.%
-\index{angr!CFGEmulated}
+\texttt{angr}'s \lstinline|CFGEmulated| control flow analysis.%
+\index{\texttt{angr}!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
 Basic starting predicates for those preconditions and postconditions%
 \index{precondition}%
@@ -81,14 +78,11 @@ The process that selects cutpoints%
 \index{cutpoint}
 also generates skeleton memory preservation theories for every function analyzed.
 The theory files can then be opened in the theorem prover Isabelle
-and the assembly loaded using the methodology described in \cref{sse:loading_assembly}.
-Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})%
-\index{Floyd!invariant}
-and add the necessary sets of memory regions%
-\index{memory!region}
+and the assembly loaded using the parser of \citet{roessle2019}.
+Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
+and add the necessary sets of memory regions
 that the functions write to (\cref{memory_regions})
-in order to complete the proofs of memory preservation.%
-\index{memory!preservation}
+in order to complete the proofs of memory preservation.
 Defining the necessary invariants for functions with complex control flow
 is generally a hard task,
 but targeting a property such as memory preservation
@@ -500,11 +494,11 @@ The invariant carries through the preservation of memory,
 showing that region $\region{a}{1}$ maintains its value throughout.
 The equalities over \inlineasm{rbp} and \inlineasm{rsp}
 are used by the memory region reasoner.
-For compositional purposes as described in \cref{se:composition},
+For compositional purposes, as described in \cref{se:cfg_composition},
 the function is also shown to preserve the value of the stack pointer.
 \begin{figure}
   \centering
-  \begin{tikzpicture}[>={stealth}]
+  \begin{tikzpicture}[>=stealth]
     \graph[math nodes, grow down=2.2cm]{
       "1:\begin{array}{l}
         \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\

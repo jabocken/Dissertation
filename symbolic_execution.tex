@@ -66,8 +66,7 @@ all operations on memory presented in this dissertation are designed with that i
 \end{example}
 Support for big-endian architectures would require changing how reads and writes%
 \index{endianness!big}
-are performed. For every read and write, the bytes would need to be reversed
-in order to use them appropriately.
+are performed; currently, the bytes of each word value are reversed on read and write.
 Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 \index{endianness!bi}
 memory operations. These include modern versions of ARM, PowerPC, SPARC, and MIPS.

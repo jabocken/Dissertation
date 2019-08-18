@@ -54,21 +54,20 @@ to produce the preconditions and proof ingredients.
 Once generation is complete, the certificate and the original assembly%
 \index{certificate}
 can then be loaded into an interactive theorem prover.
-In the theorem prover,\index{theorem!prover}
+In the theorem prover,
 minimal user input is required for discharging \iac{fmuc}s lemmas and theorems
 via the proof ingredients and customized proof methods.%
 \index{proof!ingredient}%
 \index{proof!method}
-A simple example demonstrating usage along with 
-further information on the structure of \acp{fmuc} can be found in \cref{se:fmuc_ex}.
-
-\Cref{se:syntax_example} provides an example that could theoretically overwrite
+A full example demonstrating usage along with 
+further information on the structure of \acp{fmuc}
+can be found in \cref{se:syntax_example}.
+That example could theoretically overwrite
 its own return address due to its pointer arguments, causing \ac{cfi} issues.
-The associated \ac{fmuc} provides preconditions to prevent such cases%
-\index{precondition}
+The associated \ac{fmuc} provides preconditions to prevent such cases
 along with a formal proof of return address preservation under those conditions.
 
-Following the full example in \cref{se:syntax_example} is an in-depth case study
+Following that example is an in-depth case study
 on the Xen Project hypervisor~\citep{chisnall2008definitive} in \cref{se:xen}.
 Unlike the HermitCore work in \cref{se:cfg_application},
 no modifications were made to the Xen build process
