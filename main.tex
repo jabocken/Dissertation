@@ -38,7 +38,7 @@
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
-%\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -249,12 +249,18 @@
 
 \newcommand{\Block}[2]{\mathtt{#1\texttt{->}#2}}
 
-\newcommand{\region}[2]{\ensuremath{[#1,#2]}}
-\newcommand{\readmem}[2]{\ast\region{#1}{#2}}
-\newcommand{\readmemS}[3]{#1:\readmem{#2}{#3}}
-\newcommand{\htriple}[3]{\{#1\}#2\{#3\}}
+\newcommand\region[2]{\ensuremath{[#1,#2]}}
+\newcommand\readmem[2]{\ast\region{#1}{#2}}
+\newcommand\readmemS[3]{#1:\readmem{#2}{#3}}
+\newcommand\htriple[3]{\{#1\}#2\{#3\}}
 \WithSuffix\newcommand\htriple*[4]{\{#1\}#2\{#3{;}#4\}}
-\newcommand{\parent}[3]{\operatorname{parent}(#1,#2,#3)}
+\newcommand\parent[3]{\operatorname{parent}(#1,#2,#3)}
+\newcommand\writeM{\stackrel{M}{=}}
+\newcommand\writeR{\stackrel{R}{=}}
+\newcommand\writeF{\stackrel{F}{=}}
+\newcommand\writeone[3][\sigma]{#1\llparenthesis #2\writeM #3\rrparenthesis}
+\newcommand\enclosed\sqsubseteq
+\newcommand\separate\bowtie
 
 \newcommand{\deqptr}{\var{deq}_\mathrm{ptr}}
 \newcommand{\bufferptr}{\var{buf}_\mathrm{ptr}}
@@ -316,19 +322,6 @@
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{You are also required as of Spring 2016 to include a general audience abstract. This should be geared towards individuals outside of your field that may be reading seeking information about your work. You should avoid language that is particular to your field and clearly define any terms that may have special meaning in your discipline.}
 
-% Bit of work needed to get stuff not added to the TOC automatically into the TOC
-\newcommand{\addtocfix}[2]{
-  \clearpage\phantomsection % Getting hyperref to link to the right page
-  \addcontentsline{toc}{chapter}{#1}
-  #2
-}
-
-% Listings properly in TOC
-\renewcommand\lstlistlistingname{List of Listings}
-\renewcommand{\lstlistoflistings}{\begingroup
-  \tocfile\lstlistlistingname{lol}
-\endgroup}
-
 \makeindex[intoc]
 \begin{document}
   % Sets up the document for the front matter of the dissertation (all the stuff before the body)
@@ -340,7 +333,7 @@
   \listoftables
   \listofalgorithms
   \lstlistoflistings
-  \addtocfix{Acronyms}{\printacronyms[heading=chapter*]}
+  \addtocfix{Acronyms}{\printacronyms}
   \printnomenclature
 
   \input{attribution} % prefaces go in front matter

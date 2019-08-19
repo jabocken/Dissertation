@@ -1,4 +1,4 @@
-\chapter{Memory Usage}\label{ch:symbolic_execution}
+\chapter{Symbolic Execution}\label{ch:symbolic_execution}
 
 % planning:
 % - Machine Model
@@ -61,12 +61,13 @@ As the x86-64 \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation are designed with that in mind.
 \begin{example}
-  Given the state $\{\region{a}2\coloneqq\mathtt{0xEEFF}\}$,
-  a read of region $\region{a}1$ would produce $\mathtt{0xFF}$.
+  Given the state $\sigma=\{\region{a}2\coloneqq\mathtt{0xEEFF}\}$,
+  the read $\readmemS\sigma{a}1$ would produce $\mathtt{0xFF}$.
 \end{example}
 Support for big-endian architectures would require changing how reads and writes%
 \index{endianness!big}
-are performed; currently, the bytes of each word value are reversed on read and write.
+are performed, as both the formal Isabelle and informal Haskell models
+assume little-endianness in their implementation.
 Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 \index{endianness!bi}
 memory operations. These include modern versions of ARM, PowerPC, SPARC, and MIPS.
@@ -87,6 +88,7 @@ the works presented in this document assume that the loaded assembly is never mo
 Symbolic execution in Haskell keeps track of all used memory regions,%
 \index{symbolic execution}
 both the actual regions used by instructions as well as merged regions.
+
 \begin{example}\label{ex:simple}
   Consider the following x86-64 assembly block:
   \begin{lstlisting}[style=x64,gobble=4]
@@ -106,8 +108,13 @@ both the actual regions used by instructions as well as merged regions.
   The aggregated assignment is then
   \begin{equation*}
     \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
-    \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
+    \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF},
   \end{equation*}
+  where $\takebits{h,l}w$ indicates taking the bits in word~$w$ from bit number~$l$
+  to bit number~$h$ using 0-indexing
+  and~$\concat$ indicates bitstring concatenation.%
+  \nomenclature{$\takebits{h,l}w$}{Indicates taking the bits in word~$w$ from bit 	number~$l$ to bit number~$h$ using 0-indexing}%
+  \nomenclature{$\concat$}{Indicates bitstring concatenation}
   The set~$M$ of memory regions for the given block of assembly is ultimately
   \begin{equation*}
     M\equiv\{\region{\rspo-8}2,\region{\rspo-4}4,\region{\rspo-7}2,
@@ -127,7 +134,7 @@ overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
 \index{memory!region!enclosure}
 \begin{definition}
   Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
-  notation $r_0\bowtie r_1$, if and only if
+  notation $r_0\separate r_1$, if and only if
   \begin{equation*}
     s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
   \end{equation*}
@@ -137,7 +144,7 @@ overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
   \todo{concrete example}
 \end{example}
 \begin{definition}
-  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\sqsubseteq r_1$,
+  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,
   if and only if
   \begin{equation*}
   a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
@@ -155,8 +162,11 @@ To combine those writes, the regions must be \emph{merged}.%
   The \emph{merge} of two symbolic assignments
   $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
   where the write to~$r_1$ occurs before the write to~$r_0$,
-  is defined as $r=\region{a}s\coloneqq b_0\concat b_1\concat b_2$, where:
-  \nomenclature{$\bullet$}{Indicates bitstring concatenation}
+  is defined as
+  \begin{equation}
+    r=\region{a}s\coloneqq b_0\concat b_1\concat b_2,
+  \end{equation}
+  where:
   \begin{align*}
   i_0 &= a_0 - a_1 \\
   i_1 &= a_1 + s_1 - (a_0 + s_0) \\
@@ -194,9 +204,9 @@ using \cref{algo:mem_read} as our guide.
         \State\Return $v$
       \Else
         \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
-        \alpha\mid\region{a'}{s'}\not\bowtie\region{a}{s}\}$
+        \alpha\mid\region{a'}{s'}\not\separate\region{a}{s}\}$
         \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in
-        \alpha\mid\region{a'}{s'}\bowtie\region{a}{s}\}$
+        \alpha\mid\region{a'}{s'}\separate\region{a}{s}\}$
         \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets
         \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
         \State $r\gets\region{a_l}{a_r-a_l+s_r}$

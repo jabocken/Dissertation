@@ -112,9 +112,22 @@
 
 % Fix for tocbibind from algorithms package docs (the \let is the important part, rest is standard)
 \renewcommand\listofalgorithms{\begingroup
-  \tocfile{List of Algorithms}{loa}
+  \tocfile\listalgorithmname{loa}
 \endgroup}
 \let\l@algorithm\l@figure
+
+% Similar fix for listings
+\renewcommand\lstlistlistingname{List of Listings}
+\renewcommand\lstlistoflistings{\begingroup
+  \tocfile\lstlistlistingname{lol}
+\endgroup}
+
+% Bit of work needed to get stuff not added to the TOC automatically into the TOC
+\newcommand\addtocfix[2]{
+  \clearpage\phantomsection % Getting hyperref to link to the right page
+  \addcontentsline{toc}{chapter}{#1}
+  #2
+}
 
 % So algorithm numbering matches other floats (doesn't work with acmart class, but that doesn't use chapters anyway)
 \renewcommand\thealgorithm{\arabic{chapter}.\arabic{algorithm}}

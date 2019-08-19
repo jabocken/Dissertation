@@ -142,8 +142,8 @@ the usage of which is described in \cref{sse:fmuc_comp}.
           &\equivsetfix\region{\readmem{\rsio+
               \sextend(\takebits{31,0}\rdio)*8-8}{8}}{1}\} \label{m:c} \\
         \var{MRR} &\equiv\begin{aligned}
-          \not\bowtie &= \varnothing \\
-          \sqsubseteq &= \varnothing
+          \not\separate &= \varnothing \\
+          \enclosed &= \varnothing
         \end{aligned} \notag
       \end{align}%
       \nomenclature{$\varnothing$}{Represents an empty set}
@@ -222,8 +222,8 @@ To avoid such issues, the \ac{fmuc} generation methodology
 produces the aforementioned \acp{mrr} proof ingredient,%
 \index{proof!ingredient}
 the production of which is detailed in \cref{mem_reg_rel}.
-\Acp{mrr} express which pairs of regions are not separate ($\not\bowtie$)
-as well as which regions are enclosed within one another ($\sqsubseteq$).
+\Acp{mrr} express which pairs of regions are not separate ($\not\separate$)
+as well as which regions are enclosed within one another ($\enclosed$).
 
 The \ac{fmuc} for a function as a whole is broken down by Hoare rules,
 as described in \cref{scf_hoare},
@@ -582,7 +582,7 @@ for all exit points of the loop.
   and $a_1=\textsc{stmts}(5,6,0)$.
   The loop body in~$a_0$ is extracted from subgraph $\{1,2\}$,
   while the paths from~$4$ to~$5$ and~$3$ to~$5$ continue after the loop.
-  Term~$a_1$ is simply $\ABB!5$.
+  Term~$a_1$ is simply $\ABB~5$.
 \end{example}
 
 \begin{figure*}
@@ -844,7 +844,7 @@ in terms of control flow between basic blocks.
 
 \subsubsection{Memory Aliasing}
 Because symbolic execution uses symbolic state,
-the relations enclosure, separation, and overlap,
+the relations of enclosure, separation, and overlap,
 defined in \cref{sse:memory_aliasing}, must be determined for symbolic expressions.
 Unfortunately, there is no single solution, no one decision procedure,
 that can determine these properties for all symbolic expressions.
@@ -913,6 +913,7 @@ The concrete initial value of the instruction pointer, \inlineasm{rip},
 must also be included,
 and the (symbolic) address to return to after function completion
 must be indicated as stored on the stack.
+The conditions in question are indicated as sets of assignments.
 \begin{example}
   To reuse \cref{ex:simple}, its initial precondition would be:%
   \index{precondition}
@@ -1545,7 +1546,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
     \nomenclature{$\gg$}{Performs unsigned right shift when used with word values}%
     \nomenclature{$\ll$}{Performs left shift when used with word values}
     \caption{Invariant for address \texttt{0x123e}
-      (only 7 out of 23 equations shown)}\label{fig:example2-inv}
+      (only 7 out of 23 equalities shown)}\label{fig:example2-inv}
   \end{subfigure}
   \\[1em]
   \begin{subfigure}[b]{.38\linewidth}

@@ -19,24 +19,31 @@ $\region{a}{s}$ is defined by its address~$a$ (a 64-bit word) and size~$s$ in by
 (a natural number).
 A memory region is assumed not to overflow;
 that is, the address plus the size is less than $2^{64}$.
-To read a region of memory in the state, we use the notation
-$\readmemS{\sigma}{a}{s}$.
-If it is clear from context which state is meant, that state will be omitted.
-This function reads the list of~$s$ bytes starting from the given address
-and converts it to a word.
-One notation for writing to memory that is used in this dissertation is
-$\sigma\llparenthesis a \writeM v\rrparenthesis$,
-which denotes writing a word~$v$ to address~$a$ in state~$\sigma$.
-This function decomposes the given word into bytes and then writes them into memory
-in the appropriate order.
-As size information is encoded in the type of~$v$, an explicit size is not necessary.
+
+Reading a region of memory from some state~$\sigma$
+uses notation $\readmemS{\sigma}{a}{s}$.
+In Isabelle, this function reads the list of~$s$ bytes starting from the given address~$a$
+in the appropriate order and converts it to a word;
+in Haskell, it is the word itself.
+If it is clear from context which state is meant, the state will be omitted.
+Meanwhile, writing to memory uses the notation $x\coloneqq v$,
+which denotes writing a word~$v$ to some location~$x$ that is either a region,
+register, or flag. Flags are assigned as boolean values while
+registers always store the value as a 64-bit word.
+The behavior for regions differs if the write occurs in Isabelle or in Haskell.
+In Isabelle, the value to write is decomposed into its component bytes
+and then written into memory in the appropriate order.
+In Haskell, by contrast, it is kept track of as the initial word.
+A modification to state is represented as a set of assignments,
+such as $\{x_0\coloneqq v_0,x_1\coloneqq v_1,\dotsc\}$.
 
 
 
 
-% TODO: some should go in CFG section as the Hoare triple formulation is specifically for that
+
 \section{Memory Preservation}\label{se:memory_preservation}
-\todo{move to CFG section}
+\todo{move some to CFG section, the Hoare triple formulation is specifically for that}
+
 An application of memory usage analysis,
 memory preservation shows that the values written by a program%
 \index{memory!preservation}
@@ -124,7 +131,7 @@ The notation for this formulation is shown below.
   and let~$H$ denote a halting condition.
   A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$, the following implication holds:
   \begin{equation}
-  (\forall r\in R\cdot r\bowtie\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
+  (\forall r\in R\cdot r\separate\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
   \end{equation}
 \end{definition}
 \begin{example}
@@ -141,7 +148,7 @@ the concept of memory usage with respect to state changes must first be defined.
   if and only if every byte outside of the prespecified regions in memory is unchanged.
   Those bytes are associated with the variable~$a$.
   \begin{equation}
-    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\bowtie r)
+    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\separate r)
     \longrightarrow\readmemS{\sigma'}a{1}=\readmemS{\sigma}a{1}.
   \end{equation}
 \end{definition}

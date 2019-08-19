@@ -33,7 +33,8 @@ By building on the binary analysis tool \texttt{angr}~\citep{shoshitaishvili2016
 \index{\texttt{angr}}
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
 The first step is disassembly of an x86-64 binary using
-a tweaked version of the angr \lstinline|reassembly| analysis~\citep{wang2017ramblr}
+a tweaked version of the \texttt{angr}
+\lstinline|reassembly| analysis~\citep{wang2017ramblr}
 provided by \citet{roessle2019}\footnote{%
   This is required to use the Isabelle parser provided by that work.%
 }.%
@@ -139,10 +140,10 @@ $\step:A\times S\rightarrow(S\mid\bot_E)$.%
 \nomenclature{$A$}{Type of assembly instructions}%
 \nomenclature{$S$}{Type representing program state; an Isabelle record}%
 \nomenclature{$\bot_E$}{Indicates exceptional state}
-It requires a tuple of instruction to execute and current state~$\sigma$,
+It requires a tuple of instruction to execute as well as the current state~$\sigma$,
 returning the state~$\sigma'$ after execution of that instruction.
 If some sort of exception, such as a divide by zero, occurs,
-the function returns $\bot_E$ instead.
+the function returns~$\bot_E$ instead.
 
 From the machine model, we manually derive a run function%
 \index{symbolic execution!run function}
@@ -327,7 +328,7 @@ Thus, we have the following definition:
   
   Formally,
   \begin{equation}
-    \htriple{P}{H}{Q}\equiv\forall\sigma\cdot
+    \htriple{P}H{Q}\equiv\forall\sigma\cdot
     P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
     \sigma'\neq\bot_E\wedge Q(\sigma'),
   \end{equation}
@@ -345,9 +346,8 @@ This ensures that the run first stops at~$H$ before it stops at~$H'$.
 %\refstepcounter{equation}
 \begin{theorem}\label{thm:comp}
   Hoare triples are compositional with respect to stronger halting conditions:
-  %  \def\labelSpacing{24.574 pt}
   \begin{prooftree}
-    \AxiomC{$\htriple{P}{H}{Q}$}
+    \AxiomC{$\htriple{P}H{Q}$}
     \AxiomC{$\htriple{Q}{H'}{R}$}
     \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
     %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
@@ -417,7 +417,11 @@ leaving those functions in the \ac{tcb}.
 
 \section{Examples}\label{se:cfg_examples}
 The following sections present some basic explanation
-of the procedure used in this chapter, 
+of the procedure used in this chapter via two simple functions.
+The first, in \cref{sse:pow2_example}, is a non-recursive function that features a loop.
+The second, in \cref{sse:factorial_example}, gives an example of a recursive function
+and shows why those are difficult to reason about.
+
 \subsection{Non-recursive Loop Example: \texttt{pow2}}\label{sse:pow2_example}
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
@@ -522,7 +526,7 @@ Given the parent regions presented above, the proof that the Floyd invariant hol
 is executed automatically using the symbolic execution engine
 described in \cref{ch:symbolic_execution}.
 
-\subsection{Recursion: Factorial}\label{sse:cfg_factorial}
+\subsection{Recursion: Factorial}\label{sse:factorial_example}
 The factorial operation provides a simple example of recursion.%
 \index{factorial}%
 \index{recursion}
