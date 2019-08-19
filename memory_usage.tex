@@ -22,24 +22,33 @@ that is, the address plus the size is less than $2^{64}$.
 
 Reading a region of memory from some state~$\sigma$
 uses notation $\readmemS{\sigma}{a}{s}$.
-In Isabelle, this function reads the list of~$s$ bytes starting from the given address~$a$
-in the appropriate order and converts it to a word;
-in Haskell, it is the word itself.
+In Isabelle, this operation internally reads the list of~$s$ bytes
+starting from the given address~$a$ in the appropriate order and converts it to a word.
 If it is clear from context which state is meant, the state will be omitted.
-Meanwhile, writing to memory uses the notation $x\coloneqq v$,
-which denotes writing a word~$v$ to some location~$x$ that is either a region,
-register, or flag. Flags are assigned as boolean values while
-registers always store the value as a 64-bit word.
-The behavior for regions differs if the write occurs in Isabelle or in Haskell.
-In Isabelle, the value to write is decomposed into its component bytes
-and then written into memory in the appropriate order.
-In Haskell, by contrast, it is kept track of as the initial word.
-A modification to state is represented as a set of assignments,
-such as $\{x_0\coloneqq v_0,x_1\coloneqq v_1,\dotsc\}$.
+Meanwhile, writing to memory uses the notation $x\coloneqq e$,
+which has type~$\asp=(\var{SP},\esp)$;
+these \emph{assignments} denote writing an expression~$e$ to some location~$x$
+that is a \emph{state part},~$\var{SP}$;%
+\nomenclature{$\var{SP}$}{Type of state parts (regions, flags, and registers)}%
+\index{state part}
+it can be a region, register, or flag.
+Flags can only take boolean expressions while
+the result for a register must be a 64-bit word.
+The behavior for regions in Isabelle is to internally decompose the expression to write
+into its component bytes and then write those into memory in the appropriate order.
+The expressions themselves are of type~$\esp$,%
+\nomenclature{$\esp$}{Type of expressions}
+representing expressions over state parts.
+These expressions consist of common bit-vector operations including
+taking subsets of bits, bitstring concatenation, logical operators, casting,
+and floating-point, signed, and unsigned arithmetic.
 
-
-
-
+Modifications to state are represented as sets of assignments,~$\powerset(\asp)$,
+formulated as $A=\{x_0\coloneqq e_0,x_1\coloneqq e_1,\dotsc\}$.
+These assignments are all independent; their initial conditions
+are based off of whatever state is present before application of the assignments,
+and thus they can be applied in any order.
+As a simple example, consider the 
 
 \section{Memory Preservation}\label{se:memory_preservation}
 \todo{move some to CFG section, the Hoare triple formulation is specifically for that}

@@ -20,13 +20,36 @@ rather than concrete values~\citep{king1976symbolic}.
 The individual steps of execution are implemented as \emph{rewrite rules}%
 \index{symbolic execution!rewrite rule}
 over the state.
-When used in a theorem prover such as Isabelle/HOL,
-those rules are ideally proven to be correct.
+When used in a theorem prover such as Isabelle/HOL, those rules can be proven correct.
+Applying those rules in sequence to each step or instruction of a program
+allows aggregation of the individual state changes involved in the execution.
 
-In order to perform symbolic execution, you must have some sort of \emph{machine model}.%
-\index{symbolic execution!machine model}
+As an example of how the aggregation works, consider the following two instructions:
+\begin{lstlisting}[style=x64, gobble=2]
+  xor eax, eax
+  add al, 1
+\end{lstlisting}
+These instructions write to the 64-bit register \inlineasm{rax}.
+Registers \inlineasm{eax} and \inlineasm{al} respectively refer
+to the low 32 and 8 bits of that register.
+Symbolic execution produces the following assignment:
+$\mathrax\coloneqq\takebits{63,32}\mathrax\concat 1_{32}$.
+Here $\takebits{63,32}$ denotes taking the higher 32 bits%
+\nomenclature{$\takebits{h,l}w$}{Indicates taking bits in word~$w$
+  from bit~$l$ to bit~$h$ using 0-indexing}
+and~$\concat$ denotes concatenation,%
+\nomenclature{$\concat$}{Indicates bitstring concatenation}
+with $1_{32}$ being the number one zero-extended to~32 bits.
+The \inlineasm{xor} instruction sets the lower~$32$ bits of the register to zero
+while \inlineasm{add} increments the lower byte by one.
+Both instructions keep the higher~32 bits intact.
+The aggregate result is overwriting the lower~32 bits of the register
+with the 32-bit representation of~1.
 
 \section{Machine Model}\label{se:machine_model}
+In order to perform symbolic execution,
+you must first have some sort of \emph{machine model}.%
+\index{symbolic execution!machine model}
 The machine model used in this dissertation%
 \index{symbolic execution!machine model}
 is an extension of the work of \citet{roessle2019}.
@@ -83,53 +106,19 @@ and there is nothing to prevent a write from overwriting the program itself.
 For that reason,
 the works presented in this document assume that the loaded assembly is never modified.
 
-\section{Symbolic Execution and Memory Usage}
-% TODO: probably need more here
-Symbolic execution in Haskell keeps track of all used memory regions,%
-\index{symbolic execution}
-both the actual regions used by instructions as well as merged regions.
+\subsection{Simplification}
+The basic rules supplied by the machine model are not always well-suited to verification;
+they are often very low-level bitvector/bitstring operations.
+% TODO: figure out if this has already been mentioned
 
-\begin{example}\label{ex:simple}
-  Consider the following x86-64 assembly block:
-  \begin{lstlisting}[style=x64,gobble=4]
-    a0: mov    word ptr [rsp-0x8], 0xEEFF
-    a1: mov    dword ptr [rsp-0x4], 0xAABBCCDD
-    a2: mov    ax, word ptr [rsp-0x7]
-    a3: mov    edi, dword ptr [rsp-0x6]
-  \end{lstlisting}
-  The instructions at addresses~\lstinline|a0| and~\lstinline|a1|
-  write to two separate regions in memory,
-  $r_0=\region{\mathrsp-8}2$ and $r_1=\region{\mathrsp-4}4$.
-  Following the writes, the instruction at \lstinline|a2|
-  reads from region $\region{\mathrsp-7}{2}$,
-  which is merged with~$r_0$ to obtain $r_2=\region{\mathrsp-8}3$.
-  Reading from region $\region{\mathrsp-6}4$
-  results in a merge with~$r_2$ and~$r_1$, producing region $\region{\mathrsp-8}8$.
-  The aggregated assignment is then
-  \begin{equation*}
-    \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
-    \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF},
-  \end{equation*}
-  where $\takebits{h,l}w$ indicates taking the bits in word~$w$ from bit number~$l$
-  to bit number~$h$ using 0-indexing
-  and~$\concat$ indicates bitstring concatenation.%
-  \nomenclature{$\takebits{h,l}w$}{Indicates taking the bits in word~$w$ from bit 	number~$l$ to bit number~$h$ using 0-indexing}%
-  \nomenclature{$\concat$}{Indicates bitstring concatenation}
-  The set~$M$ of memory regions for the given block of assembly is ultimately
-  \begin{equation*}
-    M\equiv\{\region{\rspo-8}2,\region{\rspo-4}4,\region{\rspo-7}2,
-    \region{\rspo-6}4,\region{\rspo-8}8\}.
-  \end{equation*}
-\end{example}
-
-\subsection{Memory Aliasing}\label{sse:memory_aliasing}
+\section{Memory Aliasing}\label{sse:memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%
 \index{memory!aliasing}
 For example, consider a write to memory region $\region{a_1}{s_1}$
 using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
 The aggregated result of that set of assignments
 depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
-overlap, are \emph{separate}, or have an \emph{enclosure} relation.%
+\emph{overlap}, are \emph{separate}, or have an \emph{enclosure} relation.%
 \index{memory!region!separation}%
 \index{memory!region!enclosure}
 \begin{definition}
@@ -238,4 +227,37 @@ and assignment combined with all separate assignments.
 The final value read from memory is extracted from the merged assignment.
 Writing to memory occurs in a similar fashion.
 
+\begin{example}\label{ex:simple}
+  Consider the following x86-64 assembly block:
+  \begin{lstlisting}[style=x64,gobble=4]
+  a0: mov    word ptr [rsp-0x8], 0xEEFF
+  a1: mov    dword ptr [rsp-0x4], 0xAABBCCDD
+  a2: mov    ax, word ptr [rsp-0x7]
+  a3: mov    edi, dword ptr [rsp-0x6]
+  \end{lstlisting}
+  The instructions at addresses~\lstinline|a0| and~\lstinline|a1|
+  write to two separate regions in memory,
+  $r_0=\region{\mathrsp-8}2$ and $r_1=\region{\mathrsp-4}4$.
+  Following the writes, the instruction at \lstinline|a2|
+  reads from region $\region{\mathrsp-7}{2}$,
+  which is merged with~$r_0$ to obtain $r_2=\region{\mathrsp-8}3$.
+  Reading from region $\region{\mathrsp-6}4$
+  results in a merge with~$r_2$ and~$r_1$, producing region $\region{\mathrsp-8}8$.
+  The aggregated assignment is then
+  \begin{equation*}
+    \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
+    \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
+  \end{equation*}
+  Assuming an intial condition of $\mathrsp=\rspo$,
+  the set~$M$ of memory regions required for the given block of assembly is ultimately
+  \begin{equation*}
+  M=\{\region{\rspo-8}2,\region{\rspo-4}4,\region{\rspo-7}2,
+  \region{\rspo-6}4,\region{\rspo-8}8\}.
+  \end{equation*}
+\end{example}
+
+\section{Simplification}
+While the basic rules 
+
 \section{Summary}
+This chapter introduced

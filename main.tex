@@ -38,7 +38,7 @@
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
-\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+%\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -333,7 +333,7 @@
   \listoftables
   \listofalgorithms
   \lstlistoflistings
-  \addtocfix{Acronyms}{\printacronyms}
+  \addtocfix{Acronyms}\printacronyms
   \printnomenclature
 
   \input{attribution} % prefaces go in front matter
