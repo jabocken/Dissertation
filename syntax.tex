@@ -1,10 +1,4 @@
 \chapter{Syntax-Driven Verification}\label{ch:syntax}
-% Overview/preamble
-% Binary -> Abstract code (Freek's)
-% Abstract Code -> Isabelle
-% Isabelle -> Verification
-% - etc. <- will formulate it this way eventually, maybe
-
 Again as described in the preface,
 my primary contributions to the certificate generation and verification approach%
 \index{certificate}
@@ -27,7 +21,7 @@ As previously stated,
 the paper detailing the work as a whole~\citep{popl2019underreview}
 is currently under review.
 
-\section{Motivation}\label{se:fmuc_motivation}
+\section{Chapter Overview}\label{se:fmuc_motivation}
 While the methodology presented in the previous chapter
 for verifying memory preservation works well, it is not ideal.
 The need to manually formulate regions
@@ -1206,7 +1200,7 @@ Syntactic structure is required because Hoare logic is a syntax-guided approach.
   and the values stored in all memory regions outside set~$M$ are preserved.
 \end{definition}
 \begin{example}
-  \todo{need example}
+  \todo{need example?}
 \end{example}
 While \cref{def:usage} focuses on the regions written to,
 the regions read must also be included as symbolic execution
