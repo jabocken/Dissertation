@@ -67,9 +67,18 @@ The works presented in this dissertation in \cref{ch:cfg,ch:syntax}
 each use their own, slightly different symbolic execution engine,
 though the ultimate behavior is executing a sequence of instructions one by one,
 modifying the state each time.
+
 The instructions themselves are loaded from the machine model
-by mapping from the deeply-embedded instruction representation to the bitvector formulas
-provided by \citet{roessle2019}.
+by mapping from the deeply-embedded instruction representation
+extracted within the step function
+to the bitvector formulas provided by \citet{roessle2019}.
+If no such formula exists for the current instruction,
+a manually-implemented variant is used.
+There are several sets of instructions
+that are guaranteed to only have manual implementations due to limitations
+of the machine learning setup, with the major ones being
+jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
+\inlineasm{leave}, and \inlineasm{ret}.
 
 \subsection{Restrictions of the Model}
 As the x86-64 \ac{isa} is a little-endian architecture,%
@@ -98,15 +107,22 @@ and there is nothing to prevent a write from overwriting the program itself.
 For that reason,
 the works presented in this document assume that the loaded assembly is never modified.
 
-\section{Simplification Rules}\label{se:simplification}
+\subsection{Simplification Rules}\label{se:simplification}
 The basic rules supplied by the machine model are not well-suited to verification;
 they are often very low-level bitvector/bitstring operations.
 While \citet{roessle2019} provided a large set of simplification rules
 to abstract away from the underlying representation,
-those rules were not fully fledged
-and required additions during the process of verification.
+those rules did not cover all situations encountered in this dissertation,
+requiring the additions of more such rules during the process of verification.
 
-As a 
+Additionally, to increase performance,
+every instruction variant with learned semantics that is known to be in use
+was given a \emph{presimplified} lemma.%
+\index{presimplification}
+These lemmas provide immediate abstractions of the low-level instruction representations
+that rely on the aforementioned simplification rules.
+Using these lemmas improved performance when performing symbolic execution,
+as they greatly reduce the number of simplification rules that must be applied.
 
 \section{Memory Aliasing}\label{sse:memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%

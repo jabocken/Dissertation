@@ -1,15 +1,23 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
 As described in the preface,
-my two main contributions to the memory preservation work presented here
-were the development of a tool for producing proof skeletons
-for memory preservation, interfacing with the analysis tool \texttt{angr},
-and the development of structured proof strategies
-to flesh out and verify those skeleton proofs (\cref{se:cfg_overview}),
-along with the development of guidelines
-for invariants that provide for function-level composition
-(\cref{se:cfg_composition}).
+my three main contributions to the memory preservation work presented here
+were:
+\begin{enumerate*}
+  \item the development of a tool for producing proof skeletons
+  for memory preservation, interfacing with the analysis tool
+  \texttt{angr} (\cref{se:cfg_overview});
+  \item the development of structured proof strategies
+  to flesh out and verify those skeleton proofs,
+  along with the development of guidelines
+  for invariants that provide for function-level composition (\cref{se:cfg_composition});
+  and
+  \item the application of the methodology to functions in
+  \cref{sse:pow2_example,se:cfg_application}.
+\end{enumerate*}
 
-\todo{describe layout? move stuff from overview maybe}
+The rest of this chapter provides formal definitions
+of the chapter-specific properties in \cref{se:cfg_defs}
+and an example of application to a recursive function in \cref{sse:factorial_example}.
 
 \section{Overview}\label{se:cfg_overview}
 The memory usage analysis approach presented in this chapter
@@ -128,59 +136,47 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 \index{function!call}%
 \index{recursion}
 
-\section{Formal Definition}
+\section{Formal Definitions}\label{se:cfg_defs}
 A formal definition of memory preservation requires a formal basis to work with,
-and this definition starts with the machine model from \cref{se:machine_model}.
+and that basis is the machine model from \cref{se:machine_model}.
 
 \subsection{Symbolic Execution for \acs*{cfg}-Driven Verification}\label{cfg_symb_exec}
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
 this chapter requires a more specific look.
 The step function for this methodology takes the form
-$\step:A\times S\rightarrow(S\mid\bot_E)$.%
-\nomenclature{$A$}{Type of assembly instructions}%
+$\step:S\rightarrow(S\mid\bot_E)$.%
 \nomenclature{$S$}{Type representing program state; an Isabelle record}%
 \nomenclature{$\bot_E$}{Indicates exceptional state}
-It requires a tuple of instruction to execute as well as the current state~$\sigma$,
-returning the state~$\sigma'$ after execution of that instruction.
+It takes the current state~$\sigma$ to execute from
+and returns the state~$\sigma'$ after execution of the current instruction,
+which is extracted from the current state based on the value of the instruction pointer
+\inlineasm{rip}.
 If some sort of exception, such as a divide by zero, occurs,
 the function returns~$\bot_E$ instead.
 
-From the machine model, we manually derive a run function%
+From the machine model, we manually derived a run function%
 \index{symbolic execution!run function}
 $\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\bot_E\mid\bot_\var{NT})$.%
 \nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
-This partial function takes as input a state predicate~$H$ and a state~$\sigma$.%
+This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
-Predicate~$H$ denotes the \emph{halting condition}.%
+producing a state~$\sigma'$ on successful completion.
+Predicate~$H$ denotes the \emph{halting condition},%
 \index{symbolic execution!halting condition}
-Typically, the halting condition instructs the run function to stop
-at a certain instruction, such as \lstinline{ret}.
-The run function iteratively fetches the current instruction
-via the current value of the instruction pointer
-and uses the machine model to execute it.
-Whenever an exception occurs, it stops and returns~$\bot_E$.
+which typically instructs the run function to stop
+at a certain instruction address, such as that following a \inlineasm{ret}.
+The run function executes $\step$ until~$H$, applied to the current state,
+is true. Whenever an exception occurs, it stops and returns~$\bot_E$.
 If the execution were to continue forever
 without an exception or reaching the halting condition
-(e.g.\ due to an infinite loop),
-the function returns $\bot_\var{NT}$.
+(as would happen with an infinite loop), the function returns $\bot_\var{NT}$.
 Formally, this is achieved by a standard least-fixed-point construction.
-
-% TODO!!!
-
-
-
-
-
-
-
-
-
-
 
 \subsection{Floyd Invariant Foundation}\label{se:cfg_invariant}
 Loops pose a significant problem when using symbolic execution to analyze code.%
 \index{loop}
-One of the major issues is that they result in significant path explosion.
+One of the major issues is that they result in significant path explosion.%
+\index{loop!path explosion}
 While there are methodologies to reduce the number of paths to execute
 when using loops~\citep{saxena2009lese,obdrzalek2011efficient},
 those methods are not currently formally verified
@@ -195,7 +191,7 @@ With the right annotations,
 it is possible to only need to symbolically execute one iteration per loop.
 This eliminates the above-mentioned loop issues.
 That breaking up of loops can be accomplished using a control-flow-based approach
-akin to \emph{Floyd verification}~\citep{floyd1967assigning}.%
+akin to Floyd verification~\citep{floyd1967assigning}.%
 \index{Floyd!verification}
 A state predicate assigned to an instruction within a loop
 functions as an \emph{invariant} for that loop.
@@ -893,13 +889,16 @@ requires a loop invariant in addition to the pre- and postconditions.
   \caption{Example Floyd invariants}
 \end{figure*}
 
-\section{On Usability}
+\subsection{On Usability}
 The three main aspects of per-function user interaction for this methodology are
 \begin{enumerate*}
   \item defining a Floyd invariant,
   \item defining memory region set~$M$, and
   \item proving memory preservation.
 \end{enumerate*}
+The functions analyzed in the above case study provided some significant insight
+into the usability of those aspects.
+
 While restricting the verification effort to memory preservation
 does reduce the effort required to provide Floyd invariants, it does not eliminate it.
 This is more of a problem for loops with complex behavior
