@@ -1,15 +1,4 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-
-% planning:
-% - Machine Model
-% - Memory aliasing
-% -- describe problem (SPLSA)
-% -- separation/enclosure
-% -- Readmem
-% - Rewriting
-% -- Isabelle rules
-% -- ...
-
 % Fix up prologue/preamble, give overview and outline
 
 Symbolic execution, in a sense,%
@@ -50,17 +39,16 @@ with the 32-bit representation of one.
 In order to perform symbolic execution,
 you must first have some sort of \emph{machine model}.%
 \index{symbolic execution!machine model}
-The machine model used in this dissertation%
-\index{symbolic execution!machine model}
+The machine model used in this dissertation for the work in Isabelle/HOL
 is an extension of the work of \citet{roessle2019}.
 They embedded bitvector-based, machine-learned semantics
 of a modern version of the x86-64 \ac{isa},
 which includes instruction set extensions such as the \ac{sse} family, in Isabelle/HOL.
 To improve reliability of their work,
 it was tested against an actual, live x86-64 machine to prove semantic equivalence.
-The semantics they used was an extension of that
-provided by \citet{heule2016stratified},
-who applied machine learning to derive semantics from a physical machine as well.
+The semantics they used was an extension of that provided by \citet{heule2016stratified},
+who did the initial application of machine learning
+to derive semantics from a physical machine.
 This produced highly reliable semantics:
 they formally compared a subset of their automatically-generated semantics
 to manually written rules based on the Intel reference manuals
@@ -74,12 +62,16 @@ The memory holds both instructions and data, as in the standard von Neumann mode
 \index{von Neumann model}
 Each instruction is executed by a \emph{step} function,%
 \index{symbolic execution!step function}
+defined to suit the nature of the symbolic execution engine in use.
+The works presented in this dissertation in \cref{ch:cfg,ch:syntax}
+each use their own, slightly different symbolic execution engine,
+though the ultimate behavior is executing a sequence of instructions one by one,
+modifying the state each time.
+The instructions themselves are loaded from the machine model
+by mapping from the deeply-embedded instruction representation to the bitvector formulas
+provided by \citet{roessle2019}.
 
-
-
-
-% TODO
-
+\subsection{Restrictions of the Model}
 As the x86-64 \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation are designed with that in mind.
@@ -96,8 +88,8 @@ Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 memory operations. These include modern versions of ARM, PowerPC, SPARC, and MIPS.
 Supporting bi-endianness would require additional complexity in memory handling.
 
-\subsection{Restrictions of the Model}
-The usage of a shared data space for instructions and data, though very common,
+Additionally,
+the usage of a shared data space for instructions and data, though very common,
 does involve some issues for verification.
 The model does not currently provide any memory protection schemes,%
 \index{memory!protection}
@@ -106,10 +98,15 @@ and there is nothing to prevent a write from overwriting the program itself.
 For that reason,
 the works presented in this document assume that the loaded assembly is never modified.
 
-\subsection{Simplification}
-The basic rules supplied by the machine model are not always well-suited to verification;
+\section{Simplification Rules}\label{se:simplification}
+The basic rules supplied by the machine model are not well-suited to verification;
 they are often very low-level bitvector/bitstring operations.
-% TODO: figure out if this has already been mentioned
+While \citet{roessle2019} provided a large set of simplification rules
+to abstract away from the underlying representation,
+those rules were not fully fledged
+and required additions during the process of verification.
+
+As a 
 
 \section{Memory Aliasing}\label{sse:memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%
@@ -140,17 +137,34 @@ The actual definitions of those relations are as follows.
   If those regions are not separate, they \emph{overlap}.
 \end{definition}
 \begin{example}
-  \todo{concrete example}
+  Consider the simple regions $r_0=\region{5}{4}$ and $r_1=\region{7}{4}$.
+  Calculating separation for those two regions is as follows:
+  \begin{gather*}
+    4=0\vee 4=0\vee 5+4\leq 7\vee 7+4\leq 5 \\
+    9\leq 7\vee 11\leq 5 \\
+    \false\vee\false \\
+    \false
+  \end{gather*}
+  Thus, those two regions are \emph{not} separate.
 \end{example}
+
 \begin{definition}
   Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,
-  if and only if
+  if and only if:
   \begin{equation*}
-  a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
+    a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
   \end{equation*}
 \end{definition}
 \begin{example}
-  \todo{concrete example}
+  Consider the simple regions $r_0=\region{7}{4}$ and $r_1=\region{5}{8}$.
+  Calculating enclosure for those two regions is as follows:
+  \begin{gather*}
+    7\geq 5\wedge 7+4\leq 5+8 \\
+    7\geq 5\wedge 11\leq 13 \\
+    \true\wedge\true \\
+    \true
+  \end{gather*}
+  Thus~$r_1$ encloses~$r_0$.
 \end{example}
 
 An additional problem is when a region that overlaps with at least one other region
@@ -187,6 +201,7 @@ if there are any bits in~$r_1$ above that address.
 For sets of assignments such as those mentioned above,
 merge is used as an infix operator, with order being important
 (the first assignment overwrites [parts of] the second as shown above).
+\Cref{ex:simple} demonstrates a more concrete usage of merging.
 
 Writing to and reading from memory in the process of symbolic execution
 also requires analysis of separation and merging.
@@ -265,9 +280,6 @@ Writing to memory occurs in a similar fashion.
   \region{\rspo-6}4,\region{\rspo-8}8\}.
   \end{equation*}
 \end{example}
-
-\section{Simplification}
-While the basic rules 
 
 \section{Summary}
 This chapter introduced
