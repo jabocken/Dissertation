@@ -70,7 +70,7 @@ modifying the state each time.
 
 The instructions themselves are loaded from the machine model
 by mapping from the deeply-embedded instruction representation
-extracted within the step function
+extracted within or supplied to the step function
 to the bitvector formulas provided by \citet{roessle2019}.
 If no such formula exists for the current instruction,
 a manually-implemented variant is used.
@@ -144,7 +144,7 @@ Other forms of overlap or enclosure, such as writing two bytes to a four byte re
 or to regions that are not aligned, require even more complicated reasoning.
 
 The actual definitions of those relations are as follows.
-\begin{definition}
+\begin{definition}[Separation]
   Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
   notation $r_0\separate r_1$, if and only if the following is true:
   \begin{equation*}
@@ -164,7 +164,7 @@ The actual definitions of those relations are as follows.
   Thus, those two regions are \emph{not} separate.
 \end{example}
 
-\begin{definition}
+\begin{definition}[Enclosure]
   Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,
   if and only if:
   \begin{equation*}
@@ -187,7 +187,7 @@ An additional problem is when a region that overlaps with at least one other reg
 that has been modified is written to.
 To combine those writes, the regions must be \emph{merged}.%
 \index{memory!merging}
-\begin{definition}\label{def:merge}
+\begin{definition}[Merging]\label{def:merge}
   The \emph{merge} of two symbolic assignments
   $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
   where the write to~$r_1$ occurs before the write to~$r_0$,
@@ -268,7 +268,7 @@ and assignment combined with all separate assignments.
 The final value read from memory is extracted from the merged assignment.
 Writing to memory occurs in a similar fashion.
 
-\begin{example}\label{ex:simple}
+\begin{example}[Merging]\label{ex:simple}
   Consider the following x86-64 assembly block:
   \begin{lstlisting}[style=x64, gobble=4]
   a0: mov  word ptr [rsp-0x8], 0xEEFF

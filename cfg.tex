@@ -235,7 +235,7 @@ This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
 As a technical detail, some function proofs require additional arguments to $I$
 that represent the arguments passed to the function.
-\begin{definition}\label{def:floyd_inv}
+\begin{definition}[Floyd invariant]\label{def:floyd_inv}
   A Floyd invariant~$I$ \emph{holds} if and only if, for any state~$\sigma$,
   \begin{equation}
     I(\loc\sigma)(\sigma)\longrightarrow
@@ -312,11 +312,12 @@ The result is that the program statement is
 characterized by the addresses of its initial
 and ending instructions, defined in~$P$ and~$H$, rather than a specific syntax.
 Thus, we have the following definition:
-\begin{definition}\label{def:htriple}
-  $\htriple{P}{H}{Q}$
+\begin{definition}[Hoare triple for memory preservation]\label{def:htriple}
+  $\htriple{P}H{Q}$
   denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
-  $\run(H,\sigma)$ produces a non-exceptional state that satisfies postcondition~$Q$.
-  
+  the function call $\run(H,\sigma)$
+  produces a non-exceptional state that satisfies postcondition~$Q$.
+
   Formally,
   \begin{equation}
     \htriple{P}H{Q}\equiv\forall\sigma\cdot

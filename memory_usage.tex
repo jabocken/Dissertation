@@ -135,7 +135,7 @@ as well as whatever heap memory was supplied or allocated, if any.
 Memory preservation formulates that any byte not within any of the regions in~$M$
 has to remain unchanged throughout the execution of that function.
 The notation for this formulation is shown below.
-\begin{definition}\label{mem_pres_hoare}
+\begin{definition}[Memory preservation]\label{mem_pres_hoare}
   Let~$M$ be a set of memory regions, let~$P$ be a precondition,
   and let~$H$ denote a halting condition.
   A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$, the following implication holds:

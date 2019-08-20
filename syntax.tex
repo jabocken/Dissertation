@@ -43,8 +43,6 @@ This includes the algorithm for control flow information extraction
 as well as how symbolic execution is used
 to produce the preconditions and proof ingredients.
 
-% Need to do: less focus on Freek work (take out in-depth explanations of algorithms?)
-
 Once generation is complete, the certificate and the original assembly%
 \index{certificate}
 can then be loaded into an interactive theorem prover.
@@ -858,7 +856,7 @@ are formulated as \ac{smt} problems.
 \Ac{smt} formulations generally require negating the desired condition
 and then proving that the resultant problem is unsatisfiable.
 Thus, for separation, we have the below definition.
-\begin{definition}
+\begin{definition}[\ac{smt} separation]
   Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
   are necessarily separate if and only if, for any address~$a$,
   the following \ac{smt} problem is unsatisfiable:
@@ -867,7 +865,7 @@ Thus, for separation, we have the below definition.
   \end{equation*}
 \end{definition}
 Overlap may occur if two regions are not necessarily separate.
-\begin{definition}
+\begin{definition}[\ac{smt} overlap]
   The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
   the following \ac{smt} problem is unsatisfiable:
   \begin{equation*}
@@ -875,7 +873,7 @@ Overlap may occur if two regions are not necessarily separate.
   \end{equation*}
 \end{definition}
 Enclosure is 
-\begin{definition}
+\begin{definition}[\ac{smt} enclosure]
   Region $r_0$ is enclosed by $r_1$ if and only if,
   for any address~$a$, the following \ac{smt} problem is unsatisfiable:
   \begin{equation*}
@@ -1038,13 +1036,10 @@ one of the primary contributions for this chapter as mentioned in its preamble.
 Both the \ac{fmuc} and the original assembly are loaded into Isabelle/HOL,
 where the memory usage theorem is then proven using the proof ingredients
 provided by the \ac{fmuc}.
-By this method, which requires a step function%
-\index{symbolic execution!step function}
-that models the semantics of the assembly instructions%
-\index{semantics!assembly}
+By this method, which requires a step function
+that models the semantics of the assembly instructions
 and a process to apply it repeatedly,
-the \ac{fmuc}'s memory usage Hoare triple can be verified.%
-\index{Hoare!triple}
+the \ac{fmuc}'s memory usage Hoare triple can be verified.
 
 \begin{figure*}
   \centering
@@ -1109,50 +1104,14 @@ These single-instruction blocks are then translated into \texttt{Call}~$f$ entri
 in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function called.
 This allows for proper matching with the Hoare rules presented below.
 
-\subsection{Per-Block Verification}\label{sse:per-block}
-The verification methodology presented here occurs 
-by first verifying the functionality of each basic block in the corresponding function.
-
-\todo{This isn't in the right place}
-\Cref{fig:intro-rule} shows the introduction rule we used
-to establish Hoare triples over basic blocks.
-The first assumption requires the symbolic execution method be run from a universally quantified initial symbolic state~$\sigma$ that satisfies the precondition.
-As long as any resulting state~$\sigma'$ satisfies the postcondition~$Q$,
-the set of memory regions~$M$ generated for the block should be correct.
-
-The second assumption is required because of an important subtlety:
-the regions generated in the~\ac{fmuc} are state dependent.
-Consider the example in \cref{fig:fmuc}.
-Memory region set~$M$ is actually a function based on the initial state of the block: its regions depend on the values stored in memory.
-However, it makes no sense to express the regions used by individual blocks
-within a larger function in terms of their own individual initial state alone.
-If a region of a basic block somewhere within a function body depends on
-something such as the value of register $\mathrdi$ at the start of that block,
-then it would be unsound to express that memory region in terms of $\rdio$,
-the value of $\mathrdi$ at the start of the function.
-As such,
-the Hoare triples are defined over a state-independent set of memory regions,~$M'$.
-That set is obtained for each block by taking the generated state-dependent set of memory regions and applying that set to any state that satisfies the current invariant.
-
-We developed a proof method in Isabelle that takes the proof ingredients
-from the \ac{fmuc} and discharges this introduction rule.
-The proof method runs symbolic execution within Isabelle/HOL
-to prove the postcondition and thus prove the memory usage.
-The open variables $P$, $Q$, $n$, $a$, $i$, and $M$ are all provided by the \ac{fmuc}.
-No user interaction is required outside of cases where semantics
-for specific instructions are unavailable or the Isabelle libraries in use
-do not have the right simplification lemmas for automatic reasoning.
-Those cases are rare and become rarer as more relevant lemmas are developed,
-so for basic blocks, the proof is essentially automated.
-
-\subsubsection{Symbolic Execution}\label{sse:syntax_ver_symb}
-\Cref{cfg_symb_exec} previously presented a formal symbolic execution engine%
-\index{symbolic execution}%
+\subsection{Symbolic Execution}\label{sse:syntax_ver_symb}
+\Cref{cfg_symb_exec} previously presented a formal symbolic execution engine
 based on the machine model described in \cref{se:machine_model}.
 It provides a function $\run$ that describes the symbolic execution of
 blocks in a control flow graph.
 
-The formal function for block-level symbolic execution presented in this chapter,
+The formal function for block-level symbolic execution presented in this chapter,%
+\index{symbolic execution}
 by contrast, is a \emph{transition relation}%
 \index{transition relation} formulated as
 $\execblock:\mathbb{N}\times W\times\mathbb{N}\times S\times S\rightarrow\mathbb{B}$.%
@@ -1169,31 +1128,60 @@ Undefined behavior, such as null-pointer dereferencing,
 is modeled by relating the state in which it occurs to any successor state
 supplied with it.
 
-\begin{example}
-  C
-  \todo{Need a good/better example!}
-\end{example}
+The internal step function has type $\step:A\times\mathbb{N}\times S\rightarrow S$,%
+\nomenclature{$A$}{Type of instructions}
+with its first argument being an instruction, its second being the size of the instruction,
+and its third being the current state.
+The function returns the state after instruction execution,
+incrementing \inlineasm{rip} by the supplied size
+if it was not changed by a control-flow instruction instead.
 
-This is then used to produce a function for \ac{scf} execution,
+The $\execblock$ function is used as part of a function for \ac{scf} execution,
 $\exec:\var{SCF}\times S\times S\rightarrow\mathbb{B}$.
-In case of loops the function is defined using a least-fixed-point construction.
+In case of loops, that function is defined using a least-fixed-point construction.
 Thus, if there are infinite loops present,
 the function will have no related successor states.
+The function is not actually executed when used in a proof, however;
+it exists to allow creation of the Hoare rules shown below in \cref{scf_hoare}.
 
 Unlike the symbolic execution for generation,
 this symbolic execution methodology is implemented fully in Isabelle/HOL,
 meaning that every rewrite rule has been formally proven correct.
 
+\subsection{Per-Block Verification}\label{sse:per-block}
+The verification methodology presented here occurs
+by first verifying the functionality of each basic block in the corresponding function.
+This is done for each block by proving the lemma shown below,
+using the $\exec$ function from the previous section:
+\begin{lemma}[Block Verification]\label{per-block-lemma}
+  \begin{equation*}
+    P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge
+    Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma')
+  \end{equation*}
+\end{lemma}
+Every generated version of this lemma is discharged
+with an Isabelle/HOL proof method written in Eisbach~\citep{matichuk2016eisbach},
+Isabelle's proof automation language.
+For each block, the method takes the block-related proof ingredients
+from the \ac{fmuc} and runs symbolic execution
+to prove the postcondition and thus establish the memory usage for the block.
+The open variables $P$, $Q$, $n$, $a$, $i$, and $M$ are all provided by the \ac{fmuc}.
+No user interaction is required outside of cases where semantics
+for specific instructions are unavailable or the Isabelle libraries in use
+do not have the right simplification lemmas for automatic reasoning.
+Those cases are rare and become rarer as more relevant lemmas are developed,
+so for basic blocks, the proof is essentially automated.
+
 \subsection{Function Body Verification}
-While symbolic execution worked well for our purposes on the level of basic blocks,
-we also wanted a more structured way of composing those blocks
-for verification on the function level. This section describes that process,
-which occurs after the individual blocks have had their semantics
-and memory usage drived.
+While symbolic execution works well to establish memory usage on the level of basic blocks,
+the goal of this verification effort is to formally establish memory usage
+on the function level. This section describes that process,
+which occurs after the individual blocks have had their semantics and memory usage derived
+and relies on Hoare logic (described in \cref{se:hoare}).
 
 \subsubsection{Hoare Rules}\label{scf_hoare}
 The Hoare triple formulation used for this work, $\htriple*{P}f{Q}M$,
-resembles traditional Hoare triples a bit more,%
+resembles traditional Hoare triples a bit more than the version from \cref{ch:cfg},%
 \index{Hoare!triple}
 as rather than a halting condition
 it takes a syntactic representation of the program, an \ac{scf}.
@@ -1202,10 +1190,9 @@ it also explicitly contains the set of memory regions,~$M$,
 that enumerate the areas of memory read and written by the program
 the \ac{scf} encodes.
 Syntactic structure is required because Hoare logic is a syntax-guided approach.
-\begin{definition}\label{def:usage}
-  A memory usage Hoare triple is defined as
+\begin{definition}[Hoare triple for \ac{scf}]\label{def:usage}
   \begin{equation}
-    \htriple*{P}{f}{Q}{M}\equiv
+    \htriple*{P}f{Q}{M}\equiv
     \forall\sigma~\sigma'\cdot P(\sigma)\wedge\exec(f,\sigma,\sigma')\longrightarrow
     Q(\sigma')\wedge\usage(M,\sigma,\sigma')
   \end{equation}
@@ -1228,7 +1215,7 @@ the related instructions will not complete.
   \setlength\parskip{1em}
   \subcaptionbox{Introduction rule\label{fig:intro-rule}}{
     \AxiomC{$\begin{multlined}
-      \forall\sigma~\sigma'\cdot P(\sigma)\longrightarrow{} \\
+      \forall\sigma~\sigma'\cdot P(\sigma)\longrightarrow \\
       \execblock(n,a,i,\sigma,\sigma')\wedge{} \\
       Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma')
     \end{multlined}$}
@@ -1328,10 +1315,34 @@ to any state that satisfies the invariant.
 This shows that the strength of the generated invariants directly influences the tightness of the overapproximation of memory usage.
 A weaker invariant, such as $i<20$, would result in a larger set of memory regions.
 
+\subsubsection{The Introduction Rule}
+This rule, depicted in \cref{fig:intro-rule},
+is the rule that ties the per-block verification to the function-body verification.
+The first assumption requires the symbolic execution method be run
+from a universally quantified initial symbolic state~$\sigma$ that satisfies the precondition.
+As long as any resulting state~$\sigma'$ satisfies the postcondition~$Q$,
+the set of memory regions~$M$ generated for the block should be correct.
+
+The second assumption is required because of an important subtlety:
+the regions generated in the~\ac{fmuc} are state dependent.
+Consider the example in \cref{fig:fmuc}.
+Memory region set~$M$ is actually a function based on the initial state of the block:
+its regions depend on the values stored in memory.
+However, it makes no sense to express the regions used by individual blocks
+within a larger function in terms of their own individual initial state alone.
+If a region of a basic block somewhere within a function body depends on
+something such as the value of register $\mathrdi$ at the start of that block,
+then it would be unsound to express that memory region in terms of $\rdio$,
+the value of $\mathrdi$ at the start of the function.
+As such,
+the Hoare triples are defined over a state-independent set of memory regions,~$M'$.
+That set is obtained for each block by taking the generated state-dependent set of memory regions
+and applying that set to any state that satisfies the current invariant.
+
+
 \subsubsection{Verification Condition Generation}\label{sse:vcg}
-The \ac{vcg} presented here is a set of proof methods
-implemented in Eisbach~\citep{matichuk2016eisbach},
-Isabelle's proof automation language.
+The \ac{vcg} presented here is also a set of proof methods
+implemented in Eisbach.
 It is designed to automatically apply the proper Hoare logic rules
 as much as possible,
 driven by the formal \ac{scf} provided by the \ac{fmuc}.
@@ -1566,10 +1577,10 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
   \end{subfigure}
   \caption{Application of entire methodology on example}
 \end{figure}
-Zooming in on block $\Block{123e}{1244}$, we see from \cref{fig:example2-inv}
+Zooming in on $\ABB~\Block{123e}{1244}$, we see from \cref{fig:example2-inv}
 that the \ac{fmuc} provides 13 regions, of which four are shown.
 Region~$r_0$ stores the return address
-while Region~$r_1$ depends on the segment register~\inlineasm{fs}
+while region~$r_1$ depends on the segment register~\inlineasm{fs}
 and stores the canary value\index{stack!canary}
 used to detect stack buffer overflows~\citep{cowan1998stackguard}.%
 \index{stack!buffer overflow}
@@ -1577,7 +1588,7 @@ Region~$r_2$ is based on the pointer passed as the second argument to the functi
 and region~$r_3$ is part of the stack frame.
 The generated \acp{mrr} assume that all these regions are separate.
 
-The precondition assigned to block $\Block{123e}{1244}$
+The precondition assigned to $\ABB~\Block{123e}{1244}$
 is effectively a loop invariant (see \cref{fig:example2-inv}).%
 \index{loop!invariant}
 The frame pointer \lstinline|rbp|%
@@ -1596,10 +1607,10 @@ executing one iteration of the loop body
 will result in a state that again satisfies the loop invariant.
 The only interactions required in verifying the \ac{fmuc} of the entire function are:
 \begin{enumerate*}
-  \item showing that the postcondition after block $\Block{1149}{120b}$
+  \item showing that the postcondition after $\ABB~\Block{1149}{120b}$
   implies the loop invariant, and
   \item showing that, in the case of a break, the postcondition of the loop body
-  implies the precondition of block $\Block{1246}{1249}$.
+  implies the precondition of $\ABB~\Block{1246}{1249}$.
 \end{enumerate*}
 This amounts to two manually written lines of Isabelle proof code.  
 
@@ -1715,7 +1726,7 @@ Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
   \begin{tikzpicture}
     \begin{axis}[
       width=0.98\linewidth,
-      height=0.35\linewidth,
+      height=\linewidth,
       ybar,
       ylabel=Counts and Percentages,
       bar width=0.3,
