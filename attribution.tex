@@ -5,15 +5,14 @@ The sections below describe which components were primarily my work
 and which were mainly those of my compatriots, as well as which were more joint efforts.
 
 \section*{Memory Usage and Symbolic Execution}
-The work on formulating properties for memory regions
+The initial work on formulating properties for memory regions
 as presented in \cref{se:memory_preservation,sse:memory_aliasing},
 which is shared between the two works presented in this document,
 was provided by Dr.~Freek Verbeek.
 
 While it was not a major contribution,
 I did help produce additional proven-correct simplification rules
-for \cref{se:simplification}
-as well as more presimplification rules for instructions;
+as well as more presimplification rules for \cref{se:simplification};
 most of the presimplification rules
 were done by a fellow student working on a tangential project, however.
 \todo{citation for all the work Abhijith did on presimplification?}
@@ -50,42 +49,42 @@ and so I also assisted in the development of simplification rules
 to enable higher-level reasoning on multiple instructions.
 The rules were implemented in Isabelle and formally proven correct.
 
-\section*{Highly Automated Formal Proofs
-  over Memory Usage of Assembly Code}\label{attribute2}
+\section*{Highly Automated Formal Proofs over Memory Usage of Assembly Code}
+\label{attribute2}
 Following on from that work is a recently-submitted paper
 that builds on our experiences from the previous verification
 work~\citep{popl2019underreview}. That work,
 which introduces the generation and verification of
-\emph{formal memory usage certificates}, is described in \cref{ch:syntax}.
+\emph{\acp{fmuc}}, is described in \cref{ch:syntax}.
+
 Most of my primary contributions to this work were on the verification side of things.
 The first two big ones were application and development of syntactic rules
-for axiomatic reasoning over memory usageusage
+for axiomatic reasoning over memory usage
 as applied to structured control flow (\cref{scf_hoare})
 as well as a method to automate the process of doing so, \iacf*{vcg}
 as described in \cref{sse:vcg}.
+The methodology for function-level compositionality in \cref{sse:fmuc_comp}
+was also a primary contribution of mine,
+as was the case study analysis in \cref{se:xen}.
 
 On the \ac{fmuc} generation side of things,
-I did most of the work on translating the informal \acp{fmuc}
-into the theorems and data types required to verify the \acp{fmuc} in Isabelle.
+I did most of the work on translating the Haskell \acp{fmuc}
+into the theorems and data types required to verify the \acp{fmuc} in Isabelle,
+which included adapting the syntactic control flow used in \ac{fmuc} generation
+into a suitable form for the Isabelle work (\cref{isabelle_scf}).
+I also made some significant contributions to invariant generation in \cref{sse:inv_gen}.
 
 The person who did most of the work on the \ac{fmuc} generation in general,
 however, was again Dr.~Verbeek.
 In order to properly generate \ac{fmuc} preconditions and postconditions,
-he formulated a symbolic execution machine model for many common x86-64 instructions
+he formulated a symbolic execution machine model in Haskell
+for many common x86-64 instructions
 as well as additional ones encountered in the course of our case studies.
-
 Dr.~Verbeek also developed the Z3 interface
 for handling the memory region separation and enclosure decision problems,
 mentioned in \cref{se:fmuc_overview},
-and did most of the work for control flow extraction (\cref{sse:cfg_extract}.
-The more complex invariant generation work was also his responsibility,
-such as the development of the invariant propagation algorithm in \cref{sse:inv_gen}.
+and did most of the work for control flow extraction (\cref{sse:cfg_extract}).
 
-I did assist in the development of the generation procedure for preconditions as well,
-however.
-I also contributed to adapting the syntactic control flow used in \ac{fmuc} generation
-into a form suitable for usage in the theorem prover we used (\cref{isabelle_scf})
-and to the methodology of function-level compositionality for that approach
-(\cref{sse:fmuc_comp}).
-Additionally, I implemented informal semantics for additional instructions encountered
-in the process of \ac{fmuc} generation.
+I did provide some contributions to the implemented Haskell semantics
+for additional instructions encountered in the process of \ac{fmuc} generation,
+as well.

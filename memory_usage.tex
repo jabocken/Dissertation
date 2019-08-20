@@ -1,24 +1,4 @@
-\chapter{Memory Usage}\label{ch:memory}
-This chapter provides an introduction to the concept of \emph{memory usage}.%
-\index{memory!usage}
-
-\todo{more}
-
-\section{Definitions}
-Much of the memory work in this document relates to the concept of \emph{basic blocks}.
-A basic block is defined here as a sequence of assembly instructions
-whose behavior can be described using only state transitions and branches.
-A block always terminates and has no loops.
-This definition differs slightly from the definition used by compilers such as LLVM,
-in which basic blocks also do not contain any internal branching.
-
-\subsection{Memory Regions}\label{memory_regions}
-A \emph{memory region}%
-\index{memory!region}
-$\region{a}{s}$ is defined by its address~$a$ (a 64-bit word) and size~$s$ in bytes
-(a natural number).
-A memory region is assumed not to overflow;
-that is, the address plus the size is less than $2^{64}$.
+\chapter{Memory Usage}
 
 Reading a region of memory from some state~$\sigma$
 uses notation $\readmemS{\sigma}{a}{s}$.
@@ -50,102 +30,13 @@ are based off of whatever state is present before application of the assignments
 and thus they can be applied in any order.
 As a simple example, consider the 
 
-\section{Memory Preservation}\label{se:memory_preservation}
-\todo{move some to CFG section, the Hoare triple formulation is specifically for that}
 
-An application of memory usage analysis,
-memory preservation shows that the values written by a program%
-\index{memory!preservation}
-are restrained to specified regions in memory.
-Those regions cannot be fully identified when working with source code alone,
-particularly when the end result is optimized.
-Memory may be laid out differently depending on the \ac{isa} and \ac{abi} targeted,
-as well as on the compiler used.
-This can include positioning of global variables
-as well as the layout of stack frames.\index{stack!frame}
-While one way of resolving that issue would be to choose a specific compiler
-and provide a formal analysis of how it arranges memory, that method is not flexible.
-It may instead be better to target assembly or machine code directly,
-as done in this dissertation.
 
-\subsection{Usefulness}
-The following small sections elaborate on the usefulness of memory preservation
-as a platform for further verification efforts.
 
-\subsubsection{Security}
-Unbounded memory usage can lead to vulnerabilities
-such as buffer overflows and data leakage.
-One example of such a vulnerability would be 2014's Heartbleed~\citep{heartbleed}.
-Heartbleed was caused by a lack of bounds checking on a string array
-requested as output as part of a ``heartbeat'' message.
-This, combined with a custom memory manager
-that also had no security protections against out-of-bounds memory accesses,
-lead to potential leakage of sensitive data such as passwords and encryption keys.
-% TODO: need another, better example that involves data modification too
-Memory preservation could serve as a foundation for formal security analyses
-that could be used to expose vulnerabilities involving malicious writes.
 
-\subsubsection{Composition}\label{sse:composition}
-Scalability in verification is only feasible with composition.
-Proofs of functional correctness over a large suite of software
-require decomposing that suite into manageable chunks.
-Separation logic provides a \emph{frame rule} that supports such%
-\index{separation logic}%
-\index{separation logic!frame rule}
-decomposition~\citep{o2001local,reynolds2002separation,krebbers2017essence}.
-In words, the frame rule states that,
-if a program or program fragment can be confined to a certain part of a state,
-properties of that program or program fragment carry over
-when used as part of a larger system involving that state.
-Memory preservation allows for discharging the most involved part of the frame rule,
-at least in terms of individual assembly functions.
-That is, it shows that the memory usage of those functions is constrained
-to specific regions in memory.
-This can then serve as a basis
-for any larger proof effort over multifunction assembly programs.
 
-\subsubsection{Concurrency}
-Reasoning over concurrent programs is complicated
-due to the potential interactions between threads.
-While there are ways of handling such interactions in a structured manner
-via kernel- or library-provided \ac{ipc},
-one method commonly used for the sake of efficiency is \emph{shared memory}.
-Shared memory, in the context of this work,
-refers to threads or processes sharing either a full memory space
-or portions of one (via memory mapping)
-that can be written to and read from freely by any thread or process with access to it.
-Usage of shared memory can result in \emph{unintended} interactions between threads.
-Memory preservation could be adapted to show the absence of such interactions
-by proving that multiple threads only write
-to specifically-allowed regions of shared memory.
-Doing so would, of course, require a proper model of concurrency,
-which is out of scope of this dissertation.
 
-\subsection{Formal Definition}\label{sse:mem_use_def}
-The formal definition of memory preservation takes the form of a Hoare triple.%
-\index{memory!preservation}%
-\index{Hoare!triple}
-Initially, there must be some predicate~$P$ that characterizes the initial state,
-at a minimum by setting the instruction pointer
-to the first instruction of the relevant function body.
-In addition, $M$ is the set of regions in memory
-that the function is allowed to write to.
-Set~$M$ includes the stack frame and any utilized data sections from the source binary,
-as well as whatever heap memory was supplied or allocated, if any.
-Memory preservation formulates that any byte not within any of the regions in~$M$
-has to remain unchanged throughout the execution of that function.
-The notation for this formulation is shown below.
-\begin{definition}[Memory preservation]\label{mem_pres_hoare}
-  Let~$M$ be a set of memory regions, let~$P$ be a precondition,
-  and let~$H$ denote a halting condition.
-  A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$, the following implication holds:
-  \begin{equation}
-  (\forall r\in R\cdot r\separate\region{a}{1})\longrightarrow\htriple{P\wedge \readmem{a}{1}=v_0}{H}{\readmem{a}{1}=v_0}
-  \end{equation}
-\end{definition}
-\begin{example}
-  \todo{Can't really give a good example without the rest of the information needed to describe this, will move it down}
-\end{example}
+
 
 \todo\dots
 

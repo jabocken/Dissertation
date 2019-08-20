@@ -2,6 +2,7 @@
 This part of my dissertation provides domain-specific information necessary to understand
 the work presented in it.
 
+\section{Formal Methods}
 To quote \citet{butler:fm},
 \begin{quote}
   ``Formal Methods''%
@@ -13,14 +14,14 @@ This dissertation on the \emph{verification} component of that,%
 \index{formal!verification}
 which 
 
-\section{Fixed Point Representation}
+\subsection{Fixed Point Representation}
 
-\section{Floyd-Style Verification}\label{ch:floyd}%
+\subsection{Floyd-Style Verification}\label{ch:floyd}%
 \index{Floyd!verification}
 Used in \cref{ch:cfg},
 \dots
 
-\section{Hoare Logic}\label{se:hoare}
+\subsection{Hoare Logic}\label{se:hoare}
 A form of \emph{axiomatic semantics},
 \index{semantics!axiomatic}
 Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare}%
@@ -37,7 +38,7 @@ Let~$P$ and~$Q$ be state predicates.
 
 \todo{more}
 
-\subsection{Verification Condition Generation}
+\subsubsection{Verification Condition Generation}
 %TODO
 
 There are two ways of performing verification condition generation%
@@ -49,14 +50,14 @@ or start at the front and go forwards, deriving the \emph{strongest postconditio
 
 %TODO
 
-\section{Theorem Proving}
+\subsection{Theorem Proving}
 %
 \index{theorem prover}
 
-\subsection{Automated versus Interactive}
+\subsubsection{Automated versus Interactive}
 \index{theorem prover!interactive}
 
-\subsection{Isabelle/HOL}
+\subsubsection{Isabelle/HOL}
 The theorem prover utilized in this work
 was Isabelle 2018\fturl{https://isabelle.in.tum.de/}~\citep{nipkow2002isabelle}.%
 \index{Isabelle/HOL}
@@ -87,5 +88,23 @@ as well as operations for converting between word sizes.
 %
 \index{embedding!shallow}%
 \index{embedding!deep}
+
+\section{Assembly Language}
+\todo\dots
+
+The x86-64
+\index{x86-64}
+\ac{isa}, originally 
+
+\subsection{Basic Blocks}
+Much of the memory work in this document relates to the concept of \emph{basic blocks}.%
+\index{basic block}
+A basic block is defined here as a sequence of assembly instructions
+whose behavior can be described using only state transitions and branches.
+A block always terminates and has no internal loops.
+This definition differs slightly from the definition used by compilers such as LLVM,
+in which basic blocks have the additional restriction that
+each block must terminate with a control flow instruction and contain no other
+control flow instructions.
 
 \section{Summary}

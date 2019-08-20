@@ -265,7 +265,7 @@ as a whole:
 \begin{proof}
   Remember from \cref{def:htriple} that
   \begin{equation*}
-    \htriple{P}{H}{Q}\equiv\forall\sigma\cdot
+    \htriple{P}H{Q}\equiv\forall\sigma\cdot
     P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
     \sigma'\neq\bot_E\wedge Q(\sigma').
   \end{equation*}
@@ -273,7 +273,6 @@ as a whole:
   and~$l_f$, Floyd~\citep{floyd1967assigning} showed that a Floyd invariant that holds
   starting from some initial condition to an intermediate annotation at~$l_1$
   will also hold starting from that annotation.
-  % TODO: double-check this with Freek, Floyd didn't actually prove that in the paper.
   Thus, as $I$ holds, we can substitute in~$I(l_0)(\sigma)$ for~$P(\sigma)$
   and~$I(l_f)(\sigma')$ for~$Q(\sigma')$ without issue,
   resulting in the following statement:
@@ -347,6 +346,40 @@ This ensures that the run first stops at~$H$ before it stops at~$H'$.
     \TrinaryInfC{$\htriple{P}{H'}{R}$}
   \end{prooftree}
 \end{theorem}
+
+\subsection{Memory Preservation}\label{sse:mem_pres}
+The formal definition of memory preservation%
+\index{memory!preservation}
+takes the form of a Hoare triple from \cref{def:htriple}.
+Initially, there must be some predicate~$P$ that characterizes the initial state,
+at a minimum by setting the instruction pointer
+to the first instruction of the relevant function body.
+In addition, there is some set of memory regions~$M$
+that the function is allowed to write to.
+$M$ includes the stack frame and any utilized data sections from the source binary,
+as well as whatever heap memory was supplied or allocated, if any.
+Memory preservation formulates any byte not within any of the regions in~$M$
+has to remain unchanged throughout the execution of that function.
+The notation for this formulation is shown below.
+\begin{definition}[Memory preservation]\label{mem_pres_hoare}
+  Let~$M$ be a set of memory regions, let~$P$ be a precondition,
+  and let~$H$ denote a halting condition.
+  A piece of assembly provides \emph{memory preservation} if and only if, for any address~$a$ and byte value~$v_0$, the following implication holds:
+  \begin{equation}
+  (\forall r\in M\cdot r\separate\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
+  \end{equation}
+\end{definition}
+\begin{example}
+  \todo{need more stuff!}
+\end{example}
+
+
+
+
+
+
+
+
 
 \section{Function-level Composition}\label{se:cfg_composition}
 As stated above, composition is crucial for scalability.%
