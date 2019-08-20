@@ -287,7 +287,6 @@
 \fancypagestyle{plain}{%
   \fancyhf{}
   \fancyfoot[C]\thepage
-  \setlength\headheight{12pt} % Doesn't seem to help that much with the chapter head positioning
 }
 
 % Helpers
@@ -415,21 +414,3 @@
 % dunno if actually needed
 %%%%%\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}  %% for numbered chapters \chapter{...}
 %%%%%\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{} %% for unnumbered chapters \chapter*{...}
-
-
-% If I try the proper book look but don't like the headers/footers on the pages:
-%\makeatletter
-%\def\cleardoublepage{\clearpage
-%  \if@twoside
-%    \ifodd
-%      \c@page
-%    \else
-%      \hbox{}\vspace*\fill\begin{center}%
-%        This page intentionally left blank.%
-%      \end{center}
-%      \vspace\fill
-%      \thispagestyle{empty}\newpage
-%      \if@twocolumn\hbox{}\newpage\fi
-%    \fi
-%  \fi}
-%\makeatother

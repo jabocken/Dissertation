@@ -1386,36 +1386,38 @@ Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
   \centering
   \begin{tikzpicture}
     \begin{axis}[
-      width=0.98\linewidth,
-      height=\linewidth,
+      width=.99\linewidth,
+      height=\axisdefaultheight,
       ybar,
-      ylabel=Counts and Percentages,
       bar width=0.3,
-      nodes near coords, % causes build failure when combined with symbolic x coords
-      point meta=y/3.52, % can't get \% shown right
+      point meta=y/3.52,
+      % the below sometimes causes build failure when combined with symbolic x coords
+      nodes near coords=\pgfmathprintnumber\pgfplotspointmeta\%,
       enlarge y limits={value=0.2, upper},
       ymin=-20,
+      ylabel=Function Count,
       xticklabels={
         Verified,
         Indirection,
-        \begin{tabular}{c}Address\\Computation\end{tabular},
-        \texttt{repz cmps},
+        Address\\Computation,
+        \inlineasm{repz cmps},
         Recursion,
         \acs{scf} explosion
       },
-      xtick=data
+      xticklabel style={align=center},
+      xtick=data,
     ]
-    \addplot coordinates {
-      (0, 251)
-      (1, 66)
-      (2, 19)
-      (3, 10)
-      (4, 2)
-      (5, 4)
-    };
+      \addplot coordinates {
+        (0, 251)
+        (1, 66)
+        (2, 19)
+        (3, 10)
+        (4, 2)
+        (5, 4)
+      };
     \end{axis}
   \end{tikzpicture}
-  \caption{Analzyed Xen functions compared to unverified features}
+  \caption{Analyzed Xen functions compared to unverified features}
   \label{fig:unverified}
 \end{figure*}
 

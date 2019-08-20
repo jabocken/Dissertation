@@ -37,6 +37,13 @@
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
 
+% Hack to fix ylabel positioning with current version of pgf
+\makeatletter
+\def\pgfsys@hboxsynced#1{%
+  \pgfsys@beginscope\pgflowlevelsynccm\pgfsys@hbox#1\pgfsys@endscope%
+}%
+\makeatother
+
 \pgfplotsset{compat=1.15}          % For up-to-date features
 %\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
 
