@@ -1806,9 +1806,28 @@ can be found in \cref{fig:unverified}.
 This chapter presented an approach to formal verification of memory usage
 for functions in a disassembled program,
 an overapproximation of the memory used by that assembly code.
-Memory usage is fundamental to compositional verification of assembly code,
-as compositionality, at a minimum, requires proving
-that the functions under consideration
-do not interfere with each others' stack frames.
-It also has the potential to serve as a basis for further security-related
-verification efforts, such as ensuring protection from \iac{rop} attack.
+The approach automatically generates \iac{fmuc} that includes
+\begin{enumerate*}
+  \item a set of memory regions read from and written to,
+  \item preconditions necessary for formal verification,
+  \item postconditions that express sanity constraints over the function
+  (the return address has not been overwritten,
+  callee-saved registers are restored, etc.), and
+  \item proof ingredients.
+\end{enumerate*}
+The certificate is loaded into a theorem prover, where it can be verified.
+The proof ingredients, combined with custom proof methods,
+provide a large degree of automation.
+They deal with memory aliasing and provide both the control flow of the function
+as well as invariants.
+
+The approach was applied to three binaries produced by the Xen hypervisor build process.
+They contain, among other things, nested loops,
+complex data structures, variadic functions,
+and both internal and external function calls.
+A certificate could be generated and verified
+for \xenpercentage\ of the functions from those binaries.
+The amount of user interaction was roughly 85 lines of proof code
+per \num{1000} lines of assembly code.
+The greatest issue was indirect branching,
+which could be found in 19\% of the functions examined.
