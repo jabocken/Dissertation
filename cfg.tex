@@ -130,7 +130,7 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 
 \section{Formal Definition}
 A formal definition of memory preservation requires a formal basis to work with,
-and this definition started with the machine model from \cref{se:machine_model}.
+and this definition starts with the machine model from \cref{se:machine_model}.
 
 \subsection{Symbolic Execution for \acs*{cfg}-Driven Verification}\label{cfg_symb_exec}
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
@@ -184,8 +184,7 @@ One of the major issues is that they result in significant path explosion.
 While there are methodologies to reduce the number of paths to execute
 when using loops~\citep{saxena2009lese,obdrzalek2011efficient},
 those methods are not currently formally verified
-and therefore not usable within Isabelle/HOL.%
-\index{Isabelle/HOL}
+and therefore not usable within Isabelle/HOL.
 Additionally, deciding the loop condition on a symbolic state
 may involve non-determinism (such as an event loop dependent on user input to exit),%
 \index{non-determinism}
@@ -198,19 +197,14 @@ This eliminates the above-mentioned loop issues.
 That breaking up of loops can be accomplished using a control-flow-based approach
 akin to \emph{Floyd verification}~\citep{floyd1967assigning}.%
 \index{Floyd!verification}
-A state predicate assigned to an instruction within a loop%
-\index{state!predicate}
-functions as an \emph{invariant} for that loop.%
-\index{loop!invariant}
+A state predicate assigned to an instruction within a loop
+functions as an \emph{invariant} for that loop.
 Such invariants hold for every iteration of the loop,
 allowing a symbolic description of the loop's behavior.
 When combined with a general methodology
-of structured preconditions and postconditions that show,%
-\index{precondition}%
-\index{postcondition}
+of structured preconditions and postconditions that show,
 for each annotated state, the succeeding annotated state satisfies its state predicate,
-a Hoare triple can be inferred for the program as a whole.%
-\index{Hoare!triple}
+a Hoare triple can be inferred for the program as a whole.
 
 Taking this approach also allows minimizing symbolic execution
 even in non-loop situations, a form of internal compositionality.
@@ -312,7 +306,8 @@ Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg
 In that \ac{cfg}, each edge can be seen as an implication.
 
 Unlike the usual formulation of
-Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},\index{Hoare!logic}
+Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},%
+\index{Hoare!logic}
 Hoare triples as defined for this work take a \emph{halting condition}%
 \index{Hoare!triple}%
 \index{symbolic execution!halting condition}
@@ -379,8 +374,7 @@ but those are not the norm.
   and the stack pointer will have some value $\rspo$.
   In order to apply compositionality to function calls,
   the pre- and postcondition have to meet the following requirements.
-  First, the precondition must imply that the return address is pushed on the stack%
-  \index{precondition}
+  First, the precondition must imply that the return address is pushed on the stack
   (a task performed by \lstinline{call}):
   $\readmem{\rspo}{8}=l_\var{call}+5\wedge\mathrsp=\rspo$.
   Second, the postcondition must imply that after \lstinline{ret},
@@ -653,12 +647,12 @@ from~$\rspo$ due to the function's recursive nature.
   \caption{Floyd invariant for factorial}
   \label{fig:factcfg}
 \end{figure*}
-The set~$R$ of separated parent regions is characterized by the following assumptions:
+The set~$M$ of separated parent regions is characterized by the following assumptions:
 \begin{subequations}
   \begin{align}
-    \forall m\le n\cdot(i_m,\region{\rspo+48*m-(n*48)-40}{40}) &\in R \\
-    \forall m\le n\cdot(i'_m,\region{\rspo+48*m-(n*48)}{8}) &\in R \\
-    (i_a,\region{a}{1}) &\in R
+    \forall m\le n\cdot(i_m,\region{\rspo+48*m-(n*48)-40}{40}) &\in M \\
+    \forall m\le n\cdot(i'_m,\region{\rspo+48*m-(n*48)}8) &\in M \\
+    (i_a,\region{a}1) &\in M
   \end{align}
 \end{subequations}
 The first assumption models all stack frames of size~40.
@@ -710,8 +704,7 @@ and the final result of the factorial operation can be returned.
 
 A Hoare triple can now be derived from the the Floyd invariant.
 This is done by instantiating variable~$n$ with \lstinline|dil|.
-Doing so simplifies the precondition,%
-\index{precondition}
+Doing so simplifies the precondition,
 as initially, no values or return addresses are pushed
 other than the upmost return address. The resulting Hoare triple becomes:
 \begin{equation}
@@ -904,7 +897,7 @@ requires a loop invariant in addition to the pre- and postconditions.
 The three main aspects of per-function user interaction for this methodology are
 \begin{enumerate*}
   \item defining a Floyd invariant,
-  \item defining memory region set~$R$, and
+  \item defining memory region set~$M$, and
   \item proving memory preservation.
 \end{enumerate*}
 While restricting the verification effort to memory preservation
@@ -926,14 +919,13 @@ Both the stack and frame pointers must be preserved throughout the recursion,%
 and all return addresses must be properly pushed on and popped off the stack as needed.
 
 Another aspect of Floyd invariant development
-that is not easily determined ahead of time is strengthening of the precondition.%
-\index{precondition}
+that is not easily determined ahead of time is strengthening of the precondition.
+\index{precondition!strengthening}
 Making reasoned guesses about the necessary precondition clauses is one way to proceed,
 and source code annotations as well as reference documentation
 may provide additional help,
 but sometimes it is necessary to just symbolically execute
-until non-determinism is encountered.%
-\index{non-determinism}
+until non-determinism is encountered.
 At that point, the cause of the non-determinism can be identified
 and the precondition can be strengthened in such a way so as to eliminate%
 \index{precondition}
@@ -941,8 +933,7 @@ that non-determinism.
 Because this proof methodology works on the assembly level,
 it may well expose implicit or undocumented preconditions.
 
-Formulation of the memory region set~$R$ as well as parent relationships,%
-\index{memory!region}
+Formulation of the memory region set~$M$ as well as parent relationships,
 if necessary, are also generally manual.
 If a necessary region is not present,
 symbolic execution will again result in non-determinism,
@@ -950,8 +941,7 @@ requiring another round of user input.
 After symbolic execution for a basic block has completed,
 a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
-In most cases, that proof can be handled by Isabelle/HOL%
-\index{Isabelle/HOL}
+In most cases, that proof can be handled by Isabelle/HOL
 using standard off-the-shelf libraries,
 either ones included with Isabelle or ones from the \ac{afp}~\citep{afp}
 (though not necessarily efficiently).
@@ -960,10 +950,8 @@ with the proofs of stack and frame pointer preservation
 requiring significant \ac{itp} over word arithmetic.
 
 \section{Summary}
-This chapter covered one method for formal verification%
-\index{formal!verification}
-of memory preservation in x86-64 binaries,%
-\index{memory!preservation}
+This chapter covered one method for formal verification
+of memory preservation in x86-64 binaries,
 showing that functions in a binary restrict themselves to certain regions of memory.
 The approach here aimed to automate verification
 while still allowing user interaction wherever necessary.
@@ -976,9 +964,7 @@ Invariants may include preconditions necessary for excluding exceptional behavio
 Such preconditions are exposed by applying the methodology to a disassembled binary,
 instead of deriving them from documents or source code annotations.
 
-The approach was applied to functions of HermitCore, a unikernel \ac{os}.%
-\index{HermitCore}%
-\index{unikernel}
+The approach was applied to functions of HermitCore, a unikernel \ac{os}.
 Memory preservation was formally proven for functions with loops, recursion,
 C structs and unions, and dynamic memory operations.
 Both optimized and non-optimized versions were verified.
@@ -986,7 +972,5 @@ Both optimized and non-optimized versions were verified.
 % TODO: move to dissertation conclusions?
 Some major additions to the framework in this chapter
 would be handling of concurrency and related instruction variants.
-Additionally, proper modeling of \ac{vm} and hypervisor calls in logic%
-\index{hypervisor}
-would allow verification of a wider range of functions from the HermitCore library.%
-\index{HermitCore}
+Additionally, proper modeling of \ac{vm} and hypervisor calls in logic
+would allow verification of a wider range of functions from the HermitCore library.
