@@ -823,7 +823,8 @@ is roughly as follows.
 % wanted to discuss Z3 usage a little but I don't have time.
 
 \subsection{Symbolic Execution}\label{sse:syntax_symb}
-In \cref{sse:cfg_extract}, the semantics of assembly were expressed
+In \cref{sse:cfg_extract}, the semantics of assembly were expressed%
+\index{semantics!assembly}
 in terms of control flow between basic blocks.
 This section now covers the symbolic execution of those individual blocks.
 The Haskell symbolic execution engine
@@ -1066,83 +1067,8 @@ the \ac{fmuc}'s memory usage Hoare triple can be verified.%
   \caption{Overview of \acs*{fmuc} verification}\label{fig:verify}
 \end{figure*}
 
-\subsection{Per-Block Verification}\label{sse:per-block}
-The verification methodology presented here occurs 
-by first verifying the functionality of each basic block in the corresponding function.
-\Cref{fig:intro-rule} shows the introduction rule we used
-to establish Hoare triples over basic blocks.
-The first assumption requires the symbolic execution method be run from a universally quantified initial symbolic state~$\sigma$ that satisfies the precondition.
-As long as any resulting state~$\sigma'$ satisfies the postcondition~$Q$,
-the set of memory regions~$M$ generated for the block should be correct.
-
-The second assumption is required because of an important subtlety:
-the regions generated in the~\ac{fmuc} are state dependent.
-Consider the example in \cref{fig:fmuc}.
-Memory region set~$M$ is actually a function based on the initial state of the block: its regions depend on the values stored in memory.
-However, it makes no sense to express the regions used by individual blocks
-within a larger function in terms of their own individual initial state alone.
-If a region of a basic block somewhere within a function body depends on
-something such as the value of register $\mathrdi$ at the start of that block,
-then it would be unsound to express that memory region in terms of $\rdio$,
-the value of $\mathrdi$ at the start of the function.
-As such,
-the Hoare triples are defined over a state-independent set of memory regions,~$M'$.
-That set is obtained for each block by taking the generated state-dependent set of memory regions and applying that set to any state that satisfies the current invariant.
-
-We developed a proof strategy in Isabelle that takes the proof ingredients
-from the \ac{fmuc} and discharges this introduction rule.
-The proof strategy runs symbolic execution within Isabelle/HOL
-to prove the postcondition and thus prove the memory usage.
-The open variables $P$, $Q$, $a_0$, $a_1$ and $M$ are all provided by the \ac{fmuc}.
-No user interaction is required outside of cases where semantics
-for specific instructions are unavailable or the Isabelle libraries in use
-do not have the right simplification lemmas for automatic reasoning.
-Those cases are rare and become rarer as more relevant lemmas are developed,
-so for basic blocks, the proof is essentially automated.
-
-\subsubsection{Symbolic Execution}
-\Cref{cfg_symb_exec} previously presented a formal symbolic execution engine%
-\index{symbolic execution}%
-based on the machine model described in \cref{se:machine_model}.
-It provides a function $\execblock$ that describes the symbolic execution of
-blocks in a control flow graph.
-
-The formal step function for symbolic execution presented in this chapter,
-by contrast, is a \emph{transition relation}%
-\index{transition relation}
-formulated as $\step:A\times S\times S\rightarrow\mathbb{B}$.
-Its inputs are an instruction, a starting state~$\sigma$,
-and an ending state~$\sigma'$.
-Its result is true if and only if execution of the instruction in state~$\sigma$
-can produce state~$\sigma'$.
-Undefined behavior, such as null-pointer dereferencing,
-is modeled by relating the state in which it occurs to any successor state
-supplied with it.
-This produces a function $\exec:\var{SCF}\times S\times S\rightarrow\mathbb{B}$.
-In case of loops the function is defined using a least fixed point construction.
-Thus, if the halting condition is never met,
-the function has no related successor states.
-
-Consider a basic block with start and end addresses~$a_0$ and~$a_1$.
-Calling the symbolic execution function $\execblock(a_0,a_1,\sigma,\sigma')$
-will return true if and only if state~$\sigma'$ is the result of
-symbolically executing the block starting from state~$\sigma$.
-Unlike the symbolic execution for generation,
-this symbolic execution methodology is implemented fully in Isabelle/HOL,
-meaning that every rewrite rule has been formally proven correct.
-\begin{example}
-  \todo{Need a good/better example!}
-\end{example}
-
-\subsection{Function Body Verification}
-While symbolic execution worked well for our purposes on the level of basic blocks,
-we also wanted a more structured way of composing those blocks
-for verification on the function level. This section describes that process,
-which occurs after the individual blocks have had their semantics
-and memory usage drived.
-
-\subsubsection{Syntactic Control Flow in Isabelle/HOL}\label{isabelle_scf}
-As described previousy, \acl{scf} is a representation of the control flow of a function
+\subsection{Syntactic Control Flow in Isabelle/HOL}\label{isabelle_scf}
+As described previously, \acl{scf} is a representation of the control flow of a function
 in terms of syntactic structures such as basic blocks,
 loops, and if-then-else statements.
 While very similar to the \ac{scf} used when generating \acp{fmuc},
@@ -1167,6 +1093,14 @@ do rely on a explicit exit condition.
 This condition is simply the precondition of the entry block of the loop
 as generated using the methodology in \cref{sse:inv_gen}.
 
+Another important difference is that basic blocks in Isabelle
+take the form $\ABB~\Block*{n}{a}{i}$,
+where~$n$ indicates the number of instructions in the block,~$a$ is the address
+of the last instruction in the block, and~$i$ is an ID
+that uniquely identifies the block in the current \ac{scf}.
+This style is used to assist with the symbolic execution methodology described in
+\cref{sse:syntax_ver_symb}.
+
 Finally, to properly handle function calls in the Isabelle/HOL syntax,
 the analyzed \acp{cfg} are preprocessed prior to performing extraction
 in order to isolate \inlineasm{call} instructions into their own basic blocks.
@@ -1174,6 +1108,88 @@ in order to isolate \inlineasm{call} instructions into their own basic blocks.
 These single-instruction blocks are then translated into \texttt{Call}~$f$ entries
 in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function called.
 This allows for proper matching with the Hoare rules presented below.
+
+\subsection{Per-Block Verification}\label{sse:per-block}
+The verification methodology presented here occurs 
+by first verifying the functionality of each basic block in the corresponding function.
+
+\todo{This isn't in the right place}
+\Cref{fig:intro-rule} shows the introduction rule we used
+to establish Hoare triples over basic blocks.
+The first assumption requires the symbolic execution method be run from a universally quantified initial symbolic state~$\sigma$ that satisfies the precondition.
+As long as any resulting state~$\sigma'$ satisfies the postcondition~$Q$,
+the set of memory regions~$M$ generated for the block should be correct.
+
+The second assumption is required because of an important subtlety:
+the regions generated in the~\ac{fmuc} are state dependent.
+Consider the example in \cref{fig:fmuc}.
+Memory region set~$M$ is actually a function based on the initial state of the block: its regions depend on the values stored in memory.
+However, it makes no sense to express the regions used by individual blocks
+within a larger function in terms of their own individual initial state alone.
+If a region of a basic block somewhere within a function body depends on
+something such as the value of register $\mathrdi$ at the start of that block,
+then it would be unsound to express that memory region in terms of $\rdio$,
+the value of $\mathrdi$ at the start of the function.
+As such,
+the Hoare triples are defined over a state-independent set of memory regions,~$M'$.
+That set is obtained for each block by taking the generated state-dependent set of memory regions and applying that set to any state that satisfies the current invariant.
+
+We developed a proof method in Isabelle that takes the proof ingredients
+from the \ac{fmuc} and discharges this introduction rule.
+The proof method runs symbolic execution within Isabelle/HOL
+to prove the postcondition and thus prove the memory usage.
+The open variables $P$, $Q$, $n$, $a$, $i$, and $M$ are all provided by the \ac{fmuc}.
+No user interaction is required outside of cases where semantics
+for specific instructions are unavailable or the Isabelle libraries in use
+do not have the right simplification lemmas for automatic reasoning.
+Those cases are rare and become rarer as more relevant lemmas are developed,
+so for basic blocks, the proof is essentially automated.
+
+\subsubsection{Symbolic Execution}\label{sse:syntax_ver_symb}
+\Cref{cfg_symb_exec} previously presented a formal symbolic execution engine%
+\index{symbolic execution}%
+based on the machine model described in \cref{se:machine_model}.
+It provides a function $\run$ that describes the symbolic execution of
+blocks in a control flow graph.
+
+The formal function for block-level symbolic execution presented in this chapter,
+by contrast, is a \emph{transition relation}%
+\index{transition relation} formulated as
+$\execblock:\mathbb{N}\times W\times\mathbb{N}\times S\times S\rightarrow\mathbb{B}$.%
+\nomenclature{$\mathbb{N}$}{Type of natural numbers}%
+\nomenclature{$W$}{Type of 64-bit words}
+Its inputs are the number of instructions left to execute in the block,
+the address of the last instruction in the block, the block's ID,
+the current state~$\sigma$, and an ending state~$\sigma'$.
+Its result is true if and only if execution
+starting from the current instruction in state~$\sigma$
+and running to the ending address can produce state~$\sigma'$.
+The other arguments are used to ensure termination and block matching.
+Undefined behavior, such as null-pointer dereferencing,
+is modeled by relating the state in which it occurs to any successor state
+supplied with it.
+
+\begin{example}
+  C
+  \todo{Need a good/better example!}
+\end{example}
+
+This is then used to produce a function for \ac{scf} execution,
+$\exec:\var{SCF}\times S\times S\rightarrow\mathbb{B}$.
+In case of loops the function is defined using a least-fixed-point construction.
+Thus, if there are infinite loops present,
+the function will have no related successor states.
+
+Unlike the symbolic execution for generation,
+this symbolic execution methodology is implemented fully in Isabelle/HOL,
+meaning that every rewrite rule has been formally proven correct.
+
+\subsection{Function Body Verification}
+While symbolic execution worked well for our purposes on the level of basic blocks,
+we also wanted a more structured way of composing those blocks
+for verification on the function level. This section describes that process,
+which occurs after the individual blocks have had their semantics
+and memory usage drived.
 
 \subsubsection{Hoare Rules}\label{scf_hoare}
 The Hoare triple formulation used for this work, $\htriple*{P}f{Q}M$,
@@ -1212,11 +1228,12 @@ the related instructions will not complete.
   \setlength\parskip{1em}
   \subcaptionbox{Introduction rule\label{fig:intro-rule}}{
     \AxiomC{$\begin{multlined}
-      \forall\sigma~\sigma'\cdot P(\sigma)\wedge\execblock(a_0,a_1,\sigma,\sigma')\longrightarrow\\
+      \forall\sigma~\sigma'\cdot P(\sigma)\longrightarrow{} \\
+      \execblock(n,a,i,\sigma,\sigma')\wedge{} \\
       Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma')
-      M'=\{r\mid\exists\sigma\cdot P(\sigma)\wedge r\in M(\sigma)\}
     \end{multlined}$}
-    \UnaryInfC{$\htriple*{P}{\ABB~\Block{a_0}{a_1}}{Q}{M'}$}
+    \AxiomC{$M'=\{r\mid\exists\sigma\cdot P(\sigma)\wedge r\in M(\sigma)\}$}
+    \BinaryInfC{$\htriple*{P}{\ABB~\Block*{n}{a}{i}}{Q}{M'}$}
     \DisplayProof
   }
 
