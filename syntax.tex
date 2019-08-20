@@ -101,7 +101,7 @@ the usage of which is described in \cref{sse:fmuc_comp}.
   \centering
   \lstset{frame=none, numbers=none}
   \begin{subfigure}{.51\linewidth}
-    \begin{lstlisting}[language=C, gobble=6]
+    \begin{lstlisting}[style=C, gobble=6]
       int main(int argc, char** argv) {
           return argv[argc - 1][0];
       }
@@ -219,9 +219,8 @@ that are not considered by symbolic execution.
 This can result in requirements for significant effort on the part of proof engineers,
 greatly reducing automation.
 To avoid such issues, the \ac{fmuc} generation methodology
-produces the aforementioned \acp{mrr} proof ingredient,%
+produces the aforementioned \acp{mrr} proof ingredient.%
 \index{proof!ingredient}
-the production of which is detailed in \cref{mem_reg_rel}.
 \Acp{mrr} express which pairs of regions are not separate ($\not\separate$)
 as well as which regions are enclosed within one another ($\enclosed$).
 
@@ -249,7 +248,7 @@ provide assistance in completing the proofs efficiently.
     \graph[grow right=2.8cm]{
       Assembly[gnode] ->[dashed]
       "Control Flow Graph"[gnode, text width=1.4cm] ->["\ref{sse:cfg_extract}"]
-      "Syntactic Control Flow"[gnode, text width=1.7cm] ->["\ref{ch:memory}"]
+      "Syntactic Control Flow"[gnode, text width=1.7cm] ->["\ref{sse:syntax_symb}"]
       "Memory Regions and \acsp*{mrr}"[gnode, text width=1.5cm]
       ->["\ref{sse:inv_gen}"]
       Invariants[gnode] ->[dashed] Certificate[gnode];
@@ -271,8 +270,7 @@ is utilized to generate the set of memory regions
 read and written by the function in question.
 To eliminate duplicates and produce \acp{mrr}
 showing which regions overlap or are enclosed or separate,
-the region sets are fed to the \ac{smt} solver Z3~\citep{de2008z3}
-as described in \cref{mem_reg_rel}.
+the region sets are fed to the \ac{smt} solver Z3~\citep{de2008z3}.
 Symbolic execution is also used in the process of generating
 the pre- and postconditions for each basic block,
 elaborated in \cref{sse:inv_gen}.
@@ -1357,21 +1355,19 @@ In order to achieve a scalable verification methodology,
 it must support some form of compositionality.
 
 Consider the body of an already-verified function~$f$
-with the following Hoare triple:%
-\index{Hoare!triple}
+with the following Hoare triple:
 \begin{equation*}
-  \htriple*{P_f}{f}{Q_f}{M_f}.
+  \htriple*{P_f}f{Q_f}{M_f}.
 \end{equation*}
 In order to reuse that function's proof in a compositional fashion,%
-\index{composition}
+\index{function!composition}
 it is treated as a black box.%
 \index{function!black box}
-Now consider a function~$g$ that calls~$f$:%
-\index{function!call}
-\begin{lstlisting}[style=x64, gobble=2]
+Now consider the assembly of a function~$g$ that calls~$f$:
+\begin{lstlisting}[style=x64, gobble=2, numbers=none]
   a0: push rbp
   a1: call f
-  a2: pop rbp
+  a2: pop  rbp
   a3: ret
 \end{lstlisting}
 $P$ and~$Q$ are the pre- and postconditions just before executing \inlineasm{call}%
@@ -1483,7 +1479,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
 \index{loop}
 \begin{figure}
   \begin{subfigure}[b]{.53\linewidth}
-    \begin{lstlisting}[language=C, gobble=6]
+    \begin{lstlisting}[style=C, gobble=6]
       int main(int argc, char* argv[]) {
           int* a = (int*)argv;
           int* b = (int*)(argv + 4);
@@ -1647,10 +1643,10 @@ Those relations thus form the preconditions%
 under which a return-address exploit is impossible.%
 \index{return-address exploit}
 For example, they assume that regions~$a$ and~$c$ are separate.
-This means that the address stored in argument \lstinline[language=C]|argv|
+This means that the address stored in argument \lstinline[style=C]|argv|
 (mapped to $\rsio$ on the assembly level)
 is not allowed to point to a region
-within the stack frame of the \lstinline[language=C]|main| function.
+within the stack frame of the \lstinline[style=C]|main| function.
 
 \section{Application: Xen Project}\label{se:xen}
 The Xen Project~\citep{chisnall2008definitive}%

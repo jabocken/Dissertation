@@ -57,6 +57,7 @@
 \DeclareAcronym{bap}{short=BAP, long=Binary Analysis Platform}
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
 \DeclareAcronym{cfi}{short=CFI, long=control-flow integrity}
+\DeclareAcronym{ci}{short=CI, long=continuous integration}
 \DeclareAcronym{csp}{short=CSP, long=communicating sequential processes}
 \DeclareAcronym{dm}{short=DM, long=device model}
 \DeclareAcronym{dil}{short=DiL, long=decompilation into logic}
@@ -64,6 +65,11 @@
   short            = FMUC,
   short-indefinite = an,
   long             = formal memory usage certificate
+}
+\DeclareAcronym{hol}{
+  short            = HOL,
+  short-indefinite = an,
+  long             = higher-order logic
 }
 \DeclareAcronym{hvm}{
   short            = HVM,
@@ -178,7 +184,12 @@
   language=[x64]{Assembler},
   keywordstyle=\bfseries\color{blue}, % bold blue keywords
   commentstyle=\color{gray},
-  identifierstyle=\color{purple},
+  stringstyle=\color{brown},
+}
+\lstdefinestyle{C}{
+  language=C,
+  keywordstyle=\bfseries\color{blue}, % bold blue keywords
+  commentstyle=\color{gray},
   stringstyle=\color{brown},
 }
 

@@ -44,7 +44,7 @@ The \inlineasm{xor} instruction sets the lower~$32$ bits of the register to zero
 while \inlineasm{add} increments the lower byte by one.
 Both instructions keep the higher~32 bits intact.
 The aggregate result is overwriting the lower~32 bits of the register
-with the 32-bit representation of~1.
+with the 32-bit representation of one.
 
 \section{Machine Model}\label{se:machine_model}
 In order to perform symbolic execution,
@@ -114,16 +114,26 @@ they are often very low-level bitvector/bitstring operations.
 \section{Memory Aliasing}\label{sse:memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%
 \index{memory!aliasing}
-For example, consider a write to memory region $\region{a_1}{s_1}$
-using the preexisting set of assignments $\{\region{a_0}{s_0}\coloneqq v_0\}$.
-The aggregated result of that set of assignments
+For example, consider the assignment $\region{a_1}{s_1}\coloneqq v_1$
+applied to the set of assignments $A=\{\region{a_0}{s_0}\coloneqq v_0\}$.
+The result of that operation
 depends on whether the two regions $\region{a_0}{s_0}$ and $\region{a_1}{s_1}$
 \emph{overlap}, are \emph{separate}, or have an \emph{enclosure} relation.%
 \index{memory!region!separation}%
-\index{memory!region!enclosure}
+\index{memory!region!enclosure}%
+\index{memory!region!overlap}
+If they are separate, then the resultant minimal assignment set is
+$A'=\{\region{a_0}{s_0}\coloneqq v_0,\region{a_1}{s_1}\coloneqq v_1\}$.
+If they instead overlap, then the situation is more complicated.
+For example, in the case where $a_0=a_1$ and $s_0=s_1$,
+the resultant minimal assignment set would be $A'=\{\region{a_0}{s_0}\coloneqq v_1\}$.
+Other forms of overlap or enclosure, such as writing two bytes to a four byte region
+or to regions that are not aligned, require even more complicated reasoning.
+
+The actual definitions of those relations are as follows.
 \begin{definition}
   Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
-  notation $r_0\separate r_1$, if and only if
+  notation $r_0\separate r_1$, if and only if the following is true:
   \begin{equation*}
     s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
   \end{equation*}
@@ -229,11 +239,11 @@ Writing to memory occurs in a similar fashion.
 
 \begin{example}\label{ex:simple}
   Consider the following x86-64 assembly block:
-  \begin{lstlisting}[style=x64,gobble=4]
-  a0: mov    word ptr [rsp-0x8], 0xEEFF
-  a1: mov    dword ptr [rsp-0x4], 0xAABBCCDD
-  a2: mov    ax, word ptr [rsp-0x7]
-  a3: mov    edi, dword ptr [rsp-0x6]
+  \begin{lstlisting}[style=x64, gobble=4]
+  a0: mov  word ptr [rsp-0x8], 0xEEFF
+  a1: mov dword ptr [rsp-0x4], 0xAABBCCDD
+  a2: mov  ax,                  word ptr [rsp-0x7]
+  a3: mov edi,                 dword ptr [rsp-0x6]
   \end{lstlisting}
   The instructions at addresses~\lstinline|a0| and~\lstinline|a1|
   write to two separate regions in memory,

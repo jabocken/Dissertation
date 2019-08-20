@@ -430,6 +430,7 @@ with \ac{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
 mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
 \begin{lstlisting}[
+  style=C,
   gobble=2,
   float=*,
   caption=\texttt{pow2} in C,
@@ -446,6 +447,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
   }
 \end{lstlisting}
 \begin{lstlisting}[
+  style=x64,
   gobble=2,
   float=*,
   caption=\texttt{pow2} in Assembly,
@@ -453,22 +455,22 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
   firstnumber=0
 ]
   pow2:
-      push	rbp # Size:1
-      mov	rbp, rsp # Size:3
-      mov	dword ptr [rbp - 0x14], edi # Size:3
-      mov	qword ptr [rbp - 8], 1 # Size:8
-      mov	dword ptr [rbp - 0xc], 0 # Size:7
-      jmp	.label_10 # Size:2
+      push rbp # Size:1
+      mov  rbp, rsp # Size:3
+      mov  dword ptr [rbp - 0x14], edi # Size:3
+      mov  qword ptr [rbp - 8], 1 # Size:8
+      mov  dword ptr [rbp - 0xc], 0 # Size:7
+      jmp  .label_10 # Size:2
   .label_11:
-      shl	qword ptr [rbp - 8], 1 # Size:4
-      add	dword ptr [rbp - 0xc], 1 # Size:4
+      shl  qword ptr [rbp - 8], 1 # Size:4
+      add  dword ptr [rbp - 0xc], 1 # Size:4
   .label_10:
-      mov	eax, dword ptr [rbp - 0xc] # Size:3
-      cmp	eax, dword ptr [rbp - 0x14] # Size:3
-      jb	.label_11 # Size:2
-      mov	rax, qword ptr [rbp - 8] # Size:4
-      pop	rbp # Size:1
-      ret	 # Size:1
+      mov  eax, dword ptr [rbp - 0xc] # Size:3
+      cmp  eax, dword ptr [rbp - 0x14] # Size:3
+      jb   .label_11 # Size:2
+      mov  rax, qword ptr [rbp - 8] # Size:4
+      pop  rbp # Size:1
+      ret  # Size:1
 \end{lstlisting}
 The function uses memory in five places, all on the stack.
 These are expressed relative to the original value of the stack pointer $\rspo$:
@@ -543,6 +545,7 @@ Expressed in recursive form, that definition is:
 \end{equation}
 The C equivalent of that function is shown in \cref{factorial-c}.
 \begin{lstlisting}[
+  style=C,
   gobble=2,
   float=*,
   caption=Factorial in C,
@@ -561,6 +564,7 @@ and disassembled by the tweaked \lstinline|reassembly| analysis~\citep{wang2017r
 In this case, the function performs a recursive factorial calculation on the value~$n$
 stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|rdi|).
 \begin{lstlisting}[
+  style=x64,
   caption=Assembly of Factorial Example,
   label=lst:factasm,
   float,
@@ -568,28 +572,28 @@ stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|r
   firstnumber=0
 ]
   factorial:
-      push rbp|\label{factasm:precondition}|
-      mov rbp, rsp
-      push rbx
-      sub rsp, 0x18
-      mov eax, edi
-      mov byte ptr [rbp - 0x14], al
-      cmp byte ptr [rbp - 0x14], 0
-      je .label_12
+      push  rbp|\label{factasm:precondition}|
+      mov   rbp, rsp
+      push  rbx
+      sub   rsp, 0x18
+      mov   eax, edi
+      mov   byte ptr [rbp - 0x14], al
+      cmp   byte ptr [rbp - 0x14], 0
+      je    .label_12
       movzx ebx, byte ptr [rbp - 0x14]
       movzx eax, byte ptr [rbp - 0x14]
-      sub eax, 1
+      sub   eax, 1
       movzx eax, al
-      mov edi, eax
-      call factorial
-      imul rax, rbx|\label{factasm:resume}|
-      jmp .label_13
+      mov   edi, eax
+      call  factorial
+      imul  rax, rbx|\label{factasm:resume}|
+      jmp   .label_13
   .label_12:
-      mov eax, 1
+      mov   eax, 1
   .label_13:
-      add rsp, 0x18
-      pop rbx
-      pop rbp
+      add   rsp, 0x18
+      pop   rbx
+      pop   rbp
       ret
 \end{lstlisting}
 It essentially consists of two loops,
