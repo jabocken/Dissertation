@@ -213,7 +213,7 @@ greatly reducing automation.
 To avoid such issues, the \ac{fmuc} generation methodology
 produces the aforementioned \acp{mrr} proof ingredient.%
 \index{proof!ingredient}
-\Acp{mrr} express which pairs of regions are not separate ($\not\separate$)
+\Acp{mrr} express which pairs of regions overlap ($\not\separate$)
 as well as which regions are enclosed within one another ($\enclosed$).
 
 The \ac{fmuc} for a function as a whole is broken down by Hoare rules,
@@ -477,10 +477,6 @@ that can occur even without loops.
   \end{figure*}
 \end{example}
 
-%\subsection{Memory Region and Region Relation Generation}\label{sse:mem_reg}
-%This process primarily relies on unverified symbolic execution in the generated code.
-% wanted to discuss Z3 usage a little but I don't have time.
-
 \subsection{Symbolic Execution}\label{sse:syntax_symb}
 In \cref{sse:cfg_extract}, the semantics of assembly were expressed%
 \index{semantics!assembly}
@@ -496,10 +492,10 @@ It keeps track of all used memory regions,
 both the actual regions used by instructions as well as merged regions,
 in order to supply those regions as part of an \ac{fmuc}.
 
-\subsubsection{Avoiding Memory Aliasing}
+\subsubsection{Generating Memory Region Relations}
 Because symbolic execution uses symbolic state,
 the relations of enclosure, separation, and overlap,
-defined in \cref{sse:memory_aliasing}, must be determined for symbolic expressions.
+defined in \cref{memory_aliasing}, must be determined for symbolic expressions.
 Unfortunately, there is no single solution, no one decision procedure,
 that can determine these properties for all symbolic expressions automatically.
 
@@ -526,9 +522,9 @@ Thus, for separation, we have the below definition.
   \end{equation*}
 \end{definition}
 Overlap may occur if two regions are not necessarily separate.
-\begin{example}
-  \todo\dots
-\end{example}
+%\begin{example}
+%  \todo\dots
+%\end{example}
 
 \begin{definition}[\ac{smt} overlap]
   The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
@@ -537,9 +533,9 @@ Overlap may occur if two regions are not necessarily separate.
   (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
   \end{equation*}
 \end{definition}
-\begin{example}
-  \todo\dots
-\end{example}
+%\begin{example}
+%  \todo\dots
+%\end{example}
 
 \begin{definition}[\ac{smt} enclosure]
   Region $r_0$ is enclosed by $r_1$ if and only if,
@@ -548,9 +544,9 @@ Overlap may occur if two regions are not necessarily separate.
   a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
   \end{equation*}
 \end{definition}
-\begin{example}
-  \todo\dots
-\end{example}
+%\begin{example}
+%  \todo\dots
+%\end{example}
 
 These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
 for a wide range of expressions over bitvectors
@@ -558,8 +554,19 @@ using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
 Z3 is also used in this work for determining the sign of two values
 in the region merge algorithm, originally presented in \cref{def:merge}.
 Additionally, reads of overlapping regions may require merging
-and separation analysis as described in \cref{sse:memory_aliasing},
+and separation analysis as described in \cref{memory_aliasing},
 so they also rely on Z3.
+
+The result of evaluating the above \ac{smt} problems
+over all pairs of memory regions for a basic block, each region being given a unique ID,
+is two sets with element type $\nat\times\nat$, $\var{enc}$ and $\var{ovl}$.
+Every element $(i_0,i_1)$ in $\var{enc}$ indicates that the region with ID~$i_0$
+is enclosed by the region with ID~$i_1$.
+Every element $(i_0,i_1)$ in $\var{ovl}$ indicates that the two regions with those IDs
+overlap.
+Those two sets are the \acp{mrr} for the block,
+and using them as assumptions allows for efficient execution of the rewrite rules
+in \cref{memory_rewrite}.
 
 \subsection{Invariant Generation}\label{sse:inv_gen}
 Invariants, formalized as sets of assignments of the aforementioned type~$\asp$,
@@ -786,9 +793,7 @@ The formal function for block-level symbolic execution presented in this chapter
 \index{symbolic execution}
 by contrast, is a \emph{transition relation}%
 \index{transition relation} formulated as
-$\execblock:\mathbb{N}\times W\times\mathbb{N}\times S\times S\rightarrow\mathbb{B}$.%
-\nomenclature{$\mathbb{N}$}{Type of natural numbers}%
-\nomenclature{$W$}{Type of 64-bit words}
+$\execblock:\nat\times W\times\nat\times S\times S\rightarrow\mathbb{B}$.
 Its inputs are the number of instructions left to execute in the block,
 the address of the last instruction in the block, the block's ID,
 the current state~$\sigma$, and an ending state~$\sigma'$.
@@ -800,7 +805,7 @@ Undefined behavior, such as null-pointer dereferencing,
 is modeled by relating the state in which it occurs to any successor state
 supplied with it.
 
-The internal step function has type $\step:A\times\mathbb{N}\times S\rightarrow S$,%
+The internal step function has type $\step:A\times\nat\times S\rightarrow S$,%
 \nomenclature{$A$}{Type of instructions}
 with its first argument being an instruction, its second being the size of the instruction,
 and its third being the current state.

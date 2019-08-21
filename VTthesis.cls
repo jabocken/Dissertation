@@ -284,11 +284,6 @@
 \pagestyle{fancy}
 \renewcommand\headrulewidth{0.0pt}
 
-\fancypagestyle{plain}{%
-  \fancyhf{}
-  \fancyfoot[C]\thepage
-}
-
 % Helpers
 \newcommand*\fancydraft[1]{%
   \renewcommand\headrulewidth{0.0pt}%

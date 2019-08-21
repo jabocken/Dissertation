@@ -13,27 +13,29 @@ When used in a theorem prover such as Isabelle/HOL, those rules can be proven co
 Applying those rules in sequence to each step or instruction of a program
 allows aggregation of the individual state changes involved in the execution.
 
-As an example of how the aggregation works, consider the following two instructions:
-\begin{lstlisting}[style=x64, gobble=2]
-  xor eax, eax
-  add al, 1
-\end{lstlisting}
-These instructions write to the 64-bit register \inlineasm{rax}.
-Registers \inlineasm{eax} and \inlineasm{al} respectively refer
-to the low 32 and 8 bits of that register.
-Symbolic execution produces the following assignment:
-$\mathrax\coloneqq\takebits{63,32}\mathrax\concat 1_{32}$.
-Here $\takebits{63,32}$ denotes taking the higher 32 bits%
-\nomenclature{$\takebits{h,l}w$}{Indicates taking bits in word~$w$
-  from bit~$l$ to bit~$h$ using 0-indexing}
-and~$\concat$ denotes concatenation,%
-\nomenclature{$\concat$}{Indicates bitstring concatenation}
-with $1_{32}$ being the number one zero-extended to~32 bits.
-The \inlineasm{xor} instruction sets the lower~$32$ bits of the register to zero
-while \inlineasm{add} increments the lower byte by one.
-Both instructions keep the higher~32 bits intact.
-The aggregate result is overwriting the lower~32 bits of the register
-with the 32-bit representation of one.
+\begin{example}[Aggregation]\label{ex:aggregation}
+  Consider the following two instructions:
+  \begin{lstlisting}[style=x64, gobble=4]
+    xor eax, eax
+    add al, 1
+  \end{lstlisting}
+  These instructions write to the 64-bit register \inlineasm{rax}.
+  Registers \inlineasm{eax} and \inlineasm{al} respectively refer
+  to the low 32 and 8 bits of that register.
+  Symbolic execution produces the following assignment:
+  $\mathrax\coloneqq\takebits{63,32}\mathrax\concat 1_{32}$.
+  Here $\takebits{63,32}$ denotes taking the higher 32 bits%
+  \nomenclature{$\takebits{h,l}w$}{Indicates taking bits in word~$w$
+    from bit~$l$ to bit~$h$ using 0-indexing}
+  and~$\concat$ denotes concatenation,%
+  \nomenclature{$\concat$}{Indicates bitstring concatenation}
+  with $1_{32}$ being the number one zero-extended to~32 bits.
+  The \inlineasm{xor} instruction sets the lower~$32$ bits of the register to zero
+  while \inlineasm{add} increments the lower byte by one.
+  Both instructions keep the higher~32 bits intact.
+  The aggregate result is overwriting the lower~32 bits of the register
+  with the 32-bit representation of the number one.
+\end{example}
 
 \section{Machine Model}\label{se:machine_model}
 In order to perform symbolic execution,
@@ -57,7 +59,7 @@ Note that this model does not include concurrency.
 
 The model is structured as follows.
 It has some symbolic \emph{state} defined as an Isabelle record
-that stores registers, flags, and 64-bit addressable byte-level memory.
+that stores registers, flags, and 64-bit byte-addressable memory.
 The memory holds both instructions and data, as in the standard von Neumann model.%
 \index{von Neumann model}
 Each instruction is executed by a \emph{step} function,%
@@ -80,10 +82,50 @@ of the machine learning setup, with the major ones being
 jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
 \inlineasm{leave}, and \inlineasm{ret}.
 
+\subsection{Memory Model}
+Reads and writes of the machine model's memory space take a specific form.
+Reading a region of memory from some state~$\sigma$
+uses the notation $\readmemS{\sigma}{a}{s}$.
+In Isabelle, this operation internally reads the list of~$s$ bytes
+starting from the given address~$a$ in the appropriate order
+and converts it to a word.
+If it is clear from context which state is meant, the state will be omitted.
+Meanwhile, writing to memory uses the notation $x\coloneqq e$,
+which has type~$\asp=(\var{SP},\esp)$;
+these \emph{assignments} denote writing an expression~$e$ to some location~$x$
+that is a \emph{state part},~$\var{SP}$;%
+\nomenclature{$\var{SP}$}{Type of state parts (regions, flags, and registers)}%
+\index{state part}
+it can be a region, register, or flag.
+Flags can only take boolean expressions while398425ff35e378c24791a460b4d242664a6a9775
+the result for a register must be a 64-bit word.
+The behavior for regions in Isabelle
+is to internally decompose the expression to write
+into its component bytes and then write those into memory in the appropriate order.
+The expressions themselves are of type~$\esp$,%
+\nomenclature{$\esp$}{Type of expressions}
+representing expressions over state parts.
+These expressions consist of common bit-vector operations including
+taking subsets of bits, bitstring concatenation, logical operators, casting,
+and floating-point, signed, and unsigned arithmetic.
+
+In this dissertation,
+modifications to state are represented as sets of assignments,~$\powerset(\asp)$,
+formulated as $\alpha=\{x_0\coloneqq e_0,x_1\coloneqq e_1,\dotsc\}$.
+These assignments are all independent; their initial conditions
+are based off of whatever state is present before application of the assignments,
+and thus they can be applied in any order.
+To order writes, use the notation $\alpha(x\coloneqq e)$,
+indicating that assignment $x\coloneqq e$ is applied
+after the set of assignments~$\alpha$.
+Notation $\sigma(x\coloneqq e)$ or $\sigma\alpha$ indicates applying that assignment
+or set of assignments to the supplied state.
+
 \subsection{Restrictions of the Model}
 As the x86-64 \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
-all operations on memory presented in this dissertation are designed with that in mind.
+all operations on memory presented in this dissertation
+are designed with that in mind.
 \begin{example}
   Given the state $\sigma=\{\region{a}2\coloneqq\mathtt{0xEEFF}\}$,
   the read $\readmemS\sigma{a}1$ would produce $\mathtt{0xFF}$.
@@ -107,24 +149,28 @@ and there is nothing to prevent a write from overwriting the program itself.
 For that reason,
 the works presented in this document assume that the loaded assembly is never modified.
 
-\subsection{Simplification Rules}\label{se:simplification}
-The basic rules supplied by the machine model are not well-suited to verification;
+\section{Simplification Rules}\label{se:simplification}
+The basic rules supplied by the formal machine model are not well-suited to verification;
 they are often very low-level bitvector/bitstring operations.
 While \citet{roessle2019} provided a large set of simplification rules
 to abstract away from the underlying representation,
 those rules did not cover all situations encountered in this dissertation,
 requiring the additions of more such rules during the process of verification.
+In particular, the decomposition of writes into bytes
+and recomposition of reads from bytes is hidden from the user under most circumstances,
+allowing better abstraction such as that depicted in \cref{ex:aggregation}.
 
 Additionally, to increase performance,
-every instruction variant with learned semantics that is known to be in use
+every instruction variant with learned semantics detected in an analyzed function
 was given a \emph{presimplified} lemma.%
 \index{presimplification}
-These lemmas provide immediate abstractions of the low-level instruction representations
+Most of those lemmas were obtained from~\citep{memocode2019}.
+They provide immediate abstractions of the low-level instruction representations
 that rely on the aforementioned simplification rules.
-Using these lemmas improved performance when performing symbolic execution,
+Using these lemmas improves performance when performing symbolic execution
 as they greatly reduce the number of simplification rules that must be applied.
 
-\section{Memory Aliasing}\label{sse:memory_aliasing}
+\subsection{Memory Aliasing}\label{memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%
 \index{memory!aliasing}
 For example, consider the assignment $\region{a_1}{s_1}\coloneqq v_1$
@@ -144,8 +190,9 @@ Other forms of overlap or enclosure, such as writing two bytes to a four byte re
 or to regions that are not aligned, require even more complicated reasoning.
 
 The actual definitions of those relations are as follows.
-\begin{definition}[Separation]
-  Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},
+\begin{definition}[Separation]\label{def:sep}
+  Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},%
+  \index{memory!region!separation}
   notation $r_0\separate r_1$, if and only if the following is true:
   \begin{equation*}
     s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
@@ -164,8 +211,9 @@ The actual definitions of those relations are as follows.
   Thus, those two regions are \emph{not} separate.
 \end{example}
 
-\begin{definition}[Enclosure]
-  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,
+\begin{definition}[Enclosure]\label{def:enc}
+  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,%
+  \index{memory!region!enclosure}
   if and only if:
   \begin{equation*}
     a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
@@ -183,56 +231,80 @@ The actual definitions of those relations are as follows.
   Thus~$r_1$ encloses~$r_0$.
 \end{example}
 
-\todo{This is a rewrite rule}
+\subsection{Rewrite Rules}\label{memory_rewrite}
 An additional problem is when a region that overlaps with at least one other region
 that has been modified is written to.
 To combine those writes, the regions must be \emph{merged}.%
 \index{memory!merging}
 \begin{definition}[Merging]\label{def:merge}
-  The \emph{merge} of two symbolic assignments
+  The \emph{merge}\footnote{%
+    This merge operates on the bit level,
+    but technically the original Isabelle version uses byte lists;
+    also, the Haskell version merges the left region onto the right,
+    not the right onto the left as the Isabelle version does.%
+  }
+  of two symbolic assignments
   $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
-  where the write to~$r_1$ occurs before the write to~$r_0$,
+  where the write to~$r_0$ occurs before the write to~$r_1$,
   is defined as
   \begin{equation}
     r=\region{a}s\coloneqq b_0\concat b_1\concat b_2,
   \end{equation}
   where:
   \begin{align*}
-  i_0 &= a_0 - a_1 \\
-  i_1 &= a_1 + s_1 - (a_0 + s_0) \\
-  a   &= \text{if } i_0 < 0 \text{ then } a_0 \text{ else } a_1 \\
-  s   &= s_0 + \max(i_0, 0) + \max(i_1, 0) \\
-  b_0 &= \text{if } i_1 > 0 \text{ then }
-  \takebits{8 s_1-1,8 s_1 - 8 i_1}v_1 \text{ else } 0_0 \\
-  b_1 &= \takebits{8 s-1, 0} v_0 \\
-  b_2 &= \text{if } i_0 > 0 \text{ then } \takebits{8 i_0-1, 0}v_1 \text{ else } 0_0
+    a   &= \min(a_0, a_1) \\
+    i_0 &= a_1 - a_0 \\
+    i_1 &= a_0 + s_0 - (a_1 + s_1) \\
+    s   &= s_1 + \max(i_0, 0) + \max(i_1, 0) \\
+    b_0 &= \text{if } i_1 > 0 \text{ then }
+      \takebits{8 s_0 - 1, 8 s_0 - 8 i_1}v_0 \text{ else } 0_0 \\
+    b_1 &= \takebits{8 s_1 - 1, 0} v_1 \\
+    b_2 &= \text{if } i_0 > 0 \text{ then }
+      \takebits{8 i_0-1, 0}v_0 \text{ else } 0_0
   \end{align*}
 \end{definition}
 As the merged region must encompass both original regions,
 its address~$a$ is the minimum of~$a_0$ and~$a_1$.
 The value stored in the merged region consists of three parts:
-whatever portion of~$v_1$, if any, is below~$a_0$;
-a possibly zero-extended~$v_0$;
-and the part of~$v_1$ above $a_0+s_0$ (the upper bound of~$r_0$),
-if there are any bits in~$r_1$ above that address.
+whatever portion of~$v_0$, if any, is below~$a_1$;~$v_1$ as a bitstring;
+and the part of~$v_0$ above $a_1+s_1$ (the upper bound of~$r_1$),
+if there are any bits in~$r_0$ above that address.
 For sets of assignments such as those mentioned above,
 merge is used as an infix operator, with order being important
-(the first assignment overwrites [parts of] the second as shown above).
+(the second assignment overwrites [parts of] the first, as shown above).
 \Cref{ex:simple} demonstrates a more concrete usage of merging.
 
-Writing to and reading from memory in the process of symbolic execution
+\subsubsection{Writing to Memory}
+The formal rewrite rule for writing to a new region into memory
+is structured as in \cref{eqn:writeM}.
+The underlined parts are the ones that, after application of the rewrite rule,
+may be rewritten again.
+\begin{equation}
+  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}
+    \underline{\sigma(r_1\coloneqq v_1)}(r_0\coloneqq v_0) &
+      \text{if } r_0\separate r_1 \\
+    \underline{\sigma((r_0\coloneqq v_0)\mmerge(r_1\coloneqq v_1))} &
+      \text{otherwise}
+  \end{cases}\label{eqn:writeM}
+\end{equation}
+The proof of correctness for the above rule is based on two lemmas.
+First, writing separate blocks is commutative.
+Second, the merge function is correct:
+the produced region is the result of two sequential and overlapping memory writes.
+
+\subsubsection{Reading from Memory}
+Reading from memory in the process of symbolic execution
 also requires analysis of separation and merging.
 Consider reading from the region $\region{a}{s}$ given a set of assignments~$\alpha$,
 using \cref{algo:mem_read} as our guide.
 \begin{algorithm}
   \caption{Symbolically reading from memory}\label{algo:mem_read}
   \begin{algorithmic}
-    \Require{A symbolic region $\region{a}{s}$}
-    \Ensure{A symbolic value}
-    \Comment{Possibly updates the current set of assignments $\alpha:A_\var{SP}$}
-    \Function{read\_mem}{$\region{a}{s}$}
+    \Require{A set of assignments~$\alpha:\asp$ and symbolic region $\region{a}{s}$}
+    \Ensure{A symbolic value and possibly-updated~$\alpha$}
+    \Function{readMem}{$\alpha,\region{a}{s}$}
       \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
-        \State\Return $v$
+        \State\Return $(\alpha,v)$
       \Else
         \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
         \alpha\mid\region{a'}{s'}\not\separate\region{a}{s}\}$
@@ -242,10 +314,10 @@ using \cref{algo:mem_read} as our guide.
         \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
         \State $r\gets\region{a_l}{a_r-a_l+s_r}$
         \State $\region{a'}{s'}\coloneqq v'\gets
-        \var{ovl}_0\mmerge\var{ovl}_1\mmerge\ldots\mmerge(r\coloneqq *r)$
-        \State $\alpha\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
+        (r\coloneqq *r)\mmerge\ldots\mmerge\var{ovl}_1\mmerge\var{ovl}_0$
+        \State $\alpha'\gets\{\region{a'}{s'}\coloneqq v'\}\cup\var{sep}$
         \State $a''\gets8(a-a')-1$
-        \State\Return $\takebits{s+a'',a''}v'$
+        \State\Return $(\alpha',\takebits{s+a'',a''}v')$
       \EndIf
     \EndFunction
   \end{algorithmic}
@@ -267,15 +339,17 @@ as it writes the value read from region~$r$ back to that same region.
 After merging, the current set of assignments is updated to be the merged region
 and assignment combined with all separate assignments.
 The final value read from memory is extracted from the merged assignment.
-Writing to memory occurs in a similar fashion.
 
-\begin{example}[Merging]\label{ex:simple}
+The correctness of the \textsc{readMem} algorithm
+is derived from the correctness of its component operations.
+
+\begin{example}[Reading, writing, and merging]\label{ex:simple}
   Consider the following x86-64 assembly block:
   \begin{lstlisting}[style=x64, gobble=4]
-  a0: mov  word ptr [rsp-0x8], 0xEEFF
-  a1: mov dword ptr [rsp-0x4], 0xAABBCCDD
-  a2: mov  ax,                  word ptr [rsp-0x7]
-  a3: mov edi,                 dword ptr [rsp-0x6]
+    a0: mov  word ptr [rsp-0x8], 0xEEFF
+    a1: mov dword ptr [rsp-0x4], 0xAABBCCDD
+    a2: mov  ax,                  word ptr [rsp-0x7]
+    a3: mov edi,                 dword ptr [rsp-0x6]
   \end{lstlisting}
   The instructions at addresses~\lstinline|a0| and~\lstinline|a1|
   write to two separate regions in memory,
@@ -287,8 +361,8 @@ Writing to memory occurs in a similar fashion.
   results in a merge with~$r_2$ and~$r_1$, producing region $\region{\mathrsp-8}8$.
   The aggregated assignment is then
   \begin{equation*}
-    \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
-    \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
+  \region{\mathrsp-8}{8}\coloneqq\mathtt{0xAABBCCDD}\concat
+  \takebits{31,16}\readmem{\mathrsp-8}{8}\concat\mathtt{0xEEFF}.
   \end{equation*}
   Assuming an intial condition of $\mathrsp=\rspo$,
   the set~$M$ of memory regions required for the given block of assembly is ultimately
@@ -298,7 +372,102 @@ Writing to memory occurs in a similar fashion.
   \end{equation*}
 \end{example}
 
-\section{Rewrite Rules for Memory Usage}
+\subsubsection{Reasoning over Memory Regions}
+Reads and writes both need to reason over separation and enclosure,
+so providing a means for users to easily specify those relations
+via assumptions over memory layout increases efficiency.
+This section covers formulating those assumptions
+and the necessary groundwork for automatic inference using them.
+
+As stated in \cref{se:machine_model}, the memory model in use is a simple,
+flat function from 64-bit words to bytes.
+As instructions and data are both stored in the same memory space,
+assumptions on their separation would be ideal.
+The function $\seps$ is used to formulate such assumptions.
+It takes as input a set of regions annotated with unique IDs.
+These IDs allow reasoning over (in)equality of regions; without them,
+it would be impossible to determine whether two regions of the same size are equal
+if their addresses are non-trivial expressions.
+\begin{definition}
+  Let~$M$ be a set of pairs of unique IDs and regions.
+  $M$ is \emph{separated} if and only if all of its regions are separated:
+  \begin{equation}
+    \seps(M)\equiv\forall(i_0,r_0),(i_1,r_1)\in M\cdot
+    \text{if }i_0=i_1\text{ then }r_0=r_1\text{ else }r_0\separate r_1
+  \end{equation}
+\end{definition}
+Originally, set~$M$ was intended to contain large regions,
+such as the whole stack frame.
+As the rewrite rules are focused on smaller regions, such as per-variable regions.
+rules that infer properties over smaller regions from larger ones are needed.
+\begin{subequations}\label{rules_sep_enc}
+  \begin{align}
+    r &\enclosed r \\
+    r_0\bowtie r_1 &= r_1\separate r_0 \\
+    r_0\enclosed r_2\wedge r_1\enclosed r_3\wedge r_2\separate r_3 &\longrightarrow r_0\separate r_1 \\
+    r_0\enclosed r_1\wedge r_1\enclosed r_0 &\longrightarrow r_0=r_1 \\
+    r_0\enclosed r_1\wedge r_1\enclosed r_2 &\longrightarrow r_0\enclosed r_2 \\
+    r_0\bowtie r_1\wedge\snd{r_0}\neq 0\wedge\snd{r_1}\neq 0 &\longrightarrow r_0 \not\sqsubseteq r_1 \\
+    \seps(M)\wedge(i_0,r_0),(i_1,r_1)\in M\wedge i_0\neq i_1 &\longrightarrow r_0\separate r_1
+  \end{align}
+\end{subequations}
+\Cref{rules_sep_enc} shows the inference rules for properties over memory regions.
+These rules are able to infer the properties of separation and non-enclosure 
+for smaller regions based on assumptions over larger ones.
+However, they \emph{cannot} infer enclosure.
+
+Often, the only way to prove enclosure is to unfold its definition.
+This introduces two inequalities over words, as shown in \cref{def:enc}.
+Such inequalities can be solved using the Isabelle/HOL tool \lstinline{unat_arith}, which is an arithmetic equation solver for bit-vectors~\citep{dawson2009isabelle}.
+That tool is augmented with several heuristics
+and auxiliary lemmas to facilitate enclosure proofs.
+However, such proofs are time-consuming
+and can significantly clutter the proof effort.
+
+The initial solution to this issue, which is used in \cref{ch:cfg},
+relies on \emph{parent regions}.%
+\index{memory!region!parent}
+A parent region is a member of set~$M$ and is thus a region annotated with an ID.
+Parent relationships are manually established to avoid having to do any unfolding.
+Local variables would have the stack frame as their parent region
+while global constants would have some data section as their parent.
+The following notation is used to link a memory region~$r_0$
+to a parent region~$r_1$ with ID~$i$: $\parent{r_0}{i}{r_1}$.
+Given that information, the proof of enclosure is done automatically, and only once.
+The established enclosure properties are then used for inference
+as per the rules in \cref{rules_sep_enc}.
+
+As a concrete example, consider a two-byte array starting at address~$10$
+and having ID~$5$.
+The region for this array would be $[10, 2]$, with ID formulation $(5, [10, 2])$.
+If we take the two bytes of the array as child regions,
+the region relations would be $\parent{[10, 1]}5{[10, 2]}$
+and $\parent{[11, 1]}5{[10, 2]}$.
+
+There is also an alternative to using parent regions:
+giving each small region its own ID.
+This avoids having to provide explicit parent relationships
+except for those cases where reads or writes of different size
+from or to the same region occur.
+\Cref{ch:syntax} takes that approach.
+
+\subsubsection{Overflow}
+As a note, many of the formal rewrite rules regarding memory usage
+have an internal requirement that the supplied memory regions not overflow.
+That is, for any memory region~$r$,
+its address plus its size must be less than $2^{64}$.
+This is represented as $\nbo r$ and may be required as an explicit assumption
+in some cases.
 
 \section{Summary}
-This chapter introduced
+This chapter introduced symbolic execution,
+a way of aggregating the state changes for individual instruction semantics.
+Symbolic execution is generally implemented as a set of rewrite rules
+based off of some machine model.
+Within that model are rewrite and simplification rules
+for reading and writing memory,
+required for abstract, region-based memory reasoning.
+Separation and enclosure are the two main relations needed for such reasoning.
+In some cases, reasoning about enclosure can be very time-consuming,
+and thus a set of assumptions and associated rewrite rules are provided 
+that allow for user-provided memory layouts, which greatly increases productivity.

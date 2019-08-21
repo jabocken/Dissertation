@@ -29,11 +29,11 @@ It characterizes the parts of memory that are read and written by a program.
 To reason about memory usage, we must have some way of describing it.
 For this purpose, we have the concept of \emph{memory regions}.%
 \index{memory!region}
-A memory region $\region{a}{s}$ is defined by its starting address~$a$,
-a 64-bit word, and its size in bytes~$s$, a natural number.
-To avoid dealing with wrapping arithmetic, memory regions are assumed to not overflow.
-That is, for any memory region, its address plus its size must be less than $2^{64}$.
-
+A memory region $\region{a}{s}$ is defined to have type $W\times\nat$;%
+\nomenclature{$W$}{Type of 64-bit words}%
+\nomenclature{$\nat$}{Type of natural numbers}
+that is, its starting address~$a$ is a 64-bit word
+and its size in bytes~$s$ is a natural number.
 
 
 \todo\dots
