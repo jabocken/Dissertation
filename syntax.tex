@@ -829,7 +829,20 @@ meaning that every rewrite rule has been formally proven correct.
 The verification methodology presented here occurs
 by first verifying the functionality of each basic block in the corresponding function.
 This is done for each block by proving the lemma shown below,
-using the $\exec$ function from the previous section:
+using the $\exec$ function from the previous section.
+To do this, however, a formal notion of \emph{memory usage}
+with respect to state changes is required.
+\begin{definition}[Memory Usage with Respect to State Change]\label{def:mem_usage}
+  The set of memory regions~$M$ represents memory usage with respect to
+  the state change from starting state~$\sigma$ to halting state~$\sigma'$
+  if and only if every byte outside of the prespecified regions in memory is unchanged.
+  Those bytes are associated with the variable~$a$.
+  \begin{equation}
+    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\separate r)
+    \longrightarrow\readmemS{\sigma'}a{1}=\readmemS{\sigma}a{1}.
+  \end{equation}
+\end{definition}
+With \cref{def:mem_usage}, \cref{per-block-lemma} can now be provided.
 \begin{lemma}[Block Verification]\label{per-block-lemma}
   \begin{equation*}
     P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge

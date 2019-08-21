@@ -28,8 +28,7 @@ It also provides proper loop handling.
 
 An overview of the methodology can be seen in \cref{fig:cfg_overview}.
 The main goal of the approach is to prove the property of \emph{memory preservation},%
-\index{memory!preservation}
-fully described in \cref{memory_preservation}.
+\index{memory!preservation}.
 In short, this property ensures only documented regions of memory are modified;%
 \index{memory!region}
 anything outside of those regions remains unchanged.
@@ -140,6 +139,33 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 A formal definition of memory preservation requires a formal basis to work with,
 and that basis is the machine model from \cref{se:machine_model}.
 
+\subsection{Hoare Triples for Memory Preservation}
+Unlike the usual formulation of
+Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},%
+\index{Hoare!logic}
+Hoare triples as defined for this work take a \emph{halting condition}%
+\index{Hoare!triple}%
+\index{symbolic execution!halting condition}
+as their middle input rather than a program statement.
+The result is that the program statement is
+characterized by the addresses of its initial
+and ending instructions, defined in~$P$ and~$H$, rather than via specific syntax.
+Thus, we have the following definition:
+\begin{definition}[Hoare triple for memory preservation]\label{def:htriple}
+  $\htriple{P}H{Q}$
+  denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
+  the function call $\run(H,\sigma)$
+  produces a non-exceptional state that satisfies postcondition~$Q$.
+  
+  Formally,
+  \begin{equation}
+  \htriple{P}H{Q}\equiv\forall\sigma\cdot
+  P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+  \sigma'\neq\bot_E\wedge Q(\sigma'),
+  \end{equation}
+  where $\sigma'=\run(H,\sigma)$.
+\end{definition}
+
 \subsection{Symbolic Execution for \acs*{cfg}-Driven Verification}\label{cfg_symb_exec}
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
 this chapter requires a more specific look.
@@ -198,34 +224,10 @@ functions as an \emph{invariant} for that loop.
 Such invariants hold for every iteration of the loop,
 allowing a symbolic description of the loop's behavior.
 When combined with a general methodology
-of structured preconditions and postconditions that show,
+of structured preconditions and postconditions showing that,
 for each annotated state, the succeeding annotated state satisfies its state predicate,
-a Hoare triple can be inferred for the program as a whole.
-
-Taking this approach also allows minimizing symbolic execution
-even in non-loop situations, a form of internal compositionality.
-Consider the following pseudocode,
-which sequentially executes an if-statement and some program~$P$:
-\begin{lstlisting}[
-  escapechar=|,
-  gobble=2,
-  caption=Simple Pseudocode,
-  label=compositional_pseudocode
-]
-  if |$b$| then |$x$| else |$y$|; |$P$|
-\end{lstlisting}
-The assembly corresponding to this code can be verified using symbolic execution.
-If executed in full, the symbolic execution engine
-would require first considering the case where~$b$ is true,
-executing~$x$ and subsequently symbolically executing program~$P$.
-It would then consider the case where~$b$ is false, executing~$y$ followed by~$P$.
-Program~$P$ would thus be symbolically executed twice.
-This repetition can be avoided
-by placing a cutpoint at the start of each block where control flow converges,%
-\index{cutpoint}
-resulting in all instructions being symbolically executed only once each.
-Each cutpoint, however, requires a state predicate contained
-in a \emph{Floyd invariant}.
+a Hoare triple can be inferred for the program as a whole
+(\cref{thm:floyd_hoare}).
 
 The Floyd invariant for a function is a partial function
 that takes the form $I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
@@ -255,7 +257,7 @@ If it terminates, the produced state~$\sigma'$ satisfies the Floyd invariant.
 The following theorem states that a Floyd invariant
 can be used to prove properties over its corresponding program or function
 as a whole:
-\begin{theorem}
+\begin{theorem}[Floyd and Hoare]\label{thm:floyd_hoare}
   Assume that Floyd invariant~$I$ holds and provides annotations for locations~$l_0$ and~$l_f$ (the initial and final location).
   Let halting condition~$H$ stop at location~$l_f$;%
   \index{halting condition}
@@ -300,53 +302,6 @@ Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg
 \index{Floyd!verification}
 In that \ac{cfg}, each edge can be seen as an implication.
 
-Unlike the usual formulation of
-Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},%
-\index{Hoare!logic}
-Hoare triples as defined for this work take a \emph{halting condition}%
-\index{Hoare!triple}%
-\index{symbolic execution!halting condition}
-as their middle input rather than a program statement.
-The result is that the program statement is
-characterized by the addresses of its initial
-and ending instructions, defined in~$P$ and~$H$, rather than a specific syntax.
-Thus, we have the following definition:
-\begin{definition}[Hoare triple for memory preservation]\label{def:htriple}
-  $\htriple{P}H{Q}$
-  denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
-  the function call $\run(H,\sigma)$
-  produces a non-exceptional state that satisfies postcondition~$Q$.
-
-  Formally,
-  \begin{equation}
-    \htriple{P}H{Q}\equiv\forall\sigma\cdot
-    P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
-    \sigma'\neq\bot_E\wedge Q(\sigma'),
-  \end{equation}
-  where $\sigma'=\run(H,\sigma)$.
-\end{definition}
-% TODO: may not need the explicit $\sigma'\neq\bot_E$
-
-Standard composition does not apply to such Hoare triples.
-Consider a symbolic run that executes until halting condition~$H'$.%
-\index{symbolic execution!halting condition}
-It is possible to break this run into two parts
-by first running until a halting condition~$H$ and then until~$H'$.
-This requires that~$H'$ is \emph{stronger} than~$H$; that is, $H'$ implies~$H$.
-This ensures that the run first stops at~$H$ before it stops at~$H'$.
-%\refstepcounter{equation}
-\begin{theorem}\label{thm:comp}
-  Hoare triples are compositional with respect to stronger halting conditions:
-  \begin{prooftree}
-    \AxiomC{$\htriple{P}H{Q}$}
-    \AxiomC{$\htriple{Q}{H'}{R}$}
-    \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
-    %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
-    %    \RightLabel{\textnormal{(\theequation)}}
-    \TrinaryInfC{$\htriple{P}{H'}{R}$}
-  \end{prooftree}
-\end{theorem}
-
 \subsection{Memory Preservation}\label{sse:mem_pres}
 The formal definition of memory preservation%
 \index{memory!preservation}
@@ -369,25 +324,83 @@ The notation for this formulation is shown below.
   (\forall r\in M\cdot r\separate\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
   \end{equation}
 \end{definition}
-\begin{example}
-  \todo{need more stuff!}
-\end{example}
 
-
-
-
-
-
-
-
-
-\section{Function-level Composition}\label{se:cfg_composition}
+\section{Composition}\label{se:cfg_composition}
 As stated above, composition is crucial for scalability.%
 \index{composition}
-On the function call level, compositionality ensures that, when a function is called,
+On the function call level, compositionality ensures that,
+when a function is called,
 a successful verification effort over that function can be reused
 if preexisting or developed later if need be.
+Taking this approach also allows minimizing symbolic execution
+even in non-loop situations, a form of internal compositionality.
 
+\subsection{Intra-Function}
+Consider the following pseudocode,
+which sequentially executes an if-statement and some program~$P$:
+\begin{lstlisting}[
+  escapechar=|,
+  gobble=2,
+  caption=Simple Pseudocode,
+  label=compositional_pseudocode
+]
+  if |$b$| then |$x$| else |$y$|; |$P$|
+\end{lstlisting}
+The assembly corresponding to this code can be verified using symbolic execution.
+If executed in full, the symbolic execution engine
+would require first considering the case where~$b$ is true,
+executing~$x$ and subsequently symbolically executing program~$P$.
+It would then consider the case where~$b$ is false, executing~$y$ followed by~$P$.
+Program~$P$ would thus be symbolically executed twice.
+This repetition can be avoided
+by placing a cutpoint at the start of each block where control flow converges,%
+\index{cutpoint}
+resulting in all instructions being symbolically executed only once each.
+Each cutpoint, however, requires a state predicate contained
+in a Floyd invariant.
+
+Reasoning about composition with the Hoare triples specific to this chapter
+requires a bit of work,
+as standard composition does not apply to Hoare triples
+that use halting conditions.%
+\index{symbolic execution!halting condition}
+It is still possible, however.
+%\refstepcounter{equation}
+\begin{theorem}[Composition Rule]\label{thm:comp}
+  Halting Hoare triples are compositional
+  with respect to stronger halting conditions:
+  \begin{prooftree}
+    \AxiomC{$\htriple{P}H{Q}$}
+    \AxiomC{$\htriple{Q}{H'}{R}$}
+    \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
+    %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
+    %    \RightLabel{\textnormal{(\theequation)}}
+    \TrinaryInfC{$\htriple{P}{H'}{R}$}
+  \end{prooftree}
+\end{theorem}
+\begin{proof}
+  Consider a symbolic run that executes until halting condition~$H'$.
+  It is possible to break this run into two parts
+  by first running until a halting condition~$H$ and then until~$H'$.
+  This requires that~$H'$ is \emph{stronger} than~$H$; that is,~$H'$ implies~$H$.
+  Doing so ensures that the run first stops at~$H$ before it stops at~$H'$
+  (as it is possible for $H$ to hold when $H'$ does not,
+  but not the other way around).
+\end{proof}
+\begin{example}
+  Now consider the block of assembly that could be generated for 
+  \cref{compositional_pseudocode}.
+  Let~$l_f$ denote the final location of the block
+  while~$l_P$ denotes the initial location of program~$P$.
+  \Cref{thm:comp} can be used by instantiating~$H$ to halt
+  at either location~$l_f$ or~$l_P$ and instantiating~$H'$ to halt at~$l_f$.
+  As long as programs~$x$ and~$y$ do not contain \lstinline[style=C]|goto|s
+  or some other instruction that violates expected control flow,
+  condition~$H$ will ultimately be equivalent to just halting at~$l_P$.
+  As~$H'$ is stronger than~$H$, compositionality is possible.
+\end{example}
+
+\subsection{Function Calls}
 Generally, compositionality over function calls requires proving
 that the stack pointer remains unchanged after execution of every function call.%
 \index{stack!pointer}
