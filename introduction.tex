@@ -1,34 +1,36 @@
 \chapter{Introduction}
-% TODO?
+% TODO
 
 The approaches to assembly-level verification detailed in this dissertation%
 \index{assembly!verification}
-are \emph{semi-automated}.
-They combine \ac{itp} with automated generation
-of at least some components of formal proofs.
-This reduces the amount of manual proof effort required by varying degrees
-while still providing flexibility in the proving process.
-
-%TODO
-
-As per Rice's theorem~\citep{rice1953classes},
-the non-trivial memory usage-related properties presented here are undecidable.
-This is why the approaches presented in this dissertation
-use \iac{itp} environment, allowing user interaction when necessary.
-
-\section{Levels of Verification}
-
-\section{Challenges of Assembly-Level Verification}
-The biggest challenge of assembly-level verification is the lack of abstraction.
-Higher-level languages hide details of their implementation
-behind layers of abstraction, which makes it easier to reason about them
-on that level.
+are \emph{semi-automated},
+as the non-trivial memory usage-related properties presented here are undecidable
+per Rice's theorem~\citep{rice1953classes}.
+The usage of \iac{itp} environment allows user interaction when necessary,
+while the automated generation
+of at least some components of formal proofs
+reduces the amount of manual proof effort required by varying degrees.
 
 \section{Memory Usage}\label{memory_usage}
 The main property targeted for verification in this dissertation
 is referred to here as \emph{memory usage}.%
 \index{memory!usage}
-It characterizes the parts of memory that are read and written by a program.
+It characterizes the exact addresses in memory
+that are read and written by a program.
+Because of this specificity, memory usage cannot be satisfactorily expressed
+on the source-code level.
+This is because even programs in a low-level language like C
+have memory that is allocated for internal rather than user use,
+and how and where that memory is allocated may be compiler, \ac{abi},
+or \ac{isa}-specific.
+
+As a further illustration,
+consider formulating a property
+that a function cannot overwrite its own return address
+(one way of protecting from \ac{rop} attacks).
+Doing so would require knowledge of the layout of the stack,
+including the values of the stack and frame pointers,
+thus making it an \emph{assembly-level} property.
 
 \subsection{Memory Preservation}
 An application of memory usage analysis,
@@ -59,7 +61,7 @@ requested as output as part of a ``heartbeat'' message.
 This, combined with a custom memory manager
 that also had no security protections against out-of-bounds memory accesses,
 lead to potential leakage of sensitive data such as passwords and encryption keys.
-% TODO: need another, better example that involves data modification too
+% TODO: need another, better example that involves data modification too?
 Memory preservation could serve as a foundation for formal security analyses
 that could be used to expose vulnerabilities involving malicious writes.
 
@@ -122,7 +124,16 @@ a significant increase in time and verification effort.
   increase in automation in general
   as one way of mitigating increased verification effort somewhere}
 
+\section{Levels of Verification}
+
+\section{Challenges of Assembly-Level Verification}
+The biggest challenge of assembly-level verification is the lack of abstraction.
+Higher-level languages hide details of their implementation
+behind layers of abstraction, which makes it easier to reason about them
+on that level.
+
 \section{Contributions}
+The main contributions of this dissertation
 
 \section{Overview of Dissertation}
 
