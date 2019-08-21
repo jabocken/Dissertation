@@ -11,8 +11,18 @@ while still providing flexibility in the proving process.
 
 %TODO
 
-\section{Levels of Verification}  
+As per Rice's theorem~\citep{rice1953classes},
+the non-trivial memory usage-related properties presented here are undecidable.
+This is why the approaches presented in this dissertation
+use \iac{itp} environment, allowing user interaction when necessary.
+
+\section{Levels of Verification}
+
 \section{Challenges of Assembly-Level Verification}
+The biggest challenge of assembly-level verification is the lack of abstraction.
+Higher-level languages hide details of their implementation
+behind layers of abstraction, which makes it easier to reason about them
+on that level.
 
 \section{Memory Usage}\label{memory_usage}
 The main property targeted for verification in this dissertation
@@ -35,10 +45,7 @@ A memory region $\region{a}{s}$ is defined to have type $W\times\nat$;%
 that is, its starting address~$a$ is a 64-bit word
 and its size in bytes~$s$ is a natural number.
 
-
 \todo\dots
-
-
 
 \subsection{Memory Preservation}
 An application of memory usage analysis,
@@ -109,20 +116,27 @@ to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
+\subsection{Overapproximation}\label{mem_use_over}
+As a formal property, memory usage has been proven to never miss any memory regions
+written to, assuming the correctness of the semantics and model it is applied
+to~\citep{bockenek2019preservation,popl2019underreview}.
+Put another way, however,
+this means that the methodology \emph{must} be conservative.
+If it cannot make a determination about the usage status of some part of memory,
+either due to an underdeveloped state or too large of one to easily reason about,
+it must assume that that region is used. It must \emph{overapproximate}.%
+\index{overapproximation}
+This sort of false positive can be an issue in the field of formal verification,
+as it can make the property under consideration weaker despite being correct.
 
+One way to shrink such overapproximations is to increase the
+\emph{context sensitivity}\index{context sensitivity}
+of the approach, such as performing the analysis over the full program at once
+rather than individual components, but that can involve
+a significant increase in time and verification effort.
 
-
-
-
-
-
-
-%TODO more?
-
-As per Rice's theorem~\citep{rice1953classes},
-the non-trivial memory usage-related properties presented here are undecidable.
-This is why the approaches presented in this dissertation
-use \iac{itp} environment, allowing user interaction when necessary.
-
+\todo{Want talk about the usage of SMT solvers/etc.,
+  increase in automation in general
+  as one way of mitigating increased verification effort somewhere}
 
 \section{Summary}
