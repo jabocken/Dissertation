@@ -1,4 +1,6 @@
 \chapter{Introduction}
+\todo{Preamble structure: 1 par intro, 1 par overview, 1 par attribution if necessary}
+
 % TODO
 
 The approaches to assembly-level verification detailed in this dissertation%
@@ -11,7 +13,13 @@ while the automated generation
 of at least some components of formal proofs
 reduces the amount of manual proof effort required by varying degrees.
 
+\section{Motivation}
+\todo{Why is software verification important?}
+
+\section{State of the Art in Assembly-Level Verification}
+
 \section{Memory Usage}\label{memory_usage}
+\todo{move to contributions}
 The main property targeted for verification in this dissertation
 is referred to here as \emph{memory usage}.%
 \index{memory!usage}
@@ -124,17 +132,22 @@ a significant increase in time and verification effort.
   increase in automation in general
   as one way of mitigating increased verification effort somewhere}
 
-\section{Levels of Verification}
+%\section{Challenges of Assembly-Level Verification}
+%The biggest challenge of assembly-level verification is the lack of abstraction.
+%Higher-level languages hide details of their implementation
+%behind layers of abstraction, which makes it easier to reason about them
+%on that level.
 
-\section{Challenges of Assembly-Level Verification}
-The biggest challenge of assembly-level verification is the lack of abstraction.
-Higher-level languages hide details of their implementation
-behind layers of abstraction, which makes it easier to reason about them
-on that level.
-
-\section{Contributions}
+\section{Research Contributions}
 The main contributions of this dissertation
+* Safecomp
+** Formal definition of Memory Preservation
+** Formal method of verifying it
+* Popl
+** Mostly-automated methodology for memory usage verification
+** Analysis of Xen binaries
 
-\section{Overview of Dissertation}
+\todo{bullet points after explanation}
 
-\section{Summary}
+\section{Organization of Dissertation}
+\todo{summary}

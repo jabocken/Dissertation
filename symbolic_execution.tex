@@ -1,5 +1,8 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-% Fix up prologue/preamble, give overview and outline
+\todo{Fix up prologue/preamble, give overview and outline}
+
+\todo{Fix definition explanations for separation, etc.}
+
 
 Symbolic execution, in a sense,%
 \index{symbolic execution}
@@ -157,7 +160,7 @@ and there is nothing to prevent a write from overwriting the program itself.
 For that reason,
 the works presented in this document assume that the loaded assembly is never modified.
 
-\section{Simplification Rules}\label{se:simplification}
+\section{Rewrite Rules}\label{se:rewrite}
 The basic rules supplied by the formal machine model are not well-suited to verification;
 they are often very low-level bitvector/bitstring operations.
 While \citet{roessle2019} provided a large set of simplification rules
@@ -205,20 +208,10 @@ The actual definitions of those relations are as follows.
   \begin{equation*}
     s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
   \end{equation*}
+  This means that, as long as neither region has zero size
+  and \todo{finish informal explanation}
   If those regions are not separate, they \emph{overlap}.
 \end{definition}
-\begin{example}
-  Consider the simple regions $r_0=\region{5}{4}$ and $r_1=\region{7}{4}$.
-  Calculating separation for those two regions is as follows:
-  \begin{gather*}
-    4=0\vee 4=0\vee 5+4\leq 7\vee 7+4\leq 5 \\
-    9\leq 7\vee 11\leq 5 \\
-    \false\vee\false \\
-    \false
-  \end{gather*}
-  Thus, those two regions are \emph{not} separate.
-\end{example}
-
 \begin{definition}[Enclosure]\label{def:enc}
   Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,%
   \index{memory!region!enclosure}
@@ -226,6 +219,7 @@ The actual definitions of those relations are as follows.
   \begin{equation*}
     a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
   \end{equation*}
+  \todo\dots
 \end{definition}
 \begin{example}
   Consider the simple regions $r_0=\region{7}{4}$ and $r_1=\region{5}{8}$.
@@ -237,9 +231,10 @@ The actual definitions of those relations are as follows.
     \true
   \end{gather*}
   Thus~$r_1$ encloses~$r_0$.
+  \todo\dots
 \end{example}
 
-\subsection{Rewrite Rules}\label{memory_rewrite}
+\subsection{Rewrite Rules for Memory}\label{memory_rewrite}
 An additional problem is when a region that overlaps with at least one other region
 that has been modified is written to.
 To combine those writes, the regions must be \emph{merged}.%

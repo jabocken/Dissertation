@@ -1,6 +1,9 @@
 \chapter{Syntax-Driven Verification}\label{ch:syntax}
-Again as described in the preface,
-my primary contributions to the certificate generation and verification approach%
+\todo{Add description of }
+
+\todo{fix preamble}
+
+My primary contributions to the certificate generation and verification approach%
 \index{certificate}
 presented in this chapter include the Hoare rules we developed
 for memory usage as well as the \ac{vcg} used to apply those rules
@@ -21,7 +24,7 @@ As previously stated,
 the paper detailing the work as a whole~\citep{popl2019underreview}
 is currently under review.
 
-\section{Chapter Overview}\label{se:fmuc_motivation}
+\section{Overview [need better name?]}\label{se:fmuc_motivation}
 While the methodology presented in the previous chapter
 for verifying memory preservation works well, it is not ideal.
 The need to manually formulate regions
@@ -477,7 +480,7 @@ that can occur even without loops.
   \end{figure*}
 \end{example}
 
-\subsection{Symbolic Execution}\label{sse:syntax_symb}
+\subsection{Symbolic Execution for Generation}\label{sse:syntax_symb}
 In \cref{sse:cfg_extract}, the semantics of assembly were expressed%
 \index{semantics!assembly}
 in terms of control flow between basic blocks.
@@ -510,44 +513,9 @@ then they must be treated as a single merged region.
 To deal with such symbolic issues,
 the three aforementioned relations of enclosure, separation, and overlap
 are formulated as \ac{smt} problems.
-\Ac{smt} formulations generally require negating the desired condition
-and then proving that the resultant problem is unsatisfiable.
-Thus, for separation, we have the below definition.
-\begin{definition}[\ac{smt} separation]
-  Two symbolic regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$
-  are necessarily separate if and only if, for any address~$a$,
-  the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  a_0\leq a<a_0+s_0\wedge a_1\leq a<a_1+s_1.
-  \end{equation*}
-\end{definition}
-Overlap may occur if two regions are not necessarily separate.
-%\begin{example}
-%  \todo\dots
-%\end{example}
-
-\begin{definition}[\ac{smt} overlap]
-  The regions~$r_0$ and~$r_1$ necessarily overlap if and only if
-  the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  (a_0<a_1\vee a_0\geq a_1+s_1)\wedge(a_1<a_0\vee a_1\geq a_0+s_0).
-  \end{equation*}
-\end{definition}
-%\begin{example}
-%  \todo\dots
-%\end{example}
-
-\begin{definition}[\ac{smt} enclosure]
-  Region $r_0$ is enclosed by $r_1$ if and only if,
-  for any address~$a$, the following \ac{smt} problem is unsatisfiable:
-  \begin{equation*}
-  a_0\leq a<a_0+s_0\wedge(a<a_1\vee a \geq a_1 + s_1).
-  \end{equation*}
-\end{definition}
-%\begin{example}
-%  \todo\dots
-%\end{example}
-
+The \ac{smt} formulations are negations
+of the equations presented in \cref{};
+the result states the property holds if the resultant problem is unsatisfiable.
 These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
 for a wide range of expressions over bitvectors
 using the \texttt{QF\_UFBV} theory~\citep{barrett2017smt}.
@@ -783,7 +751,7 @@ These single-instruction blocks are then translated into \texttt{Call}~$f$ entri
 in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function called.
 This allows for proper matching with the Hoare rules presented below.
 
-\subsection{Symbolic Execution}\label{sse:syntax_ver_symb}
+\subsection{Symbolic Execution for Verification}\label{sse:syntax_ver_symb}
 \Cref{cfg_symb_exec} previously presented a formal symbolic execution engine
 based on the machine model described in \cref{se:machine_model}.
 It provides a function $\run$ that describes the symbolic execution of
@@ -841,15 +809,14 @@ with respect to state changes is required.
     \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\separate r)
     \longrightarrow\readmemS{\sigma'}a{1}=\readmemS{\sigma}a{1}.
   \end{equation}
+  \todo{explain!}
 \end{definition}
-With \cref{def:mem_usage}, \cref{per-block-lemma} can now be provided.
-\begin{lemma}[Block Verification]\label{per-block-lemma}
-  \begin{equation*}
-    P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge
-    Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma')
-  \end{equation*}
-\end{lemma}
-Every generated version of this lemma is discharged
+Using \cref{def:mem_usage}, each block gets a lemma of the form
+\begin{equation}
+  P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge
+  Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma').\label{eq:block_lemma}
+\end{equation}
+Every generated version of \cref{eq:block_lemma} is discharged
 with an Isabelle/HOL proof method written in Eisbach~\citep{matichuk2016eisbach},
 Isabelle's proof automation language.
 For each block, the method takes the block-related proof ingredients
@@ -1143,8 +1110,8 @@ Fourth and finally,~$\psep$ and~$Q_f$ should imply postcondition$~Q$.
     \AxiomC{$\htriple*{P_f}{f}{Q_f}{M_f}$}
     \AxiomC{$P\longrightarrow P_f\wedge\psep$}
     \AxiomC{$\forall s~s'\cdot\begin{array}{l}
-      \usage(M_f,s,s')\wedge{} \\
-      \psep(s)\longrightarrow\psep(s')
+      (\usage(M_f,s,s')\wedge{} \\
+      \psep(s))\longrightarrow\psep(s')
     \end{array}$}
     \AxiomC{$Q_f\wedge\psep\longrightarrow Q$}
     \QuaternaryInfC{$\htriple*{P}{\ACall f}{Q}{M_f}$}
