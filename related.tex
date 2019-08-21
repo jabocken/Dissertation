@@ -73,7 +73,8 @@ including a word count program and two kernel-mode memory copying examples.
     Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
     Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
-    This paper & x86-64 & \ac*{itp}+CG & Xen & \num{12252} insts \\
+    \cref{ch:cfg} & x86-64 & \ac*{itp} & HermitCore & \num{2379}+ insts \\
+    \cref{ch:syntax} & x86-64 & \ac*{itp}+CG & Xen & \num{12252} insts \\
     \midrule
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & \num{8000} \acs*{sloc}, 60 insts \\
@@ -244,3 +245,9 @@ This section covered some of the work related to that presented in this disserta
 Previous assembly- or lower-level formal verification efforts,
 verification efforts containing assembly or binary analysis components,
 verified compilation, and static analysis tools were all discussed.
+
+Notably, while multiple assembly-level verification efforts
+presented in this chapter achieved more coverage
+than the over \num{2379} instructions achieved by the work in \cref{ch:cfg},
+none appear to have achieved the \num{12252}
+verified instructions covered in \cref{ch:syntax}.

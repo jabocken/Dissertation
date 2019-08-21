@@ -30,23 +30,6 @@ is referred to here as \emph{memory usage}.%
 \index{memory!usage}
 It characterizes the parts of memory that are read and written by a program.
 
-
-\todo\dots
-
-
-
-\subsection{Memory Regions}\label{memory_regions}
-To reason about memory usage, we must have some way of describing it.
-For this purpose, we have the concept of \emph{memory regions}.%
-\index{memory!region}
-A memory region $\region{a}{s}$ is defined to have type $W\times\nat$;%
-\nomenclature{$W$}{Type of 64-bit words}%
-\nomenclature{$\nat$}{Type of natural numbers}
-that is, its starting address~$a$ is a 64-bit word
-and its size in bytes~$s$ is a natural number.
-
-\todo\dots
-
 \subsection{Memory Preservation}
 An application of memory usage analysis,
 memory preservation shows that the values written by a program%
@@ -138,5 +121,9 @@ a significant increase in time and verification effort.
 \todo{Want talk about the usage of SMT solvers/etc.,
   increase in automation in general
   as one way of mitigating increased verification effort somewhere}
+
+\section{Contributions}
+
+\section{Overview of Dissertation}
 
 \section{Summary}

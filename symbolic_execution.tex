@@ -84,6 +84,14 @@ jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
 
 \subsection{Memory Model}
 Reads and writes of the machine model's memory space take a specific form.
+They operate on \emph{memory regions}.%
+\index{memory!region}
+A memory region $\region{a}{s}$ is defined to have type $W\times\nat$;%
+\nomenclature{$W$}{Type of 64-bit words}%
+\nomenclature{$\nat$}{Type of natural numbers}
+that is, its starting address~$a$ is a 64-bit word
+and its size in bytes~$s$ is a natural number.
+
 Reading a region of memory from some state~$\sigma$
 uses the notation $\readmemS{\sigma}{a}{s}$.
 In Isabelle, this operation internally reads the list of~$s$ bytes
@@ -97,7 +105,7 @@ that is a \emph{state part},~$\var{SP}$;%
 \nomenclature{$\var{SP}$}{Type of state parts (regions, flags, and registers)}%
 \index{state part}
 it can be a region, register, or flag.
-Flags can only take boolean expressions while398425ff35e378c24791a460b4d242664a6a9775
+Flags can only take boolean expressions while
 the result for a register must be a 64-bit word.
 The behavior for regions in Isabelle
 is to internally decompose the expression to write
