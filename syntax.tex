@@ -1,5 +1,5 @@
 \chapter{Syntax-Driven Verification}\label{ch:syntax}
-\todo{Add description of }
+\todo{Add description of definitions that don't have them}
 
 \todo{fix preamble}
 
@@ -514,7 +514,7 @@ To deal with such symbolic issues,
 the three aforementioned relations of enclosure, separation, and overlap
 are formulated as \ac{smt} problems.
 The \ac{smt} formulations are negations
-of the equations presented in \cref{};
+of the equations presented in \cref{def:sep,def:enc};
 the result states the property holds if the resultant problem is unsatisfiable.
 These \ac{smt} problems can be solved by Z3~\citep{de2008z3}
 for a wide range of expressions over bitvectors
@@ -998,25 +998,95 @@ This shows that the strength of the generated invariants directly influences the
 A weaker invariant, such as $i<20$, would result in a larger set of memory regions.
 
 \subsubsection{Verification Condition Generation}\label{sse:vcg}
-% TODO: add more if time permits
-The \ac{vcg} presented here is also a set of proof methods
-implemented in Eisbach.
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  caption=VCG Step Method,
+  label=lst:vcg_step,
+  escapechar=|
+]
+  method vcg_step =
+    ((rule htriples)+, rule blocks)+,
+    (simp add: pred_logic Ps Qs)?, |\label{step_simp}|
+    (((auto simp: eq_def)[])+)? |\label{step_auto}|
+\end{lstlisting}
+\begin{lstlisting}[gobble=2, float=*, caption=Main VCG Method, label=lst:vcg]
+  method vcg uses scf =
+    subst scf,
+    vcg_step+
+\end{lstlisting}
+The \ac{vcg} presented here is a set of Eisbach proof methods,
+the entry point of which is shown in \cref{lst:vcg}.
 It is designed to automatically apply the proper Hoare logic rules
-as much as possible,
+as much as possible via the \lstinline|vcg_step| method in \cref{lst:vcg_step},
 driven by the formal \ac{scf} provided by the \ac{fmuc}.
-While it does allow for additional user interaction as necessary,
-my experience with function bodies without loops
-has been that minimal further interaction is required.
-For the case where loops are present,
-the \ac{vcg} provides an alternate \lstinline|vcg_while| method
+
+Internally, \lstinline|vcg_step| repeatedly applies one of the Hoare rules
+from \cref{fig:rules} (excluding the While, strengthening, and weakening rules)
+to the current state of the \ac{scf} until no more rules can be applied.
+At that point, it assumes that the introduction rule has been applied,
+resulting in a block goal being generated, and attempts to discharge that goal
+using one of the lemmas generated for \cref{sse:per-block}.
+This process is repeated until no more of the restricted set of rules can be applied
+or the last rule application resulted in a non-block goal.
+At that point, \cref{step_simp} cleans up any preconditions and postconditions
+in the current goal.
+The last step, \cref{step_auto}, then tries to eliminate as many goals as it can,
+one at a time, with Isabelle's basic \lstinline|auto| method.
+If there are no loops present in the \ac{scf} under consideration,
+this method will complete the proof without any need for user interaction.
+
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  caption=Alternate Step Method for Resume Clauses,
+  label=lst:vcg_cases,
+  escapechar=|
+]
+  method vcg_step' =
+    (rule htriples)+,
+    simp,
+    ((rule htriples)+, rule blocks)+,
+    (simp add: pred_logic Ps Qs)?,
+    (((auto simp: eq_def)[])+)?
+\end{lstlisting}
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  caption=VCG Method for Loops,
+  label=lst:vcg_while,
+  escapechar=*
+]
+  method vcg_while for P :: state_pred =
+    ((rule htriples)+)?,
+    rule HTriple_weaken[where P=P], *\label{step_weaken}*
+    simp add: pred_logic Ps Qs,
+    rule HTriple_while,
+    vcg_step+,
+    (simp add: pred_logic Ps Qs)+,
+    (
+      (vcg_step' | vcg_step)+,
+      (simp+)?
+    )?
+\end{lstlisting}
+In the case where loops are present,
+the \ac{vcg} provides an alternate \lstinline|vcg_while| method,
+shown in \cref{lst:vcg_while}
 that relies on the loop rule presented in \cref{fig:hoare-loop}.
 That loop rule is structured such that
 the majority of work required to support the loops
 is identifying the preconditions of their exit blocks
 and then supplying their disjunction to \lstinline|vcg_while|.
 This method relies on application of the weakening rule
-presented in \cref{fig:hoare-weaken}
+presented in \cref{fig:hoare-weaken} on \cref{step_weaken}
 to show that the postcondition of the block before entry implies the loop invariant.
+\todo{discuss \lstinline|vcg_step'| when Resumes are present}
+
+After application of \lstinline|vcg_while|,
+nested loops and those with multiple exit points may require
+additional applications of condition simplifying or plain \lstinline|simp| usage
+around further applications of \lstinline|vcg_step|.
+Nothing beyond that should be necessary.
 
 Without exception, each of the proofs we produced
 could be finished using standard, off-the-shelf Isabelle/HOL methods,
@@ -1024,6 +1094,8 @@ though finishing them was not always an automatic process.
 The part that is usually the most involved,
 defining the invariants (as seen in the previous chapter)
 is taken care of by the \ac{fmuc} generation.
+This leaves dealing with loops, particularly ones with multiple exit points,
+as the biggest challenge for most situations.
 
 \subsection{Composition}\label{sse:fmuc_comp}
 In order to achieve a scalable verification methodology,
@@ -1166,7 +1238,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
       }
     \end{lstlisting}
     \caption{C code}\label{fig:example2-c}
-  \end{subfigure}
+  \end{subfigure}%
   \hfill
   \begin{subfigure}[b]{.46\linewidth}
     \begin{equation*}
@@ -1217,19 +1289,18 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
       (only 7 out of 23 equalities shown)}\label{fig:example2-inv}
   \end{subfigure}
   \\[1em]
-  \begin{subfigure}[b]{.38\linewidth}
+  \begin{subfigure}[b]{.5\linewidth}
     \begin{equation*}
       \htriple*{P_\mathtt{124b}}{\fbox{\texttt{is\_even}}}
       {P_\mathtt{1250}}{M_\mathtt{is\_even}}
     \end{equation*}
     \caption{Assumption due to call of \lstinline|is_even|}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{.56\linewidth}
+  \end{subfigure}%
+  \begin{subfigure}[b]{.5\linewidth}
     \begin{lstlisting}[gobble=6]
-      apply check_scf_step+
-      apply (check_scf_while \<open>P_123e || P_1246\<close>)
-      apply check_scf_step+
+      apply (vcg scf: main_scf)
+      apply (vcg_while \<open>P_123e || P_1246\<close>)
+      apply vcg_step+
     \end{lstlisting}
     \caption{Isabelle proof code (manual effort)}\label{fig:manual}
   \end{subfigure}
@@ -1284,18 +1355,18 @@ is assumed to not overlap with regions~$a$ through~$d$, among other things.
 
 \Cref{fig:manual} shows the sole manual effort required
 to prove the \ac{fmuc} for this function.
-All it involves is calling the proper predefined Eisbach~\citep{matichuk2016eisbach}
-proof methods.
-The first proof method applied is \lstinline|check_scf_step|,
-which applies Hoare rules and proves correctness of all memory usage
-up until the loop.
-Following that, the proof method for dealing with loops
-is called with the invariant formed from the disjunction
+All it involves is calling the proper predefined Eisbach proof methods,
+previously described in \cref{sse:vcg}.
+The first proof method applied is \lstinline|vcg|,
+which initializes the proof with the function's \ac{scf}, applies Hoare rules,
+and proves correctness of all memory usage up until the loop.
+Following that, the proof method for dealing with loops, \lstinline|vcg_while|,
+is applied with the invariant formed from the disjunction
 of the precondition of the loop's entry block
 and the precondition of the loop's exit block,
-both identified from the generated \ac{scf}.
-As the last manual step, \lstinline|check_scf_step| is once again called
-and is able to verify the remainder of the function.
+both manually identified from the generated \ac{scf}.
+As the last manual step, \lstinline|vcg_step| is called repeatedly
+to verify the remainder of the function.
 
 Finally, note that, without any assumptions,
 the function could overwrite its own return address at various places.
