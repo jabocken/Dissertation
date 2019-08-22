@@ -40,14 +40,14 @@
 \boolfalse{@dbl}
 \newbool{@dft}
 \boolfalse{@dft}
-\newbool{@nopgskip}
-\booltrue{@nopgskip}
+\newbool{@pgskip}
+\boolfalse{@pgskip}
 
 \DeclareOption{proposal}{\booltrue{@proposal}}
 \DeclareOption{prelim}{\booltrue{@prelim}}
 \DeclareOption{doublespace}{\booltrue{@dbl}}
 \DeclareOption{draft}{\booltrue{@dft}}
-\DeclareOption{pageskip}{\boolfalse{@nopgskip}}  % Skips blank pages.
+\DeclareOption{pageskip}{\booltrue{@pgskip}}  % Skips blank pages.
 %%% EXECUTION OF OPTIONS -------------------------------------------------
 %% default to:
 \ExecuteOptions{}
@@ -56,7 +56,7 @@
 
 %%% PACKAGE LOADING -------------------------------------------------------
 %% based on standard book class
-\LoadClass[12pt,letterpaper,\ifbool{@nopgskip}{}{openany}]{book}
+\LoadClass[12pt,letterpaper,\ifbool{@pgskip}{openany}{}]{book}
 
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
@@ -308,13 +308,13 @@
 }
 
 \renewcommand\frontmatter{%
-  \ifbool{@nopgskip}\cleardoublepage\clearpage
+  \ifbool{@pgskip}\clearpage\cleardoublepage
   \@mainmatterfalse
   \pagenumbering{roman}%
   \pagestyle{front}%
 }
 \renewcommand\mainmatter{%
-  \ifbool{@nopgskip}\cleardoublepage\clearpage
+  \ifbool{@pgskip}\clearpage\cleardoublepage
   \@mainmattertrue
   \pagenumbering{arabic}%
   \pagestyle{main}%
@@ -339,7 +339,7 @@
 
 %Set up title page, abstract page, dedication page, and acknowledgement page
 \def\titlepage{%
-  \ifbool{@nopgskip}\cleardoublepage{}%
+  \ifbool{@pgskip}{}\cleardoublepage%
   \newpage
   \thispagestyle{empty}%
   \setcounter{page}\@ne%
@@ -378,7 +378,7 @@
   \end{center}
   \newpage%
   \if@twoside
-    \ifbool{@nopgskip}{}{\setcounter{page}\@ne}
+    \ifbool{@pgskip}{\setcounter{page}\@ne}{}
   \else
     \setcounter{page}\@ne
   \fi
