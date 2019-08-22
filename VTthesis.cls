@@ -96,7 +96,7 @@
 \RequirePackage{imakeidx}
 
 % links for references
-\RequirePackage[final,colorlinks]{hyperref} % allcolors=blue 
+\RequirePackage[final,colorlinks]{hyperref}
 
 % For including pdf images:
 %\RequirePackage[final]{graphicx}
