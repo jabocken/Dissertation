@@ -79,8 +79,10 @@
 
 \RequirePackage[nottoc]{tocbibind}
 
-\RequirePackage{fontspec}
-\setmainfont{Latin Modern Roman}[SmallCapsFont={* Caps}]
+% Font setup
+\RequirePackage[T1]{fontenc} % nice font encoding
+\RequirePackage{lmodern}     % Nice vector fonts
+\RequirePackage{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern.
 
 %package required for nomenclature entry
 \RequirePackage[intoc]{nomencl}
