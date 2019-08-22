@@ -83,12 +83,8 @@
 \RequirePackage[intoc]{nomencl}
 \makenomenclature
 
-% Official format doesn't look as good as in book form but that can always be changed
-\setlength{\textwidth}{6.5in}
-\setlength{\textheight}{8.5in}
-\setlength{\evensidemargin}{0in}
-\setlength{\oddsidemargin}{0in}
-\setlength{\topmargin}{0in}
+% Official margins don't necessarily look as good as default book layout but that can always be changed
+\RequirePackage[margin=1in,includehead,headheight=15pt]{geometry}
 
 \RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
 
@@ -100,7 +96,7 @@
 \RequirePackage{imakeidx}
 
 % links for references
-\RequirePackage[final,colorlinks=true,allcolors=blue]{hyperref}
+\RequirePackage[final,colorlinks]{hyperref} % allcolors=blue 
 
 % For including pdf images:
 %\RequirePackage[final]{graphicx}
@@ -111,7 +107,7 @@
 \RequirePackage{algorithm} % For algorithm float
 \RequirePackage{algpseudocode} % algorithmicx pseudocode (needs to come before cleveref)
 
-% Fix for tocbibind from algorithms package docs (the \let is the important part, rest is standard)
+% Fix for tocbibind from algorithms package docs (the \let is an extra, rest is standard)
 \renewcommand\listofalgorithms{\begingroup
   \tocfile\listalgorithmname{loa}
 \endgroup}
@@ -278,7 +274,6 @@
 
 %% Set up the header and footer
 \RequirePackage{fancyhdr}
-\setlength\headheight{15pt}
 
 % initial setup (trying to update the defaults on fancy itself didn't work, oh well))
 \pagestyle{fancy}
