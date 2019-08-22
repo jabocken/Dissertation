@@ -49,9 +49,9 @@ provided by \citet{roessle2019}\footnote{%
 \index{\texttt{angr}!\texttt{reassembly}}
 
 To achieve minimal symbolic execution,
-it features automatically-selected \emph{cutpoints}%
+it features \emph{cutpoints}%
 \index{cutpoint}
-identified by a Python script that relies on
+automatically selected by a Python script that relies on
 \texttt{angr}'s \lstinline|CFGEmulated| control flow analysis.%
 \index{\texttt{angr}!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
@@ -357,25 +357,21 @@ This repetition can be avoided
 by placing a cutpoint at the start of each block where control flow converges,%
 \index{cutpoint}
 resulting in all instructions being symbolically executed only once each.
-Each cutpoint, however, requires a state predicate contained
-in a Floyd invariant.
+Each cutpoint, however, requires a state predicate contained in a Floyd invariant.
 
 Reasoning about composition with the Hoare triples specific to this chapter
 requires a bit of work,
 as standard composition does not apply to Hoare triples
 that use halting conditions.%
 \index{symbolic execution!halting condition}
-It is still possible, however.
-%\refstepcounter{equation}
-\begin{theorem}[Composition Rule]\label{thm:comp}
+Doing so is still possible, however.
+\begin{theorem}[Composition rule]\label{thm:comp}
   Halting Hoare triples are compositional
   with respect to stronger halting conditions:
   \begin{prooftree}
     \AxiomC{$\htriple{P}H{Q}$}
     \AxiomC{$\htriple{Q}{H'}{R}$}
     \AxiomC{$\forall\sigma\cdot H'(\sigma) \longrightarrow H(\sigma)$}
-    %    \LeftLabel{\hphantom{\textnormal{(\theequation)}}}
-    %    \RightLabel{\textnormal{(\theequation)}}
     \TrinaryInfC{$\htriple{P}{H'}{R}$}
   \end{prooftree}
 \end{theorem}

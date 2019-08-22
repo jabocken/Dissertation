@@ -426,11 +426,11 @@ as well as the restrictions on loop structure. This is elaborated on below.
   \end{figure*}
 \end{example}
 
-\subsubsection{Code Duplication}\label{sse:code_dup}
+\subsubsection{\acs*{scf} Explosion}\label{sse:scf_explode}
 The algorithm is not optimal in terms of generated \ac{scf} size
-as basic blocks may be duplicated.
+as certain basic blocks may be duplicated.
 There are two situations where basic block duplication occurs,
-one less common and one more common.
+one less common than the other.
 The less common situation is when loop having multiple entry points,
 which can occur in situations that involve less-structured control flow,
 such as a C program that jumps into a loop using \texttt{goto}.

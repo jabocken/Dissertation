@@ -157,8 +157,8 @@ The model does not currently provide any memory protection schemes,%
 \index{memory!protection}
 such as those used in modern hardware,
 and there is nothing to prevent a write from overwriting the program itself.
-For that reason,
-the works presented in this document assume that the loaded assembly is never modified.
+For that reason, the works presented in this document must assume that the loaded assembly
+is never modified.
 
 \section{Rewrite Rules}\label{se:rewrite}
 The basic rules supplied by the formal machine model are not well-suited to verification;
@@ -280,10 +280,16 @@ merge is used as an infix operator, with order being important
 \subsubsection{Writing to Memory}
 The formal rewrite rule for writing to a new region into memory
 is structured as in \cref{eqn:writeM}.
-The underlined parts are the ones that, after application of the rewrite rule,
-may be rewritten again.
+The underlined parts are the \emph{reducible expressions},%
+\index{reducible expression}
+or redexes.\index{redex|see{reducible expression}}
+They are the subexpressions not in \emph{normal form},%
+\index{normal form}
+the ones that may be rewritten again after application of the rewrite rule.
 \begin{equation}
-  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}
+  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}%
+  \nomenclature{$\equiv$}{Indicates expression equivalence;
+    the term on the left may be replaced by the term on the right}
     \underline{\sigma(r_1\coloneqq v_1)}(r_0\coloneqq v_0) &
       \text{if } r_0\separate r_1 \\
     \underline{\sigma((r_0\coloneqq v_0)\mmerge(r_1\coloneqq v_1))} &
