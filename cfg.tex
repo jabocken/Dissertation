@@ -155,8 +155,7 @@ the function returns~$\bot_E$ instead.
 
 From the machine model, we manually derived a run function%
 \index{symbolic execution!run function}
-$\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\bot_E\mid\bot_\var{NT})$.%
-\nomenclature{$\bot_\var{NT}$}{Indicates non-termination}
+$\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\bot_E\mid\infloop)$.
 This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
 producing a state~$\sigma'$ on successful completion.
@@ -169,7 +168,7 @@ is true. Whenever an exception occurs, it stops and returns~$\bot_E$.
 If the execution were to continue forever
 without an exception or reaching the halting condition
 (as would happen with an infinite loop), the function returns $\bot_\var{NT}$.
-Formally, this is achieved by a standard least-fixed-point construction.
+Formally, this is achieved by a standard \ac{lfp} construction.
 
 \subsection{Hoare Triples for Memory Usage}
 Unlike the usual formulation of
@@ -191,7 +190,7 @@ Thus, we have the following definition:
   Formally,
   \begin{equation}
   \htriple{P}H{Q}\equiv\forall\sigma\cdot
-  P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+  P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
   \sigma'\neq\bot_E\wedge Q(\sigma'),
   \end{equation}
   where $\sigma'=\run(H,\sigma)$.
@@ -240,7 +239,7 @@ that represent the arguments passed to the function.
   A Floyd invariant~$I$ \emph{holds} if and only if, for any state~$\sigma$,
   \begin{equation}
     I(\loc\sigma)(\sigma)\longrightarrow
-    \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(\loc\sigma')(\sigma')),
+    \sigma'\neq\bot_E\wedge(\sigma'=\infloop\vee I(\loc\sigma')(\sigma')),
   \end{equation}
   where
   $\sigma'=\run((\lambda\sigma\cdot I(\loc\sigma)(\sigma)\neq\bot),\sigma)$%
@@ -268,7 +267,7 @@ as a whole:
   Remember from \cref{def:htriple} that
   \begin{equation*}
     \htriple{P}H{Q}\equiv\forall\sigma\cdot
-    P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+    P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
     \sigma'\neq\bot_E\wedge Q(\sigma').
   \end{equation*}
   Though there could be any number of additional annotations between~$l_0$
@@ -279,15 +278,15 @@ as a whole:
   and~$I(l_f)(\sigma')$ for~$Q(\sigma')$ without issue,
   resulting in the following statement:
   \begin{equation*}
-      I(l_0)(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+      I(l_0)(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
       \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
   \end{equation*}
   As we have already assumed that~$I$ holds,
   we can substitute in the right side of the implication from \cref{def:floyd_inv}
   to obtain
   \begin{equation*}
-    \sigma'\neq\bot_E\wedge(\sigma'=\bot_{\var{NT}}\vee I(l_f)(\sigma'))\wedge
-    \sigma'\neq\bot_{\var{NT}}\longrightarrow
+    \sigma'\neq\bot_E\wedge(\sigma'=\infloop\vee I(l_f)(\sigma'))\wedge
+    \sigma'\neq\infloop\longrightarrow
     \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
   \end{equation*}
   This then simplifies to 

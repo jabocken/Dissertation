@@ -1,9 +1,6 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
 \todo{Fix up prologue/preamble, give overview and outline}
 
-\todo{Fix definition explanations for separation, etc.}
-
-
 Symbolic execution, in a sense,%
 \index{symbolic execution}
 is an extension of symbolic manipulation of mathematical equations.
@@ -208,10 +205,12 @@ The actual definitions of those relations are as follows.
   \begin{equation*}
     s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
   \end{equation*}
-  This means that, as long as neither region has zero size
-  and \todo{finish informal explanation}
-  If those regions are not separate, they \emph{overlap}.
 \end{definition}
+This means that, if at least one of the regions has zero size
+or the lower bound of one of the regions is equal to or greater than
+the upper bound of the other, those two regions are separate.
+If those regions are not separate, they \emph{overlap}.
+
 \begin{definition}[Enclosure]\label{def:enc}
   Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,%
   \index{memory!region!enclosure}
@@ -219,20 +218,11 @@ The actual definitions of those relations are as follows.
   \begin{equation*}
     a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
   \end{equation*}
-  \todo\dots
 \end{definition}
-\begin{example}
-  Consider the simple regions $r_0=\region{7}{4}$ and $r_1=\region{5}{8}$.
-  Calculating enclosure for those two regions is as follows:
-  \begin{gather*}
-    7\geq 5\wedge 7+4\leq 5+8 \\
-    7\geq 5\wedge 11\leq 13 \\
-    \true\wedge\true \\
-    \true
-  \end{gather*}
-  Thus~$r_1$ encloses~$r_0$.
-  \todo\dots
-\end{example}
+This means that, if the lower bound of the first region is the same as
+or greater than the lower bound of the second region
+and the upper bound of the first region is either the same as or less than
+the upper bound of the second region, the first region is enclosed by the second.
 
 \subsection{Rewrite Rules for Memory}\label{memory_rewrite}
 An additional problem is when a region that overlaps with at least one other region
@@ -352,7 +342,6 @@ The final value read from memory is extracted from the merged assignment.
 The correctness of the \textsc{readMem} algorithm
 is derived from the correctness of its component operations.
 
-% TODO: add an explicit linebreak or something if this doesn't get pushed to a new page by extra explanations so that it doesn't get split across pages
 \begin{example}[Reading, writing, and merging]\label{ex:simple}
   Consider the following x86-64 assembly block:
   \begin{lstlisting}[style=x64, gobble=4]
@@ -406,6 +395,10 @@ if their addresses are non-trivial expressions.
     \text{if }i_0=i_1\text{ then }r_0=r_1\text{ else }r_0\separate r_1
   \end{equation}
 \end{definition}
+This function over memory region sets compares all possible combinations of
+ID-region pairs in the supplied set, returning true only if each region
+has a unique ID and is separate from every other region in the set.
+
 Originally, set~$M$ was intended to contain large regions,
 such as the whole stack frame.
 As the rewrite rules are focused on smaller regions, such as per-variable regions.

@@ -44,7 +44,7 @@
 \makeatother
 
 \pgfplotsset{compat=1.15}          % For up-to-date features
-%\tikzexternalize[prefix=extern/]                  % Enables externalization (has issues with figures containing references when used with XeLaTeX, so turn off externalization when you need those)
+%\tikzexternalize[prefix=extern/]                  % Enables externalization (sometimes has issues with figures containing references, it seems, so turn off externalization when you need those)
 
 \DeclareAcronym{abi}{
   short            = ABI,
@@ -84,6 +84,10 @@
   long             = hardware virtual machine
 }
 \DeclareAcronym{gcc}{short=GCC, long=the GNU Compiler Collection}
+\DeclareAcronym{gfp}{
+  short            = GFP,
+  long             = greatest fixed point
+}
 \DeclareAcronym{icc}{
   short            = ICC,
   short-indefinite = an,
@@ -118,6 +122,11 @@
   long-indefinite  = an
 }
 \DeclareAcronym{jvm}{short=JVM, long=Java virtual machine}
+\DeclareAcronym{lfp}{
+  short            = LFP,
+  short-indefinite = an,
+  long             = least fixed point
+}
 \DeclareAcronym{mc}{short=MC, long=model checking}
 \DeclareAcronym{mrr}{short=MRR, long=memory region relation}
 \DeclareAcronym{navsea}{short=NAVSEA, long=the Naval Sea Systems Command}
@@ -220,6 +229,7 @@
 
 \newcommand{\asp}{A_\mathrm{SP}}
 \newcommand{\esp}{E_\mathrm{SP}}
+\newcommand{\infloop}{\bot_\mathrm{NT}}
 \newcommand{\bop}{\mathbin{\bigcirc}}
 \newcommand{\nat}{\mathbb{N}}
 

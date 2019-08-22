@@ -1,6 +1,4 @@
 \chapter{Syntax-Driven Verification}\label{ch:syntax}
-\todo{Add description of definitions that don't have them}
-
 \todo{fix preamble}
 
 My primary contributions to the certificate generation and verification approach%
@@ -24,7 +22,6 @@ As previously stated,
 the paper detailing the work as a whole~\citep{popl2019underreview}
 is currently under review.
 
-\section{Overview [need better name?]}\label{se:fmuc_motivation}
 While the methodology presented in the previous chapter
 for verifying memory usage works well, it is not ideal.
 The need to manually formulate regions
@@ -761,7 +758,9 @@ The formal function for block-level symbolic execution presented in this chapter
 \index{symbolic execution}
 by contrast, is a \emph{transition relation}%
 \index{transition relation} formulated as
-$\execblock:\nat\times W\times\nat\times S\times S\rightarrow\mathbb{B}$.
+\begin{equation*}
+  \execblock:\nat\times W\times\nat\times S\times S\rightarrow\mathbb{B}.
+\end{equation*}
 Its inputs are the number of instructions left to execute in the block,
 the address of the last instruction in the block, the block's ID,
 the current state~$\sigma$, and an ending state~$\sigma'$.
@@ -781,13 +780,21 @@ The function returns the state after instruction execution,
 incrementing \inlineasm{rip} by the supplied size
 if it was not changed by a control-flow instruction instead.
 
-The $\execblock$ function is used as part of a function for \ac{scf} execution,
+% TODO: provide the detail of the $\exec$ function if time permits
+The $\execblock$ function is used internally by another transition relation,
+this one for the symbolic execution of entire \acp{scf}:
 $\exec:\var{SCF}\times S\times S\rightarrow\mathbb{B}$.
-In case of loops, that function is defined using a least-fixed-point construction.
-Thus, if there are infinite loops present,
+That function recurses through \iac{scf}
+and checks $\execblock$ on every block it finds,
+performing the necessary state transformations to deal with the semantics of
+the individual \ac{scf} components encountered.
+Any loops encountered are dealt with using \iac{lfp} construction.
+This means that, if there are any infinite loops present,
 the function will have no related successor states.
-The function is not actually executed when used in a proof, however;
-it exists to allow creation of the Hoare rules shown below in \cref{scf_hoare}.
+The only matching state would be $\infloop$.
+Strictly speaking, $\exec$ is not actually executed when used in \ac{fmuc} proofs;
+it exists to allow proving the correctness
+of the Hoare rules shown below in \cref{scf_hoare}.
 
 Unlike the symbolic execution for generation,
 this symbolic execution methodology is implemented fully in Isabelle/HOL,
@@ -800,17 +807,19 @@ This is done for each block by proving the lemma shown below,
 using the $\exec$ function from the previous section.
 To do this, however, a formal notion of \emph{memory usage}
 with respect to state changes is required.
-\begin{definition}[Memory Usage with Respect to State Change]\label{def:mem_usage}
-  The set of memory regions~$M$ represents memory usage with respect to
-  the state change from starting state~$\sigma$ to halting state~$\sigma'$
-  if and only if every byte outside of the prespecified regions in memory is unchanged.
-  Those bytes are associated with the variable~$a$.
+\begin{definition}[Memory usage with respect to state changes]\label{def:mem_usage}
+  The set of memory regions~$M$ characterizes memory usage with respect to
+  the change from some state~$\sigma$ to some other state~$\sigma'$
+  if and only if every byte outside of the regions in~$M$ is the same in both states.
+  The addresses of those bytes are represented by the variable~$a$.
+
+  This is formally expressed as:
   \begin{equation}
     \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\separate r)
-    \longrightarrow\readmemS{\sigma'}a{1}=\readmemS{\sigma}a{1}.
+    \longrightarrow\readmemS{\sigma}a{1}=\readmemS{\sigma'}a{1}.
   \end{equation}
-  \todo{explain!}
 \end{definition}
+
 Using \cref{def:mem_usage}, each block gets a lemma of the form
 \begin{equation}
   P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge
@@ -844,8 +853,7 @@ as rather than a halting condition
 it takes a syntactic representation of the program, an \ac{scf}.
 Unlike traditional Hoare triples, however,
 it also explicitly contains the set of memory regions,~$M$,
-that enumerate the areas of memory read and written by the program
-the \ac{scf} encodes.
+that contain the areas of memory read and written by the program the \ac{scf} encodes.
 Syntactic structure is required because Hoare logic is a syntax-guided approach.
 \begin{definition}[Hoare triple for \ac{scf}]\label{def:usage}
   \begin{equation}
@@ -853,15 +861,13 @@ Syntactic structure is required because Hoare logic is a syntax-guided approach.
     \forall\sigma~\sigma'\cdot P(\sigma)\wedge\exec(f,\sigma,\sigma')\longrightarrow
     Q(\sigma')\wedge\usage(M,\sigma,\sigma')
   \end{equation}
-  The above equation states the following:
-  if precondition~$P$ holds on the initial state~$\sigma$
-  and~$\sigma'$ can be obtained by executing~$f$,
-  postcondition~$Q$ holds on the produced state
-  and the values stored in all memory regions outside set~$M$ are preserved.
 \end{definition}
-%\begin{example}
-%  \todo{need example?}
-%\end{example}
+The above definition states the following:
+if precondition~$P$ holds on the initial state~$\sigma$
+and~$\sigma'$ would be the result of symbolically executing the \ac{scf}~$f$,
+postcondition~$Q$ will hold on the produced state
+and any values stored in the regions of memory outside set~$M$ remain unchanged.
+
 While \cref{def:usage} focuses on the regions written to,
 the regions read must also be included as symbolic execution
 relies on those regions being included.
@@ -1584,4 +1590,3 @@ The amount of user interaction was roughly 85 lines of proof code
 per \num{1000} lines of assembly code.
 The greatest issue was indirect branching,
 which could be found in \SI{19}\percent of the functions examined.
-6
