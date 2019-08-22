@@ -58,6 +58,9 @@
 %% based on standard book class
 \LoadClass[12pt,letterpaper,\ifbool{@pgskip}{openany}{}]{book}
 
+% Official margins don't necessarily look as good as default book layout but that can always be changed
+\RequirePackage[margin=1in,includehead,headheight=15pt]{geometry}
+
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
 \RequirePackage[normalem]{ulem}
@@ -82,9 +85,6 @@
 %package required for nomenclature entry
 \RequirePackage[intoc]{nomencl}
 \makenomenclature
-
-% Official margins don't necessarily look as good as default book layout but that can always be changed
-\RequirePackage[margin=1in,includehead,headheight=15pt]{geometry}
 
 \RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
 
