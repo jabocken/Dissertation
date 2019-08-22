@@ -1,13 +1,14 @@
-PAPER = main
-BIB = references
-TEX = $(wildcard *.tex)
+.PHONY: all clean cleanall cleanext
 
-.PHONY: all clean
+# -shell-escape not needed for basic usage of imakeidx
+all:
+	latexmk -pdf main
 
-mk:
-	latexmk -shell-escape $(PAPER)
+clean: cleanext
+	latexmk -c
 
-clean:
-	rm -f *.aux *.auxlock *.bbl *.blg *.log *.loa *.lof *.lol *.lot *.nlo \
-		*.nls *.fls *.idx *.ind *.ilg *.out \
-		*.fdb_latexmk *.toc *.xdv $(PAPER).pdf extern/*
+cleanall: cleanext
+	latexmk -C
+
+cleanext:
+	rm extern/*
