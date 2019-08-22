@@ -150,6 +150,11 @@
   \SetWatermarkLightness{0.7}
 }
 
+% Fix for amsthm+parskip
+\def\thm@space@setup{%
+  \thm@preskip=\parskip \thm@postskip=0pt
+}
+
 % Define Theorems and such
 \newtheorem{proposition}{Proposition}[chapter]
 \newtheorem{theorem}[proposition]{Theorem}
