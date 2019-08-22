@@ -139,33 +139,6 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 A formal definition of memory usage requires a formal basis to work with,
 and that basis is the machine model from \cref{se:machine_model}.
 
-\subsection{Hoare Triples for Memory Usage}
-Unlike the usual formulation of
-Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},%
-\index{Hoare!logic}
-Hoare triples as defined for this work take a \emph{halting condition}%
-\index{Hoare!triple}%
-\index{symbolic execution!halting condition}
-as their middle input rather than a program statement.
-The result is that the program statement is
-characterized by the addresses of its initial
-and ending instructions, defined in~$P$ and~$H$, rather than via specific syntax.
-Thus, we have the following definition:
-\begin{definition}[Hoare triple for memory usage]\label{def:htriple}
-  $\htriple{P}H{Q}$
-  denotes that, for any state~$\sigma$, assuming precondition~$P$ and termination,
-  the function call $\run(H,\sigma)$
-  produces a non-exceptional state that satisfies postcondition~$Q$.
-  
-  Formally,
-  \begin{equation}
-  \htriple{P}H{Q}\equiv\forall\sigma\cdot
-  P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
-  \sigma'\neq\bot_E\wedge Q(\sigma'),
-  \end{equation}
-  where $\sigma'=\run(H,\sigma)$.
-\end{definition}
-
 \subsection{Symbolic Execution for \acs*{cfg}-Driven Verification}\label{cfg_symb_exec}
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
 this chapter requires a more specific look.
@@ -187,7 +160,7 @@ $\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\bot_E\mid\bot_\var{NT})$
 This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
 producing a state~$\sigma'$ on successful completion.
-Predicate~$H$ denotes the \emph{halting condition},%
+Predicate~$H$ denotes a \emph{halting condition},%
 \index{symbolic execution!halting condition}
 which typically instructs the run function to stop
 at a certain instruction address, such as that following a \inlineasm{ret}.
@@ -197,6 +170,32 @@ If the execution were to continue forever
 without an exception or reaching the halting condition
 (as would happen with an infinite loop), the function returns $\bot_\var{NT}$.
 Formally, this is achieved by a standard least-fixed-point construction.
+
+\subsection{Hoare Triples for Memory Usage}
+Unlike the usual formulation of
+Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},%
+\index{Hoare!logic}
+Hoare triples for this work take one of the aforementioned halting conditions%
+\index{Hoare!triple}
+as their middle input rather than a program statement.
+The result is that the program statement,
+the block of instructions to execute, is characterized by the addresses of its initial
+and ending instructions, defined in~$P$ and~$H$, rather than via specific syntax.
+Thus, we have the following definition:
+\begin{definition}[Hoare triple for memory usage]\label{def:htriple}
+  $\htriple{P}H{Q}$
+  denotes that, for any initial state that satisfies the precondition~$P$
+  and results in symbolic execution to the halting condition~$H$ terminating,
+  the resultant state will be non-exceptional and satisfy postcondition~$Q$.
+
+  Formally,
+  \begin{equation}
+  \htriple{P}H{Q}\equiv\forall\sigma\cdot
+  P(\sigma)\wedge\sigma'\neq\bot_{\var{NT}}\longrightarrow
+  \sigma'\neq\bot_E\wedge Q(\sigma'),
+  \end{equation}
+  where $\sigma'=\run(H,\sigma)$.
+\end{definition}
 
 \subsection{Floyd Invariant Foundation}\label{se:cfg_invariant}
 Loops pose a significant problem when using symbolic execution to analyze code.%
@@ -250,9 +249,10 @@ that represent the arguments passed to the function.
   and $\loc\sigma$ is the current program location,
   stored in \inlineasm{rip} on x86-64 systems.
 \end{definition}
-In words, if the Floyd invariant holds on the current state~$\sigma$,
-then running to the next annotated location does not produce an exception.
-If it terminates, the produced state~$\sigma'$ satisfies the Floyd invariant.
+In words, if the Floyd invariant holds on the current state,
+then running to the next annotated location will not produce an exception.
+If that run terminates, then the state it produces
+will also satisfy the Floyd invariant.
 
 The following theorem states that a Floyd invariant
 can be used to prove properties over its corresponding program or function
@@ -324,6 +324,7 @@ The notation for this formulation is shown below.
   \begin{equation}
   (\forall r\in M\cdot r\separate\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
   \end{equation}
+  \todo{Explain in words!}
 \end{definition}
 
 \section{Composition}\label{se:cfg_composition}
