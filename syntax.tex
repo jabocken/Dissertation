@@ -1,27 +1,4 @@
 \chapter{Syntax-Driven Verification}\label{ch:syntax}
-\todo{fix preamble}
-
-My primary contributions to the certificate generation and verification approach%
-\index{certificate}
-presented in this chapter include the Hoare rules we developed
-for memory usage as well as the \ac{vcg} used to apply those rules
-to \ac{scf} in Isabelle (\cref{se:fmuc_ver}).
-I also wrote much of the code for full translation of the \acp{fmuc}
-into the Isabelle/HOL language
-and helped adapt the \ac{scf} into a form suitable for verification
-in Isabelle (\cref{isabelle_scf}).
-Additionally, I contributed to invariant generation (\cref{sse:inv_gen}),
-and performed much of the verification work for our large case study,
-presented in \cref{se:xen}.
-
-The rest of the chapter provides some information
-on why such certificates are desirable (\cref{se:fmuc_motivation}),
-provides an overview of the certificates (\cref{se:fmuc_overview}),
-and explains the process of generating them in \cref{se:fmuc_gen}.
-As previously stated,
-the paper detailing the work as a whole~\citep{popl2019underreview}
-is currently under review.
-
 While the methodology presented in the previous chapter
 for verifying memory usage works well, it is not ideal.
 The need to manually formulate regions
@@ -74,6 +51,19 @@ In total, the \num{12252} assembly instructions
 were verified with only \num{1047} manual proof lines added,
 all of which were simple reuses of established proof methods.
 The majority of added lines of proof involved guiding loop invariant application.
+
+My primary contributions to the certificate generation and verification approach%
+\index{certificate}
+presented in this chapter include the Hoare rules developed
+for memory usage as well as the \ac{vcg} used to apply those rules
+to \ac{scf} in Isabelle (\cref{se:fmuc_ver}).
+I also wrote much of the code for full translation of the \acp{fmuc}
+into the Isabelle/HOL language
+and helped adapt the \ac{scf} into a form suitable for verification
+in Isabelle (\cref{isabelle_scf}).
+Additionally, I contributed to invariant generation (\cref{sse:inv_gen}),
+and performed much of the verification work for our large case study,
+presented in \cref{se:xen}.
 
 \section{Overview of Formal Memory Usage Certificates}\label{se:fmuc_overview}
 \Cref{fig:fmuc} provides an example of \iac{fmuc}.

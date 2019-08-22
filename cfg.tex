@@ -1,26 +1,4 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
-
-As described in the preface,
-my three main contributions to the memory usage work presented here
-were:
-\begin{enumerate*}
-  \item the development of a tool for producing proof skeletons
-  for memory usage, interfacing with the analysis tool
-  \texttt{angr} (\cref{se:cfg_overview});
-  \item the development of structured proof strategies
-  to flesh out and verify those skeleton proofs,
-  along with the development of guidelines
-  for invariants that provide for function-level composition (\cref{se:cfg_composition});
-  and
-  \item the application of the methodology to functions in
-  \cref{sse:pow2_example,se:cfg_application}.
-\end{enumerate*}
-
-The rest of this chapter provides formal definitions
-of the chapter-specific properties in \cref{se:cfg_defs}
-and an example of application to a recursive function in \cref{sse:factorial_example}.
-
-\section{Overview}\label{se:cfg_overview}
 The memory usage analysis approach presented in this chapter
 features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
 This methodology allows for minimization of symbolic execution%
@@ -37,6 +15,22 @@ This property has the potential to be used
 to prove the absence of common memory-related issues,
 such as buffer overflows or some forms of data leakage.
 
+My three main contributions to the memory usage work presented here
+were:
+\begin{enumerate*}
+  \item the development of a tool for producing proof skeletons
+  for memory usage, interfacing with the analysis tool
+  \texttt{angr} (\cref{se:cfg_overview});
+  \item the development of structured proof strategies
+  to flesh out and verify those skeleton proofs,
+  along with the development of guidelines
+  for invariants that provide for function-level composition (\cref{se:cfg_composition});
+  and
+  \item the application of the methodology to functions in
+  \cref{sse:pow2_example,se:cfg_application}.
+\end{enumerate*}
+
+\section{Overview}\label{se:cfg_overview}
 By building on the binary analysis tool \texttt{angr}~\citep{shoshitaishvili2016state},%
 \index{\texttt{angr}}
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
@@ -187,7 +181,7 @@ Thus, we have the following definition:
   and results in symbolic execution to the halting condition~$H$ terminating,
   the resultant state will be non-exceptional and satisfy postcondition~$Q$.
 
-  Formally,
+  This is formally expressed as:
   \begin{equation}
   \htriple{P}H{Q}\equiv\forall\sigma\cdot
   P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
@@ -323,8 +317,14 @@ The notation for this formulation is shown below.
   \begin{equation}
   (\forall r\in M\cdot r\separate\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
   \end{equation}
-  \todo{Explain in words!}
 \end{definition}
+This definition states that, for every byte in memory outside of the memory region set,
+the following property holds.
+Starting the current program fragment from a state that both satisfies
+the specified precondition and assumes that each byte has some value
+and then executing that program fragment to the specified halting condition
+will result in a state that satisfies the specified postcondition
+and retains the same value for that byte.
 
 \section{Composition}\label{se:cfg_composition}
 As stated above, composition is crucial for scalability.%

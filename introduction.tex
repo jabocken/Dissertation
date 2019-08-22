@@ -114,7 +114,8 @@ that are then loaded into the interactive theorem prover Isabelle/HOL
 and completed there. The process of completing those proofs involves
 \emph{symbolic execution}~\citep{king1976symbolic} of the underlying assembly code.
 
-\todo\dots
+The main differences between the two methodologies
+lie in their levels of automation and the strength of their invariants.
 
 \subsection{Memory Usage}\label{memory_usage}
 This property characterizes the regions in memory that are read and written by a program
@@ -181,27 +182,57 @@ to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
+\subsection{Control-Flow-Driven Verification}
+This methodology for verification of memory usage relies on treating function bodies
+as \acp{cfg} of basic blocks
+and providing state predicate annotations on specific nodes in the \ac{cfg}.
 
-\subsection{Summary}
-In summary, this dissertation contributes 
-\begin{itemize}
-  \item 
-  \item \ac{cfg}-Driven Verification
-  \begin{itemize}
-    \item 
-  \end{itemize}
-\end{itemize}
-  
-* Safecomp
-** Formal definition of Memory Preservation
-** Formal method of verifying it
-* Popl
-** Mostly-automated methodology for memory usage verification
-** Analysis of Xen binaries
+
+%Formal Definition of Memory Usage
+\todo\dots
+
+%Semi-Automated Formal Verification for Memory Usage
+\todo\dots
+
+%Analysis of HermitCore Functions
+The control-flow-driven methodology was applied to \num{71} functions
+extracted from the HermitCore~\citep{lankes2016hermitcore}
+unikernel~\citep{madhavapeddy2014unikernels} library,
+covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
+Of those functions, 18 had loops and 33 had subcalls.
+Optimized variants were also verified for 12 of the functions involved.
+There was even one function that featured recursion,
+which turned out to be the most challenging function to handle.
+
+\subsection{Syntax-Driven Verification}
+\todo\dots
+
+%Mostly-Automated Formal Verification for Memory Usage
+\todo\dots
+
+%Analysis of Xen Binaries
+Unlike the previous work, this one was applied to assembly obtained
+by running \texttt{objdump} on three \emph{unmodified} binaries resulting from the
+Xen Project hypervisor~\citep{chisnall2008definitive} build process.
+Of the \num{352} functions present in those binaries,
+\num{251} or \xenpercentage\ were verified.
+Ultimately, over \num{12252} optimized instructions were covered
+with \num{1047} manual lines of proof required.
+This is an approximate ratio of one manual line of proof
+for every \num{12} instructions handled,
+or an average of \num{16} manual lines of proof for every loop handled,
+of which there were \num{65}.
 
 \section{Organization of Dissertation}
-
-\todo\dots
+Following this introduction in \cref{ch:related} is a review of tools and work
+related to the field of assembly-level verification and software correctness in general.
 Domain-specific information necessary to understand the work
-can be found in \cref{ch:background}.
-\todo\dots
+and terminology can then be found in \cref{ch:background}.
+For an in-depth exploration of the basis for the symbolic execution engines
+and formal memory reasoning used by the contributions of this work,
+see the next chapter,~\ref{ch:symbolic_execution}.
+After that, the control-flow-driven approach to verification of memory usage
+mentioned above is presented in \cref{ch:cfg}
+while the syntax-driven approach is presented in \cref{ch:syntax}.
+Finally, my dissertation wraps up in \cref{ch:conclusions},
+which includes a discussion of possible post-preliminary exam work.
