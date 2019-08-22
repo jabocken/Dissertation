@@ -121,6 +121,8 @@
 \DeclareAcronym{jvm}{short=JVM, long=Java virtual machine}
 \DeclareAcronym{mc}{short=MC, long=model checking}
 \DeclareAcronym{mrr}{short=MRR, long=memory region relation}
+\DeclareAcronym{navsea}{short=NAVSEA, long=the Naval Sea Systems Command}
+\DeclareAcronym{neec}{short=NEEC, long=the Naval Engineering Education Consortium}
 \DeclareAcronym{nqthm}{short=Nqthm, long=the Boyer-Moore theorem prover}
 \DeclareAcronym{os}{
   short            = OS,
@@ -128,6 +130,11 @@
   long             = operating system,
   long-indefinite  = an,
   short-plural     = es
+}
+\DeclareAcronym{onr}{
+  short            = ONR,
+  short-indefinite = an,
+  long             = the Office of Naval Research
 }
 \DeclareAcronym{rop}{
   short            = ROP,
@@ -324,7 +331,6 @@
 \program{Electrical and Computer Engineering}
 \degree{Doctor of Philosophy}
 
-% This should be your defense date: (update when settled)
 \submitdate{\DTMdate{2019-09-02}}
 
 \principaladvisor{Binoy Ravindran}
@@ -335,19 +341,32 @@
 
 % The dedication and acknowledgement pages are optional. Comment them out to remove them.
 \dedication{This is where you put your dedications.}
-\acknowledge{This is where you put your acknowledgments.}
+\acknowledge{%
+  This work was supported in part by \ac{onr} under grant N00014-17-1-2297
+  and \ac{navsea}/\ac{neec} under grant N00174-16-C-0018.
+  Any opinions, findings, and conclusions or recommendations expressed
+  in this dissertation are those of the author
+  and do not necessarily reflect the views of \ac{onr} or \ac{navsea}/\ac{neec}.%
+}
 
 % The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
 \abstract{%
-  Give a brief description of your thesis here. Max of 250 words for a master's thesis and 350 words for a PhD dissertation, according to the VT ETD standards.
+  Give a brief description of your thesis here.
+  Max of 250 words for a master's thesis and 350 words for a PhD dissertation,
+  according to the VT ETD standards.%
 }
 
 % The general audience abstract is required. There are currently no word limits.
-\abstractgenaud{You are also required as of Spring 2016 to include a general audience abstract. This should be geared towards individuals outside of your field that may be reading seeking information about your work. You should avoid language that is particular to your field and clearly define any terms that may have special meaning in your discipline.}
+\abstractgenaud{%
+  You are also required as of Spring 2016 to include a general audience abstract.
+  This should be geared towards individuals outside of your field
+  that may be reading seeking information about your work.
+  You should avoid language that is particular to your field
+  and clearly define any terms that may have special meaning in your discipline.%
+}
 
 \makeindex[intoc]
 \begin{document}
-  % Sets up the document for the front matter of the dissertation (all the stuff before the body)
   \frontmatter
   \maketitle
   \tableofcontents
@@ -356,14 +375,12 @@
   \listoftables
   \listofalgorithms
   \lstlistoflistings
-  \addtocfix{Acronyms}\printacronyms
+  \addtocfix{Acronyms}{\printacronyms[heading=chapter]}
   \printnomenclature
 
   \input{attribution} % prefaces go in front matter
 
-  % Sets up the document for the main part of the dissertation.
   \mainmatter
-
   \input{introduction}
   \input{related}
   \input{background}
