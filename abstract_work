@@ -1,0 +1,4 @@
+Knowledge of the memory used by a program provides a basis for security analyses
+and compositional verification.
+This dissertation presents the property of \emph{memory usage},
+
