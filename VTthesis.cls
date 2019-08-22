@@ -59,7 +59,7 @@
 \LoadClass[12pt,letterpaper,\ifbool{@pgskip}{openany}{}]{book}
 
 % Official margins don't necessarily look as good as default book layout but that can always be changed
-\RequirePackage[margin=1in,includehead,headheight=15pt]{geometry}
+\RequirePackage[margin=1in,headheight=15pt]{geometry}
 
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
@@ -118,13 +118,6 @@
 \renewcommand\lstlistoflistings{\begingroup
   \tocfile\lstlistlistingname{lol}
 \endgroup}
-
-% Bit of work needed to get stuff not added to the TOC automatically into the TOC
-\newcommand\addtocfix[2]{
-  \clearpage\phantomsection % Getting hyperref to link to the right page
-  \addcontentsline{toc}{chapter}{#1}
-  #2
-}
 
 % So algorithm numbering matches other floats (doesn't work with acmart class, but that doesn't use chapters anyway)
 \renewcommand\thealgorithm{\arabic{chapter}.\arabic{algorithm}}
@@ -282,11 +275,10 @@
 
 % initial setup (trying to update the defaults on fancy itself didn't work, oh well))
 \pagestyle{fancy}
-\renewcommand\headrulewidth{0.0pt}
+\renewcommand\headrulewidth{0pt}
 
 % Helpers
 \newcommand*\fancydraft[1]{%
-  \renewcommand\headrulewidth{0.0pt}%
   \ifbool{@dft}
     {#1[C]{\textbf{DRAFT}}}
     {#1[C]{}}}
@@ -320,30 +312,33 @@
   \pagestyle{main}%
 }
 % probably good to use this in restricted environments, which I'm doing anyway because of the appendix
-\apptocmd\backmatter{\let\MakeUppercase=\relax}{}{}
+\appto\backmatter{\let\MakeUppercase=\relax}
+
+\newcommand*\fpbookmark[1]{\pdfbookmark[1]{#1}{\zap@space#1 \@empty}}
 
 \newenvironment{frontpage}[1]{%
   \clearpage\thispagestyle{empty}%
-  \addcontentsline{toc}{chapter}{#1}%
-  \center%
+  \fpbookmark{#1}%
+  \center
 }{\endcenter}
-\newcommand\frontpagesimple[3]{\begin{frontpage}{#1}%
+\newcommand\abstractpage[2]{\begin{frontpage}{#1}%
     {\Large \@title}
     \vfill
     \@author
     \vfill
-    #2
+    (\MakeUppercase{#1})
   \end{frontpage}%
-  #3
+  \vfill
+  #2
 }
 
 %Set up title page, abstract page, dedication page, and acknowledgement page
 \def\titlepage{%
-  \ifbool{@pgskip}{}\cleardoublepage%
+  \ifbool{@pgskip}{}\cleardoublepage
   \newpage
   \thispagestyle{empty}%
-  \setcounter{page}\@ne%
-  \addcontentsline{toc}{chapter}{Title}%
+  \setcounter{page}\@ne
+  \fpbookmark{Title Page}%
   \begin{center}%
     {\Large \@title}
     \vfill
@@ -376,7 +371,7 @@
 
     \@vtcopyright
   \end{center}
-  \newpage%
+  \newpage
   \if@twoside
     \ifbool{@pgskip}{\setcounter{page}\@ne}{}
   \else
@@ -384,24 +379,18 @@
   \fi
 }
 
-\def\dedpage{%
-  \chapter{Dedication}
+\def\dedpage{\begin{frontpage}{Dedication}%
+  \thispagestyle{front}
   \vspace*\fill
-  \begin{center}%
-    \emph\@dedication%
-  \end{center}
+  \emph\@dedication
   \vspace*\fill
-}
+\end{frontpage}}
 
 %This is where the main magic happens
 \renewcommand\maketitle{%
   \titlepage
-  \ifbool{@abs}{\frontpagesimple{Abstract}{(ABSTRACT)}{\vfill\@abstract}}{}
-  \ifbool{@gaa}{
-    \frontpagesimple{General Audience Abstract}
-    {(GENERAL AUDIENCE ABSTRACT)}
-    {\vfill\@abstractgenaud}
-  }{}
+  \ifbool{@abs}{\abstractpage{Abstract}\@abstract}{}
+  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud}{}
   \ifbool{@ded}\dedpage{}
-  \ifbool{@ack}{\chapter{Acknowledgments}\@acknowledge}{}
+  \ifbool{@ack}{\chapter*{Acknowledgments}\@acknowledge}{}
 }
