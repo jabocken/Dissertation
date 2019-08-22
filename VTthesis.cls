@@ -66,12 +66,13 @@
 \RequirePackage{paralist}
 \RequirePackage[titletoc,page]{appendix}
 
-%% Proper chapter spacing in List of Algorithms (courtesy of https://tex.stackexchange.com/a/88563; no longer needed as now all the others are narrow)
-%\patchcmd{\@chapter}% <cmd>
-%  {\chaptermark{#1}}% <search>
-%  {\chaptermark{#1}%
-%    \addtocontents{loa}{\protect\addvspace{10\p@}}}% replace
-%{}{}% <success><failure>
+% Proper spacing between different chapters in extra lists (courtesy of https://tex.stackexchange.com/a/88563)
+\patchcmd\@chapter % <cmd>
+  {\chaptermark{#1}} % <search>
+  {\chaptermark{#1}%
+   \addtocontents{loa}{\protect\addvspace{10\p@}}%
+   \addtocontents{lol}{\protect\addvspace{10\p@}}} % <replace>
+{}{} % <success><failure>
 
 \RequirePackage[nottoc]{tocbibind}
 
@@ -138,7 +139,7 @@
 
 % Misc Packages
 \RequirePackage{booktabs}
-\RequirePackage[mathscr]{eucal}
+\RequirePackage{eucal}
 \RequirePackage{tikz}
 \usetikzlibrary{shapes,arrows}
 
@@ -165,7 +166,6 @@
 \newtheorem{example}[proposition]{Example}
 \newtheorem{definition}[proposition]{Definition}
 \newtheorem{remark}[proposition]{Remark}
-%\newtheorem{algorithm}[proposition]{Algorithm}
 
 \lstset{ % command to set programming language parameter(s)
   frame=single,
@@ -405,7 +405,3 @@
   \ifbool{@ded}\dedpage{}
   \ifbool{@ack}{\chapter{Acknowledgments}\@acknowledge}{}
 }
-
-% dunno if actually needed
-%%%%%\patchcmd{\@makechapterhead}{\vspace*{50\p@}}{}{}{}  %% for numbered chapters \chapter{...}
-%%%%%\patchcmd{\@makeschapterhead}{\vspace*{50\p@}}{}{}{} %% for unnumbered chapters \chapter*{...}
