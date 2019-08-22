@@ -14,17 +14,30 @@ of at least some components of formal proofs
 reduces the amount of manual proof effort required by varying degrees.
 
 \section{Motivation}
+\subsection{Importance}
+\subsection{Challenges}
 \todo{Why is software verification important?}
+
+\section{Assembly-Level Verification}
+\subsection{Importance}
+\subsection{Challenges}
+The biggest challenges in assembly-level verification are the lack of abstraction
+and the semantic gap between compiled and source code.
+Higher-level languages hide details of their implementation
+behind layers of abstraction, which makes it easier to reason about them on that level
+but makes it harder to formally map the source to lower levels of abstraction.
 
 \section{State of the Art in Assembly-Level Verification}
 
-\section{Memory Usage}\label{memory_usage}
-\todo{move to contributions}
+
+\section{Research Contributions}
+\todo\dots
+
+\subsection{Memory Usage and Memory Preservation}\label{memory_usage}
 The main property targeted for verification in this dissertation
 is referred to here as \emph{memory usage}.%
 \index{memory!usage}
-It characterizes the exact addresses in memory
-that are read and written by a program.
+It characterizes the exact addresses in memory that are read and written by a program.
 Because of this specificity, memory usage cannot be satisfactorily expressed
 on the source-code level.
 This is because even programs in a low-level language like C
@@ -40,9 +53,8 @@ Doing so would require knowledge of the layout of the stack,
 including the values of the stack and frame pointers,
 thus making it an \emph{assembly-level} property.
 
-\subsection{Memory Preservation}
 An application of memory usage analysis,
-memory preservation shows that the values written by a program%
+\emph{memory preservation} shows that the values written by a program%
 \index{memory!preservation}
 are constrained to specified regions in memory.
 Those regions cannot be fully identified when working with source code alone,
@@ -109,37 +121,17 @@ to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
-\subsection{Overapproximation}\label{mem_use_over}
-As a formal property, memory usage has been proven to never miss any memory regions
-written to, assuming the correctness of the semantics and model it is applied
-to~\citep{bockenek2019preservation,popl2019underreview}.
-Put another way, however,
-this means that the methodology \emph{must} be conservative.
-If it cannot make a determination about the usage status of some part of memory,
-either due to an underdeveloped state or too large of one to easily reason about,
-it must assume that that region is used. It must \emph{overapproximate}.%
-\index{overapproximation}
-This sort of false positive can be an issue in the field of formal verification,
-as it can make the property under consideration weaker despite being correct.
 
-One way to shrink such overapproximations is to increase the
-\emph{context sensitivity}\index{context sensitivity}
-of the approach, such as performing the analysis over the full program at once
-rather than individual components, but that can involve
-a significant increase in time and verification effort.
-
-\todo{Want talk about the usage of SMT solvers/etc.,
-  increase in automation in general
-  as one way of mitigating increased verification effort somewhere}
-
-%\section{Challenges of Assembly-Level Verification}
-%The biggest challenge of assembly-level verification is the lack of abstraction.
-%Higher-level languages hide details of their implementation
-%behind layers of abstraction, which makes it easier to reason about them
-%on that level.
-
-\section{Research Contributions}
-The main contributions of this dissertation
+\subsection{Summary}
+In summary, this dissertation contributes 
+\begin{itemize}
+  \item 
+  \item \ac{cfg}-Driven Verification
+  \begin{itemize}
+    \item 
+  \end{itemize}
+\end{itemize}
+  
 * Safecomp
 ** Formal definition of Memory Preservation
 ** Formal method of verifying it
@@ -147,7 +139,9 @@ The main contributions of this dissertation
 ** Mostly-automated methodology for memory usage verification
 ** Analysis of Xen binaries
 
-\todo{bullet points after explanation}
-
 \section{Organization of Dissertation}
-\todo{summary}
+
+\todo\dots
+Domain-specific information necessary to understand the work
+can be found in \cref{ch:background}.
+\todo\dots
