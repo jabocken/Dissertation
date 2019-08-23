@@ -31,13 +31,13 @@ were:
 \end{enumerate*}
 
 \section{Overview}\label{se:cfg_overview}
-By building on the binary analysis tool \texttt{angr}~\citep{shoshitaishvili2016state},%
+By building on the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state},%
 \index{\texttt{angr}}
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
 The first step is disassembly of an x86-64 binary using
 a tweaked version of the \texttt{angr}
-\lstinline|reassembly| analysis~\citep{wang2017ramblr}
-provided by \citet{roessle2019}\footnote{%
+\lstinline|reassembly| analysis \cite{wang2017ramblr}
+provided by \textcite{roessle2019}\footnote{%
   This is required to use the Isabelle parser provided by that work.%
 }.%
 \index{\texttt{angr}!\texttt{reassembly}}
@@ -69,7 +69,7 @@ to hold most of the intermediate values and local variables,
 those locals must be stored on the stack with each recursive call%
 \index{stack}
 and potentially restored on return.
-Tail call recursion~\citep{clinger1998tail} can help with that,%
+Tail call recursion can help with that \autocite{clinger1998tail},%
 \index{recursion!tail call}
 but only when it is supported by the compiler in use\footnote{%
   \acs{gcc}, Clang, and \acs{icc} all support it
@@ -81,7 +81,7 @@ The process that selects cutpoints%
 \index{cutpoint}
 also generates skeleton memory usage theories for every function analyzed.
 The theory files can then be opened in the theorem prover Isabelle
-and the assembly loaded using the parser of \citet{roessle2019}.
+and the assembly loaded using the parser of \textcite{roessle2019}.
 Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
 and add the necessary sets of memory regions that the functions write to
 in order to complete the proofs of memory usage.
@@ -117,7 +117,7 @@ The work is still not trivial, however.
 
 This methodology was applied to two example functions
 as well as to multiple functions
-from the HermitCore unikernel library~\citep{lankes2016hermitcore}.%
+from the HermitCore unikernel library \autocite{lankes2016hermitcore}.%
 \index{HermitCore}%
 \index{unikernel}
 HermitCore is \iac{os} kernel library aiming to provide real-time guarantees for high-performance computing.
@@ -166,7 +166,7 @@ Formally, this is achieved by a standard \ac{lfp} construction.
 
 \subsection{Hoare Triples for Memory Usage}
 Unlike the usual formulation of
-Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare},%
+Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare},%
 \index{Hoare!logic}
 Hoare triples for this work take one of the aforementioned halting conditions%
 \index{Hoare!triple}
@@ -196,7 +196,7 @@ Loops pose a significant problem when using symbolic execution to analyze code.%
 One of the major issues is that they result in significant path explosion.%
 \index{loop!path explosion}
 While there are methodologies to reduce the number of paths to execute
-when using loops~\citep{saxena2009lese,obdrzalek2011efficient},
+when using loops \autocite{saxena2009lese,obdrzalek2011efficient},
 those methods are not currently formally verified
 and therefore not usable within Isabelle/HOL.
 Additionally, deciding the loop condition on a symbolic state
@@ -209,7 +209,7 @@ With the right annotations,
 it is possible to only need to symbolically execute one iteration per loop.
 This eliminates the above-mentioned loop issues.
 That breaking up of loops can be accomplished using a control-flow-based approach
-akin to Floyd verification~\citep{floyd1967assigning}.%
+akin to Floyd verification \autocite{floyd1967assigning}.%
 \index{Floyd!verification}
 A state predicate assigned to an instruction within a loop
 functions as an \emph{invariant} for that loop.
@@ -265,7 +265,7 @@ as a whole:
     \sigma'\neq\bot_E\wedge Q(\sigma').
   \end{equation*}
   Though there could be any number of additional annotations between~$l_0$
-  and~$l_f$, Floyd~\citep{floyd1967assigning} showed that a Floyd invariant that holds
+  and~$l_f$, Floyd \cite{floyd1967assigning} showed that a Floyd invariant that holds
   starting from some initial condition to an intermediate annotation at~$l_1$
   will also hold starting from that annotation.
   Thus, as $I$ holds, we can substitute in~$I(l_0)(\sigma)$ for~$P(\sigma)$
@@ -283,7 +283,7 @@ as a whole:
     \sigma'\neq\infloop\longrightarrow
     \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
   \end{equation*}
-  This then simplifies to 
+  This then simplifies to
   \begin{equation*}
     \sigma'\neq\bot_E\wedge I(l_f)(\sigma')\longrightarrow
     \sigma'\neq\bot_E\wedge I(l_f)(\sigma'),
@@ -385,7 +385,7 @@ Doing so is still possible, however.
   but not the other way around).
 \end{proof}
 \begin{example}
-  Now consider the block of assembly that could be generated for 
+  Now consider the block of assembly that could be generated for
   \cref{compositional_pseudocode}.
   Let~$l_f$ denote the final location of the block
   while~$l_P$ denotes the initial location of program~$P$.
@@ -472,11 +472,11 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
 ]
   unsigned long pow2(unsigned exponent) {
       unsigned long a = 1;
-      
+
       for (unsigned i = 0; i < exponent; ++i) {
           a += a;
       }
-      
+
       return a;
   }
 \end{lstlisting}
@@ -594,7 +594,7 @@ The C equivalent of that function is shown in \cref{factorial-c}.
 \end{lstlisting}
 The assembly snippet shown in \cref{lst:factasm} is again
 the result of a function compiled with \ac{gcc} 7.2.0
-and disassembled by the tweaked \lstinline|reassembly| analysis~\citep{wang2017ramblr}.
+and disassembled by the tweaked \lstinline|reassembly| analysis \autocite{wang2017ramblr}.
 In this case, the function performs a recursive factorial calculation on the value~$n$
 stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|rdi|).
 \begin{lstlisting}[
@@ -764,7 +764,7 @@ for over five years now.%
 The term ``unikernel'' can refer to any single-address-space program.
 All that is required is that it be compiled with a library
 that provides all kernel code necessary to run the program.
-This bypasses the need for a separate \ac{os}~\citep{madhavapeddy2014unikernels},
+This bypasses the need for a separate \ac{os} \autocite{madhavapeddy2014unikernels},
 allowing the program to be used directly with a hypervisor%
 \index{hypervisor}
 or even run on a bare metal system with no additional support.
@@ -779,7 +779,7 @@ with many single-purpose unikernels all performing their own tasks in isolation.
 This makes unikernels an interesting target for verification,
 as they aim to provide a high speed and real-time environment for cloud software.
 
-The unikernel library HermitCore~\citep{lankes2016hermitcore} was chosen%
+The unikernel library HermitCore \cite{lankes2016hermitcore} was chosen%
 \index{HermitCore}
 to demonstrate the applicability of this methodology
 due to its established functionality and decent size.
@@ -986,7 +986,7 @@ a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
 In most cases, that proof can be handled by Isabelle/HOL
 using standard off-the-shelf libraries,
-either ones included with Isabelle or ones from the \ac{afp}~\citep{afp}
+either ones included with Isabelle or ones from the \ac{afp} \cite{afp}
 (though not necessarily efficiently).
 Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation

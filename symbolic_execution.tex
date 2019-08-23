@@ -5,7 +5,7 @@ Symbolic execution, in a sense,%
 \index{symbolic execution}
 is an extension of symbolic manipulation of mathematical equations.
 It involves executing a program with a set of symbolic inputs
-rather than concrete values~\citep{king1976symbolic}.
+rather than concrete values \autocite{king1976symbolic}.
 The individual steps of execution are implemented as \emph{rewrite rules}%
 \index{symbolic execution!rewrite rule}
 over the state.
@@ -42,13 +42,13 @@ In order to perform symbolic execution,
 you must first have some sort of \emph{machine model}.%
 \index{symbolic execution!machine model}
 The machine model used in this dissertation for the work in Isabelle/HOL
-is an extension of the work of \citet{roessle2019}.
+is an extension of the work of \textcite{roessle2019}.
 They embedded bitvector-based, machine-learned semantics
 of a modern version of the x86-64 \ac{isa},
 which includes instruction set extensions such as the \ac{sse} family, in Isabelle/HOL.
 To improve reliability of their work,
 it was tested against an actual, live x86-64 machine to prove semantic equivalence.
-The semantics they used was an extension of that provided by \citet{heule2016stratified},
+The semantics they used was an extension of that provided by \textcite{heule2016stratified},
 who did the initial application of machine learning
 to derive semantics from a physical machine.
 This produced highly reliable semantics:
@@ -73,7 +73,7 @@ modifying the state each time.
 The instructions themselves are loaded from the machine model
 by mapping from the deeply-embedded instruction representation
 extracted within or supplied to the step function
-to the bitvector formulas provided by \citet{roessle2019}.
+to the bitvector formulas provided by \textcite{roessle2019}.
 If no such formula exists for the current instruction,
 a manually-implemented variant is used.
 There are several sets of instructions
@@ -160,7 +160,7 @@ is never modified.
 \section{Rewrite Rules}\label{se:rewrite}
 The basic rules supplied by the formal machine model are not well-suited to verification;
 they are often very low-level bitvector/bitstring operations.
-While \citet{roessle2019} provided a large set of simplification rules
+While \textcite{roessle2019} provided a large set of simplification rules
 to abstract away from the underlying representation,
 those rules did not cover all situations encountered in this dissertation,
 requiring the additions of more such rules during the process of verification.
@@ -172,7 +172,7 @@ Additionally, to increase performance,
 every instruction variant with learned semantics detected in an analyzed function
 was given a \emph{presimplified} lemma.%
 \index{presimplification}
-Most of those lemmas were obtained from~\citep{verbeek2019refinement}.
+Most of those lemmas were obtained from \autocite{verbeek2019refinement}.
 They provide immediate abstractions of the low-level instruction representations
 that rely on the aforementioned simplification rules.
 Using these lemmas improves performance when performing symbolic execution
@@ -391,7 +391,7 @@ if their addresses are non-trivial expressions.
   Let~$M$ be a set of pairs of unique IDs and regions.
   $M$ is \emph{separated} if and only if all of its regions are separated:
   \begin{equation}
-    \seps(M)\equiv\forall(i_0,r_0),(i_1,r_1)\in M\cdot
+    \seps M\equiv\forall(i_0,r_0),(i_1,r_1)\in M\cdot
     \text{if }i_0=i_1\text{ then }r_0=r_1\text{ else }r_0\separate r_1
   \end{equation}
 \end{definition}
@@ -415,13 +415,13 @@ rules that infer properties over smaller regions from larger ones are needed.
   \end{align}
 \end{subequations}
 \Cref{rules_sep_enc} shows the inference rules for properties over memory regions.
-These rules are able to infer the properties of separation and non-enclosure 
+These rules are able to infer the properties of separation and non-enclosure
 for smaller regions based on assumptions over larger ones.
 However, they \emph{cannot} infer enclosure.
 
 Often, the only way to prove enclosure is to unfold its definition.
 This introduces two inequalities over words, as shown in \cref{def:enc}.
-Such inequalities can be solved using the Isabelle/HOL tool \lstinline{unat_arith}, which is an arithmetic equation solver for bit-vectors~\citep{dawson2009isabelle}.
+Such inequalities can be solved using the Isabelle/HOL tool \lstinline{unat_arith}, which is an arithmetic equation solver for bitvectors \autocite{dawson2009isabelle,isabelle-word-session}.
 That tool is augmented with several heuristics
 and auxiliary lemmas to facilitate enclosure proofs.
 However, such proofs are time-consuming
@@ -472,5 +472,5 @@ for reading and writing memory,
 required for abstract, region-based memory reasoning.
 Separation and enclosure are the two main relations needed for such reasoning.
 In some cases, reasoning about enclosure can be very time-consuming,
-and thus a set of assumptions and associated rewrite rules are provided 
+and thus a set of assumptions and associated rewrite rules are provided
 that allow for user-provided memory layouts, which greatly increases productivity.

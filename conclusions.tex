@@ -16,7 +16,7 @@ than source code verification.
 \subsection{Reducing Overapproximation}\label{mem_use_over}
 As a formal property, memory usage has been proven to never miss any memory regions
 written to, assuming the correctness of the semantics and model it is applied
-to~\citep{bockenek2019preservation,popl2019underreview}.
+to \autocite{bockenek2019preservation,popl2019underreview}.
 Put another way, however,
 this means that the methodology \emph{must} be conservative.
 If it cannot make a determination about the usage status of some part of memory,
@@ -32,7 +32,7 @@ of the approach, such as performing the analysis over the full program at once
 rather than individual components, but that can involve
 a significant increase in time and verification effort.
 
-\todo{Want talk about the usage of SMT solvers/etc.,
+\todo{Want talk about the usage of \ac{smt} solvers/etc.,
   increase in automation in general
   as one way of mitigating increased verification effort somewhere}
 

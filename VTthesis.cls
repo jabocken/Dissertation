@@ -61,11 +61,17 @@
 % Official margins don't necessarily look as good as default book layout but that can always be changed
 \RequirePackage[margin=1in,headheight=15pt]{geometry}
 
+%% Modern citations
+%\RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX
+\RequirePackage[
+  style=numeric-comp,
+  maxbibnames=10
+]{biblatex} % if issues occur with inputenc, try the safeinputenc option
+
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
 \RequirePackage[normalem]{ulem}
 \RequirePackage{enumerate}
-\RequirePackage[numbers,sort&compress]{natbib}
 \RequirePackage{paralist}
 \RequirePackage[titletoc,page]{appendix}
 
@@ -130,7 +136,8 @@
 
 % Misc Packages
 \RequirePackage{booktabs}
-\RequirePackage{eucal}
+\RequirePackage{eucal} % For Euler script math calligraphy
+\RequirePackage{mathrsfs} % For very scripty script
 \RequirePackage{tikz}
 \usetikzlibrary{shapes,arrows}
 

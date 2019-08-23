@@ -5,7 +5,7 @@ The approaches to assembly-level verification detailed in this dissertation%
 \index{assembly!verification}
 are \emph{semi-automated},
 as the non-trivial memory usage-related properties presented here are undecidable
-per Rice's theorem~\citep{rice1953classes}.
+per Rice's theorem \autocite{rice1953classes}.
 The usage of \iac{itp} environment allows user interaction when necessary,
 while the automated generation
 of at least some components of formal proofs
@@ -82,8 +82,7 @@ and even the number of bytes and the address to read from or write to can be var
 A user could go as far as supplying the result of a floating-point computation
 as the address operand of an instruction that loads or stores memory.
 Historically, there have been computers that associated type information
-with memory locations in hardware~%
-\citep{feustel1972rice,feustel1973advantages,thornton2008rice},
+with memory locations in hardware \autocite{feustel1972rice,feustel1973advantages,thornton2008rice},
 but we do not have that luxury on typical modern systems.
 
 An additional issue with assembly,
@@ -104,38 +103,49 @@ must provide its own abstractions and assumptions on layout.
 \subsection{State of the Art}
 \todo\dots
 
-\section{Contributions}
-This dissertation presents two formal methodologies for function-oriented verification
-of the assembly-level property we call \emph{memory usage},
-described in \cref{memory_usage}.
-Both methodologies use some form of control-flow analysis over x86-64 assembly code
+\section{Research Contributions}
+This dissertation presents two formal approaches to function-oriented verification
+of the assembly-level property we call \emph{memory preservation},
+described in \cref{memory_usage}:
+\emph{control-flow-driven} verification and \emph{syntax-driven} verification.
+Both approaches use some form of control-flow analysis over functions in x86-64 assembly
 to generate incomplete proofs
 that are then loaded into the interactive theorem prover Isabelle/HOL
-and completed there. The process of completing those proofs involves
-\emph{symbolic execution}~\citep{king1976symbolic} of the underlying assembly code.
+and completed there. The proof strategies for both approaches involve
+\emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic},
+albeit in different ways.
 
-The main differences between the two methodologies
-lie in their levels of automation and the strength of their invariants.
+The main differences between the two approaches
+lie in their degrees of automation, the strengths of their invariants,
+and how they perform symbolic execution.
+The first approach, control-flow-driven verification,
+requires significantly more user user input but has the potential for much stronger invariants.
+Meanwhile, the second approach, syntax-driven verification,
+has a significantly higher level of proof automation but is not as suited for stronger invariant production.
+Symbolic execution is also more efficient in the control-flow-driven approach
+as it more closely follows the structure of the function \ac{cfg}.
+In contrast, the syntax-driven appraoch
 
-\subsection{Memory Usage}\label{memory_usage}
-This property characterizes the regions in memory that are read and written by a program
-and shows that the values written by that program are constrained to those regions.
-The following sections elaborate on the usefulness of memory usage
+\subsection{Memory Usage and Preservation}\label{memory_usage}
+\emph{Memory usage} characterizes the regions in memory that are read and written by a program.
+A subproperty is that of memory prservation,
+which shows that the values written by that program are constrained to those memory regions.
+The following sections elaborate on the usefulness of memory preservation
 as a platform for further verification efforts.
 
 \subsubsection{Security}
 Unbounded memory usage can lead to vulnerabilities
 such as buffer overflows and data leakage.
-One example of such a vulnerability would be 2014's Heartbleed~\citep{heartbleed}.
+One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}.
 Heartbleed was caused by a lack of bounds checking on a string array
 requested as output as part of a ``heartbeat'' message.
 This, combined with a custom memory manager
 that also had no security protections against out-of-bounds memory accesses,
 lead to potential leakage of sensitive data such as passwords and encryption keys.
-Memory usage could serve as a foundation for formal security analyses
+Memory preservation could serve as a foundation for formal security analyses
 that could be used to expose vulnerabilities involving malicious writes.
 
-Another important property that memory usage could help with
+Another important property that memory preservation could help with
 is \emph{\ac{cfi}}~\cite{abadi2009cfi}. \Ac{cfi} ensures that software execution
 follows a predetermined \ac{cfg} using static analysis and runtime checks.
 The dynamic checking could be made more efficient
@@ -144,8 +154,8 @@ and then leaving out any return-oriented checks for those functions it holds on.
 This could be one way of avoiding \ac{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
-It requires reasoning over which parts of the memory are used by which functions~\citep{rushby1992noninterference},
-and memory usage is ideal for such a scenario.
+It requires reasoning over which parts of the memory are used by which functions \autocite{rushby1992noninterference},
+and memory preservation is ideal for such a scenario.
 
 \subsubsection{Composition}\label{sse:composition}
 Scalability in verification is only feasible with composition;
@@ -153,14 +163,14 @@ proofs of functional correctness or some other property over a large suite of so
 require decomposing that suite into manageable chunks.
 Separation logic provides a \emph{frame rule} that supports such%
 \index{separation logic!frame rule}
-decomposition~\citep{o2001local,reynolds2002separation,krebbers2017essence}.
+decomposition \autocite{o2001local,reynolds2002separation,krebbers2017essence}.
 In words, the frame rule states that,
 if a program or program fragment can be confined to a certain part of a state,
 properties of that program or program fragment carry over
 when used as part of a larger system involving that state.
-Memory usage allows for discharging the most involved part of the frame rule,
+Memory preservation allows for discharging the most involved part of the frame rule,
 at least in terms of individual assembly functions.
-That is, it shows that the memory usage of those functions is constrained
+That is, it shows that the memory preservation of those functions is constrained
 to specific regions in memory.
 This could then serve as a basis
 for a larger proof effort over multi-function assembly programs.
@@ -176,28 +186,28 @@ refers to threads or processes sharing either a full memory space
 or portions of one (via memory mapping)
 that can be written to and read from freely by any thread or process with access to it.
 Usage of shared memory can result in \emph{unintended} interactions between threads.
-Memory usage could be adapted to show the absence of such interactions
+Memory preservation could be adapted to show the absence of such interactions
 by proving that multiple threads only write
 to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
 \subsection{Control-Flow-Driven Verification}
-This methodology for verification of memory usage relies on treating function bodies
+This methodology for verification of memory preservation relies on treating function bodies
 as \acp{cfg} of basic blocks
 and providing state predicate annotations on specific nodes in the \ac{cfg}.
 
 
-%Formal Definition of Memory Usage
+%Formal Definition of Memory Preservation
 \todo\dots
 
-%Semi-Automated Formal Verification for Memory Usage
+%Semi-Automated Formal Verification for Memory Preservation
 \todo\dots
 
 %Analysis of HermitCore Functions
 The control-flow-driven methodology was applied to \num{71} functions
-extracted from the HermitCore~\citep{lankes2016hermitcore}
-unikernel~\citep{madhavapeddy2014unikernels} library,
+extracted from the HermitCore \cite{lankes2016hermitcore}
+unikernel library \autocite{madhavapeddy2014unikernels},
 covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
 Of those functions, 18 had loops and 33 had subcalls.
 Optimized variants were also verified for 12 of the functions involved.
@@ -207,13 +217,13 @@ which turned out to be the most challenging function to handle.
 \subsection{Syntax-Driven Verification}
 \todo\dots
 
-%Mostly-Automated Formal Verification for Memory Usage
+%Mostly-Automated Formal Verification for Memory Preservation
 \todo\dots
 
 %Analysis of Xen Binaries
 Unlike the previous work, this one was applied to assembly obtained
 by running \texttt{objdump} on three \emph{unmodified} binaries resulting from the
-Xen Project hypervisor~\citep{chisnall2008definitive} build process.
+Xen Project hypervisor build process \autocite{chisnall2008definitive}.
 Of the \num{352} functions present in those binaries,
 \num{251} or \xenpercentage\ were verified.
 Ultimately, over \num{12252} optimized instructions were covered
@@ -230,8 +240,8 @@ Domain-specific information necessary to understand the work
 and terminology can then be found in \cref{ch:background}.
 For an in-depth exploration of the basis for the symbolic execution engines
 and formal memory reasoning used by the contributions of this work,
-see the next chapter,~\ref{ch:symbolic_execution}.
-After that, the control-flow-driven approach to verification of memory usage
+see \cref{ch:symbolic_execution}.
+After that, the control-flow-driven approach to verification of memory preservation
 mentioned above is presented in \cref{ch:cfg}
 while the syntax-driven approach is presented in \cref{ch:syntax}.
 Finally, my dissertation wraps up in \cref{ch:conclusions},

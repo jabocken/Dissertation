@@ -230,32 +230,32 @@
 \newcommand{\asp}{A_\mathrm{SP}}
 \newcommand{\esp}{E_\mathrm{SP}}
 \newcommand{\infloop}{\bot_\mathrm{NT}}
-\newcommand{\bop}{\mathbin{\bigcirc}}
-\newcommand{\nat}{\mathbb{N}}
+\newcommand{\bop}{\mathbin\bigcirc}
+\newcommand{\nat}{\mathbb N}
 
-\newcommand{\true}{\mathrm{T}}
-\newcommand{\false}{\mathrm{F}}
-\DeclareMathOperator{\powerset}{\mathcal{P}}
+\newcommand{\true}{\mathcal T}
+\newcommand{\false}{\mathcal F}
+\DeclareMathOperator{\powerset}{\mathcal P}
 
 \DeclareMathOperator{\unat}{unat}
 \DeclareMathOperator{\snd}{snd}
-
 \newcommand{\concat}{\bullet}
 \newcommand{\mmerge}{\text{ merge }}
 \newcommand{\var}[1]{\mathit{#1}}
-\DeclareMathOperator{\step}{step}
-\DeclareMathOperator{\run}{run\_until}
+
+\DeclareMathOperator{\step}{\textsc{step}}
+\DeclareMathOperator{\run}{\textsc{runUntil}}
 \DeclareMathOperator{\loc}{loc}
-\DeclareMathOperator{\rbxpops}{multiplicands\_pushed}
-\DeclareMathOperator{\retsites}{ret\_addrs\_pushed}
+\DeclareMathOperator{\rbxpops}{\textsc{multiplicandsPushed}}
+\DeclareMathOperator{\retsites}{\textsc{retAddrsPushed}}
 \DeclareMathOperator{\seps}{\bigotimes}
 
-\DeclareMathOperator{\blockusage}{block\_usage}
-\DeclareMathOperator{\nbo}{no\_block\_overflow}
+\DeclareMathOperator{\blockusage}{blockUsage}
+\DeclareMathOperator{\nbo}{\textsc{noBlockOverflow}}
 \DeclareMathOperator{\sextend}{sextend}
 \DeclareMathOperator{\usage}{usage}
-\DeclareMathOperator{\exec}{exec\_scf}
-\DeclareMathOperator{\execblock}{symb\_exec}
+\DeclareMathOperator{\exec}{\textsc{execScf}}
+\DeclareMathOperator{\execblock}{\textsc{symbExec}}
 
 \newcommand*{\ASeq}{\mathrel{\texttt{;}}}
 \WithSuffix{\newcommand*}\ASeq*{\texttt{;}}
@@ -374,6 +374,8 @@
   and clearly define any terms that may have special meaning in your discipline.%
 }
 
+\addbibresource{bibliography.bib}
+
 \makeindex[intoc]
 \begin{document}
   \frontmatter
@@ -402,10 +404,7 @@
 
   {% appendices don't work right with backmatter on its own due to the lack of counters
     \backmatter
-
-    \bibliographystyle{plainnat}
-    \bibliography{bibliography}
-
+    \printbibliography
     \printindex
   }
 %  \begin{appendices}
@@ -423,12 +422,19 @@
 %****************************************************************************
 % 2.       Citation                     Output
 %      -------------------------------------------------------
-%      \citep{doe_title_2016}        [18]
-%      \citet{doe_title_2016}       Doe et al. [18]
-%      \citet*{doe_title_2016}      Doe, Jones, and Smith [18]
+%      \cite{doe_title_2016}        [18] % would be Doe et al. 2016 with authoryear style
+%       \autocite{doe_title_2016}    [18] % would be (Doe et al. 2016) with authoryear style; does some special handling with punctuation at end of sentences
+%      \textcite{doe_title_2016}    Doe et al. [18] % would be Doe et al. (2016) with authoryear style
+%
+%    There are also capitalized versions of most of these
+% 	 to handle name prefixes on the first name in a citation if `useprefix` is on,
+%    assuming the prefix exists and the citation style prints names.
+%    (also \supercite for superscript citations in numeric style)
+%     \autocite and \parencite are interchangable in the current style but not always
+%    (in other styles it represents with \supercite or \footnotecite)
 %
 %    For a complete list of options, see
-%      https://www.ctan.org/pkg/natbib?lang=en
+%      Section 3.8 (Citation Commands) of https://www.ctan.org/pkg/biblatex
 %
 %----------------------------------------------------------------------------
 %

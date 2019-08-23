@@ -3,7 +3,7 @@ This part of my dissertation provides domain-specific information necessary to u
 the work presented in it.
 
 \section{Formal Methods}
-To quote \citet{butler:fm},
+To quote \textcite{butler:fm},
 \todo{should go in intro maybe}
 \begin{quote}
   ``Formal Methods''%
@@ -13,7 +13,7 @@ To quote \citet{butler:fm},
 \end{quote}
 This dissertation on the \emph{verification} component of that,%
 \index{formal!verification}
-which 
+which
 
 \subsection{Fixed Point Representation}
 The \ac{lfp} and \ac{gfp} of a function are
@@ -27,7 +27,7 @@ is thus the bottom element $\infloop$.%
 \subsection{Hoare Logic}\label{se:hoare}
 A form of \emph{axiomatic semantics},
 \index{semantics!axiomatic}
-Hoare logic~\citep{hoare1969axiomatic,myreen2007hoare}%
+Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare}%
 \index{Hoare!logic}
 describes the behavior of a program
 in terms of a set of rules that are applied iteratively
@@ -64,13 +64,13 @@ being the canonical methodology.\todo{need citation}
 
 \subsubsection{Isabelle and HOL}
 The theorem prover utilized in this work
-was Isabelle 2018\fturl{https://isabelle.in.tum.de/}~\citep{nipkow2002isabelle}.%
+was Isabelle 2018\fturl{https://isabelle.in.tum.de/} \autocite{nipkow2002isabelle}.%
 \index{Isabelle/HOL}
 It is a generic tool with a flexible, extensible syntactic framework.
 Isabelle also utilizes a powerful proof language
-known as \ac{isar}~\citep{wenzel2007isabelle}
-and a proof method language called Eisbach~\citep{matichuk2016eisbach}.
-We made heavy use of Isabelle's Word library~\citep{isabelle-word-session}
+known as \ac{isar} \cite{wenzel2007isabelle}
+and a proof method language called Eisbach \autocite{matichuk2016eisbach}.
+We made heavy use of Isabelle's Word library \cite{isabelle-word-session}
 for the work presented in this dissertation.
 That library provides a limited-precision integer type, \lstinline|'a word|,
 where \lstinline|'a| is the number of bits in the integer.
@@ -87,8 +87,8 @@ as well as operations for converting between word sizes.
 %In order to perform symbolic execution of assembly instructions in Isabelle,
 %the instructions must somehow be embedded in the theorem prover.
 %This is done using the symbolic execution toolchain
-%of \citet{roessle2019},
-%the \emph{machine model} of which is based on the work of \citet{heule2016}.%
+%of \textcite{roessle2019},
+%the \emph{machine model} of which is based on the work of \textcite{heule2016stratified}.%
 %\index{symbolic execution!machine model}
 
 %
@@ -100,7 +100,7 @@ as well as operations for converting between word sizes.
 
 The x86-64
 \index{x86-64}
-\ac{isa}, originally 
+\ac{isa}, originally
 
 \subsection{Basic Blocks}
 Much of the memory work in this document relates to the concept of \emph{basic blocks}.%

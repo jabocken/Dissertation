@@ -1,14 +1,26 @@
-@String{CACM = "Communications of the {ACM}"}
-@String{ACMPress = "{ACM} Press"}
+@String{CACM = "Communications of the ACM"}
+@String{JACM = "Journal of the ACM"}
+@String{ACM = "ACM"}
+@String{ACMLoc = "New York, NY, USA"}
+@String{IEEE = "IEEE"}
+@String{IEEELoc = "Piscataway, NJ, US"}
 @String{Springer = "Springer-Verlag"}
+@String{SpringerLoc = "Berlin Heidelberg"}
 
+% editor = {}, number = {}, don't have the LNCS number yet
 @unpublished{bockenek2019preservation,
   title = {Formal Verification of Memory Preservation of x86-64 Binaries},
   author = {Bockenek, Joshua A. and Verbeek, Freek and Lammich, Peter and Ravindran, Binoy},
-  series = {SAFECOMP 2019},
-  year = 2019,
-  month = sep,
-  day = {10--13},
+  booktitle = {Computer Safety, Reliability and Security},
+  booktitleaddon = {Proceedings of the 38th International Conference},
+  shorttitle = {SAFECOMP 2019},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  venue = {Turku, Finland},
+  date = {2019-09},
+  day = {10/13},
+  publisher = Springer,
+  location = SpringerLoc,
   note = {Accepted but not yet published}
 }
 
@@ -19,64 +31,88 @@
   note = {Under review}
 }
 
-@article{rice1953classes,
-  title = {Classes of Recursively Enumerable Sets and their Decision Problems},
-  author = {Rice, Henry Gordon},
-  journal = {Transactions of the American Mathematical Society},
-  volume = 74,
-  number = 2,
-  pages = {358--366},
-  year = 1953,
-  publisher = {JSTOR}
+@inproceedings{verbeek2019refinement,
+  title = {Establishing a Refinement Relation between Binaries and Abstract Code},
+  author = {Freek Verbeek and Joshua A. Bockenek and Abhijith Bharadwaj and Ian Roessle and Binoy Ravindran},
+  booktitle = {Proceedings of 17th ACM-IEEE International Conference on Formal Methods and Models for System Design},
+  series = {MEMOCODE'19},
+  year = 2019
 }
 
-@misc{heartbleed,
+@article{rice1953classes,
+  title = {Classes of Recursively Enumerable Sets and Their Decision Problems},
+  author = {Rice, Henry Gordon},
+  journal = {Transactions of the American Mathematical Society},
+  ISSN = 00029947,
+  url = {http://www.jstor.org/stable/1990888},
+  number = 2,
+  pages = {358-366},
+  publisher = {American Mathematical Society},
+  location = {Providence, RI, USA},
+  volume = 74,
+  date = {1953-03},
+  doi = {10.2307/1990888}
+}
+
+@online{heartbleed,
   title = {Heartbleed Bug},
   url = {http://heartbleed.com/},
   year = 2014,
   month = apr,
   day = 29,
-  note = {Accessed 2019-08-22}
+  urldate = {2019-08-22}
 }
 
 @article{madhavapeddy2014unikernels,
   title = {Unikernels: The Rise of the Virtual Library Operating System},
   author = {Madhavapeddy, Anil and Scott, David J.},
+  editor = {Vardi, Moshe Y.},
   journal = CACM,
   volume = 57,
   number = 1,
-  month = jan,
-  year = 2014,
+  date = {2014-01},
   issn = {0001-0782},
-  pages = {61--69},
+  pages = {61-69},
   numpages = 9,
   acmid = 2541895,
-  publisher = ACMPress,
-  address = {New York, NY, USA},
+  publisher = ACM,
+  location = ACMLoc,
 }
 
 @inproceedings{reynolds2002separation,
   title={Separation Logic: A Logic for Shared Mutable Data Structures},
   author={Reynolds, John C.},
-  booktitle={Logic in Computer Science, 2002. Proceedings. 17th Annual IEEE Symposium on},
-  pages = {55--74},
-  year = 2002,
-  organization = {IEEE}
+  editor={Anne Jacobs},
+  booktitle={Logic in Computer Science},
+  booktitleaddon={Proceedings of the 17th Annual IEEE Symposium},
+  shorttitle={LICS 2002},
+  pages={55-74},
+  date={2002-11-07},
+  venue={Copenhagen, Denmark},
+  eventdate={2002-07},
+  eventday={22/25},
+  doi={10.1109/LICS.2002.1029817},
+  issn={1043-6871},
+  publisher=IEEE,
+  location=IEEELoc
 }
 
 @inproceedings{saxena2009lese,
+  title = {Loop-Extended Symbolic Execution on Binary Programs},
   author = {Saxena, Prateek and Poosankam, Pongsin and McCamant, Stephen and Song, Dawn},
-  title = {Loop-extended Symbolic Execution on Binary Programs},
-  booktitle = {Proceedings of the Eighteenth International Symposium on Software Testing and Analysis},
-  series = {ISSTA '09},
+  booktitle = {Software Testing and Analysis},
+  booktitleaddon = {Proceedings of the Eighteenth International Symposium},
+  shorttitle = {ISSTA 2009},
   year = 2009,
+  eventdate = {2009-07},
+  eventday = {19/23},
   isbn = {978-1-60558-338-9},
-  location = {Chicago, IL, USA},
-  pages = {225--236},
+  venue = {Chicago, IL, USA},
+  pages = {225-236},
   numpages = 12,
   acmid = 1572299,
-  publisher = {ACM},
-  address = {New York, NY, USA}
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @inproceedings{obdrzalek2011efficient,
@@ -84,74 +120,77 @@
   author = {Obdr\v{z}\'alek, Jan and Trt\'ik, Marek},
   editor = {Bultan, Tevfik and Hsiung, Pao-Ann},
   booktitle = {Automated Technology for Verification and Analysis},
+  booktitleaddon = {Proceedings of the 9th International Symposium},
+  shorttitle = {ATVA 2011},
   year = 2011,
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 6996,
+  pages = {453-462},
+  venue = {Taipei, Taiwan},
+  eventdate = {2001-10},
+  eventday = {11/14},
   publisher = Springer,
-  address = {Berlin, Heidelberg},
-  pages = {453--462},
+  location = SpringerLoc,
+  doi={doi.org/10.1007/978-3-642-24372-1_34}
 }
 
+% pages originally 4:1-4:8
 @inproceedings{lankes2016hermitcore,
-  author = {Lankes, Stefan and Pickartz, Simon and Breitbart, Jens},
   title = {Hermit{C}ore: A Unikernel for Extreme Scale Computing},
-  booktitle = {ROSS '16},
+  author = {Lankes, Stefan and Pickartz, Simon and Breitbart, Jens},
+  booktitle = {Runtime and Operating Systems for Supercomputers},
+  booktitleaddon = {Proceedings of the 6th International Workshop},
+  shorttitle = {ROSS 2016},
   year = 2016,
   isbn = {978-1-4503-4387-9},
-  location = {Kyoto, Japan},
-  pages = {4:1--4:8},
+  venue = {Kyoto, Japan},
+  eventdate = {2016-06-01},
+  pages = {1-8},
   articleno = 4,
   numpages = 8,
   acmid = 2931093,
-  publisher = {ACM},
-  address = {New York, NY, USA}
+  publisher = ACM,
+  location = ACMLoc,
+  doi={10.1145/2931088.2931093}
 }
 
 @inproceedings{heule2016stratified,
-  author = {Heule, Stefan and Schkufza, Eric and Sharma, Rahul and Aiken, Alex},
   title = {Stratified Synthesis: Automatically Learning the x86-64 Instruction Set},
-  booktitle = {Proceedings of the 37th ACM SIGPLAN Conference on Programming Language Design and Implementation},
-  series = {PLDI '16},
+  author = {Heule, Stefan and Schkufza, Eric and Sharma, Rahul and Aiken, Alex},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 37th ACM SIGPLAN Conference},
+  shorttitle = {PLDI 2016},
   year = 2016,
+  eventdate = {2016-06},
+  eventday = {13/17},
   isbn = {978-1-4503-4261-2},
-  location = {Santa Barbara, CA, USA},
-  pages = {237--250},
+  venue = {Santa Barbara, CA, USA},
+  pages = {237-250},
   numpages = 14,
+  doi = {10.1145/2908080.2908121},
   acmid = 2908121,
-  publisher = {ACM},
-  address = {New York, NY, USA},
-  keywords = {ISA specification, program synthesis, x86-64},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @inproceedings{roessle2019,
-  author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
   title = {Formally Verified Big Step Semantics out of x86-64 Binaries},
-  booktitle = {Proceedings of the 8th ACM SIGPLAN International Conference on Certified Programs and Proofs},
-  series = {CPP 2019},
+  author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
+  booktitle = {Certified Programs and Proofs},
+  booktitleaddon = {Proceedings of the 8th ACM SIGPLAN International Conference},
+  shorttitle = {CPP 2019},
   year = 2019,
   isbn = {978-1-4503-6222-1},
-  location = {Cascais, Portugal},
-  pages = {181--195},
+  venue = {Cascais, Portugal},
+  eventdate = {2019-01},
+  eventday = {14-15},
+  pages = {181-195},
   numpages = 15,
   acmid = 3294102,
-  publisher = {ACM},
-  address = {New York, NY, USA},
-  keywords = {semantics, theorem proving, x86-64},
   doi = {10.1145/3293880.3294102},
-}
-
-@inproceedings{heule2016,
-  author = {Heule, Stefan and Schkufza, Eric and Sharma, Rahul and Aiken, Alex},
-  title = {Stratified Synthesis: Automatically Learning the x86-64 Instruction Set},
-  booktitle = {Proceedings of the 37th ACM SIGPLAN Conference on Programming Language Design and Implementation},
-  series = {PLDI '16},
-  year = 2016,
-  isbn = {978-1-4503-4261-2},
-  location = {Santa Barbara, CA, USA},
-  pages = {237--250},
-  numpages = 14,
-  acmid = 2908121,
-  publisher = {ACM},
-  address = {New York, NY, USA},
-  keywords = {ISA specification, program synthesis, x86-64},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @article{floyd1967assigning,
@@ -159,7 +198,7 @@
   author = {Floyd, Robert W.},
   journal = {Mathematical Aspects of Computer Science},
   volume = 19,
-  pages = {19--32},
+  pages = {19-32},
   number = 1,
   year = 1967
 }
@@ -167,33 +206,33 @@
 @article{hoare1969axiomatic,
   author = {Hoare, Charles Antony Richard},
   title = {An Axiomatic Basis for Computer Programming},
+  editor = {M. Stuart Lynn},
   journal = CACM,
   volume = 12,
   number = 10,
-  month = oct,
-  year = 1969,
+  date = {1969-10},
   issn = {0001-0782},
-  pages = {576--580},
+  pages = {576-580},
   acmid = 363259,
-  publisher = {ACM},
-  address = {New York, NY, USA},
+  doi = {10.1145/363235.363259},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @article{hoare1978csp,
-  author = {Hoare, Charles Antony Richard},
   title = {Communicating Sequential Processes},
-  journal = {Commun. ACM},
-  issue_date = {Aug. 1978},
+  author = {Hoare, Charles Antony Richard},
+  editor = {Robert L. Ashenhurst},
+  journal = CACM,
   volume = 21,
   number = 8,
-  month = aug,
-  year = 1978,
+  date = {1978-08},
   issn = {0001-0782},
-  pages = {666--677},
+  pages = {666-677},
   doi = {10.1145/359576.359585},
   acmid = 359585,
-  publisher = ACMPress,
-  address = {New York, NY, USA},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @inproceedings{myreen2007hoare,
@@ -201,27 +240,33 @@
   author = {Myreen, Magnus O. and Gordon, Michael J. C.},
   editor = {Grumberg, Orna and Huth, Michael},
   booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
+  booktitleaddon = {Proceedings of the 13th International Conference},
+  shorttitle = {TACAS 2007},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 4424,
   year = 2007,
+  doi = {10.1007/978-3-540-71209-1_44},
+  venue = {Braga, Portugal},
+  eventdate = {2007-03-24/2007-04-01},
   publisher = Springer,
-  address = {Berlin, Heidelberg},
-  pages = {568--582},
+  location = SpringerLoc,
+  pages = {568-582}
 }
 
 @article{king1976symbolic,
   title = {Symbolic Execution and Program Testing},
   author = {King, James C.},
   journal = CACM,
-  issue_date = {July 1976},
   volume = 19,
   number = 7,
-  month = jul,
-  year = 1976,
+  date = {1976-07},
   issn = {0001-0782},
-  pages = {385--394},
+  pages = {385-394},
   doi = {10.1145/360248.360252},
   acmid = 360252,
-  publisher = ACMPress,
-  address = {New York, NY, USA},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @inproceedings{shoshitaishvili2016state,
@@ -229,120 +274,189 @@
   author = {Shoshitaishvili, Yan and Wang, Ruoyu and Salls, Christopher and
   Stephens, Nick and Polino, Mario and Dutcher, Audrey and Grosen, John and
   Feng, Siji and Hauser, Christophe and Kruegel, Christopher and Vigna, Giovanni},
-  booktitle = {IEEE Symposium on Security and Privacy},
-  year = 2016,
-  url = {https://angr.io/}
+  booktitle = {2016 IEEE Symposium on Security and Privacy},
+  shorttitle = {SP},
+  date = {2016-08-18},
+  eventdate = {2016-05},
+  eventday = {22/26},
+  venue = {San Jose, CA, USA},
+  doi = {10.1109/SP.2016.17},
+  url = {https://angr.io/},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @inproceedings{wang2017angr,
-  title={{A}ngr -- The Next Generation of Binary Analysis},
-  author={Wang, Fish and Shoshitaishvili, Yan},
-  booktitle={2017 IEEE Cybersecurity Development (SecDev)},
-  pages={8--9},
-  year=2017,
-  organization={IEEE}
+  title = {{A}ngr -- The Next Generation of Binary Analysis},
+  author = {Wang, Fish and Shoshitaishvili, Yan},
+  booktitle = {2017 IEEE Cybersecurity Development},
+  shorttitle = {SecDev},
+  pages={8-9},
+  date = {2017-10-23},
+  eventdate = {2017-09},
+  eventday = {24/26},
+  venue = {Cambridge, MA, USA},
+  doi = {10.1109/SecDev.2017.14},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @inproceedings{wang2017ramblr,
   title = {Ramblr: Making Reassembly Great Again},
   author = {Wang, Ruoyu and Shoshitaishvili, Yan and Bianchi, Antonio and Machiry, Aravind and Grosen, John and Grosen, Paul and Kruegel, Christopher and Vigna, Giovanni},
-  booktitle = {Proceedings of the 24th Annual Symposium on Network and Distributed System Security},
-  series = {NDSS'17},
+  booktitle = {Network and Distributed System Security},
+  booktitleaddon = {Proceedings of the 24th Annual Symposium},
+  shorttitle = {NDSS 2017},
   year = 2017
 }
 
-@misc{afp,
+@online{afp,
   title = {Archive of Formal Proofs},
   editor = {Manuel Eberl and Gerwin Klein and Tobias Nipkow and Larry Paulson and Ren\'e Thiemann},
-  url = {https://www.isa-afp.org/}
+  url = {https://www.isa-afp.org/},
+  date = {2019-08-19},
+  urldate = {2019-08-22}
 }
 
 @inproceedings{clinger1998tail,
   title = {Proper Tail Recursion and Space Efficiency},
   author = {Clinger, William D.},
-  booktitle = {Proceedings of the ACM SIGPLAN 1998 Conference on Programming Language Design and Implementation},
-  series = {PLDI '98},
+  editor = {Berman, A. Michael},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the ACM SIGPLAN 1998 Conference},
+  shorttitle = {PLDI '98},
   year = 1998,
   isbn = {0-89791-987-4},
-  location = {Montreal, Quebec, Canada},
-  pages = {174--185},
+  venue = {Montreal, Quebec, Canada},
+  eventdate = {1998-06},
+  eventday = {17/19},
+  pages = {174-185},
   acmid = 277719,
-  publisher = {ACM},
-  address = {New York, NY, USA},
+  doi = {10.1145/277650.277719},
+  publisher = ACM,
+  location = ACMLoc,
 }
 
 @book{chisnall2008definitive,
   title = {The Definitive Guide to the Xen Hypervisor},
   author = {Chisnall, David},
   year = 2008,
-  publisher = {Pearson Education}
+  publisher = {Pearson Education},
+  location = {London, England, UK}
 }
 
-@misc{cpuid-masking,
+@online{cpuid-masking,
   title = {Xen {CPUID} masking},
   author = {Hans van~Kranenburg},
-  day = 18,
-  month = aug,
-  year = 2016,
+  date = {2016-08-18},
   url = {https://tech.mendix.com/linux/2016/08/18/xen-cpuid-masking/},
-  note = {Accessed July 3, 2019}
+  urldate = {2019-07-03}
 }
 
 @inproceedings{de2008z3,
-  title={{Z3}: An Efficient {SMT} Solver},
-  author={de~Moura, Leonardo and Bj\o{}rner, Nikolaj},
-  booktitle={International conference on Tools and Algorithms for the Construction and Analysis of Systems},
-  pages={337--340},
-  year=2008,
-  organization=Springer
+  title = {{Z3}: An Efficient {SMT} Solver},
+  author = {de~Moura, Leonardo and Bj\o{}rner, Nikolaj},
+  editor = {Ramakrishnan, C. R. and Rehof, Jakob},
+  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
+  booktitleaddon = {14th International Conference},
+  shorttitle = {TACAS 2008},
+  pages = {337-340},
+  venue = {Budapest, Hungary},
+  eventdate = {2008-03-29/2008-04-06},
+  year = 2008,
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 4963,
+  doi = {10.1007/978-3-540-78800-3_24},
+  publisher = Springer,
+  location = SpringerLoc
 }
 
-@misc{capstone,
+@online{capstone,
   title = {Capstone: Next-Gen Disassembly Framework},
   author = {{Nguyen Anh Quynh}},
-  day = 7,
-  month = aug,
-  year = 2014,
-  url = {http://www.capstone-engine.org/},
+  date = {2014-08-07},
+  url = {https://www.capstone-engine.org/},
   series = {Blackhat USA},
-  note = {Accessed June 27, 2019}
+  urldate = {2019-07-27}
 }
 
-@techreport{barrett2017smt,
-  title = {The {SMT-LIB} Standard: Version 2.6},
+@manual{barrett2017smt,
+  title = {The {SMT-LIB} Standard},
+  version = {2.6},
   author = {Barrett, Clark and Fontaine, Pascal and Tinelli, Cesare},
   numpages = 104,
-  year = 2017,
-  month = jul,
-  day = 18
+  day = {2017-07-18},
+  url = {http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf},
+  urldate = {2019-08-22}
+}
+
+@online{smtlib:bitvector-logic,
+  title = {{QF\_UFBV} | {SMT-LIB} The Satisfiability Modulo Theories Library},
+  author = {Cesare Tinelli},
+  url = {http://smtlib.cs.uiowa.edu/logics-all.shtml#QF_UFBV},
+  date = {2017-07-18},
+  urldate = {2019-08-22}
+}
+
+@online{smtlib:bitvector-theory,
+  title = {{FixedSizeBitVectors} | {SMT-LIB} The Satisfiability Modulo Theories Library},
+  author = {Silvio Ranise, Cesare Tinelli, and Clark Barrett},
+  date = {2017-06-13},
+  url = {http://smtlib.cs.uiowa.edu/theories-FixedSizeBitVectors.shtml},
+  urldate = {2019-08-22}
 }
 
 @inproceedings{o2001local,
   title = {Local Reasoning about Programs that Alter Data Structures},
   author = {O'Hearn, Peter and Reynolds, John and Yang, Hongseok},
-  booktitle = {International Workshop on Computer Science Logic},
-  pages = {1--19},
-  year = 2001,
-  organization = Springer
+  editor = {Fribourg, Laurent},
+  booktitle = {Computer Science Logic},
+  booktitleaddon = {Proceedings of the 15th International Workshop},
+  shorttitle = {CSL 2001},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 2142,
+  date = {2001-08-30},
+  venue = {Paris, France},
+  eventdate = {2001-09},
+  eventday = {10/13},
+  pages = {1-19},
+  publisher = Springer,
+  location = SpringerLoc,
+  isbn = {978-3-540-44802-0},
+  doi = {doi.org/10.1007/3-540-44802-0}
 }
 
 @inproceedings{krebbers2017essence,
   title = {The Essence of Higher-Order Concurrent Separation Logic},
   author = {Krebbers, Robbert and Jung, Ralf and Bizjak, Ale\v{s} and Jourdan, Jacques-Henri and Dreyer, Derek and Birkedal, Lars},
-  booktitle = {European Symposium on Programming},
-  pages = {696--723},
-  year = 2017,
-  organization = Springer
+  editor = {Hongseok Yang},
+  booktitle = {Programming},
+  booktitleaddon = {Proceedings of the 26th European Symposium},
+  shorttitle = {ESOP 2017},
+  series = {Lecture Notes in Computer Science},
+  number = 10201,
+  pages = {696-723},
+  date = {2017-03-19},
+  venue = {Uppsala, Sweden},
+  eventdate = {2017-04},
+  eventday = {22/29},
+  publisher = Springer,
+  location = SpringerLoc
 }
 
 @inproceedings{cowan1998stackguard,
   title = {StackGuard: Automatic Adaptive Detection and Prevention of Buffer-Overflow Attacks},
   author = {Cowan, Crispan and Pu, Calton and Maier, Dave and Walpole, Jonathan and Bakke, Peat and Beattie, Steve and Grier, Aaron and Wagle, Perry and Zhang, Qian and Hinton, Heather},
   booktitle = {USENIX Security Symposium},
+  booktitleaddon = {Proceedings of the 7th},
   volume = 98,
-  pages = {63--78},
   year = 1998,
-  location = {San Antonio, TX}
+  pages = {63-78},
+  eventdate = {1998-01},
+  eventday = {26/29},
+  venue = {San Antonio, TX, USA}
 }
 
 @article{matichuk2016eisbach,
@@ -351,19 +465,19 @@
   journal = {Journal of Automated Reasoning},
   volume = 56,
   number = 3,
-  pages = {261--282},
-  year = 2016,
-  publisher = {Springer}
+  pages = {261-282},
+  date = {2016-03-01},
+  doi = {10.1007/s10817-015-9360-2},
+  publisher = {Springer},
+  location = {Netherlands}
 }
 
-@misc{butler:fm,
+@online{butler:fm,
   title = {What is Formal Methods?},
   author = {Butler, Ricky W.},
-  year = 2016,
-  month = apr,
-  day = 10,
+  date = {2016-04-10},
   url = {https://shemesh.larc.nasa.gov/fm/fm-what.html},
-  note = {Accessed \DTMdate{2019-08-16}}
+  urldate = {2019-08-16}
 }
 
 @article{dawson2009isabelle,
@@ -372,25 +486,32 @@
   journal = {Electronic Notes in Theoretical Computer Science},
   volume = 250,
   number = 1,
-  pages = {55--70},
-  year = 2009,
-  publisher = {Elsevier}
+  pages = {55-70},
+  date = {2009-09-01},
+  doi = {10.1016/j.entcs.2009.08.005},
+  publisher = {Elsevier Ltd.},
+  location = {Amsterdam, Netherlands}
 }
 
-@misc{isabelle-word-session,
+@manual{isabelle-word-session,
   title = {Machine Words in {I}sabelle/{HOL}},
   author = {Dawson, Jeremy and Graunke, Paul and Huffman, Brian and Klein, Gerwin and Matthews, John},
-  day = 15,
-  month = aug,
-  year = 2018
+  version = 2018,
+  date = {2018-08-15},
+  url = {https://isabelle.in.tum.de/website-Isabelle2018/dist/library/HOL/HOL-Word/document.pdf},
+  urldate = {2019-08-22}
 }
 
 @book{nipkow2002isabelle,
   title = {Isabelle/{HOL}: A Proof Assistant for Higher-Order Logic},
   author = {Nipkow, Tobias and Paulson, Lawrence C. and Wenzel, Markus},
-  volume = 2283,
-  year = 2002,
-  publisher = {Springer Science \& Business Media}
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 2283,
+  date = {2002-01},
+  doi = {10.1007/3-540-45949-9},
+  publisher = Springer,
+  location = SpringerLoc
 }
 
 @article{wenzel2007isabelle,
@@ -399,52 +520,61 @@
   journal = {From Insight to Proof---Festschrift in Honour of Andrzej Trybulec},
   volume = 10,
   number = 23,
-  pages = {277--298},
-  year = 2007
+  pages = {277-298},
+  date = {2007-01}
 }
 
-@phdthesis{yu1992automated,
+@phdthesis{yu1993automated,
   title = {Automated Proofs of Object Code for a Widely Used Microprocessor},
   author = {Yu, Yuan},
-  year = 1992,
+  date = {1993-10-05},
   school = {University of Texas at Austin}
 }
 
 @article{boyer1996automated,
   title = {Automated Proofs of Object Code for a Widely Used Microprocessor},
   author = {Boyer, Robert S. and Yu, Yuan},
-  journal = {Journal of the ACM},
+  editor = {Leighton, Frank Thomson},
+  journal = JACM,
   volume = 43,
   number = 1,
-  pages = {166--192},
-  year = 1996
+  pages = {166-192},
+  date = {1996-01},
+  doi = {10.1145/227595.227603},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @book{boyer1979computational,
   title = {A Computational Logic},
   author = {Boyer, Robert S. and Moore, J Strother},
   year = 1979,
-  publisher = {Academic Press, Inc.}
+  numpages = 414,
+  doi = {10.1016/C2013-0-10411-4},
+  isbn = {978-0-12-122950-4},
+  publisher = {Academic Press, Inc.},
+  location = {New York, NY, USA}
 }
 
 @article{clutterbuck1988verification,
   title = {The Verification of Low-Level Code},
   author = {D. L. Clutterbuck and Bernard A. Carr\'e},
   journal = {Software Engineering Journal},
-  year = 1988,
+  date  = {1988-05},
   volume = 3,
   number = 3,
-  pages = {97--111},
+  pages = {97-111},
   doi = {10.1049/sej.1988.0012},
   ISSN = {0268-6961},
-  month = may
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @inproceedings{carre1986spade,
   title = {{SPADE}--The Southampton Program Analysis and Development Environment},
   author = {Carr\'e, Bernard A. and O'Neill, I. M. and Clutterbuck, D. L. and Debney, C. W.},
   booktitle = {Software Engineering Environments},
-  year =1986,
+  year = 1986,
   organization = {Peter Peregrinus, Ltd. Stevenage}
 }
 
@@ -452,14 +582,14 @@
   title = "An Approach to Systems Verification",
   author = "Bevier, William R. and Hunt, Warren A. and Moore, J Strother and Young, William D.",
   journal = "Journal of Automated Reasoning",
-  year = 1989,
-  month = dec,
-  day = 1,
+  date = {1989-12-01},
   volume = 5,
   number = 4,
-  pages = "411--428",
+  pages = "411-428",
   issn = "1573-0670",
   doi = "10.1007/BF00243131",
+  publisher = {Kluwer Academic Publishers},
+  location = SpringerLoc
 }
 
 @article{bevier1989kit,
@@ -468,308 +598,453 @@
   journal = {Journal of Automated Reasoning},
   volume = 5,
   number = 4,
-  pages = {519--530},
-  year = 1989,
-  publisher = {Springer}
+  pages = {519-530},
+  date = {1989-12},
+  issn = {1573-0670},
+  doi = {doi.org/10.1007/BF00243135},
+  publisher = {Kluwer Academic Publishers},
+  location = SpringerLoc
 }
 
 @inproceedings{matthews2006verification,
   title = {Verification Condition Generation via Theorem Proving},
   author = {Matthews, John and Moore, J Strother and Ray, Sandip and Vroon, Daron},
-  booktitle = {International Conference on Logic for Programming, Artificial Intelligence, and Reasoning},
-  pages = {362--376},
+  editor = {Hermann, Miki and Voronkov, Andrei},
+  booktitle = {Logic for Programming, Artificial Intelligence, and Reasoning},
+  booktitleaddon = {Proceedings of the 13th International Conference},
+  shorttitle = {LPAR 2006},
+  pages = {362-376},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 4246,
   year = 2006,
-  organization = Springer
+  venue = {Phnom Penh, Cambodia},
+  eventdate = {2006-11},
+  eventday = {13/17},
+  doi = {10.1007/11916277_25},
+  publisher = Springer,
+  location = SpringerLoc
 }
 
 @inproceedings{goel2014syscalls,
-  title={Simulation and Formal Verification of x86 Machine-Code Programs that make System Calls},
-  author={ Shilpi Goel and Warren A. Hunt and Matt Kaufmann and Soumava Ghosh},
-  booktitle={2014 Formal Methods in Computer-Aided Design (FMCAD)},
-  year=2014,
-  pages={91--98},
-  doi={10.1109/FMCAD.2014.6987600},
-  month=oct,
+  title = {Simulation and Formal Verification of x86 Machine-Code Programs that make System Calls},
+  author = {Shilpi Goel and Warren A. Hunt and Matt Kaufmann and Soumava Ghosh},
+  editor = {Claessen, Koen and Kuncak, Viktor},
+  booktitle = {2014 Formal Methods in Computer-Aided Design},
+  shorttitle = {FMCAD 2014},
+  date = {2014-12-18},
+  venue = {Lausanne, Switzerland},
+  eventdate = {2014-10},
+  eventday = {21/24},
+  pages = {91-98},
+  doi = {10.1109/FMCAD.2014.6987600},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @phdthesis{goelphd,
-  title={Formal Verification of Application and System Programs Based on a Validated x86 {ISA} Model},
-  author={Shilpi Goel},
-  year=2016,
-  institute={The University of Texas at Austin},
-  url={http://hdl.handle.net/2152/46437}
+  title = {Formal Verification of Application and System Programs Based on a Validated x86 {ISA} Model},
+  author = {Shilpi Goel},
+  date = {2016-12},
+  institute = {The University of Texas at Austin},
+  url = {http://hdl.handle.net/2152/46437}
 }
 
 @inproceedings{tan2015auspice,
-  title={{AUSPICE}: Automatic Safety Property Verification for Unmodified Executables},
-  author={Tan, Jiaqi and Tay, Hui Jun and Gandhi, Rajeev and Narasimhan, Priya},
-  booktitle={7th International Conference on Verified Software: Theories, Tools and Experiments},
-  series = {VSTTE 2015},
-  pages={202--222},
-  year=2015,
-  month=jul,
-  organization=Springer
+  title = {{AUSPICE}: Automatic Safety Property Verification for Unmodified Executables},
+  author = {Tan, Jiaqi and Tay, Hui Jun and Gandhi, Rajeev and Narasimhan, Priya},
+  editor = {Gurfinkel, Arie and Seshia, Sanjit A.},
+  booktitle = {Verified Software: Theories, Tools and Experiments},
+  booktitleaddon = {Revised Selected Papers from the 7th International Conference},
+  shorttitle = {VSTTE 2015},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 9593,
+  pages = {202-222},
+  date = {2015-07},
+  venue = {San Francisco, CA, USA},
+  eventdate = {2015-07},
+  eventday = {18/19},
+  doi = {10.1007/978-3-319-29613-5_12},
+  publisher = Springer,
+  location = {Cham}
 }
 
 @inproceedings{myreen2008decompilation,
   title = {Machine-Code Verification for Multiple Architectures - An Application of Decompilation into Logic},
   author = {Myreen, Magnus O. and Gordon, Michael J. C. and Slind, Konrad},
   booktitle = {2008 Formal Methods in Computer-Aided Design},
-  year = 2008,
-  pages = {1--8},
-  month = nov,
-  day = {17--20},
-  location = {Portland, OR, USA},
-  publisher = {IEEE}
+  shorttitle = {FMCAD 2008},
+  date = {2008-11-25},
+  day = {17/20},
+  pages = {1-8},
+  venue = {Portland, OR, USA},
+  eventdate = {2008-11},
+  eventday = {17/20},
+  doi = {10.1109/FMCAD.2008.ECP.24},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @inproceedings{myreen2012decompilation,
-  title={Decompilation into Logic---Improved},
-  author={Myreen, Magnus O. and Gordon, Michael J. C. and Slind, Konrad},
-  booktitle={2012 Formal Methods in Computer-Aided Design (FMCAD)},
-  pages={78--81},
-  year={2012},
-  organization={IEEE}
+  title = {Decompilation into Logic---Improved},
+  author = {Myreen, Magnus O. and Gordon, Michael J. C. and Slind, Konrad},
+  booktitle = {2012 Formal Methods in Computer-Aided Design},
+  shorttitle = {FMCAD 2012},
+  pages={78-81},
+  date = {2013-02-19},
+  venue = {Cambridge, UK},
+  eventdate = {2012-10},
+  eventday = {22/25},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @book{ACL2,
   title = {Computer-Aided Reasoning: An Approach},
   author = {Matt Kaufmann and Panagiotis Manolios and J Strother Moore},
   publisher = {Kluwer Academic Publishers},
-  year = {2000},
+  location = SpringerLoc,
+  year = 2000
 }
 
 @inproceedings{slind2008brief,
   title = {A Brief Overview of {HOL4}},
   author = {Slind, Konrad and Norrish, Michael},
-  booktitle = {International Conference on Theorem Proving in Higher Order Logics},
-  pages = {28--32},
+  editor = {Mohamed, Otmane Ait and Mu\~noz, C\'esar and Tahar Sofi\`ene},
+  booktitle = {Theorem Proving in Higher Order Logics},
+  booktitleaddon = {Proceedings of the 21st International Conference},
+  shorttitle = {TPHOLs 2008},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 5170,
+  pages = {28-32},
   year = 2008,
-  organization = {Springer}
+  venue = {Montreal, Canada},
+  eventdate = {2008-08},
+  eventday = {18/21},
+  doi = {10.1007/978-3-540-71067-7_6},
+  organization = Springer,
+  location = SpringerLoc
 }
 
 @inproceedings{sewell2013tvv,
   title = {Translation Validation for a Verified {OS} Kernel},
   author = {Sewell, Thomas Arthur Leck and Myreen, Magnus O. and Klein, Gerwin},
-  booktitle = {Proceedings of the 34th ACM SIGPLAN Conference on Programming Language Design and Implementation},
-  series = {PLDI '13},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 34th ACM SIGPLAN Conference},
+  shorttitle = {PLDI 2013},
   year = 2013,
   isbn = {978-1-4503-2014-6},
-  location = {Seattle, Washington, USA},
-  pages = {471--482},
+  venue = {Seattle, WA, USA},
+  eventdate = {2013-06},
+  eventday = {16/22},
+  pages = {471-482},
   numpages = 12,
   acmid = 2462183,
-  publisher = {ACM},
-  address = {New York, NY, USA}
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @inproceedings{feng2006modular,
   title = {Modular Verification of Assembly Code with Stack-Based Control Abstractions},
-  author = {Feng, Xinyu and Shao, Zhong and Vaynberg, Alexander and Xiang, Sen and Ni, Zhaozhong},
-  booktitle = {Proc. 2006 ACM SIGPLAN Conference on Programming Language Design and Implementation},
-  series = {PLDI'06},
-  location = {Ottawa, Canada},
+  author = {Feng, Xinyu and Shao, Zhong and Vaynberg,  Alexander and Xiang, Sen and Ni, Zhaozhong},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 27th ACM SIGPLAN Conference},
+  series = {PLDI 2006},
+  venue = {Ottawa, Ontario, Canada},
+  eventdate = {2006-06},
+  eventday = {11/14},
   volume = 41,
   number = 6,
-  pages = {401--414},
-  year = 2006,
-  month = jun,
-  publisher = {ACM Press},
-  address = {New York, NY, USA},
+  pages = {401-414},
+  date = {2006-06},
+  doi = {10.1145/1133981.1134028},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @techreport{feng2005sbca,
   title       = {Modular Verification of Assembly Code with Stack-Based Control Abstractions},
   author      = {Xinyu Feng and Zhong Shao and Alexander Vaynberg and Sen Xiang and Zhaozhong Ni},
   number      = {YALEU/DCS/TR-1336},
-  institution = {Dept. of Computer Science, Yale University},
-  address     = {New Haven, CT},
-  month       = nov,
-  year        = 2005,
-  url         = {http://flint.cs.yale.edu/publications/sbca.html},
+  institution = {Yale University Department of Computer Science},
+  location    = {New Haven, CT, USA},
+  date        = {2005-11},
+  pagetotal   = 24,
+  url         = {http://flint.cs.yale.edu/publications/sbca.html}
 }
 
 @inproceedings{necula1997proof,
   title = {Proof-Carrying Code},
   author = {Necula, George C.},
-  booktitle = {Proceedings of the 24th ACM SIGPLAN-SIGACT symposium on Principles of programming languages},
-  pages = {106--119},
+  booktitle = {Principles of Programming Languages},
+  booktitleaddon = {Proceedings of the 24th ACM SIGPLAN-SIGACT Symposium},
+  shorttitle = {POPL'97},
+  pages = {106-119},
   year = 1997,
-  organization = {ACM}
+  venue = {Paris, France},
+  eventdate = {1997-01},
+  eventday = {15/17},
+  doi = {10.1145/263699.263712},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @book{chlipala2013certified,
   title={Certified Programming with Dependent Types: A Pragmatic Introduction to the {C}oq Proof Assistant},
   author={Chlipala, Adam},
-  year={2013},
-  publisher={MIT Press}
+  date={2013-12-06},
+  publisher={MIT Press},
+  location={Cambridge, MA, USA}
 }
 
 @inproceedings{klein2009sel4,
   title={se{L}4: Formal Verification of an {OS} Kernel},
   author={Klein, Gerwin and Elphinstone, Kevin and Heiser, Gernot and Andronick, June and Cock, David and Derrin, Philip and Elkaduwe, Dhammika and Engelhardt, Kai and Kolanski, Rafal and Norrish, Michael and others},
-  booktitle={Proceedings of the ACM SIGOPS 22nd symposium on Operating systems principles},
-  pages={207--220},
-  year={2009},
-  organization={ACM}
+  booktitle={Operating Systems Principles},
+  booktitleaddon={Proceedings of the 22nd ACM SIGOPS Symposium},
+  shorttitle={SOSP 2009},
+  pages={207-220},
+  year=2009,
+  venue={Big Sky, MT, USA},
+  eventdate={2009-10},
+  eventday={11/14},
+  doi={10.1145/1629575.1629596},
+  publisher=ACM,
+  location=ACMLoc
 }
 
+%originally pages = 2:1-2:70
 @article{Klein_AEMSKH_14,
   title            = {Comprehensive Formal Verification of an {OS} Microkernel},
   author           = {Klein, Gerwin and Andronick, June and Elphinstone, Kevin and Murray, Toby and Sewell, Thomas and
   Kolanski, Rafal and Heiser, Gernot},
-  doi              = {10.1145/2560537},
   journal          = {ACM Transactions on Computer Systems},
+  shortjournal     = {TOCS},
+  doi              = {10.1145/2560537},
   number           = 1,
-  month            = feb,
   volume           = 32,
-  year             = 2014,
-  keywords         = {sel4, isabelle/hol, verification, microkernel},
-  pages            = {2:1-2:70}
+  date             = {2014-02},
+  pages            = {1-70},
+  articleno        = 2,
+  publisher        = ACM,
+  location         = ACMLoc
 }
 
 @inproceedings{greenaway2012bridging,
   title = {Bridging the Gap: Automatic Verified Abstraction of {C}},
-  editor = {L. Beringer and A. Felty},
   author = {Greenaway, David and Andronick, June and Klein, Gerwin},
-  booktitle = {International Conference on Interactive Theorem Proving},
-  series = {ITP 2012},
-  pages = {99--115},
-  year = 2012,
-  month = aug,
-  location = {Princeton, New Jersey, USA},
+  editor = {Beringer, Lennart and Felty, Amy},
+  booktitle = {Interactive Theorem Proving},
+  booktitleaddon = {Proceedings of the Third International Conference},
+  shorttitle = {ITP 2012},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 7406,
+  pages = {99-115},
+  date = {2012-08},
+  venue = {Princeton, NJ, USA},
+  eventdate = {2012-08},
+  eventday = {13/15},
+  doi = {10.1007/978-3-642-32347-8_8},
   publisher = Springer,
-  address = {Berlin, Heidelberg}
+  location = SpringerLoc
 }
 
 @INPROCEEDINGS{shi2012orientais,
   title = {{ORIENTAIS}: Formal Verified {OSEK/VDX} Real-Time Operating System},
   author={Jianqi Shi and Jifeng He and Huibiao Zhu and Huixing Fang and Yanhong Huang and Xiaoxian Zhang},
-  booktitle = {2012 IEEE 17th International Conference on Engineering of Complex Computer Systems},
-  year = 2012,
-  pages = {293--301},
+  booktitle = {Engineering of Complex Computer Systems},
+  booktitleaddon = {Proceedings of the IEEE 17th International Conference},
+  shorttitle = {ICECCS 2012},
+  date = {2012-09-13},
+  pages = {293-301},
   isbn = {978-2-9541-8100-4},
-  month = jul,
-  day = {18--20}
+  venue = {Paris, France},
+  eventdate = {2012-07},
+  eventday = {18/20},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
 @INPROCEEDINGS{shi2012xbil,
   title = {{xBIL} -- A Hardware Resource Oriented Binary Intermediate Language},
   author = {Jianqi Shi and Longfei Zhu and Huixing Fang and Jian Guo and Huibiao Zhu and Xin Ye},
-  booktitle={2012 IEEE 17th International Conference on Engineering of Complex Computer Systems},
-  year=2012,
-  pages={211--219},
-  month=jul,
+  booktitle = {Engineering of Complex Computer Systems},
+  booktitleaddon = {Proceedings of the IEEE 17th International Conference},
+  shorttitle = {ICECCS 2012},
+  date = {2012-09-13},
+  pages = {211-219},
+  venue = {Paris, France},
+  eventdate = {2012-07},
+  eventday = {18/20},
+  publisher = IEEE,
+  location = IEEELoc  
 }
 
 @inproceedings{rushby1981dvss,
-  author = {Rushby, John M.},
   title = {Design and Verification of Secure Systems},
-  booktitle = {Proceedings of the Eighth ACM Symposium on Operating Systems Principles},
+  author = {Rushby, John M.},
+  booktitle = {Operating Systems Principles},
+  booktitleaddon = {Proceedings of the Eighth ACM Symposium},
   series = {SOSP '81},
   year = 1981,
   isbn = {0-89791-062-1},
-  location = {Pacific Grove, California, USA},
-  pages = {12--21},
+  pages = {12-21},
   numpages = 10,
   doi = {10.1145/800216.806586},
-  acmid = {806586},
-  publisher = ACMPress,
-  address = {New York, NY, USA},
+  acmid = 806586,
+  venue = {Pacific Grove, CA, USA},
+  eventdate = {1981-12},
+  eventday = {14/16},
+  publisher = ACM,
+  location = ACMLoc,
 } 
 
 @techreport{rushby1992noninterference,
   title = {Noninterference, Transitivity, and Channel-Control Security Policies},
   author = {Rushby, John M.},
   year = 1992,
-  institution = {SRI International, Computer Science Laboratory}
+  institution = {Computer Science Laboratory at SRI International}
 }
 
 @inproceedings{dam2013hypervisor,
   title = {Machine Code Verification of a Tiny {ARM} Hypervisor},
   author = {Dam, Mads and Guanciale, Roberto and Nemati, Hamed},
-  booktitle = {Proceedings of the 3rd International Workshop on Trustworthy Embedded Devices},
-  series = {TrustED '13},
-  year = 2013,
+  booktitle = {Trustworthy Embedded Devices},
+  booktitleaddon = {Proceedings of the 3rd International Workshop},
+  shorttitle = {TrustED '13},
+  date = {2013-11},
   isbn = {978-1-4503-2486-1},
-  location = {Berlin, Germany},
-  pages = {3--12},
+  venue = {Berlin, Germany},
+  eventdate = {2013-11},
+  eventday = 4,
+  pages = {3-12},
   numpages = 10,
   doi = {10.1145/2517300.2517302},
   acmid = 2517302,
-  publisher = ACMPress,
-  address = {New York, NY, USA},
+  publisher = ACM,
+  location = ACMLoc
 } 
 
 @inproceedings{dam2013formal,
   title = {Formal Verification of Information Flow Security for a Simple {ARM}-Based Separation Kernel},
   author = {Dam, Mads and Guanciale, Roberto and Khakpour, Narges and Nemati, Hamed and Schwarz, Oliver},
-  booktitle = {Proceedings of the 2013 ACM SIGSAC conference on Computer \& communications security},
-  pages = {223--234},
-  year = 2013,
-  month = nov,
-  day = {4--8},
-  location = {Berlin, Germany},
-  organization = ACMPress,
-  doi = {10.1145/2508859.2516702}
+  booktitle = {Computer \& Communications Security},
+  booktitleaddon = {Proceedings of the 2013 ACM SIGSAC Conference},
+  shorttitle = {CCS '13},
+  pages = {223-234},
+  date = {2013-11},
+  day = {04/08},
+  venue = {Berlin, Germany},
+  eventdate = {2013-11},
+  eventday = {4/8},
+  doi = {10.1145/2508859.2516702},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @inproceedings{baumann2016high,
   title={A High Assurance Virtualization Platform for {ARMv8}},
   author={Baumann, Christoph and N\"aslund, Mats and Gehrmann, Christian and Schwarz, Oliver and Thorsen, Hans},
-  booktitle={2016 European Conference on Networks and Communications (EuCNC)},
-  pages={210--214},
-  year=2016,
-  organization={IEEE}
+  booktitle={2016 European Conference on Networks and Communications},
+  shorttitle={EuCNC 2016},
+  pages={210-214},
+  date={2016-09-08},
+  doi={10.1109/EuCNC.2016.7561034},
+  venue={Athens, Greece},
+  eventdate={2016-06},
+  eventday={27/30},
+  publisher=IEEE,
+  location=IEEELoc
 }
 
 @inproceedings{brumley2011bap,
   title={{BAP}: A Binary Analysis Platform},
   author={Brumley, David and Jager, Ivan and Avgerinos, Thanassis and Schwartz, Edward J.},
-  editor = "Gopalakrishnan, Ganesh and Qadeer, Shaz",
-  booktitle={International Conference on Computer Aided Verification},
-  pages={463--469},
+  editor = {Gopalakrishnan, Ganesh and Qadeer, Shaz},
+  booktitle={Computer Aided Verification},
+  booktitleaddon={Proceedings of the 23rd International Conference},
+  shorttitle={CAV 2011},
+  series={Lecture Notes in Computer Science},
+  shortseries={LNCS},
+  number=6806,
+  pages={463-469},
   year=2011,
-  isbn = "978-3-642-22110-1",
-  doi = "10.1007/978-3-642-22110-1_37",
+  isbn = {978-3-642-22110-1},
+  doi = {10.1007/978-3-642-22110-1_37},
+  venue={Snowbird, UT, USA},
+  eventdate={2011-07},
+  eventday={14/20},
   publisher = Springer,
-  address = "Berlin, Heidelberg"
+  location = SpringerLoc
 }
 
-@InProceedings{fox2010arm,
+@inproceedings{fox2010arm,
   title = "A Trustworthy Monadic Formalization of the {ARMv7} Instruction Set Architecture",
   author = "Fox, Anthony and Myreen, Magnus O.",
   editor = "Kaufmann, Matt and Paulson, Lawrence C.",
   booktitle = "Interactive Theorem Proving",
+  booktitleaddon = "Proceedings of the First International Conference",
+  shorttitle = "ITP 2010",
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 6172,
   year = 2010,
-  publisher = "Springer Berlin Heidelberg",
-  address = "Berlin, Heidelberg",
-  pages = "243--258",
-  isbn = "978-3-642-14052-5",
-  doi = "10.1007/978-3-642-14052-5_18"
+  venue = {Edinburgh, UK},
+  eventdate = {2010-07},
+  eventday = {11/14},
+  pages = {243-258},
+  isbn = {978-3-642-14052-5},
+  doi = {10.1007/978-3-642-14052-5_18},
+  publisher = Springer,
+  location = SpringerLoc
 }
 
 @inproceedings{fox2015improved,
   title={Improved Tool Support for Machine-Code Decompilation in {HOL4}},
   author={Fox, Anthony},
   editor={Urban, Christian and Zhang, Xingyuan},
-  booktitle={International Conference on Interactive Theorem Proving},
-  pages={187--202},
-  year=2015,
-  organization=Springer
+  booktitle={Interactive Theorem Proving},
+  booktitleaddon={Proceedings of the 6th International Conference},
+  shorttitle={ITP 2015},
+  series={Lecture Notes in Computer Science},
+  shortseries={LNCS},
+  number=9236,
+  pages={187-202},
+  date={2015-08-19},
+  venue={Nanjing, China},
+  eventdate={2015-08},
+  eventday={24/27},
+  doi={10.1007/978-3-319-22102-1_12},
+  organization=Springer,
+  location={Cham}
+}
+
+@proceedings{cav2007,
+  editor = "Damm, Werner and Hermanns, Holger",
+  title = "Computer Aided Verification",
+  titleaddon = "Proceedings of the 19th International Conference",
+  shorttitle = "CAV 2007",
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 4590,
+  year = 2007,
+  venue = "Berlin, Germany",
+  eventdate = "2007-07",
+  eventday = "3/7",
+  publisher = Springer,
+  location = SpringerLoc
 }
 
 @InProceedings{ganesh2007stp,
   title = "A Decision Procedure for Bit-Vectors and Arrays",
   author = "Ganesh, Vijay and Dill, David L.",
-  editor="Damm, Werner and Hermanns, Holger",
-  booktitle = "Computer Aided Verification",
-  year = 2007,
-  publisher = "Springer Berlin Heidelberg",
-  address = "Berlin, Heidelberg",
-  pages = "519--531",
+  pages = "519-531",
   isbn = "978-3-540-73368-3",
-  doi = "/10.1007/978-3-540-73368-3_52"
+  doi = "10.1007/978-3-540-73368-3_52",
+  crossref = cav2007
 }
 
 @inproceedings{leroy:compcert,
@@ -778,30 +1053,32 @@
   URL = {https://hal.inria.fr/hal-01238879},
   BOOKTITLE = {Embedded Real Time Software and Systems, 8th European Congress},
   SERIES = {ERTS 2016},
-  ADDRESS = {Toulouse, France},
+  location = {Toulouse, France},
   ORGANIZATION = {SEE},
   NUMPAGES = 8,
-  YEAR = 2016,
-  MONTH = jan,
+  date = {2016-01},
   publisher = {HAL},
-  PDF = {https://hal.inria.fr/hal-01238879/file/erts2016_compcert.pdf},
+  PDF = {https://hal.inria.fr/hal-01238879/file/erts2016\_compcert.pdf},
   HAL_ID = {hal-01238879},
   HAL_VERSION = {v1},
-  url = {http://compcert.inria.fr/},
 }
 
 @inproceedings{kumar2014cakeml,
   title = {Cake{ML}: A Verified Implementation of {ML}},
   author = {Kumar, Ramana and Myreen, Magnus O. and Norrish, Michael and Owens, Scott},
-  booktitle = {Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
-  series = {POPL '14},
+  booktitle = {Principles of Programming Languages},
+  booktitleaddon = {Proceedings of the 41st ACM SIGPLAN-SIGACT Symposium},
+  shorttitle = {POPL '14},
   year = 2014,
   isbn = {978-1-4503-2544-8},
-  location = {San Diego, California, USA},
-  pages = {179--191},
+  venue = {San Diego, CA, USA},
+  eventdate = {2014-01},
+  eventday = {22/24},
+  pages = {179-191},
   acmid = 2535841,
-  publisher = {ACM},
-  address = {New York, NY, USA},
+  doi = {10.1145/2535838.2535841},
+  publisher = ACM,
+  location = ACMLoc,
   url = {https://cakeml.org/}
 }
 
@@ -809,38 +1086,67 @@
   title={Automating Mimicry Attacks Using Static Binary Analysis},
   author={Kruegel, Christopher and Kirda, Engin and Mutz, Darren and Robertson, William and Vigna, Giovanni},
   booktitle={USENIX Security Symposium},
-  volume={14},
-  pages={11--11},
-  year={2005}
+  volume=14,
+  pages={161-176},
+  year=2005,
+  organization={USENIX Association}
 }
 
-@InProceedings{song2008bitblaze,
+@inproceedings{song2008bitblaze,
   title = {{BitBlaze}: A New Approach to Computer Security via Binary Analysis},
   author = {Dawn Song and David Brumley and Heng Yin and Juan Caballero and
   Ivan Jager and Min Gyung Kang and Zhenkai Liang and James Newsome and
   Pongsin Poosankam and Prateek Saxena},
-  booktitle = {Proceedings of the 4th International Conference on Information Systems Security. Keynote invited paper.},
-  address = {Hyderabad, India},
-  year = 2008,
-  month = dec,
+  editor = {Sekar, R. and Pujari, Arun K.},
+  booktitle = {Information Systems Security},
+  booktitleaddon = {Proceedings of the 4th International Conference},
+  shorttitle = {ICISS 2008},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 5352,
+  venue = {Hyderabad, India},
+  eventdate = {2008-12},
+  eventday = {16/20},
+  publisher = Springer,
+  location = SpringerLoc,
+  date = {2008-12},
+  isbn = {978-3-540-89861-0},
+  note = {Keynote invited paper}
+}
+
+@online{BitBlazeWebSite,
+  key = {BitBlaze},
+  title = {{BitBlaze}: Binary Analysis for Computer Security},
+  url = {http://bitblaze.cs.berkeley.edu/},
+  date = {2013-07-16},
+  urldate = {2019-08-22}
 }
 
 @inproceedings{barrett2004cvcl,
   title = {{CVC} {L}ite: A New Implementation of the Cooperating Validity Checker},
   author = {Barrett, Clark and Berezin, Sergey},
-  booktitle = {International Conference on Computer Aided Verification},
-  pages = {515--518},
+  editor = {Alur, Rajeev and Peled, Doron A.},
+  booktitle = {Computer Aided Verification},
+  booktitleaddon = {Proceedings of the 16th International Conference},
+  shorttitle = {CAV 2004},
+  pages = {515-518},
   year = 2004,
-  organization = Springer
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 3114,
+  venue = {Boston, MA, USA},
+  eventdate = {2004-07},
+  eventday = {13/17},
+  doi = {10.1007/978-3-540-27813-9_49},
+  publisher = Springer,
+  location = SpringerLoc
 }
 
 @inproceedings{barrett2007cvc3,
   title = {{CVC3}},
   author = {Barrett, Clark and Tinelli, Cesare},
-  booktitle = {International Conference on Computer Aided Verification},
-  pages = {298--302},
-  year = 2007,
-  organization = Springer
+  pages = {298-302},
+  crossref = cav2007
 }
 
 @InProceedings{calcagno2011infer,
@@ -848,119 +1154,126 @@
   author="Calcagno, Cristiano and Distefano, Dino",
   editor="Bobaru, Mihaela and Havelund, Klaus and Holzmann, Gerard J. and Joshi, Rajeev",
   booktitle="NASA Formal Methods",
+  booktitleaddon="Proceedings of the Third International Symposium",
+  shorttitle="NFM 2011",
   year=2011,
-  publisher=Springer,
-  address="Berlin, Heidelberg",
-  pages="459--465",
+  series={Lecture Notes in Computer Science},
+  shortseries={LNCS},
+  number=6617,
+  pages="459-465",
+  venue="Pasadena, CA, USA",
+  eventdate="2011-04",
+  eventday="18/20",
   isbn="978-3-642-20398-5",
   doi="10.1007/978-3-642-20398-5_33",
-  url="https://fbinfer.com/"
+  url="https://fbinfer.com/",
+  publisher=Springer,
+  location=SpringerLoc
 }
 
 @article{hovemeyer2004findbugs,
   title = {Finding Bugs is Easy},
   author = {Hovemeyer, David and Pugh, William},
-  journal = {SIGPLAN Not.},
-  issue_date = {December 2004},
+  journal = {ACM SIGPLAN Notices},
   volume = 39,
   number = 12,
-  month = dec,
-  year = 2004,
+  date = {2004-12},
   issn = {0362-1340},
-  pages = {92--106},
+  pages = {92-106},
   url = {http://findbugs.sourceforge.net/},
   doi = {10.1145/1052883.1052895},
   acmid = 1052895,
-  publisher = {ACM Press},
-  address = {New York, NY, USA},
+  publisher = ACM,
+  location = ACMLoc,
 } 
 
 @article{evans2002static,
   title={Improving Security using Extensible Lightweight Static Analysis},
   author={David Evans and David Larochelle},
   journal={IEEE Software},
-  year=2002,
+  date={2002-01},
   volume=19,
   number=1,
-  pages={42--51},
+  pages={42-51},
   doi={10.1109/52.976940},
   ISSN={0740-7459},
-  month=jan,
+  publisher=IEEE,
+  location=IEEELoc
 }
 
 @inproceedings{oneill1988verification,
   title = "The Formal Verification of Safety-critical Assembly Code",
   author = "I. M. O'Neill and D. L. Clutterbuck and P. F. Farrow and P. G. Summers and W. C. Dolman",
+  booktitle = "IFAC Symposium on Safety of Computer Control Systems 1988",
+  shorttitle = "SAFECOMP '88",
   volume = 21,
   number = 18,
-  pages = "115--120",
-  year = 1988,
-  month = nov,
-  day = {9--11},
+  pages = "115-120",
+  date = {1988-11},
   series = "SAFECOMP '88",
-  booktitle = "IFAC Symposium on Safety of Computer Control Systems 1988",
   location = "Fulda, FRG",
   issn = "1474-6670",
   doi = "10.1016/S1474-6670(17)54540-1",
-}
-
-@inproceedings{verbeek2019refinement,
-  title = {Establishing a Refinement Relation between Binaries and Abstract Code},
-  authors = {Freek Verbeek and Joshua A. Bockenek and Abhijith Bharadwaj and Ian Roessle and Binoy Ravindran},
-  booktitle = {Proceedings of 17th ACM-IEEE International Conference on Formal Methods and Models for System Design},
-  series = {MEMOCODE'19},
-  year = 2019
+  venue = "Fulda, FRG",
+  eventdate = {1988-11},
+  eventday = {09/11},
+  publisher = {Elsevier Ltd.},
+  location = {Amsterdam, Netherlands}
 }
 
 @inproceedings{feustel1972rice,
   title = {The {R}ice Research Computer---A Tagged Architecture},
   author = {Feustel, Edward A.},
-  booktitle = {Proceedings of the AFIPS Spring Joint Computer Conference},
+  booktitle = {Proceedings of the 1972 Spring Joint Computer Conference},
+  shorttitle = {AFIPS '72},
   volume = 40,
-  pages = {369--377},
+  pages = {369-377},
   year = 1972,
   month = may,
-  organization = ACMPress
+  venue = {Atlantic City, NJ, USA},
+  eventdate = {1972-05},
+  eventday = {16/18},
+  doi = {10.1145/1478873.1478920},
+  publisher = ACM,
+  location = ACMLoc
 }
 
 @article{feustel1973advantages,
   title = {On the Advantages of Tagged Architecture},
   author = {Feustel, Edward A.},
   journal = {IEEE Transactions on Computers},
-  volume = 22,
+  volume = {C-22},
   number = 7,
-  pages = {644--656},
-  year = 1973,
-  month = jul,
-  publisher = {IEEE}
+  pages = {644-656},
+  date = {1973-07},
+  doi = {10.1109/TC.1973.5009130},
+  publisher = IEEE,
+  location = IEEELoc
 }
 
-@misc{thornton2008rice,
+@online{thornton2008rice,
   title = {A Brief History of the {R}ice Computer 1959-1971},
   author = {Adam Thornton},
-  url =
-   {https://web.archive.org/web/20080224035658/http://www.princeton.edu/~adam/R1/r1rpt.html},
-   year = 2008,
-   month = feb,
-   day = 24,
-  note = {Accessed \DTMdate{2019-08-22}}   
+  url = {https://web.archive.org/web/20080224035658/http://www.princeton.edu/~adam/R1/r1rpt.html},
+  date = {2008-02-24},
+  urldate = {2019-08-22}
 }
 
+% pages originally 4:1-4:40
 @article{abadi2009cfi,
   title = {Control-Flow Integrity: Principles, Implementations, and Applications},
-  author = {Abadi, Mart\'{\i}n and Budiu, Mihai and Erlingsson, \'Ulfar and Ligatti, Jay},
-  journal = {ACM Transactions on Information Systems},
-  issue_date = {October 2009},
+  author = {Abadi, Mart\'in and Budiu, Mihai and Erlingsson, \'Ulfar and Ligatti, Jay},
+  journal = {ACM Transactions on Information and System Security},
+  shortjournal = {TISSEC},
   volume = 13,
   number = 1,
-  month = nov,
-  year = 2009,
+  date = {2009-10},
   issn = {1094-9224},
-  pages = {4:1--4:40},
+  pages = {1-40},
   articleno = 4,
   numpages = 40,
   doi = {10.1145/1609956.1609960},
   acmid = 1609960,
-  publisher = ACMPress,
-  address = {New York, NY, USA},
+  publisher = ACM,
+  location = ACMLoc
 }
