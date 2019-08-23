@@ -109,8 +109,8 @@ of the assembly-level property we call \emph{memory preservation},
 described in \cref{memory_usage}:
 \emph{control-flow-driven} verification and \emph{syntax-driven} verification.
 Both approaches use some form of control-flow analysis over functions in x86-64 assembly
-to generate incomplete proofs
-that are then loaded into the interactive theorem prover Isabelle/HOL
+to generate incomplete proofs.
+Those proofs are then loaded into the interactive theorem prover Isabelle/HOL
 and completed there. The proof strategies for both approaches involve
 \emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic},
 albeit in different ways.
@@ -121,18 +121,21 @@ and how they perform symbolic execution.
 The first approach, control-flow-driven verification,
 requires significantly more user user input but has the potential for much stronger invariants.
 Meanwhile, the second approach, syntax-driven verification,
-has a significantly higher level of proof automation but is not as suited for stronger invariant production.
+has a significantly higher level of proof automation
+but is not as suited for stronger invariant production.
 Symbolic execution is also more efficient in the control-flow-driven approach
 as it more closely follows the structure of the function \ac{cfg}.
 In contrast, the syntax-driven approach must deal with
-operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
+operating on a restricted set of control flow constructs,
+which can result in extra symbolic execution.
 
 \subsection{Memory Usage and Preservation}\label{memory_usage}
 \emph{Memory usage} characterizes the regions in memory that are read and written by a program.
 An extension of memory usage is the property of \emph{memory preservation},
 which states that the values written by that program are constrained to those memory regions.
 The following sections elaborate on the usefulness of memory preservation
-as a platform for further verification efforts.
+as a platform for further verification efforts,
+after which the control-flow-driven and syntax-driven methodologies are discussed further.
 
 \subsubsection{Security}
 Unbounded memory usage can lead to vulnerabilities
@@ -195,14 +198,38 @@ which is out of scope of this dissertation.
 
 \subsection{Control-Flow-Driven Verification}
 This methodology for verification of memory preservation relies on treating function bodies
-as \acp{cfg} of basic blocks
-and providing state predicate annotations on specific nodes in the \ac{cfg}.
+as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
+In order to reason about the \acp{cfg},
+they are annotated with predicates on state at specific locations,
+between which the program will be symbolically executed.
+While it is possible to reason about full functional correctness with this methodology,
+doing so takes a significant amount of effort due to the very low level of abstraction
+assembly provides, even with proven-correct formal simplification rules in Isabelle.
+Because of this, we focused on the aforementioned property of memory preservation.
 
 %Formal Definition of Memory Preservation
-Memory preservation is 
+In our model, memory usage is formulated as a set of \emph{regions}
+that start at some address and have a specific size in bytes.
+We do not currently differentiate between regions for writes and regions for reads,
+though doing so is a possibility in the future.
+Proving memory preservation requires performing symbolic execution
+on the underlying assembly instructions
+and showing that no regions beyond those needed to complete the proof are modified.
 
 %Semi-Automated Formal Verification for Memory Preservation
-\todo\dots
+In order to reason about that memory usage so we can prove memory preservation in a theorem prover,
+the structure of the proof must be extracted from the assembly programs.
+For that purpose, our code generation tool for this work produces the outline of a proof
+based on the control flow of the analyzed programs. This is achieved using off-the-shelf tools.
+
+That proof outline specifies where the program should be annotated
+and provides some initial conditions based on register values.
+It also provides the proof steps to properly perform symbolic execution
+and starts the user off with a basic set of regions determined from variables in the stack frame.
+The two steps remaining, however, are up to the user.
+Those steps are formulating any remaining memory regions to successfully complete symbolic execution
+and fleshing out the annotations on state so that the symbolic execution of later blocks
+can continue from that of earlier ones.
 
 %Analysis of HermitCore Functions
 The control-flow-driven methodology was applied to \num{71} functions
@@ -213,12 +240,32 @@ Of those functions, 18 had loops and 33 had subcalls.
 Optimized variants were also verified for 12 of the functions involved.
 There was even one function that featured recursion,
 which turned out to be the most challenging function to handle.
+Other than the recursive function, the most challenging ones to handle
+were indeed the ones with loops. Formulating annotations that must hold for all loop iterations
+is not exactly easy when a significant amount of memory operations are performed.
 
 \subsection{Syntax-Driven Verification}
-\todo\dots
+Taking our experiences from the control-flow-driven verification work into account,
+we chose a slightly different path for the second verification work
+presented in this dissertation.
+This approach focuses on relating symbolically-executed basic blocks
+with a syntactic representation of program control flow.
+It also involves significantly more information generation
+than the previously-discussed approach.
 
 %Mostly-Automated Formal Verification for Memory Preservation
-\todo\dots
+Abstracting away from the concrete control flow to a more structured syntax
+increases the capacity for automation
+as it allows for the development of a set of \emph{Hoare rules}
+over the syntactic control flow \autocite{hoare1969axiomatic}.
+By developing and using a set of such formal rules, we were able to restrict symbolic execution
+to the level of individual basic blocks and then use those rules to do the rest of the work.
+This greatly simplified our proof strategies for proving memory preservation.
+
+The change in methodology alone would not have been enough, however.
+As stated, we also generate much more information.
+The additional information is primarily for the regions and annotation contents,
+greatly reducing the work and end user must perform compared to our initial approach.
 
 %Analysis of Xen Binaries
 Unlike the previous work, this one was applied to assembly obtained
