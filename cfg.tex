@@ -318,12 +318,14 @@ The notation for this formulation is shown below.
   \end{equation}
 \end{definition}
 This definition states that, for every byte in memory outside of the memory region set,
-the following property holds.
-Starting the current program fragment from a state that both satisfies
-the specified precondition and assumes that each byte has some value
-and then executing that program fragment to the specified halting condition
-will result in a state that satisfies the specified postcondition
-and retains the same value for that byte.
+the following property holds:
+\begin{enumerate}
+  \item if you start the current program fragment from a state that both satisfies
+  the specified precondition and assumes that each byte has some value, then;
+  \item if you execute that program fragment to the specified halting condition, then;
+  \item you will end up with a state that satisfies the specified postcondition
+  and retains the same value for all of those bytes outside the memory regions.
+\end{enumerate}
 
 \section{Composition}\label{se:cfg_composition}
 As stated above, composition is crucial for scalability.%
