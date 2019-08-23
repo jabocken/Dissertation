@@ -6,8 +6,8 @@ This methodology allows for minimization of symbolic execution%
 It also provides proper loop handling.
 
 An overview of the methodology can be seen in \cref{fig:cfg_overview}.
-The main goal of the approach is to prove the property of \emph{memory usage},%
-\index{memory!usage}.
+The main goal of the approach is to prove the property of \emph{memory preservation},%
+\index{memory!preservation}.
 In short, this property ensures only documented regions of memory are modified;%
 \index{memory!region}
 anything outside of those regions remains unchanged.
@@ -15,11 +15,11 @@ This property has the potential to be used
 to prove the absence of common memory-related issues,
 such as buffer overflows or some forms of data leakage.
 
-My three main contributions to the memory usage work presented here
+My three main contributions to the memory preservation work presented here
 were:
 \begin{enumerate*}
   \item the development of a tool for producing proof skeletons
-  for memory usage, interfacing with the analysis tool
+  for memory preservation, interfacing with the analysis tool
   \texttt{angr} (\cref{se:cfg_overview});
   \item the development of structured proof strategies
   to flesh out and verify those skeleton proofs,
@@ -79,15 +79,14 @@ but only when it is supported by the compiler in use\footnote{%
 
 The process that selects cutpoints%
 \index{cutpoint}
-also generates skeleton memory usage theories for every function analyzed.
+also generates skeleton memory preservation theories for every function analyzed.
 The theory files can then be opened in the theorem prover Isabelle
 and the assembly loaded using the parser of \textcite{roessle2019}.
 Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
 and add the necessary sets of memory regions that the functions write to
-in order to complete the proofs of memory usage.
+in order to complete the proofs of memory preservation.
 Defining the necessary invariants for functions with complex control flow
-is generally a hard task,
-but targeting a property such as memory usage
+is generally a hard task, but targeting a property such as memory preservation
 does reduce the amount of work required
 as seen in \cref{se:cfg_examples,se:cfg_application}.
 The work is still not trivial, however.
@@ -104,7 +103,7 @@ The work is still not trivial, however.
     \node[myblock] (binary) {x86-64 binary};
     \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python package};
     \node[myblock, right of=cfg] (isa) {Isabelle};
-    \node[myblock, right of=isa] (mem) {Formal Proof of Memory Usage};
+    \node[myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
 
     \draw[transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
     \draw (binary) -- (cfg);
@@ -130,7 +129,7 @@ non-trivial data structures, pointers, subcalls, and even recursion in some case
 \index{recursion}
 
 \section{Formal Definitions}\label{se:cfg_defs}
-A formal definition of memory usage requires a formal basis to work with,
+A formal definition of memory preservation requires a formal basis to work with,
 and that basis is the machine model from \cref{se:machine_model}.
 
 \subsection{Symbolic Execution for \acs*{cfg}-Driven Verification}\label{cfg_symb_exec}
@@ -164,7 +163,7 @@ without an exception or reaching the halting condition
 (as would happen with an infinite loop), the function returns $\bot_\var{NT}$.
 Formally, this is achieved by a standard \ac{lfp} construction.
 
-\subsection{Hoare Triples for Memory Usage}
+\subsection{Hoare Triples for Memory Preservation}
 Unlike the usual formulation of
 Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare},%
 \index{Hoare!logic}
@@ -175,7 +174,7 @@ The result is that the program statement,
 the block of instructions to execute, is characterized by the addresses of its initial
 and ending instructions, defined in~$P$ and~$H$, rather than via specific syntax.
 Thus, we have the following definition:
-\begin{definition}[Hoare triple for memory usage]\label{def:htriple}
+\begin{definition}[Hoare triple for memory preservation]\label{def:htriple}
   $\htriple{P}H{Q}$
   denotes that, for any initial state that satisfies the precondition~$P$
   and results in symbolic execution to the halting condition~$H$ terminating,
@@ -295,9 +294,9 @@ Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg
 \index{Floyd!verification}
 In that \ac{cfg}, each edge can be seen as an implication.
 
-\subsection{Definition of Memory Usage}\label{sse:mem_pres}
-The formal definition of memory usage%
-\index{memory!usage}
+\subsection{Definition of Memory Preservation}\label{sse:mem_pres}
+The formal definition of memory preservation%
+\index{memory!preservation}
 takes the form of a Hoare triple from \cref{def:htriple}.
 Initially, there must be some predicate~$P$ that characterizes the initial state,
 at a minimum by setting the instruction pointer
@@ -306,13 +305,13 @@ In addition, there is some set of memory regions~$M$
 that the function is allowed to write to.
 $M$ includes the stack frame and any utilized data sections from the source binary,
 as well as whatever heap memory was supplied or allocated, if any.
-Memory usage formulates that any byte not within any of the regions in~$M$
+Memory preservation formulates that any byte not within any of the regions in~$M$
 has to remain unchanged throughout the execution of that function.
 The notation for this formulation is shown below.
-\begin{definition}[Memory usage]\label{mem_pres_hoare}
+\begin{definition}[Memory preservation]\label{mem_pres_hoare}
   Let~$M$ be a set of memory regions, let~$P$ be a precondition,
   and let~$H$ denote a halting condition.
-  A piece of assembly demonstrates \emph{memory usage} if and only if,
+  A piece of assembly demonstrates \emph{memory preservation} if and only if,
   for any address~$a$ and byte value~$v_0$, the following implication holds:
   \begin{equation}
   (\forall r\in M\cdot r\separate\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
@@ -434,7 +433,7 @@ It is generally assumed that the net effect of a function call
 does not touch these registers.
 Consider a situation in which \lstinline{rbp} contains an address,
 which will be used as the target of a write after a function call.
-In order to prove memory usage, \lstinline{rbp} must be shown to be preserved.
+In order to prove memory preservation, \lstinline{rbp} must be shown to be preserved.
 Generally, this is easy to prove
 by strengthening the pre- and postcondition with a conjunct $\mathrbp=\rbpo$.
 The proof is generally not complicated,
@@ -525,7 +524,7 @@ parent relationships can then be established as shown below:
   & \parent{\region{\rspo-16}8}{i_s}{r_s} && \parent{\region{a}1}{i_a}{\region{a}1}
 \end{align*}
 
-For the memory usage proof of this function, we chose to associate annotations
+For the memory preservation proof of this function, we chose to associate annotations
 at the start of the function, an instruction that broke the loop,
 and the return address of the function
 (a logical variable, as the caller of the function is unspecified for this proof).
@@ -755,7 +754,7 @@ other than the upmost return address. The resulting Hoare triple becomes:
   \end{array}
 \end{equation}
 This, combined with the regions presented above as assumptions,
-provide us with our theorem of memory usage.
+provide us with our theorem of memory preservation.
 
 \section{Application: HermitCore}\label{se:cfg_application}
 The concept of \emph{unikernels} has existed in the world of virtualization
@@ -938,12 +937,12 @@ The three main aspects of per-function user interaction for this methodology are
 \begin{enumerate*}
   \item defining a Floyd invariant,
   \item defining memory region set~$M$, and
-  \item proving memory usage.
+  \item proving memory preservation.
 \end{enumerate*}
 The functions analyzed in the above case study provided some significant insight
 into the usability of those aspects.
 
-While restricting the verification effort to memory usage
+While restricting the verification effort to memory preservation
 does reduce the effort required to provide Floyd invariants, it does not eliminate it.
 This is more of a problem for loops with complex behavior
 and is a significant problem for recursive functions.
@@ -994,13 +993,13 @@ requiring significant \ac{itp} over word arithmetic.
 
 \section{Summary}
 This chapter covered one method for formal verification
-of memory usage in x86-64 binaries,
+of memory preservation in x86-64 binaries,
 showing that functions in a binary restrict themselves to certain regions of memory.
 The approach here aimed to automate verification
 while still allowing user interaction wherever necessary.
 As a semi-automated approach,
 it requires setting up an invariant, which traditionally is a hard problem in itself.
-Requirements for memory usage invariants are provided for several examples.
+Requirements for memory preservation invariants are provided for several examples.
 For recursive functions, more involved invariants are required,
 along with \ac{itp} to show preservation of the stack and frame pointers.
 Invariants may include preconditions necessary for excluding exceptional behavior.
@@ -1008,7 +1007,7 @@ Such preconditions are exposed by applying the methodology to a disassembled bin
 instead of deriving them from documents or source code annotations.
 
 The approach was applied to functions of HermitCore, a unikernel \ac{os}.
-Memory usage was formally proven for functions with loops, recursion,
+Memory preservation was formally proven for functions with loops, recursion,
 C structs and unions, and dynamic memory operations.
 Both optimized and non-optimized versions were verified.
 

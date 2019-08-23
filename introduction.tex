@@ -124,12 +124,13 @@ Meanwhile, the second approach, syntax-driven verification,
 has a significantly higher level of proof automation but is not as suited for stronger invariant production.
 Symbolic execution is also more efficient in the control-flow-driven approach
 as it more closely follows the structure of the function \ac{cfg}.
-In contrast, the syntax-driven appraoch
+In contrast, the syntax-driven approach must deal with
+operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
 \subsection{Memory Usage and Preservation}\label{memory_usage}
 \emph{Memory usage} characterizes the regions in memory that are read and written by a program.
-A subproperty is that of memory prservation,
-which shows that the values written by that program are constrained to those memory regions.
+An extension of memory usage is the property of \emph{memory preservation},
+which states that the values written by that program are constrained to those memory regions.
 The following sections elaborate on the usefulness of memory preservation
 as a platform for further verification efforts.
 
@@ -146,7 +147,7 @@ Memory preservation could serve as a foundation for formal security analyses
 that could be used to expose vulnerabilities involving malicious writes.
 
 Another important property that memory preservation could help with
-is \emph{\ac{cfi}}~\cite{abadi2009cfi}. \Ac{cfi} ensures that software execution
+is \emph{\ac{cfi}} \autocite{abadi2009cfi}. \Ac{cfi} ensures that software execution
 follows a predetermined \ac{cfg} using static analysis and runtime checks.
 The dynamic checking could be made more efficient
 by first proving the property in \cref{ex:rop} for those functions it is applicable to
@@ -197,9 +198,8 @@ This methodology for verification of memory preservation relies on treating func
 as \acp{cfg} of basic blocks
 and providing state predicate annotations on specific nodes in the \ac{cfg}.
 
-
 %Formal Definition of Memory Preservation
-\todo\dots
+Memory preservation is 
 
 %Semi-Automated Formal Verification for Memory Preservation
 \todo\dots
