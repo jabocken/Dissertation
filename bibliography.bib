@@ -135,7 +135,6 @@
   doi={doi.org/10.1007/978-3-642-24372-1_34}
 }
 
-% pages originally 4:1-4:8
 @inproceedings{lankes2016hermitcore,
   title = {Hermit{C}ore: A Unikernel for Extreme Scale Computing},
   author = {Lankes, Stefan and Pickartz, Simon and Breitbart, Jens},
@@ -146,7 +145,7 @@
   isbn = {978-1-4503-4387-9},
   venue = {Kyoto, Japan},
   eventdate = {2016-06-01},
-  pages = {1-8},
+  pages = {4:1-4:8},
   articleno = 4,
   numpages = 8,
   acmid = 2931093,
@@ -233,6 +232,18 @@
   acmid = 359585,
   publisher = ACM,
   location = ACMLoc
+}
+
+@article{hoare1980clothes,
+  title = {The Emperor's Old Clothes},
+  author = {Hoare, Charles Antony Richard},
+  journal = CACM,
+  date = {1981-02},
+  volume = 24,
+  number = 2,
+  pages = {75-83},
+  publisher = ACM,
+  location = ACMLoc  
 }
 
 @inproceedings{myreen2007hoare,
@@ -401,7 +412,7 @@
 
 @online{smtlib:bitvector-theory,
   title = {{FixedSizeBitVectors} | {SMT-LIB} The Satisfiability Modulo Theories Library},
-  author = {Silvio Ranise, Cesare Tinelli, and Clark Barrett},
+  author = {Silvio Ranise and Cesare Tinelli and Clark Barrett},
   date = {2017-06-13},
   url = {http://smtlib.cs.uiowa.edu/theories-FixedSizeBitVectors.shtml},
   urldate = {2019-08-22}
@@ -815,7 +826,6 @@
   location=ACMLoc
 }
 
-%originally pages = 2:1-2:70
 @article{Klein_AEMSKH_14,
   title            = {Comprehensive Formal Verification of an {OS} Microkernel},
   author           = {Klein, Gerwin and Andronick, June and Elphinstone, Kevin and Murray, Toby and Sewell, Thomas and
@@ -826,7 +836,7 @@
   number           = 1,
   volume           = 32,
   date             = {2014-02},
-  pages            = {1-70},
+  pages            = {2:1-2:70},
   articleno        = 2,
   publisher        = ACM,
   location         = ACMLoc
@@ -1044,7 +1054,7 @@
   pages = "519-531",
   isbn = "978-3-540-73368-3",
   doi = "10.1007/978-3-540-73368-3_52",
-  crossref = cav2007
+  crossref = {cav2007}
 }
 
 @inproceedings{leroy:compcert,
@@ -1146,7 +1156,7 @@
   title = {{CVC3}},
   author = {Barrett, Clark and Tinelli, Cesare},
   pages = {298-302},
-  crossref = cav2007
+  crossref = {cav2007}
 }
 
 @InProceedings{calcagno2011infer,
@@ -1259,7 +1269,6 @@
   urldate = {2019-08-22}
 }
 
-% pages originally 4:1-4:40
 @article{abadi2009cfi,
   title = {Control-Flow Integrity: Principles, Implementations, and Applications},
   author = {Abadi, Mart\'in and Budiu, Mihai and Erlingsson, \'Ulfar and Ligatti, Jay},
@@ -1269,11 +1278,213 @@
   number = 1,
   date = {2009-10},
   issn = {1094-9224},
-  pages = {1-40},
+  pages = {4:1-4:40},
   articleno = 4,
   numpages = 40,
   doi = {10.1145/1609956.1609960},
   acmid = 1609960,
   publisher = ACM,
   location = ACMLoc
+}
+
+@Inbook{clarke2012modelchecking,
+  title="Model Checking and the State Explosion Problem",
+  author="Clarke, Edmund M. and Klieber, William and Nov\'a\v{c}ek, Milo\v{s} and Zuliani, Paolo",
+  editor="Meyer, Bertrand and Nordio, Martin",
+  bookTitle="Tools for Practical Software Verification: LASER, International Summer School 2011, Revised Tutorial Lectures",
+  year="2012",
+  venue = {Elba Island, Italy},
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS},
+  number = 7682,
+  publisher=Springer,
+  location=SpringerLoc,
+  pages="1--30",
+  isbn="978-3-642-35746-6",
+  doi="10.1007/978-3-642-35746-6_1"
+}
+
+@inproceedings{lipp2018meltdown,
+  title = {Meltdown: Reading Kernel Memory from User Space},
+  author = {Moritz Lipp and Michael Schwarz and Daniel Gruss and Thomas Prescher and Werner Haas and Anders Fogh and Jann Horn and Stefan Mangard and Paul Kocher and Daniel Genkin and Yuval Yarom and Mike Hamburg},
+  booktitle = {27th {USENIX} Security Symposium ({USENIX} Security 18)},
+  date = {2018-08},
+  isbn = {978-1-939133-04-5},
+  address = {Baltimore, MD, USA},
+  pages = {973--990},
+  url = {https://www.usenix.org/conference/usenixsecurity18/presentation/lipp},
+  publisher = {{USENIX} Association}
+}
+
+@inproceedings{kocher2018spectre,
+  title = {Spectre Attacks: Exploiting Speculative Execution},
+  author = {Paul Kocher and Jann Horn and Anders Fogh and Daniel Genkin and Daniel Gruss and Werner Haas and Mike Hamburg and Moritz Lipp and Stefan Mangard and Thomas Prescher and Michael Schwarz and Yuval Yarom},
+  booktitle = {40th IEEE Symposium on Security and Privacy (S\&P'19)},
+  year = 2019,
+  url = {https://meltdownattack.com/}
+}
+
+@inproceedings{zhang2014iot,
+  title={{IoT} Security: Ongoing Challenges and Research Opportunities},
+  author={Zhi-Kai Zhang and Michael Cheng Yi Cho and Chia-Wei Wang and Chia-Wei Hsu and Chong-Kuan Chen and Shiuhpyng Shieh},
+  booktitle={IEEE 7th International Conference on Service-Oriented Computing and Applications},
+  date={2014-12-08},
+  pages={230-234},
+  doi={10.1109/SOCA.2014.58},
+  ISSN={2163-2871},
+  venue={Matsue, Japan},
+  eventdate={2014-11},
+  eventday={17/19},
+  publisher=IEEE,
+  location=IEEELoc
+}
+
+@inproceedings{zhao2013iot,
+  title={A Survey on the Internet of Things Security},
+  author={Kai Zhao and Lina Ge},
+  booktitle={Ninth International Conference on Computational Intelligence and Security},
+  date={2014-02-24},
+  pages={663-667},
+  doi={10.1109/CIS.2013.145},
+  venue={Leshan, China},
+  eventdate={2013-12},
+  eventday={14/15},
+  publisher=IEEE,
+  location=IEEELoc
+}
+
+@online{smackers2019,
+  title = {The Workshop on Democratizing Software Verification | July 14, 2019 colocated with CAV 2019: The 31st International Conference on Computer-Aided Verification},
+  url = {https://smackers.github.io/democratizing-software-verification-workshop-2019/},
+  date = {2019-07-15},
+  urldate = {2019-08-23}
+}
+
+@article{khazeev2019acceptance,
+  title     = {Towards {A} Broader Acceptance Of Formal Verification Tools: The Role
+  Of Education},
+  author    = {Mansur Khazeev and
+  Manuel Mazzara and
+  Daniel de Carvalho and
+  Hamna Aslam},
+  journal   = {CoRR},
+  volume    = {abs/1906.01430},
+  year      = 2019,
+  url       = {http://arxiv.org/abs/1906.01430},
+  archivePrefix = {arXiv},
+  eprint    = {1906.01430},
+  timestamp = {Thu, 13 Jun 2019 13:36:00 +0200},
+  biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1906-01430},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@inproceedings{brignon2019abv,
+  title={Assertion-Based Verification through Binary Instrumentation},
+  author={Enzo Brignon and Laurence Pierre},
+  booktitle={Design, Automation Test in Europe Conference Exhibition},
+  shorttitle={DATE},
+  date={2019-05-16},
+  pages={988-991},
+  doi={10.23919/DATE.2019.8715117},
+  ISSN={1558-1101},
+  venue={Florence, Italy},
+  eventdate={2019-03},
+  eventday={25/29},
+  publisher=IEEE,
+  location=IEEELoc
+}
+
+@techreport{ieee:psl,
+  title={{IEEE} Standard for Property Specification Language {(PSL)}},
+  version={IEEE Std 1850-2010 (Revision of IEEE Std 1850-2005)},
+  author=IEEE,
+  date={2010-04-06},
+  pages={1-182},
+  doi={10.1109/IEEESTD.2010.5446004},
+  institute=IEEE,
+  location=IEEELoc
+}
+
+@article{fromherz2019verified,
+  title = {A Verified, Efficient Embedding of a Verifiable Assembly Language},
+  author = {Fromherz, Aymeric and Giannarakis, Nick and Hawblitzel, Chris and Parno, Bryan and Rastogi, Aseem and Swamy, Nikhil},
+  journal = {Proceedings of the ACM on Programming Languages},
+  shortjournal = {PACMPL},
+  volume = 3,
+  number = {POPL},
+  month = jan,
+  year = 2019,
+  issn = {2475-1421},
+  pages = {63:1--63:30},
+  articleno = 63,
+  numpages = 30,
+  doi = {10.1145/3290376},
+  acmid = 3290376,
+  publisher = ACM,
+  location = ACMLoc
+} 
+
+@online{fstar,
+  title = {F*: A Higher-Order Effectful Language Designed for Program Verification},
+  url = {https://www.fstar-lang.org/},
+  urldate = {2019-08-23}
+}
+
+@article{chen2018compositional,
+  title="Toward Compositional Verification of Interruptible {OS} Kernels and Device Drivers",
+  journal="Journal of Automated Reasoning",
+  author="Chen, Hao and Wu, Xiongnan and Shao, Zhong and Lockerman, Joshua and Gu, Ronghui",
+  editor="Avigad, Jeremy and Klein, Gerwin and Paulson, Lawrence C.",
+  date={2018-06-01},
+  volume=61,
+  number=1,
+  pages="141--189",
+  issn="1573-0670",
+  doi="10.1007/s10817-017-9446-0",
+}
+
+@inproceedings{costanzo2016endtoend,
+  title = {End-to-end Verification of Information-flow Security for C and Assembly Programs},
+  author = {Costanzo, David and Shao, Zhong and Gu, Ronghui},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 37th ACM SIGPLAN Conference},
+  shorttitle = {PLDI '16},
+  year = 2016,
+  isbn = {978-1-4503-4261-2},
+  venue = {Santa Barbara, CA, USA},
+  eventdate = {2016-06},
+  eventday = {13-17},
+  pages = {648-664},
+  numpages = 17,
+  doi = {10.1145/2908080.2908100},
+  acmid = 2908100,
+  publisher = ACM,
+  location = ACMLoc
+}
+
+@Article{blazy2009clight,
+  title="Mechanized Semantics for the Clight Subset of the C Language",
+  author="Blazy, Sandrine and Leroy, Xavier",
+  journal="Journal of Automated Reasoning",
+  date="2009-10-01",
+  volume=43,
+  number=3,
+  pages="263-288",
+  issn="1573-0670",
+  doi="10.1007/s10817-009-9148-3",
+  publisher=Springer,
+  location="Netherlands"
+}
+
+@incollection{Schmidt:2003:PLS:1074100.1074733,
+  title = {Programming Language Semantics},
+  booktitle = {Encyclopedia of Computer Science},
+  author = {Schmidt, David A.},
+  isbn = {0-470-86412-5},
+  pages = {1463-1466},
+  numpages = 20,
+  url = {http://dl.acm.org/citation.cfm?id=1074100.1074733},
+  acmid = 1074733,
+  publisher = {John Wiley and Sons Ltd.},
+  location = {Chichester, UK},
 }

@@ -1,6 +1,4 @@
 \chapter{Related Work}\label{ch:related}
-% TODO: put in mention of https://link.springer.com/chapter/10.1007/978-1-4471-3054-3_35
-
 Verification of assembly has been an active research field for decades.
 \Cref{related-table} provides an overview of related work,
 discussed in the following sections.
@@ -8,25 +6,36 @@ Up first in \cref{se:previous_assembly}
 are some previous formal verification efforts that target assembly.
 Following that is work in which assembly verification played a role
 in a larger verification context, \cref{se:integrated_assembly}.
-Finally, verified compilation and static analysis tools are discussed
+Verified compilation and static analysis tools are discussed
 in \cref{se:verified,se:static_analysis}.
+The chapter is rounded up by something a little different,
+an examination of a runtime methodology to ensure functional correctness
+in \cref{se:dynamic}.
 
 \todo{Add some approaches that use model-checking}
 
-\todo{More on verified compilation}
-
-\todo{More on static analysis}
-
-\todo{Describe methodologies for each reference! More paragraphs for each}
+\todo{More static analysis examples?}
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
 \textcite{clutterbuck1988verification} performed formal verification
 of assembly code using SPACE-8080, a verifiable subset of the Intel 8080
 \ac{isa} that is analyzable and formally verifiable \autocite{carre1986spade}.
+They worked with the \ac{spade} tool.
 % Their approach uses Floyd-style verification~\cite{floyd1967assigning}.
+\todo{elaborate}
+
 Another usage of \ac{spade} for verification of assembly
 was in the correctness proof of fuel control code for a Rolls-Royce
 jet engine \autocite{oneill1988verification}.
+That work involved formulating a verification-friendly model of the Z8002 \ac{isa}
+in \ac{spade}, the development of a Prolog translator from Z8002 assembly
+to \ac{spade}'s modeling language, FDL,
+and the formalization of written specifications into proper pre- and postconditions
+in \ac{spade}. \Ac{spade}'s proof checker was then used to validate the correctness
+of the translated control code.
+This work followed a now-standard process for working with informal tools:
+translate the tools into a formal form and then reason over them
+in a formal environment.
 
 Not long after, Bevier et al.\ presented a systems approach
 to software verification \autocite{bevier1989approach,boyer1979computational}.
@@ -36,6 +45,7 @@ including compiler, assembler and linker.
 It was implemented in \ac{nqthm} \autocite{boyer1979computational},
 a precursor to the theorem prover ACL2 \autocite{ACL2}.
 The methodology was applied to a small \ac{os} kernel, Kit \autocite{bevier1989kit}.
+\todo{elaborate more?}
 
 Similarly, Yu and Boyer \cite{yu1993automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
@@ -45,6 +55,7 @@ Their approach utilized symbolic execution of operational semantics.
 These early efforts required significant interaction.
 For example, the approach of Yu and Boyer required over \num{19000}
 lines of manually written proof to verify approximately \num{900} assembly instructions.
+\todo{elaborate more?}
 
 Following that, \textcite{matthews2006verification}
 targeted a simple machine model called TINY
@@ -56,6 +67,7 @@ which reduced the number of manually written invariants.
 Both of those assembly-style languages feature a stack
 for handling scratch variables rather than a register file
 as x86, ARM, and most other mainstream \acp{isa} do.
+\todo{Not much more to say about their methodology, but explaining their case studies would be good. Also mention ACL2, I didn't explicitly state it here}
 
 Additionally, Goel et al.\ presented an approach for modeling and verifying
 non-deterministic programs on the binary level \autocite{goel2014syscalls,goelphd}.
@@ -65,15 +77,231 @@ they provided semantics for common system calls.
 System call semantics increase the spread of programs that can be fully verified.
 Their work was applied to multiple small case studies,
 including a word count program and two kernel-mode memory copying examples.
+\todo{Maybe talk a little more about this}
+ 
+The main difference between the above-mentioned existing approaches
+and the methodologies presented in this work is in the degree of automation.
+Generally, interactive theorem proving over semantics of assembly instructions
+does not scale due to the amount of intricate user interaction involved.
+For example, \cref{fig:example2-inv} shows
+the complexity of defining an assembly-level invariant even for a small example.
+
+Fully automated approaches to formal verification, however, do not scale either.
+The recent automated approach AUSPICE provided by \textcite{tan2015auspice}
+takes about 6 hours for a 533-instruction string search algorithm.
+To the best of my knowledge,
+the methodology in \cref{ch:syntax} is the first that is able to deal with
+optimized x86-64 binaries produced by production code
+with an average manual proof effort of one line
+for approximately every twelve assembly instructions.
+\todo{talk more about Tan work}
+
+Though it is not a verification methodology by itself,
+there is also \emph{\ac{dil}} \autocite{myreen2008decompilation,myreen2012decompilation}.
+Developed by Myreen et al.\ in the HOL4 theorem prover \autocite{slind2008brief},
+\ac{dil} uses operational semantics of machine code
+to lift programs into a functional form.
+That functional form can then be used in a Hoare logic framework
+for program analysis \autocite{myreen2007hoare}.
+It formally covers the gap between machine code and \iac{hol} model
+and allows for verification of properties in a theorem prover that utilizes that model.
+\Ac{dil} has been used for both ARM and x86 \ac{isa} machine models
+and applied to various large examples,
+including benchmarks such as a garbage collector as well as the Skein hash function.
+It has also has been used as a component in a binary-level verification methodology \autocite{sewell2013tvv}.
+\todo{elaborate a little}
+
+Also, \textcite{feng2006modular,feng2005sbca} presented stack abstractions
+for modular verification of assembly code
+in the Coq theorem prover \autocite{chlipala2013certified}.
+Their work allows for integration
+of various proof-carrying code systems \autocite{necula1997proof}.
+As with the work presented in \cref{ch:syntax},
+it utilizes a Hoare-style framework for its verification.
+The authors applied their work to multiple example functions,
+such as two factorial implementations
+as well as \lstinline[style=C]|setjmp| and \lstinline[style=C]|longjmp|.
+In contrast to the approach presented in \cref{ch:syntax},
+though not that in \cref{ch:cfg},
+manual annotations are required to provide information
+regarding invariants and memory layout.
+\todo{elaborate a little}
+
+Finally, \textcite{fromherz2019verified} embedded a subset
+of the x86-64 \ac{isa} in the functional, verification-oriented language
+F$^*$ \autocite{fstar}.
+This was done in order to perform a proof of correctness
+over the commonly-used cryptographic routine AES-GCM.
+
+\section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
+A major verification effort based on \acl{dil}
+was the verification of the seL4 kernel \autocite{klein2009sel4,Klein_AEMSKH_14}.
+The seL4 project provides a microkernel written in formally proven correct C code.
+The tool AutoCorres is used for C code verification \autocite{greenaway2012bridging}.
+\textcite{sewell2013tvv} verified a \emph{refinement relation} between the C source code
+and corresponding non-optimized and \lstinline|O2|-optimized ARM binaries.
+The major differences with respect to our work
+is that our methodology targets existing production code,
+instead of code written with verification in mind.
+For example, the seL4 source code does not allow taking the addresses of stack variables
+(such as in \cref{fig:example2-c}):
+their approach requires a static separation of stack and heap instead.
+% seL4 actually does support function pointers, so I removed that sentence
+\todo{more}
+
+\textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
+called ORIENTAIS.
+Part of their approach involved source-level verification
+using a combination of Hoare logic
+and abstract \ac{csp} model analysis \autocite{hoare1978csp}.
+Binary verification was done by lifting the \ac{rtos} binary to xBIL,
+a related hardware verification language \autocite{shi2012xbil}.
+They translated requirements from the OSEK automotive industry standard
+to source code annotations.
+\todo{elaborate}
+
+Targeting a similar case study as \cref{ch:syntax},
+\textcite{dam2013hypervisor,dam2013formal}
+formally verified a tiny ARMv7 \emph{separation kernel},%
+\index{separation kernel}
+PROSPER, at the assembly level.
+Separation kernels are similar to hypervisors,
+providing isolation for individual components of a system and ensuring
+only those components that are allowed to communicate do \autocite{rushby1981dvss}.
+Their methodology integrated HOL4 with the \ac{bap} \autocite{brumley2011bap}.
+\Ac{bap} utilizes a custom intermediate language
+that provides an architecture-agnostic representation of machine instructions
+and their side effects.
+First, the formal model of the ARM \ac{isa} provided by \textcite{fox2010arm} was used
+in an HOL4 tool to translate the ARM binary into \ac{bap}'s intermediate language.
+Following that, the \ac{smt} solver \ac{stp} \cite{ganesh2007stp}
+was used to determine the targets of indirect branches
+and to perform weakest-precondition computation with Hoare triples
+to verify the user contracts.
+While the approach was generally automated,
+user input was still required to describe the contracts
+the separation kernel was verified against.
+An extension to the work is found in the HAPSOC project by \textcite{baumann2016high},
+who did a similar proof for the ARMv8-A model provided by \textcite{fox2015improved}.
+
+\section{Verified Compilation}\label{se:verified}
+In contrast to directly verifying machine or assembly code,
+one can verify source code and then use \emph{verified compilation}.%
+\index{verified compilation}
+Verified compilation establishes that
+the semantics of the output of the verified compiler
+is equivalent to the semantics of the input.
+This can be done via refinement relations, but is not always.
+
+The CompCert project is one such verified compiler,
+used by the seL4 project to reduce its \ac{tcb} \autocite{Klein_AEMSKH_14}.
+It is written in a subset of C
+called Clight \autocite{leroy:compcert,blazy2009clight},
+though it itself is able to handle most components of the C99 standard.
+The main difference between C and Clight is that Clight is \emph{pure};
+none of its operations have side effects. It also provides only one loop structure,
+an infinite loop that must be broken out of to exit.
+Clight has been mechanized in the Coq theorem prover with established
+big-step operational semantics, making it a useful subset of C
+for program verification work in Coq.
+
+The full proof of \emph{semantic preservation},
+as it is called in the CompCert documentation,
+is based off of proofs of semantic preservation
+for each step in CompCert's compilation process, of which there are twenty.
+On top of that, it has eleven different intermediate languages for those steps,
+all of which had to be proven semantically equivalent.
+
+Another example of verified compilation is CakeML \autocite{kumar2014cakeml}.
+It utilizes a subset of Standard ML modeled with big-step operational semantics.
+The main purpose of verified compilation, however,
+is not to verify properties over the code.
+For example, if the source code is vulnerable to \iac{rop} exploit,
+then the assembly code is vulnerable as well.
+Verified compilation is thus often accompanied by source code verification.
+\todo{elaborate}
+
+More recently, \textcite{chen2018compositional} produced a compositional framework
+for the development of certified, \emph{interruptible}%
+\index{interrupt}
+\ac{os} kernels that use device drivers.%
+\index{operating system!kernel}
+This was previously a challenge due to the non-local and asynchronous behavior
+of hardware interrupts. Their approach uses a general certified device model
+with multiple instantiations and provides an effective model of device interrupts.
+The verification was done in Coq with the kernel written in Clight.
+Once verification was complete, the source code was compiled using a modified version
+of CompCert to ensure the semantics were maintained.
+They showed the value of their work by taking a preexisting,
+non-interruptible, mostly-verified kernel, mCertiKOS \autocite{costanzo2016endtoend},
+and extending it to work in their framework along with a couple of device drivers.
+In order to deal with devices running in parallel with the \ac{cpu},
+device interaction, drivers that are written in a mix of assembly and C,
+and properly integrating the correctness proofs for individual components
+of the system under test, they did the following.
+First, they designed their system architecture such that each device driver
+is given its own logical \ac{cpu}, running independently from the core of the kernel.
+Then they designed an abstract model of interrupts
+based on existing hardware implementations.
+The correctness of the system as a whole was shown
+by starting from a base machine model
+and proving a refinement relation with each layer of abstraction placed on top of it.
+As they started off with a mostly-verified kernel, it is likely they would have had
+more difficulty if they had started with a kernel
+not explicitly designed to be verified. While we did isolate functions
+for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
+
+\todo{Will write about
+  \url{https://link.springer.com/chapter/10.1007/978-1-4471-3054-3_35}
+once I have access to eduroam/etc.}
+
+\section{Static Analysis}\label{se:static_analysis}
+Static analysis of binary code has also an active research field
+for decades \cite{kruegel2005automating,brumley2011bap,wang2017angr}.
+
+The BitBlaze project \cite{song2008bitblaze,BitBlazeWebSite}
+provides a tool called Vine which constructs control flow graphs
+for supplied programs and lifts x86 instructions to its own \ac{il}.
+Though Vine itself is not formally verified,
+it does support interfacing with the aforementioned \ac{smt} solver \ac{stp}
+as well as CVC \autocite{barrett2004cvcl,barrett2007cvc3}.
+\todo{elaborate}
+
+The tool Infer \autocite{calcagno2011infer}, developed at Facebook,
+provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
+It utilizes separation logic \cite{reynolds2002separation}
+and bi-abduction to perform its analyses in an automated fashion.
+It is designed to be integrated into compiler toolchains
+in order to provide immediate feedback even in \ac{ci} scenarios.
+\todo{elaborate}
+
+FindBugs is a static analysis tool for Java code \autocite{hovemeyer2004findbugs}.
+Rather than relying on formal methods,
+it uses searches for common (bad practice) code idioms to detect likely bugs.
+Common errors it highlights include null pointer dereferences,
+objects that compare equal not having equal hash codes,
+and inconsistent synchronization.
+\todo{elaborate}
+
+Another tool, Splint \autocite{evans2002static}, detects buffer overflows
+and similar potential security flaws in C code.
+It relies on annotated preconditions to derive postconditions
+based on the syntactic structure of the code.
+\todo{elaborate}
+
+The main difference between these static analysis tools and formal verification
+is that these tools are generally highly suited to finding bugs
+but are not able to prove their absence.
+They generally apply techniques that are formally unsound, such as depth-bounded searches.
 
 \begin{table*}
   \centering
-  \caption{Overview of Related Work.}\label{related-table}
+  \caption{Overview of Related Assembly Work}\label{related-table}
   \begin{tabular}{l l l l l}
     \toprule
     Work & Target & Approach & Applications & Verified code\\
     \midrule
-    Clutterbuck \& Carr\'e & SPACE-8080 & \acs*{itp} & N/A & \\
+    Clutterbuck\&Carr\'e & SPACE-8080 & \acs*{itp} & N/A & \\
     Bevier et al. & PDP-11-like & \acs*{itp} & Kit & \\
     Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
@@ -104,147 +332,15 @@ including a word count program and two kernel-mode memory copying examples.
   \end{tabular}
 \end{table*}
 
-The main difference between the above-mentioned existing approaches
-and the methodologies presented in this work is in the degree of automation.
-Generally, interactive theorem proving over semantics of assembly instructions
-does not scale due to the amount of intricate user interaction involved.
-For example, \cref{fig:example2-inv} shows
-the complexity of defining an assembly-level invariant even for a small example.
-Fully automated approaches to formal verification, however, do not scale either.
-The recent automated approach AUSPICE provided by \textcite{tan2015auspice}
-takes about 6 hours for a 533-instruction string search algorithm.
-To the best of my knowledge,
-the methodology in \cref{ch:syntax} is the first that is able to deal with
-optimized x86-64 binaries produced by production code
-with an average manual proof effort of one line
-for approximately every twelve assembly instructions.
-
-Though it is not a verification methodology by itself,
-there is also \emph{\ac{dil}} \autocite{myreen2008decompilation,myreen2012decompilation}.
-Developed by Myreen et al.\ in the HOL4 theorem prover \autocite{slind2008brief},
-\ac{dil} uses operational semantics of machine code
-to lift programs into a functional form.
-That functional form can then be used in a Hoare logic framework
-for program analysis \autocite{myreen2007hoare}.
-It formally covers the gap between machine code and \iac{hol} model
-and allows for verification of properties in a theorem prover that utilizes that model.
-\Ac{dil} has been used for both ARM and x86 \ac{isa} machine models
-and applied to various large examples,
-including benchmarks such as a garbage collector as well as the Skein hash function.
-It has also has been used as a component in a binary-level verification methodology \autocite{sewell2013tvv}.
-
-Finally, \textcite{feng2006modular,feng2005sbca} presented stack abstractions
-for modular verification of assembly code
-in the Coq theorem prover \autocite{chlipala2013certified}.
-Their work allows for integration
-of various proof-carrying code systems \autocite{necula1997proof}.
-As with the work presented in \cref{ch:syntax},
-it utilizes a Hoare-style framework for its verification.
-The authors applied their work to multiple example functions,
-such as two factorial implementations
-as well as \lstinline[style=C]|setjmp| and \lstinline[style=C]|longjmp|.
-In contrast to the approach presented in \cref{ch:syntax},
-though not that in \cref{ch:cfg},
-manual annotations are required to provide information
-regarding invariants and memory layout.
-
-\section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
-A major verification effort, based on decompilation-into-logic,
-was the verification of the seL4 kernel \autocite{klein2009sel4,Klein_AEMSKH_14}.
-The seL4 project provides a microkernel written in formally proven correct C code.
-The tool AutoCorres is used for C code verification \autocite{greenaway2012bridging}.
-\textcite{sewell2013tvv} verified a refinement relation between the C source code
-and an ARM binary for both non-optimized and optimized at \lstinline{O2}.
-The major differences with respect to our work
-is that our methodology targets existing production code,
-instead of code written with verification in mind.
-For example, the seL4 source code does not allow taking the addresses of stack variables
-(such as in \cref{fig:example2-c}):
-their approach requires a static separation of stack and heap instead.
-Neither the seL4 proof effort nor any of the methodologies presented here
-support function pointers.
-
-\textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
-called ORIENTAIS.
-Part of their approach involved source-level verification
-using a combination of Hoare logic
-and abstract \ac{csp} model analysis \autocite{hoare1978csp}.
-Binary verification was done by lifting the \ac{rtos} binary to xBIL,
-a related hardware verification language \autocite{shi2012xbil}.
-They translated requirements from the OSEK automotive industry standard
-to source code annotations.
-
-Targeting a similar case study as \cref{ch:syntax},
-\textcite{dam2013hypervisor,dam2013formal}
-formally verified a tiny ARMv7 \emph{separation kernel},%
-\index{separation kernel}
-PROSPER, at the assembly level.
-Separation kernels are similar to hypervisors,
-providing isolation for individual components of a system and ensuring
-only those components that are allowed to communicate do \autocite{rushby1981dvss}.
-Their methodology integrated HOL4 with the \ac{bap} \autocite{brumley2011bap}.
-\Ac{bap} utilizes a custom intermediate language
-that provides an architecture-agnostic representation of machine instructions
-and their side effects.
-First, the formal model of the ARM \ac{isa} provided by \textcite{fox2010arm} was used
-in an HOL4 tool to translate the ARM binary into \ac{bap}'s intermediate language.
-Following that, the \ac{smt} solver \ac{stp} \cite{ganesh2007stp}
-was used to determine the targets of indirect branches
-and to perform weakest-precondition computation with Hoare triples
-to verify the user contracts.
-While the approach was generally automated,
-user input was still required to describe the contracts
-the separation kernel was verified against.
-An extension to the work is found in the HAPSOC project by \textcite{baumann2016high},
-who did a similar proof for the ARMv8-A model provided by \textcite{fox2015improved}.
-
-\section{Verified Compilation}\label{se:verified}
-In contrast to directly verifying machine or assembly code,
-one can verify source code and then use \emph{verified compilation}.%
-\index{verified compilation}
-Verified compilation establishes that the semantics of the output of the verified compiler
-is equivalent to the semantics of the input. This is done via refinement relations.
-The CompCert project provides a compiler for a subset of C \autocite{leroy:compcert}.
-Its output has been verified to have the same semantics as the C source code.
-The seL4 project used CompCert to reduce its \ac{tcb} \autocite{Klein_AEMSKH_14}.
-Another example of verified compilation is CakeML \autocite{kumar2014cakeml}.
-It utilizes a subset of Standard ML modeled with big-step operational semantics.
-The main purpose of verified compilation, however,
-is not to verify properties over the code.
-For example, if the source code is vulnerable to \iac{rop} exploit,
-then the assembly code is vulnerable as well.
-Verified compilation is thus often accompanied by source code verification.
-
-\section{Static Analysis}\label{se:static_analysis}
-Static analysis of binary code has also an active research field
-for decades~\cite{kruegel2005automating,brumley2011bap,wang2017angr}.
-The BitBlaze project \cite{song2008bitblaze,BitBlazeWebSite}
-provides a tool called Vine which constructs control flow graphs
-for supplied programs and lifts x86 instructions to its own \ac{il}.
-Though Vine itself is not formally verified,
-it does support interfacing with the aforementioned \ac{smt} solver \ac{stp}
-as well as CVC \autocite{barrett2004cvcl,barrett2007cvc3}.
-The tool Infer \autocite{calcagno2011infer}, developed at Facebook,
-provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
-It utilizes separation logic \cite{reynolds2002separation}
-and bi-abduction to perform its analyses in an automated fashion.
-It is designed to be integrated into compiler toolchains
-in order to provide immediate feedback even in \ac{ci} scenarios.
-FindBugs is a static analysis tool for Java code \autocite{hovemeyer2004findbugs}.
-Rather than relying on formal methods,
-it uses searches for common (bad practice) code idioms to detect likely bugs.
-Common errors it highlights include null pointer dereferences,
-objects that compare equal not having equal hash codes,
-and inconsistent synchronization.
-Another tool, Splint \autocite{evans2002static}, detects buffer overflows
-and similar potential security flaws in C code.
-It relies on annotated preconditions to derive postconditions
-based on the syntactic structure of the code.
-
-The main difference between these static analysis tools and formal verification
-is that these tools are generally highly suited to finding bugs
-but are not able to prove their absence.
-They generally apply techniques that are formally unsound, such as depth-bounded searches.
+\section{Dynamic Analysis}\label{se:dynamic}
+While this chapter mainly focused on approaches involving static analysis of actual code,
+that is not the only way to verify programs.
+\Textcite{brignon2019abv} recently published a paper
+utilizing instrumented binaries to ensure properties at runtime.
+Their work used the IEEE \ac{psl}
+to describe the properties they ensured \autocite{ieee:psl},
+which were translated into software assertion checkers to be instrumented into binaries.
+\todo{elaborate}
 
 \section{Summary}
 This section covered some of the work related to that presented in this dissertation.

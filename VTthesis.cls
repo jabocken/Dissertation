@@ -62,7 +62,7 @@
 \RequirePackage[margin=1in,headheight=15pt]{geometry}
 
 %% Modern citations
-%\RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX
+\RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX
 \RequirePackage[
   style=numeric-comp,
   maxbibnames=10

@@ -1,29 +1,107 @@
 \chapter{Introduction}
-% TODO
-
-The approaches to assembly-level verification detailed in this dissertation%
-\index{assembly!verification}
-are \emph{semi-automated},
-as the non-trivial memory usage-related properties presented here are undecidable
-per Rice's theorem \autocite{rice1953classes}.
-The usage of \iac{itp} environment allows user interaction when necessary,
-while the automated generation
-of at least some components of formal proofs
-reduces the amount of manual proof effort required by varying degrees.
+Proving that a non-trivial program has no bugs is not an easy task,
+and as technology continues to improve,
+software will continue to increase in complexity.
+Providing methods to ease the work of reasoning over programs is a necessity
+in the modern world.
+This is particularly important for programs
+that are intended for high-reliability applications,
+such as avionics or medical equipment.
 
 \section{Motivation}
-\todo\dots
+Using formal, mathematical techniques to reason about and prove properties of programs
+greatly increases their reliability and trustworthiness.
+The downside is the high degree of effort required to achieve that level of reliability.
+Achieving reasonable formal analyses without requiring an excessive degree of effort
+would surely encourage more people to use those analyses.
+
+As an example, several years ago Facebook integrated the static analysis tool Infer
+into their \ac{ci} toolchain \autocite{calcagno2011infer}.
+That tool, which uses formal techniques to identify potential bugs
+that other static analysis tools may not detect,
+requires minimal user interaction to function.
+If this could be done with more forms of formal analysis,
+it would make the world of software development a better place.
+
+While formal methods are not yet widely used in industry outside of hardware design
+and other applications requiring the highest level of security,
+the world does seem to be slowly moving in that direction
+\autocite{smackers2019,khazeev2019acceptance}.
+Putting in the work to increase their automation and usability
+would have advantages beyond just the research community.
+
 \subsection{Importance}
-\todo\dots
-\todo{Why is software verification important?}
+Increasing complexity in software development makes programs harder to reason about.
+Sir Charles Antony Richard Hoare
+once bemoaned the state of software development in his time~\autocite{hoare1980clothes},
+the favoring of adding fancy language features over minimizing the possibility of bugs.
+To quote him:
+\begin{quote}
+  There is nothing a mere scientist can say that will stand against the flood of a hundred million dollars. But there is one quality that cannot be purchased in this way---and that is reliability. The price of reliability is the pursuit of the utmost simplicity. It is a price which the very rich find most hard to pay.
+\end{quote}
+This was said almost forty years ago, but things do not seem to have changed much.
+The recent debacles with Meltdown and Spectre \cite{lipp2018meltdown,kocher2018spectre}
+are yet another case of a push for additional performance having unexpected,
+negative consequences.
+Admittedly, those were hardware rather than software issues,
+but in a way that is even worse. Once identified, a software problem can be resolved
+with an update or patch, but hardware issues are much harder to fix.
+
+Ultimately, given how modern life involves being surrounded by devices
+running all kinds of software, there is a need for accurate analysis
+of the properties of the programs we use in our everyday lives.
+\Ac{iot} devices in particular have not had a particularly good reputation
+when it comes to security \autocite{zhang2014iot,zhao2013iot}, despite their popularity.
+Lowering the bar for verifying the safety and security of everyday devices
+would improve quality of life and grant greater peace of mind.
 
 \subsection{Challenges}
-\todo\dots
 Highly-automated verification efforts are desirable, but do not necessarily scale.
-Model checking
+Model checking, in particular, suffers from what is known as the
+``state explosion'' problem \autocite{clarke2012modelchecking}.
+Though there have been significant improvements in model-checking performance
+in the past decades, model checkers still have issues with large, complex systems.
+
+On the opposite side of the interactivity level is \emph{\ac{itp}}.
+Interactive theorem provers and proof assistants
+like Isabelle/HOL \autocite{nipkow2002isabelle}, Coq \autocite{chlipala2013certified},
+and HOL4 \cite{slind2008brief} are powerful tools for producing meaningful proofs.
+Unfortunately, their learning curves are not exactly flat.
+The average software developer will not want to have to spend the time
+learning how to write formal proofs just to eliminate some bugs from their programs.
+
+Targeting an approach somewhere in the middle,
+automating the bulk of the proof effort while still allowing user interaction,
+may be the best way to go.
+This does require a significant amount of up-front verification work, however.
+Developing a proof-generation framework that allows easy interaction
+without the need for any in-depth work is pretty much impossible.
+The most that can be achieved is a minimization of the work needed.
+With the right properties chosen, however, it is possible to greatly minimize that work.
+
+Choosing those properties wisely can even allow significant verification effort
+on the \emph{assembly level}.
 
 \section{Assembly-Level Verification}
-\todo\dots
+There are many approaches for formal verification that target source code
+and higher level languages in general.
+This dissertation, however, focuses on \emph{assembly-level} verification.
+
+Targeting assembly means that there is no need to trust all the steps between
+writing source code and obtaining a binary from it.
+Doing so reduces the \ac{tcb} without needing to use a compiler
+that has been formally proven to maintain the semantics of the source code
+in the binaries it produces. On the flip side, analyzing code on the assembly level
+is harder than analyzing source code.
+While the individual instructions are usually simpler
+than any individual higher-level statement could be,
+there are a lot more of them and they lack some of the abstraction
+that can help simplify reasoning on a higher level. \Cref{asm_challenges}
+covers some of the issues with verification on the assembly level.
+
+Even so, there are properties that can only be identified on the assembly level
+due to how close assembly is to the machine it is executed on,
+as detailed in the following section.
 
 \subsection{Importance}
 Properties that reason over the concrete memory used by a program
@@ -46,7 +124,7 @@ allows bypassing the build process, opening the door for verification of legacy 
   thus making it an \emph{assembly-level} property.
 \end{example}
 
-\subsection{Challenges}
+\subsection{Challenges}\label{asm_challenges}
 The biggest challenge in assembly-level verification is
 the semantic gap between compiled and source code.
 Higher-level languages hide details of their implementation
@@ -100,8 +178,33 @@ or local variables.
 Any verification effort that wishes to reason about low-level memory properties
 must provide its own abstractions and assumptions on layout.
 
-\subsection{State of the Art}
-\todo\dots
+\subsection{Current Approaches to Assembly Verification}
+A few years ago, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
+for automated verification of safety properties on the assembly level.
+That work took six hours to execute on \num{533} instructions,
+but was applicable to unmodified code.
+
+A little before that, \textcite{shi2012orientais} provided a verification methodology
+for a real-time \ac{os} designed for automotive applications.
+Part of their verification methodology involved lifting machine code into an intermediate
+representation called xBIL \autocite{shi2012xbil}.
+
+More recently, \textcite{baumann2016high} provided an ARMv8-based hypervisor
+that was formally verified on the machine code level
+to ensure isolation of guest \acp{os}.
+That work was based on an earlier one for an ARMv7 separation kernel,
+PROSPER \autocite{dam2013hypervisor,dam2013formal}.
+
+Around the same time, \textcite{goel2014syscalls,goelphd} produced formal semantics
+for most user-mode x86-64 instructions as well as for commonly-used system calls.
+Their work allows mechanized reasoning over compiled programs
+in the ACL2 theorem prover \autocite{ACL2}.
+
+Additionally, earlier this year, \textcite{fromherz2019verified} embedded a subset
+of the x86-64 \ac{isa} in the functional, verification-oriented language
+F$^*$ \autocite{fstar}.
+This was done in order to perform a proof of correctness
+over the commonly-used cryptographic routine AES-GCM.
 
 \section{Research Contributions}
 This dissertation presents two formal approaches to function-oriented verification

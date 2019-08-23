@@ -1,4 +1,3 @@
 Knowledge of the memory used by a program provides a basis for security analyses
 and compositional verification.
-This dissertation presents the property of \emph{memory usage},
-
+This dissertation presents the properties of \emph{memory usage} and \emph{memory preservation} and the verification methods used to prove memory preservation over compiled programs.

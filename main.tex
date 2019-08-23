@@ -98,6 +98,12 @@
   short-indefinite = an,
   long             = intermediate language
 }
+\DeclareAcronym{iot}{
+  short            = IoT,
+  short-indefinite = an,
+  long             = Internet of Things,
+  long-indefinite  = an
+}
 \DeclareAcronym{ipc}{
   short            = IPC,
   short-indefinite = an,
@@ -144,6 +150,7 @@
   short-indefinite = an,
   long             = the Office of Naval Research
 }
+\DeclareAcronym{psl}{short=PSL, long=Property Specification Language}
 \DeclareAcronym{rop}{
   short            = ROP,
   short-indefinite = an,
@@ -404,7 +411,7 @@
 
   {% appendices don't work right with backmatter on its own due to the lack of counters
     \backmatter
-    \printbibliography
+    \printbibliography[heading=bibintoc]
     \printindex
   }
 %  \begin{appendices}
