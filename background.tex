@@ -38,6 +38,25 @@ The \ac{lfp} of an infinite loop formulated in this way
 is thus the bottom element $\infloop$.%
 \nomenclature{$\infloop$}{Indicates non-terminating state}
 
+\subsection{Symbolic Execution}
+At its most basic, ``symbolic execution'' refers to
+executing a program with a set of symbolic inputs
+rather than concrete values \autocite{king1976symbolic}.
+Based on the semantics of the program, the execution may end up taking multiple paths;
+it could potentially be an infinite number if there are loops involved.
+
+\todo{more}
+
+\todo{The below doesn't really sound right.}
+In this work, the individual steps of symbolic execution
+are implemented as \emph{rewrite rules} over the state%
+\index{symbolic execution!rewrite rule}
+that derive their representation from 
+Applying those rules in sequence to each step or instruction of a program
+allows aggregation of the individual state changes involved in the execution.
+
+\subsection{Floyd Flowcharts}\label{se:floyd}
+
 \subsection{Hoare Logic}\label{se:hoare}
 A form of \emph{axiomatic semantics},
 \index{semantics!axiomatic}

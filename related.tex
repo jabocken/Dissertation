@@ -18,36 +18,39 @@ in \cref{se:dynamic}.
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
 \textcite{clutterbuck1988verification} performed formal verification
-of assembly code using SPACE-8080, a verifiable subset of the Intel 8080
-\ac{isa} that is analyzable and formally verifiable \autocite{carre1986spade}.
-They worked with the \ac{spade} tool.
-% Their approach uses Floyd-style verification \autocite{floyd1967assigning}.
-\todo{elaborate}
+of assembly programs using SPACE-8080, a verifiable,
+analyzable subset of the Intel 8080 \ac{isa}.
+Their work used \ac{spade}\autocite{carre1986spade},
+a set of software tools for ``the efficient development,
+analysis, and formal verification of high-integrity software''.
+\Ac{spade} provides \iac{fdl} for modeling programs
+in order to analyze and formally verify them
+using \iac{vcg}, proof checker, and symbolic interpreter.
+They used automatic translation to model their SPACE-8080 program
+in \ac{fdl}, and their verification methodology used the same kind of
+annotated control-flow analysis as our control-flow-driven approach
+presented in \cref{ch:cfg} does, with additional assertions on state to avoid errors
+and stronger conditions in order to prove functinoa correctness.
+They also provided \emph{rewrite rules} that described the semantics
+of the formal models in \ac{spade}. Unlike the work detailed in \cref{ch:cfg}, however,
+they only covered a single 33-instruction function
+with the verification methodology they presented.
 
-Another usage of \ac{spade} for verification of assembly
+Another usage of \ac{spade} for a more in-depth verification of assembly
 was in the correctness proof of fuel control code for a Rolls-Royce
-jet engine \autocite{oneill1988verification}.
-That work involved formulating a verification-friendly model of the Z8002 \ac{isa}
-in \ac{spade}, the development of a Prolog translator from Z8002 assembly
-to \ac{spade}'s modeling language, FDL,
+jet engine \autocite{oneill1988verification}. Once again,
+it involved formulating a verification-friendly model of the Z8002 \ac{isa}
+in \ac{spade}, the development of a Prolog translator from Z8002 assembly to \ac{fdl},
 and the formalization of written specifications into proper pre- and postconditions
 in \ac{spade}. \Ac{spade}'s proof checker was then used to validate the correctness
-of the translated control code.
-This work followed a now-standard process for working with informal tools:
-translate the tools into a formal form and then reason over them
-in a formal environment.
+of the translated control code. While they assumedly covered many more instructions
+than the previous \ac{spade} work did, the authors did not go into detail
+on the amount of work that was actually done.
+The only number given was that the specifications for about \SI{10}{\percent}
+of the code modules under test were clarified
+and one module received a code fix to improve its performance.
 
-Not long after, Bevier et al.\ presented a systems approach
-to software verification \autocite{bevier1989approach,boyer1979computational}.
-Their work laid out a methodology for verifying the correctness
-of all components necessary to execute a program correctly,
-including compiler, assembler and linker.
-It was implemented in \ac{nqthm} \autocite{boyer1979computational},
-a precursor to the theorem prover ACL2 \autocite{ACL2}.
-The methodology was applied to a small \ac{os} kernel, Kit \autocite{bevier1989kit}.
-\todo{elaborate more?}
-
-Similarly, Yu and Boyer  \autocite{yu1993automated,boyer1996automated}
+Similarly, Yu and Boyer \autocite{yu1993automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
 for approximately \SI{80}\percent of the instructions of the MC68020 microprocessor,
 over 85.
@@ -184,6 +187,26 @@ the separation kernel was verified against.
 An extension to the work is found in the HAPSOC project by \textcite{baumann2016high},
 who did a similar proof for the ARMv8-A model provided by \textcite{fox2015improved}.
 
+Finally, \textcite{bevier1989approach} presented a systems approach to software verification
+that targeted correctness all the way down to the hardware level.
+All of their work was implemented in \ac{nqthm} \autocite{boyer1979computational},
+a precursor to the theorem prover ACL2 \autocite{ACL2}.
+\Textcite{hunt1989microprocessor} developed a general-purpose, 32-bit microprocessor,
+FM8502, and proved that its gate-level specification
+was an implementation of its formal \ac{isa}.
+\Textcite{bevier1989short,bevier1989kit,bevier1987verified}
+designed a small \ac{os} kernel, Kit, and proved that it implemented
+``a fixed number of conceptually distributed communicating processes''
+along with a set of typical kernel services and some security properties.
+He did not prove that it could run on an FM8502, however;
+it was executed on a more abstract model instead.
+\Textcite{young1989generator} designed and proved the correctness of a code generator,
+a major compiler component, for a subset of the Gypsy 2.05 programming language
+\autocite{good1986gypsy}. That code generator's output was
+the verified, high-level assembly language Piton \autocite{moore1988piton}.
+\Textcite{moore1989language} then proved the correctness
+of that language's FM8502 implementation.
+
 \section{Verified Compilation}\label{se:verified}
 In contrast to directly verifying machine or assembly code,
 one can verify source code and then use \emph{verified compilation}.%
@@ -251,10 +274,6 @@ more difficulty if they had started with a kernel
 not explicitly designed to be verified. While we did isolate functions
 for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
 
-\todo{Will write about
-  \url{https://link.springer.com/chapter/10.1007/978-1-4471-3054-3_35}
-once I have access to eduroam/etc.}
-
 \section{Static Analysis}\label{se:static_analysis}
 Static analysis of binary code has also an active research field
 for decades  \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
@@ -301,21 +320,22 @@ They generally apply techniques that are formally unsound, such as depth-bounded
     \toprule
     Work & Target & Approach & Applications & Verified code\\
     \midrule
-    Clutterbuck\&Carr\'e & SPACE-8080 & \acs*{itp} & N/A & \\
-    Bevier et al. & PDP-11-like & \acs*{itp} & Kit & \\
+    Clutterbuck\&Carr\'e & SPACE-8080 & \acs*{itp}+\acs*{vcg} & Example func & \\
+    O'Neill et al. & Z8002 & \acs*{itp}+\acs*{vcg} & Jet engine code & \\
     Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
     Goel et al. & x86-64 & \acs*{itp} & word-count  & \num{186} insts \\
     Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
     Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
-    \cref{ch:cfg} & x86-64 & \ac*{itp} & HermitCore & \num{2379}+ insts \\
-    \cref{ch:syntax} & x86-64 & \ac*{itp}+CG & Xen & \num{12252} insts \\
+    \textbf{\cref{ch:cfg}} & x86-64 & \ac*{itp} & HermitCore & \num{2379}+ insts \\
+    \textbf{\cref{ch:syntax}} & x86-64 & \ac*{itp}+CG & Xen & \num{12252} insts \\
     \midrule
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & \num{8000} \acs*{sloc}, 60 insts \\
     Dam et al. & ARMv7 & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
     Baumann et al. & ARMv8-A & \acs*{atp}+UC & HAPSOC & \num{8000} \acs*{sloc} \\
+    Bevier et al. & PDP-11-like & \acs*{itp}+TV & Full system & \num{3000}+ \acs*{sloc}/insts \\
     \bottomrule
     \multicolumn{5}{c}{
       \small
@@ -323,8 +343,8 @@ They generally apply techniques that are formally unsound, such as depth-bounded
       \setlength\colseplen{1ex}
       \newcommand\colsep{\hspace\colseplen}
       \begin{tabular}{l@{\colsep}c@{\colsep}l l@{\colsep}c@{\colsep}l}
-        VCG  &=& Verification Condition Generation	& \acs*{dil} &=& Decompilation into Logic \\
-        \acs*{sloc} &=& Source Lines of Code        & ATP &=& Automated Theorem Proving \\
+        \acs*{vcg} &=& Verification Condition Generation & \acs*{dil} &=& Decompilation into Logic \\
+        \acs*{sloc} &=& Source Lines of Code        & \acs*{atp} &=& Automated Theorem Proving \\
         UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
         TV   &=& Translation Validation							& MC 	&=& Model Checking
       \end{tabular}

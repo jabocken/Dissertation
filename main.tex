@@ -68,10 +68,20 @@
 \DeclareAcronym{cpu}{short=CPU, long=central processing unit}
 \DeclareAcronym{dm}{short=DM, long=device model}
 \DeclareAcronym{dil}{short=DiL, long=decompilation into logic}
+\DeclareAcronym{fdl}{
+  short            = FDL,
+  short-indefinite = an,
+  long             = functional description language
+}
 \DeclareAcronym{fmuc}{
   short            = FMUC,
   short-indefinite = an,
   long             = formal memory usage certificate
+}
+\DeclareAcronym{fsm}{
+  short            = FSM,
+  short-indefinite = an,
+  long             = finite state machine
 }
 \DeclareAcronym{hol}{
   short            = HOL,
@@ -387,12 +397,15 @@
 \begin{document}
   \frontmatter
   \maketitle
-  \tableofcontents
 
+  \microtypesetup{protrusion=false} % avoiding potential line length alterations in the lists
+  \tableofcontents
   \listoffigures
   \listoftables
   \listofalgorithms
   \lstlistoflistings
+  \microtypesetup{protrusion=true}
+
   \printacronyms[heading=chapter]
   \printnomenclature
 

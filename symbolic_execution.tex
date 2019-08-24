@@ -1,17 +1,6 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-\todo{Fix up prologue/preamble, give overview and outline}
-
-Symbolic execution, in a sense,%
-\index{symbolic execution}
-is an extension of symbolic manipulation of mathematical equations.
-It involves executing a program with a set of symbolic inputs
-rather than concrete values \autocite{king1976symbolic}.
-The individual steps of execution are implemented as \emph{rewrite rules}%
-\index{symbolic execution!rewrite rule}
-over the state.
-When used in a theorem prover such as Isabelle/HOL, those rules can be proven correct.
-Applying those rules in sequence to each step or instruction of a program
-allows aggregation of the individual state changes involved in the execution.
+\todo{Add preamble: give overview first, then outline.
+  Maybe combine the two if it feels like doing otherwise is too much.}
 
 \begin{example}[Aggregation]\label{ex:aggregation}
   Consider the following two instructions:
