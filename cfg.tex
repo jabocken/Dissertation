@@ -36,7 +36,7 @@ By building on the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
 The first step is disassembly of an x86-64 binary using
 a tweaked version of the \texttt{angr}
-\lstinline|reassembly| analysis \cite{wang2017ramblr}
+\lstinline|reassembly| analysis \autocite{wang2017ramblr}
 provided by \textcite{roessle2019}\footnote{%
   This is required to use the Isabelle parser provided by that work.%
 }.%
@@ -264,7 +264,7 @@ as a whole:
     \sigma'\neq\bot_E\wedge Q(\sigma').
   \end{equation*}
   Though there could be any number of additional annotations between~$l_0$
-  and~$l_f$, Floyd \cite{floyd1967assigning} showed that a Floyd invariant that holds
+  and~$l_f$, \textcite{floyd1967assigning} showed that a Floyd invariant that holds
   starting from some initial condition to an intermediate annotation at~$l_1$
   will also hold starting from that annotation.
   Thus, as $I$ holds, we can substitute in~$I(l_0)(\sigma)$ for~$P(\sigma)$
@@ -780,7 +780,7 @@ with many single-purpose unikernels all performing their own tasks in isolation.
 This makes unikernels an interesting target for verification,
 as they aim to provide a high speed and real-time environment for cloud software.
 
-The unikernel library HermitCore \cite{lankes2016hermitcore} was chosen%
+The unikernel library HermitCore \autocite{lankes2016hermitcore} was chosen%
 \index{HermitCore}
 to demonstrate the applicability of this methodology
 due to its established functionality and decent size.
@@ -987,7 +987,7 @@ a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
 In most cases, that proof can be handled by Isabelle/HOL
 using standard off-the-shelf libraries,
-either ones included with Isabelle or ones from the \ac{afp} \cite{afp}
+either ones included with Isabelle or ones from the \ac{afp} \autocite{afp}
 (though not necessarily efficiently).
 Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation

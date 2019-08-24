@@ -21,7 +21,7 @@ in \cref{se:dynamic}.
 of assembly code using SPACE-8080, a verifiable subset of the Intel 8080
 \ac{isa} that is analyzable and formally verifiable \autocite{carre1986spade}.
 They worked with the \ac{spade} tool.
-% Their approach uses Floyd-style verification~\cite{floyd1967assigning}.
+% Their approach uses Floyd-style verification \autocite{floyd1967assigning}.
 \todo{elaborate}
 
 Another usage of \ac{spade} for verification of assembly
@@ -47,7 +47,7 @@ a precursor to the theorem prover ACL2 \autocite{ACL2}.
 The methodology was applied to a small \ac{os} kernel, Kit \autocite{bevier1989kit}.
 \todo{elaborate more?}
 
-Similarly, Yu and Boyer \cite{yu1993automated,boyer1996automated}
+Similarly, Yu and Boyer  \autocite{yu1993automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
 for approximately \SI{80}\percent of the instructions of the MC68020 microprocessor,
 over 85.
@@ -174,7 +174,7 @@ that provides an architecture-agnostic representation of machine instructions
 and their side effects.
 First, the formal model of the ARM \ac{isa} provided by \textcite{fox2010arm} was used
 in an HOL4 tool to translate the ARM binary into \ac{bap}'s intermediate language.
-Following that, the \ac{smt} solver \ac{stp} \cite{ganesh2007stp}
+Following that, the \ac{smt} solver \ac{stp}  \autocite{ganesh2007stp}
 was used to determine the targets of indirect branches
 and to perform weakest-precondition computation with Hoare triples
 to verify the user contracts.
@@ -257,9 +257,9 @@ once I have access to eduroam/etc.}
 
 \section{Static Analysis}\label{se:static_analysis}
 Static analysis of binary code has also an active research field
-for decades \cite{kruegel2005automating,brumley2011bap,wang2017angr}.
+for decades  \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
 
-The BitBlaze project \cite{song2008bitblaze,BitBlazeWebSite}
+The BitBlaze project  \autocite{song2008bitblaze,BitBlazeWebSite}
 provides a tool called Vine which constructs control flow graphs
 for supplied programs and lifts x86 instructions to its own \ac{il}.
 Though Vine itself is not formally verified,
@@ -269,7 +269,7 @@ as well as CVC \autocite{barrett2004cvcl,barrett2007cvc3}.
 
 The tool Infer \autocite{calcagno2011infer}, developed at Facebook,
 provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
-It utilizes separation logic \cite{reynolds2002separation}
+It utilizes separation logic  \autocite{reynolds2002separation}
 and bi-abduction to perform its analyses in an automated fashion.
 It is designed to be integrated into compiler toolchains
 in order to provide immediate feedback even in \ac{ci} scenarios.

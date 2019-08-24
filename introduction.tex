@@ -33,14 +33,17 @@ would have advantages beyond just the research community.
 \subsection{Importance}
 Increasing complexity in software development makes programs harder to reason about.
 Sir Charles Antony Richard Hoare
-once bemoaned the state of software development in his time~\autocite{hoare1980clothes},
+once bemoaned the state of software development in his time \autocite{hoare1980clothes},
 the favoring of adding fancy language features over minimizing the possibility of bugs.
 To quote him:
 \begin{quote}
-  There is nothing a mere scientist can say that will stand against the flood of a hundred million dollars. But there is one quality that cannot be purchased in this way---and that is reliability. The price of reliability is the pursuit of the utmost simplicity. It is a price which the very rich find most hard to pay.
+  There is nothing a mere scientist can say that will stand against the flood
+  of a hundred million dollars. But there is one quality that cannot be purchased
+  in this way---and that is reliability. The price of reliability is the pursuit of
+  the utmost simplicity. It is a price which the very rich find most hard to pay.
 \end{quote}
 This was said almost forty years ago, but things do not seem to have changed much.
-The recent debacles with Meltdown and Spectre \cite{lipp2018meltdown,kocher2018spectre}
+The recent debacles with Meltdown and Spectre  \autocite{lipp2018meltdown,kocher2018spectre}
 are yet another case of a push for additional performance having unexpected,
 negative consequences.
 Admittedly, those were hardware rather than software issues,
@@ -65,7 +68,7 @@ in the past decades, model checkers still have issues with large, complex system
 On the opposite side of the interactivity level is \emph{\ac{itp}}.
 Interactive theorem provers and proof assistants
 like Isabelle/HOL \autocite{nipkow2002isabelle}, Coq \autocite{chlipala2013certified},
-and HOL4 \cite{slind2008brief} are powerful tools for producing meaningful proofs.
+and HOL4  \autocite{slind2008brief} are powerful tools for producing meaningful proofs.
 Unfortunately, their learning curves are not exactly flat.
 The average software developer will not want to have to spend the time
 learning how to write formal proofs just to eliminate some bugs from their programs.
@@ -336,7 +339,7 @@ can continue from that of earlier ones.
 
 %Analysis of HermitCore Functions
 The control-flow-driven methodology was applied to \num{71} functions
-extracted from the HermitCore \cite{lankes2016hermitcore}
+extracted from the HermitCore  \autocite{lankes2016hermitcore}
 unikernel library \autocite{madhavapeddy2014unikernels},
 covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
 Of those functions, 18 had loops and 33 had subcalls.
