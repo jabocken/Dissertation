@@ -5,16 +5,9 @@ discussed in the following sections.
 Up first in \cref{se:previous_assembly}
 are some previous formal verification efforts that target assembly.
 Following that is work in which assembly verification played a role
-in a larger verification context, \cref{se:integrated_assembly}.
-Verified compilation and static analysis tools are discussed
+in a larger verification context, \cref{se:integrated_assembly},
+and then verified compilation and static analysis tools are discussed
 in \cref{se:verified,se:static_analysis}.
-The chapter is rounded up by something a little different,
-an examination of a runtime methodology to ensure functional correctness
-in \cref{se:dynamic}.
-
-\todo{Add some approaches that use model-checking}
-
-\todo{More static analysis examples?}
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
 \textcite{clutterbuck1988verification} performed formal verification
@@ -52,25 +45,41 @@ and one module received a code fix to improve its performance.
 
 Similarly, Yu and Boyer \autocite{yu1993automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
-for approximately \SI{80}\percent of the instructions of the MC68020 microprocessor,
+for approximately \SI{80}{\percent} of the instructions of the MC68020 microprocessor,
 over 85.
-Their approach utilized symbolic execution of operational semantics.
-These early efforts required significant interaction.
-For example, the approach of Yu and Boyer required over \num{19000}
+They implemented those semantics and mechanized their approach
+in \ac{nqthm} \autocite{boyer1979computational},
+a precursor to the theorem prover ACL2 \autocite{ACL2}.
+They then applied their mechanized reasoning to check functional correctness
+for a binary search, quicksort, a standard C string library, and others.
+These early efforts required significant interaction,
+as Yu and Boyer required over \num{19000}
 lines of manually written proof to verify approximately \num{900} assembly instructions.
-\todo{elaborate more?}
+Compare this to the \num{1047} lines of manual proof
+required to prove memory preservation over \num{12252} assembly instructions.
+Admittedly, they were verifying stronger properties,
+which would greatly increase the amount of work required for verification,
+but even then it's a significant difference.
 
 Following that, \textcite{matthews2006verification}
 targeted a simple machine model called TINY
 as well as the M5 operational model of \ac{jvm} bitcode.
-Their approach utilizes symbolic execution of code annotated
-with manually written invariants.
+Their approach for functional correctness, implemented in ACL2,
+utilized symbolic execution of operational semantics
+over code annotated with manually written invariants.
+This is very much like the control-flow-driven approach presented in this dissertation.
 It also used verification condition generation to increase automation,
 which reduced the number of manually written invariants.
+That was not done for the control-flow-driven verification.
 Both of those assembly-style languages feature a stack
 for handling scratch variables rather than a register file
 as x86, ARM, and most other mainstream \acp{isa} do.
-\todo{Not much more to say about their methodology, but explaining their case studies would be good. Also mention ACL2, I didn't explicitly state it here}
+The case studies they verified were an implementation of the Fibonacci sequence,
+a factorial function, and functions for CBC-mode encryption and decryption.
+In total, they covered \num{631} assembly instructions,
+less than that handled by either of the methodologies presented in this dissertation.
+Once again, of course, they were targeting a stronger property,
+but they also did not perform any significant work to automate their approach.
 
 Additionally, Goel et al.\ presented an approach for modeling and verifying
 non-deterministic programs on the binary level \autocite{goel2014syscalls,goelphd}.
@@ -80,24 +89,19 @@ they provided semantics for common system calls.
 System call semantics increase the spread of programs that can be fully verified.
 Their work was applied to multiple small case studies,
 including a word count program and two kernel-mode memory copying examples.
-\todo{Maybe talk a little more about this}
  
-The main difference between the above-mentioned existing approaches
-and the methodologies presented in this work is in the degree of automation.
-Generally, interactive theorem proving over semantics of assembly instructions
-does not scale due to the amount of intricate user interaction involved.
-For example, \cref{fig:example2-inv} shows
-the complexity of defining an assembly-level invariant even for a small example.
+Ultimately, the main difference between the above-mentioned existing approaches
+and the methodologies presented in this dissertation lies in the degree of automation.
+Interactive theorem proving over semantics of assembly instructions
+does not scale under normal circumstances
+due to the amount of intricate user interaction involved.
 
-Fully automated approaches to formal verification, however, do not scale either.
+Fully automated approaches to formal verification, however, do not necessarily scale either.
 The recent automated approach AUSPICE provided by \textcite{tan2015auspice}
-takes about 6 hours for a 533-instruction string search algorithm.
-To the best of my knowledge,
-the methodology in \cref{ch:syntax} is the first that is able to deal with
-optimized x86-64 binaries produced by production code
-with an average manual proof effort of one line
-for approximately every twelve assembly instructions.
-\todo{talk more about Tan work}
+takes about 6 hours to run on a 533-instruction string search algorithm.
+This is despite the fact that they were targeting weaker safety properties
+rather than going for functional correctness.
+They even used a full formulation of Hoare logic, much as is done in \cref{ch:syntax}.
 
 Though it is not a verification methodology by itself,
 there is also \emph{\ac{dil}} \autocite{myreen2008decompilation,myreen2012decompilation}.
@@ -111,8 +115,8 @@ and allows for verification of properties in a theorem prover that utilizes that
 \Ac{dil} has been used for both ARM and x86 \ac{isa} machine models
 and applied to various large examples,
 including benchmarks such as a garbage collector as well as the Skein hash function.
-It has also has been used as a component in a binary-level verification methodology \autocite{sewell2013tvv}.
-\todo{elaborate a little}
+It has even been used as a component
+in a binary-level verification methodology over the seL4 microkernel \autocite{sewell2013tvv}.
 
 Also, \textcite{feng2006modular,feng2005sbca} presented stack abstractions
 for modular verification of assembly code
@@ -128,13 +132,49 @@ In contrast to the approach presented in \cref{ch:syntax},
 though not that in \cref{ch:cfg},
 manual annotations are required to provide information
 regarding invariants and memory layout.
-\todo{elaborate a little}
 
-Finally, \textcite{fromherz2019verified} embedded a subset
-of the x86-64 \ac{isa} in the functional, verification-oriented language
-F$^*$ \autocite{fstar}.
-This was done in order to perform a proof of correctness
-over the commonly-used cryptographic routine AES-GCM.
+\Textcite{schlich2008phd} worked on the development of a model checker for analysis
+of microcontroller assembly, \mcsquare.
+Implemented in Java and supporting several microcontroller \acp{isa},
+it uses multiple methods of state space reduction in order to avoid state space explosion
+as much as possible. While it was applied to multiple case studies,
+some of those case studies were only to analyze the effectiveness
+of the various abstraction techniques used for state space reduction.
+
+The most relevant case study to this dissertation was its application
+to software compiled for an automotive microcontroller \autocite{schlich2007automotive}.
+The three programs they focused on for their case study
+were designed to record speed measurements from sensors on four wheels,
+calculate the actual speed, and then transmit it over \iac{can} bus.\footnote{%
+  \Iac{can} bus is a standard bus for electronic communications in automotive applications.%
+}
+Some of the programs required simplification to be checkable,
+so for consistency they applied, or at least attempted to apply,
+the same simplifications to all three programs.
+They did what they could to remove sends over the \ac{can} bus
+and tried to focus on the speed signal from just one wheel rather than all four.
+Ultimately, they were able to reason about all three programs
+and prove both functional and non-functional properties of those programs.
+On average they covered around 700 lines of C or \num{2666} assembly instructions.
+In terms of the works presented in this dissertation,
+the case study on HermitCore in \cref{se:cfg_application}
+did involve isolating the functions under test before compiling them
+and covered less instructions.
+By contrast, the analyzed Xen functions in \cref{se:xen} were handled
+without any modification whatsoever to the Xen build process
+and covered even more instructions.
+
+\Textcite{brauer2009sba} intially performed static analysis of stack bounds
+for the Atmel ATmega16 and Intel MCS-51 microcontrollers
+in order to verify a lack of stack overflows.
+Their work was applied to eight programs, four compiled for each microcontroller.
+The functions compiled for the ATmega16 \ac{isa}
+had previously been used to evaluate the effectiveness of \mcsquare.
+They then embedded their static analysis in \mcsquare\ as a means to
+improve the accuracy of \ac{dvr}, which \mcsquare\ uses for state space reduction.
+While this stack safety approach is similar in focus to the memory preservation works
+I present here, the scope is much smaller.
+Their focus was specifically on stack memory rather than memory in general.
 
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
@@ -161,7 +201,6 @@ Binary verification was done by lifting the \ac{rtos} binary to xBIL,
 a related hardware verification language \autocite{shi2012xbil}.
 They translated requirements from the OSEK automotive industry standard
 to source code annotations.
-\todo{elaborate}
 
 Targeting a similar case study as \cref{ch:syntax},
 \textcite{dam2013hypervisor,dam2013formal}
@@ -189,8 +228,7 @@ who did a similar proof for the ARMv8-A model provided by \textcite{fox2015impro
 
 Finally, \textcite{bevier1989approach} presented a systems approach to software verification
 that targeted correctness all the way down to the hardware level.
-All of their work was implemented in \ac{nqthm} \autocite{boyer1979computational},
-a precursor to the theorem prover ACL2 \autocite{ACL2}.
+All of their work was implemented in \ac{nqthm}.
 \Textcite{hunt1989microprocessor} developed a general-purpose, 32-bit microprocessor,
 FM8502, and proved that its gate-level specification
 was an implementation of its formal \ac{isa}.
@@ -275,6 +313,7 @@ not explicitly designed to be verified. While we did isolate functions
 for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
 
 \section{Static Analysis}\label{se:static_analysis}
+%TODO: No time to elaborate on static analysis, oh well
 Static analysis of binary code has also an active research field
 for decades  \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
 
@@ -284,29 +323,26 @@ for supplied programs and lifts x86 instructions to its own \ac{il}.
 Though Vine itself is not formally verified,
 it does support interfacing with the aforementioned \ac{smt} solver \ac{stp}
 as well as CVC \autocite{barrett2004cvcl,barrett2007cvc3}.
-\todo{elaborate}
 
-The tool Infer \autocite{calcagno2011infer}, developed at Facebook,
+Meanwhile, the tool Infer \autocite{calcagno2011infer}, developed at Facebook,
 provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
 It utilizes separation logic  \autocite{reynolds2002separation}
 and bi-abduction to perform its analyses in an automated fashion.
 It is designed to be integrated into compiler toolchains
 in order to provide immediate feedback even in \ac{ci} scenarios.
-\todo{elaborate}
 
-FindBugs is a static analysis tool for Java code \autocite{hovemeyer2004findbugs}.
+The static analysis tool FindBugs, written for Java code,
+takes a bit of a different approach from those other two \autocite{hovemeyer2004findbugs}.
 Rather than relying on formal methods,
-it uses searches for common (bad practice) code idioms to detect likely bugs.
-Common errors it highlights include null pointer dereferences,
+it searches for common (bad practice) code idioms to detect likely bugs.
+Some of the common errors it highlights include null pointer dereferences,
 objects that compare equal not having equal hash codes,
 and inconsistent synchronization.
-\todo{elaborate}
 
 Another tool, Splint \autocite{evans2002static}, detects buffer overflows
 and similar potential security flaws in C code.
 It relies on annotated preconditions to derive postconditions
 based on the syntactic structure of the code.
-\todo{elaborate}
 
 The main difference between these static analysis tools and formal verification
 is that these tools are generally highly suited to finding bugs
@@ -315,12 +351,12 @@ They generally apply techniques that are formally unsound, such as depth-bounded
 
 \begin{table*}
   \centering
-  \caption{Overview of Related Assembly Work}\label{related-table}
+  \caption{Overview of Related Assembly and Additional Work}\label{related-table}
   \begin{tabular}{l l l l l}
     \toprule
-    Work & Target & Approach & Applications & Verified code\\
+    \thead{Work} & \thead{Target} & \thead{Approach} & \thead{Applications} & \thead{Verified code} \\
     \midrule
-    Clutterbuck\&Carr\'e & SPACE-8080 & \acs*{itp}+\acs*{vcg} & Example func & \\
+    Clutterbuck\&Carr\'e & SPACE-8080 & \acs*{itp}+\acs*{vcg} & Example func & \num{33} insts \\
     O'Neill et al. & Z8002 & \acs*{itp}+\acs*{vcg} & Jet engine code & \\
     Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
@@ -328,6 +364,10 @@ They generally apply techniques that are formally unsound, such as depth-bounded
     Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
     Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
+    Schlich et al. & ATmega16 & MC & Auto funcs & Around \num{8000} insts \\
+    Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+MC & Example progs &
+      \makecell[l]{\num{2630} \acs*{sloc}\\
+        \num{935} \acs*{sloc}} \\
     \textbf{\cref{ch:cfg}} & x86-64 & \ac*{itp} & HermitCore & \num{2379}+ insts \\
     \textbf{\cref{ch:syntax}} & x86-64 & \ac*{itp}+CG & Xen & \num{12252} insts \\
     \midrule
@@ -346,21 +386,12 @@ They generally apply techniques that are formally unsound, such as depth-bounded
         \acs*{vcg} &=& Verification Condition Generation & \acs*{dil} &=& Decompilation into Logic \\
         \acs*{sloc} &=& Source Lines of Code        & \acs*{atp} &=& Automated Theorem Proving \\
         UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
-        TV   &=& Translation Validation							& MC 	&=& Model Checking
+        TV   &=& Translation Validation							& MC 	&=& Model Checking \\
+        SA   &=& Static Analysis & & &
       \end{tabular}
     }
   \end{tabular}
 \end{table*}
-
-\section{Dynamic Analysis}\label{se:dynamic}
-While this chapter mainly focused on approaches involving static analysis of actual code,
-that is not the only way to verify programs.
-\Textcite{brignon2019abv} recently published a paper
-utilizing instrumented binaries to ensure properties at runtime.
-Their work used the IEEE \ac{psl}
-to describe the properties they ensured \autocite{ieee:psl},
-which were translated into software assertion checkers to be instrumented into binaries.
-\todo{elaborate}
 
 \section{Summary}
 This section covered some of the work related to that presented in this dissertation.
