@@ -211,9 +211,6 @@ to the level of basic blocks, each of which gets its own lemma
 to prove memory preservation for.
 The generation of these per-block lemmas involves generation of per-block
 pre- and postconditions as well; these conditions are treated as invariants.
-Stronger invariants can lead to a tighter approximation of memory preservation
-(recall from \cref{mem_use_over} that memory preservation as a property
-is an overapproximation of actual memory preservation in a program).
 
 With the \acp{fmuc} as generated, their theorems and proof ingredients all considered,
 minimal effort is required in the vast majority of cases to complete the proofs.
@@ -991,8 +988,12 @@ The set~$M'$ contains the regions of memory used by the entire loop,
 not just one iteration.
 This is because the introduction rule applies the state-dependent set of memory regions
 to any state that satisfies the invariant.
-This shows that the strength of the generated invariants directly influences the tightness of the overapproximation of memory preservation.
-A weaker invariant, such as $i<20$, would result in a larger set of memory regions.
+This shows that the strength of the generated invariants directly influences 
+the tightness of the overapproximation of memory preservation
+and of memory usage as a whole.
+A weaker invariant, such as $i<20$, would result in a larger set of memory regions
+by relaxing the constraints on symbolic addresses and,
+for other situations, symbolic region sizes.
 
 \subsubsection{Verification Condition Generation}\label{sse:vcg}
 \begin{lstlisting}[
@@ -1141,7 +1142,7 @@ based on the calling context.
 Thus, to be able to verify function~$f$ once
 but reuse its proof for each call,
 the proof must at least contain an overapproximation
-of the memory written to by function~$f$, .
+of the memory written to by function~$f$.
 This is exactly what \emph{separation
 logic} \autocite{o2001local,reynolds2002separation,krebbers2017essence}%
 \index{separation logic}
@@ -1555,9 +1556,9 @@ can be found in \cref{fig:unverified}.
 
 \section{Summary}
 This chapter presented an approach to formal verification of memory preservation
-for functions in a disassembled program.
-The memory reported used by those functions
-will be an overapproximation of the memory used by the actual assembly code.
+for functions in a disassembled program. As in the previous chapter,
+the memory usage reported for those functions is an overapproximation
+of the memory used when actually executing the assembly code.
 The approach automatically generates \iac{fmuc} that includes
 \begin{enumerate*}
   \item a set of memory regions read from and written to,
