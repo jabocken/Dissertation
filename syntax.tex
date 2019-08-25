@@ -16,204 +16,32 @@ The proof ingredients are assumptions on memory layout,
 control flow information, and invariants
 generated to reduce the amount of work required from end users.
 
-Information on how these certificates are generated
-can be found in \cref{se:fmuc_gen}.
-This includes the algorithm for control flow information extraction
-as well as how symbolic execution is used
-to produce the preconditions and proof ingredients.
-
-Once generation is complete, the certificate%
-\index{certificate}
-and the original assembly can then be loaded into Isabelle.
-In Isabelle, minimal user input is required for discharging \iac{fmuc}s
-lemmas and theorems via the proof ingredients and customized proof methods%
-\index{proof!ingredient}%
-\index{proof!method}
-documented in \cref{se:fmuc_ver}.
-
-A full example demonstrating usage along with
-further information on the structure of \acp{fmuc}
-can be found in \cref{se:syntax_example}.
+Certificate generation is presented in \cref{se:fmuc_gen},
+while the process of verification in Isabelle is documented in \cref{se:fmuc_ver}.
+A full example of \ac{fmuc} usage can then be found in \cref{se:syntax_example}.
 That example could theoretically overwrite
 its own return address due to its pointer arguments, causing \ac{cfi} issues.
 The associated \ac{fmuc} provides preconditions to prevent such cases
 along with a formal proof of return address preservation under those conditions.
-
-Following that example is an in-depth case study
-on the Xen Project hypervisor \autocite{chisnall2008definitive} in \cref{se:xen}.
-Unlike the HermitCore work in \cref{se:cfg_application},
-no modifications were made to the Xen build process
-and the basic utility \texttt{objdump} was used for disassembly
-rather than a tweaked version of a less-commonly-used utility.
+Following the example in \cref{se:xen} is an in-depth case study
+on the Xen Project hypervisor \autocite{chisnall2008definitive}.
 In total, \acp{fmuc} were generated and proofs discharged in Isabelle
 for 251 Xen functions.
-Minimal user interaction was required;
-on average, only \num{85} lines of additional proof were needed
-for every \num{1000} assembly instructions verified.
-In total, the \num{12252} assembly instructions
-were verified with only \num{1047} manual proof lines added,
-all of which were simple reuses of established proof methods.
-The majority of added lines of proof involved guiding loop invariant application.
 
 My primary contributions to the certificate generation and verification approach%
 \index{certificate}
 presented in this chapter include the Hoare rules developed
 for memory preservation as well as the \ac{vcg} used to apply those rules
 to \ac{scf} in Isabelle (\cref{se:fmuc_ver}).
-I also wrote much of the code for full translation of the \acp{fmuc}
+I also greatly expanded the code for full translation of the \acp{fmuc}
 into the Isabelle/HOL language
 and helped adapt the \ac{scf} into a form suitable for verification
 in Isabelle (\cref{isabelle_scf}).
-Additionally, I contributed to invariant generation (\cref{sse:inv_gen}),
+Additionally, I contributed to invariant generation (\cref{sse:inv_gen})
 and performed much of the verification work for our large case study,
 presented in \cref{se:xen}.
 
-\section{Example of Formal Memory Usage Certificate}\label{se:fmuc_overview}
-\Cref{fig:fmuc} provides an example of \iac{fmuc}.
-\Acp{fmuc} are produced from assembly code
-
-\begin{figure*}
-  \centering
-  \lstset{frame=none, numbers=none}
-  \begin{subfigure}{.51\linewidth}
-    \begin{lstlisting}[style=C, gobble=6]
-      int main(int argc, char** argv) {
-          return argv[argc - 1][0];
-      }
-    \end{lstlisting}
-    \caption{Source code}\label{fig:example-src}
-  \end{subfigure}
-  \begin{subfigure}{.48\linewidth}
-    \begin{lstlisting}[style=x64, basicstyle=\footnotesize\ttfamily, gobble=6]
-      4f0: movsxd rdi, edi
-      4f3: mov rax, qword ptr [rsi+rdi*8-8]
-      4f8: movsx eax, byte ptr [rax]
-      4fb: ret
-    \end{lstlisting}
-    \caption{Compiled assembly}\label{fig:example-asm}
-  \end{subfigure}
-  \begin{subfigure}{\linewidth}
-    \centering
-    \begin{align*}
-      \text{\bfseries Theorem: } & \var{MRR}\longrightarrow\htriple*{P}f{Q}{M} \\
-      \text{\bfseries Proof: } & \ldots
-    \end{align*}
-    where
-    \begin{subequations}
-      \begin{align}
-        f &\equiv\ABB~\Block{4f0}{4fb} \notag \\
-        P &\equiv\mathrip=
-        \mathtt{4f0}\wedge\mathrsp=
-        \rspo\wedge\ldots\wedge\readmem{\rspo}{8}=\retaddr \notag \\
-        Q &\equiv\begin{multlined}[t]
-          \mathrip=\retaddr\wedge\mathrsp=\rspo+8\wedge\ldots\wedge \notag \\
-          \takebits{31,0}\rangle\mathrax=
-          \sextend(\readmem{\readmem{\rsio+
-              \sextend(\takebits{31,0}\rangle\rdio)*8-8}{8}}{1})
-          \end{multlined} \notag \\
-        M &\equiv\{\region{\rspo}{8}, \label{m:a} \\
-          &\equivsetfix\region{\rsio+\sextend(\takebits{31,0}\rdio)*8-8}{8},
-              \label{m:b} \\
-          &\equivsetfix\region{\readmem{\rsio+
-              \sextend(\takebits{31,0}\rdio)*8-8}{8}}{1}\} \label{m:c} \\
-        \var{MRR} &\equiv\begin{aligned}
-          \not\separate &= \varnothing \\
-          \enclosed &= \varnothing
-        \end{aligned} \notag
-      \end{align}%
-      \nomenclature{$\varnothing$}{Represents an empty set}
-    \end{subequations}
-    \caption{\Acl*{fmuc}\footnote{%
-      $\sextend$ indicates sign extension,
-      $\takebits{h,l}w$ indicates taking bits~$l$ through~$h$ of word~$w$,
-      and $\readmem{a}{n}$ indicates reading~$n$ bytes of memory
-      starting at address~$a$.
-    }}\label{fig:fmuc-thm}
-  \end{subfigure}
-  \caption{Example \acl*{fmuc}}\label{fig:fmuc}
-\end{figure*}
-
-The small program shown in \cref{fig:example-src} provides a simple example
-for \ac{fmuc} explanation. This one-function program
-returns the numeric value of the first character of its last command-line argument.
-When compiled to assembly (\arch\ using the System~V \ac{abi}),
-the program will resemble the code depicted in \cref{fig:example-asm}.
-In this assembly code,
-\lstinline|argc| maps to the register \inlineasm{edi},
-which is the low 32 bits of the 64-bit register \inlineasm{rdi},
-and \lstinline|argv| maps to \inlineasm{rsi}.
-After sign-extending \inlineasm{edi} to fill \inlineasm{rdi},
-that value and the other argument are used to calculate
-an address, stored in the register \inlineasm{rax},
-from which a one-byte value is read.
-That value sign extended and stored in the lower~32 bits of \inlineasm{rax},
-\inlineasm{eax}.
-
-To reiterate, \iac{fmuc} consists of two main parts:
-theorems on memory preservation and their associated proof ingredients,%
-\index{memory!preservation}%
-\index{proof!ingredient}
-the two of which are used in a theorem prover to prove the theorem.
-The \ac{fmuc} for the associated example can be seen in \cref{fig:fmuc-thm}.
-
-The function-level theorem is formulated as a Hoare triple, defined in \cref{def:preserve}.
-One set of proof ingredients,
-the \acp{mrr} required to ensure successful proof completion (detailed below),
-are included as assumptions on the theorem.
-The control flow ingredient,
-represented as the \ac{scf} variable~$f$, is a single basic block for this function
-starting at instruction address \inlineasm{4f0} and going to address \inlineasm{4fb}.
-Following that,
-the precondition~$P$ provides the starting conditions for the function,
-which include symbolic variables for initial register values,
-storage on the stack of the address to jump to after function execution,
-and the address of the instruction to start from
-(stored in the instruction pointer register, \inlineasm{rip}).
-The last of the traditional Hoare triple components is the postcondition~$Q$,
-which indicates completion of function execution
-by showing that the instruction pointer is now set to the address to return to,
-the stack pointer \inlineasm{rsp} has been updated with an increment of eight,
-and the return value register, \inlineasm{rax},
-contains the value \lstinline|argv[argc - 1][0]|.
-All additional callee-saved registers are shown to retain their initial values%
-\index{register!callee-saved}
-as well.
-
-Following the traditional Hoare triple elements is the memory region set,~$M$.
-For the function under consideration, this set consists of three regions.
-The eight-byte location of the return address
-on the stack frame (\cref{m:a}),
-the location of the pointer \lstinline|argv[argc - 1]| (\cref{m:b}),
-and the first element of the array pointed to by that pointer (\cref{m:c}).
-Without additional assumptions, those regions may \emph{alias};
-they may overlap or even be the same.
-While that is not a problem for this specific example,
-as none of the regions are written to, in cases where writes do occur
-aliasing can result in writes to regions
-that are not considered by symbolic execution.
-This can result in requirements for significant effort on the part of proof engineers,
-greatly reducing automation.
-To avoid such issues, the \ac{fmuc} generation methodology
-produces the aforementioned \acp{mrr} proof ingredient.%
-\index{proof!ingredient}
-\Acp{mrr} express which pairs of regions overlap ($\not\separate$)
-as well as which regions are enclosed within one another ($\enclosed$).
-
-The \ac{fmuc} for a function as a whole is broken down by Hoare rules
-to the level of basic blocks, each of which gets its own lemma
-to prove memory preservation for.
-The generation of these per-block lemmas involves generation of per-block
-pre- and postconditions as well; these conditions are treated as invariants.
-
-With the \acp{fmuc} as generated, their theorems and proof ingredients all considered,
-minimal effort is required in the vast majority of cases to complete the proofs.
-The main exception is functions containing loops.
-For functions that do have loops,
-as well as for any other cases where proof completion is not automatic,
-Isabelle/HOL proof strategies as documented in \cref{se:fmuc_ver}
-provide assistance in completing the proofs efficiently.
-
-\section{FMUC Generation}\label{se:fmuc_gen}
+\section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
 \begin{figure*}
   \centering
   \begin{tikzpicture}[>=stealth, gnode/.style={draw, rounded corners, text centered}]
@@ -226,14 +54,14 @@ provide assistance in completing the proofs efficiently.
       Invariants[gnode] ->[dashed] Certificate[gnode];
     };
   \end{tikzpicture}
-  \caption{\acs*{fmuc} overview}\label{fig:overview}
+  \caption{Overview of \acs*{fmuc} generation}\label{fig:overview}
 \end{figure*}
 
-\Acl{fmuc} require the assembly code of a program as input.
-That source assembly could be obtained from a binary using disassemblers such as \texttt{objdump},
+\Acp{fmuc} require the assembly code of a program as input.
+That source assembly could be obtained from a binary using a disassembler, such as \texttt{objdump},
 IDA\fturl{https://www.hex-rays.com/products/ida/index.shtml},
 Ghidra's decompiler\fturl{https://ghidra-sre.org/}, or Capstone \autocite{capstone}.
-or generated directly by a compiler when source code is available.
+If source code is available, it could be generated directly by a compiler instead.
 Each function specified for verification receives \iac{fmuc};
 those that are not included in the verification effort,%
 \index{verification!effort}
@@ -249,16 +77,16 @@ using \iac{cfg} analysis similar to angr's CFGFast%
 \autocite{shoshitaishvili2016state},
 ultimately producing \iac{scf} (the details of which are presented
 in \cref{sse:cfg_extract}).
-Afterwards, per-basic block symbolic execution,
-as detailed in \cref{ch:symbolic_execution},
+Afterwards, per-basic block symbolic execution
 is utilized to generate the set of memory regions
 read and written by the function in question.
+This was detailed in \cref{ch:symbolic_execution}.
 To eliminate duplicates and produce \acp{mrr}
 showing which regions overlap or are enclosed or separate,
-the region sets are fed to the \ac{smt} solver Z3 \autocite{de2008z3}.
+the region sets are then fed to the \ac{smt} solver Z3 \autocite{de2008z3}.
 Symbolic execution is also used in the process of generating
 the pre- and postconditions for each basic block,
-elaborated in \cref{sse:inv_gen}.
+elaborated on in \cref{sse:inv_gen}.
 
 With the exception of \ac{mrr} generation,
 none of the steps in this procedure are included in the \ac{tcb}.
@@ -669,7 +497,7 @@ the invariants that result from individual resume propagation
 are intersected to produce a singular invariant for all resumes,
 which is then returned along with all of the propagated resumes.
 
-\section{FMUC Verification}\label{se:fmuc_ver}
+\section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
 This section presents verification of \iac{fmuc} as shown in \cref{fig:verify},
 one of the primary contributions for this chapter as mentioned in its preamble.
 Both the \ac{fmuc} and the original assembly are loaded into Isabelle/HOL,
@@ -948,18 +776,16 @@ the set of memory regions~$M$ generated for the block should be correct.
 
 The second assumption is required because of an important subtlety:
 the regions generated in the~\ac{fmuc} are state dependent.
-Consider the example in \cref{fig:fmuc}.
-Memory region set~$M$ is actually a function based on the initial state of the block:
+$M$~is actually a function based on the initial state of the block:
 its regions depend on the values stored in memory.
 However, it makes no sense to express the regions used by individual blocks
 within a larger function in terms of their own individual initial state alone.
-If a region of a basic block somewhere within a function body depends on
-something such as the value of register $\mathrdi$ at the start of that block,
-then it would be unsound to express that memory region in terms of $\rdio$,
-the value of $\mathrdi$ at the start of the function.
+It would be unsound for regions that depend on values calculated
+in the middle of the function to be expressed solely in terms of the initial state.
 As such,
 the Hoare triples are defined over a state-independent set of memory regions,~$M'$.
-That set is obtained for each block by taking the generated state-dependent set of memory regions
+That set is obtained for each block
+by taking the generated state-dependent set of memory regions
 and applying that set to any state that satisfies the current invariant.
 
 \subsubsection{The Other Rules}
@@ -1085,7 +911,15 @@ and then supplying their disjunction to \lstinline|vcg_while|.
 This method relies on application of the weakening rule
 presented in \cref{fig:hoare-weaken} on \cref{step_weaken}
 to show that the postcondition of the block before entry implies the loop invariant.
-\todo{discuss \lstinline|vcg_step'| when Resumes are present}
+
+The method \lstinline|vcg_step'|, used within \lstinline|vcg_while|,
+is provided for those cases where a loop has multiple exit points.
+A $\AWhileResume$ statement will be present in such cases,
+and the process of rule application and simplification must occur
+in a slightly different order. On occasion, there will also be a loop that has a single
+exit point but gets a $\AWhileResume$ statement anyway
+due to how the control flow extraction algorithm is set up.
+The process of dealing with such statements is roughly the same, however.
 
 After application of \lstinline|vcg_while|,
 nested loops and those with multiple exit points may require
@@ -1582,8 +1416,7 @@ They deal with memory aliasing and provide both the control flow of the function
 as well as invariants.
 
 The approach was applied to three binaries produced by the Xen hypervisor build process.
-They contain, among other things, nested loops,
-complex data structures, variadic functions,
+They contain nested loops, complex data structures, variadic functions,
 and both internal and external function calls.
 A certificate could be generated and verified
 for \xenpercentage\ of the functions from those binaries.

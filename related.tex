@@ -180,6 +180,18 @@ While this stack safety approach is similar in focus to the memory preservation 
 I present here, the scope is much smaller.
 Their focus was specifically on stack memory rather than memory in general.
 
+\section{Hardware Verification}\label{se:hardware}
+On a level lower than the assembly code level, or even the machine code level,
+is the work done by hardware designers and testers
+to verify the products that run those codes.
+Quite often this is done with model checkers and \ac{smt} solvers.
+
+ARM recently released several of their \acp{isa} in a machine-parsable,
+executable format called \ac{asl}.
+It took them five years to 
+While not directly verifiable, such a format greatly aided in the development of
+that is \autocite{reid2016endtoend}.
+
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
 was the verification of the seL4 kernel \autocite{klein2009sel4,Klein_AEMSKH_14}.
