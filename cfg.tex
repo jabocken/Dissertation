@@ -73,8 +73,8 @@ Even recursive functions are supported, albeit with a caveat.%
 
 The caveat on recursion is that it requires a significant amount of work,
 much greater than that needed for loops or function calls alone.
-Recursive functions are equivalent to one or more loops that utilize a stack,
-which significantly complicates the necessary invariants
+Recursive functions are equivalent to one or more loops that utilize a stack.
+This significantly complicates the necessary invariants
 due to the fact that program stacks, when used with most modern \acp{isa},
 are stored in regular memory.
 Even when recursive code primarily uses registers
@@ -82,21 +82,20 @@ to hold most of the intermediate values and local variables,
 those locals must be stored on the stack with each recursive call%
 \index{stack}
 and potentially restored on return.
-Tail call recursion can help with that \autocite{clinger1998tail},%
+Tail call%
 \index{recursion!tail call}
-but only when it is supported by the compiler in use\footnote{%
-  \acs{gcc}, Clang, and \acs{icc} all support it
-  via the \texttt{-foptimize-sibling-calls} flag%
-} and is applicable to the functions under consideration
-(which is not the case for the examples presented in this paper).
-An advantage of this, however, is that a proof over a recursive function
-essentially requires showing termination
-and thus the avoidance of stack overflows\footnote{%
-  On a conceptual level, at least. Most modern language runtimes and \acp{os}
-  put limits on stack size as sanity checks;
-  this can be handled in control-flow-driven verification
-  by adding additional assumptions to the analysis.
-}.
+optimization, implemented in most major C and C++ compilers, can help with that
+by converting recursive implementations into loop-based ones that only use
+one stack frame for the recursion.
+Unfortunately, that only applies when the functions under consideration use
+the appropriate formulations proper tail calls require \autocite{probst2001proper}.
+Neither of the recursive functions examined in this chapter met those requirements.
+
+On a nicer note, an advantage of the requirements for proofs over recursion
+is that they essentially require showing termination of the recursion
+and thus the (conceptual) avoidance of stack overflows.
+Proving lack of overflow for a specific stack size
+would require some additional assumptions in the analysis.
 
 The process that selects cutpoints%
 \index{cutpoint}
