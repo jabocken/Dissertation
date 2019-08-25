@@ -1296,9 +1296,9 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
     \caption{Assumption due to call of \lstinline|is_even|}
   \end{subfigure}%
   \begin{subfigure}[b]{.5\linewidth}
-    \begin{lstlisting}[gobble=6]
+    \begin{lstlisting}[gobble=6, mathescape]
       apply (vcg scf: main_scf)
-      apply (vcg_while \<open>P_123e || P_1246\<close>)
+      apply (vcg_while \<open>$P_\mathtt{123e}$ || $P_\mathtt{1246}$\<close>)
       apply vcg_step+
     \end{lstlisting}
     \caption{Isabelle proof code (manual effort)}\label{fig:manual}
@@ -1459,7 +1459,7 @@ Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
       bar width=0.3,
       point meta=y/3.52,
       % the below sometimes causes build failure when combined with symbolic x coords
-      nodes near coords=\pgfmathprintnumber\pgfplotspointmeta\%,
+      nodes near coords=\pgfmathprintnumber\pgfplotspointmeta\,\%,
       enlarge y limits={value=0.2, upper},
       ymin=-20,
       ylabel=Function Count,

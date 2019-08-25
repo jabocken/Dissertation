@@ -32,9 +32,9 @@ you must first have some sort of \emph{machine model}.%
 \index{symbolic execution!machine model}
 The machine model used in this dissertation for the work in Isabelle/HOL
 is an extension of the work of \textcite{roessle2019}.
-They embedded bitvector-based, machine-learned semantics
-of a modern version of the x86-64 \ac{isa},
-which includes instruction set extensions such as the \ac{sse} family, in Isabelle/HOL.
+They embedded in Isabelle/HOL a bitvector-based semantics
+machine-learned from a modern version of the \arch\ \ac{isa},
+which includes instruction set extensions such as the \ac{sse} family.
 To improve reliability of their work,
 it was tested against an actual, live x86-64 machine to prove semantic equivalence.
 The semantics they used was an extension of that provided by \textcite{heule2016stratified},

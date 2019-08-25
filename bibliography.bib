@@ -6,6 +6,21 @@
 @String{IEEELoc = "Piscataway, NJ, US"}
 @String{Springer = "Springer-Verlag"}
 @String{SpringerLoc = "Berlin Heidelberg"}
+@String{Kluwer = "Kluwer Academic Publishers"}
+@String{KluwerLoc = "The Netherlands"}
+
+@XData{acm,
+  publisher = ACM,
+  location = ACMLoc
+}
+@XData{springer,
+  publisher = Springer,
+  location = SpringerLoc
+}
+@XData{ieee,
+  publisher = IEEE,
+  location = IEEELoc
+}
 
 % editor = {}, number = {}, don't have the LNCS number yet
 @unpublished{bockenek2019preservation,
@@ -19,9 +34,18 @@
   venue = {Turku, Finland},
   date = {2019-09},
   day = {10/13},
-  publisher = Springer,
-  location = SpringerLoc,
-  note = {Accepted but not yet published}
+  note = {Accepted but not yet published},
+  xdata = {springer}
+}
+
+@software{bockenek2019artifact,
+  author = {Joshua Bockenek and Freek Verbeek and Peter Lammich and Binoy Ravindran},
+  title = {Formal Verification of Memory Preservation of x86-64 Binaries},
+  subtitle = {SAFECOMP 2019 supplemental material},
+  date = {2019-07-24},
+  origdate = {2018-11-20},
+  version = 4,
+  doi = {10.6084/m9.figshare.7356110.v4}
 }
 
 @unpublished{popl2019underreview,
@@ -34,9 +58,12 @@
 @inproceedings{verbeek2019refinement,
   title = {Establishing a Refinement Relation between Binaries and Abstract Code},
   author = {Freek Verbeek and Joshua A. Bockenek and Abhijith Bharadwaj and Ian Roessle and Binoy Ravindran},
-  booktitle = {Proceedings of 17th ACM-IEEE International Conference on Formal Methods and Models for System Design},
+  booktitle = {Formal Methods and Models for System Design},
+  booktitleaddon = {Proceedings of 17th ACM-IEEE International Conference},
   series = {MEMOCODE'19},
-  year = 2019
+  date = 2019,
+  eventdate = {2019-10-09/2019-10-11},
+  venue = {San Diego, CA, USA}
 }
 
 @article{rice1953classes,
@@ -58,9 +85,7 @@
 @online{heartbleed,
   title = {Heartbleed Bug},
   url = {http://heartbleed.com/},
-  year = 2014,
-  month = apr,
-  day = 29,
+  date = {2014-04-29},
   urldate = {2019-08-22}
 }
 
@@ -76,8 +101,7 @@
   pages = {61-69},
   numpages = 9,
   acmid = 2541895,
-  publisher = ACM,
-  location = ACMLoc,
+  xdata = {acm}
 }
 
 @inproceedings{reynolds2002separation,
@@ -93,8 +117,7 @@
   eventdate={2002-07-22/2002-07-25},
   doi={10.1109/LICS.2002.1029817},
   issn={1043-6871},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata={ieee}
 }
 
 @inproceedings{saxena2009lese,
@@ -110,8 +133,7 @@
   pages = {225-236},
   numpages = 12,
   acmid = 1572299,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{obdrzalek2011efficient,
@@ -129,12 +151,11 @@
   venue = {Taipei, Taiwan},
   eventdate = {2001-10-11/2001-10-14},
   doi={doi.org/10.1007/978-3-642-24372-1_34},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{lankes2016hermitcore,
-  title = {Hermit{C}ore: A Unikernel for Extreme Scale Computing},
+  title = {{HermitCore}: A Unikernel for Extreme Scale Computing},
   author = {Lankes, Stefan and Pickartz, Simon and Breitbart, Jens},
   booktitle = {Runtime and Operating Systems for Supercomputers},
   booktitleaddon = {Proceedings of the 6th International Workshop},
@@ -148,8 +169,7 @@
   articleno = 4,
   numpages = 8,
   acmid = 2931093,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{heule2016stratified,
@@ -166,8 +186,7 @@
   numpages = 14,
   doi = {10.1145/2908080.2908121},
   acmid = 2908121,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{roessle2019,
@@ -184,8 +203,7 @@
   numpages = 15,
   acmid = 3294102,
   doi = {10.1145/3293880.3294102},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @article{floyd1967assigning,
@@ -210,8 +228,7 @@
   pages = {576-580},
   acmid = 363259,
   doi = {10.1145/363235.363259},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @article{hoare1978csp,
@@ -226,8 +243,7 @@
   pages = {666-677},
   doi = {10.1145/359576.359585},
   acmid = 359585,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @article{hoare1980clothes,
@@ -238,12 +254,11 @@
   volume = 24,
   number = 2,
   pages = {75-83},
-  publisher = ACM,
-  location = ACMLoc  
+  xdata = {acm}
 }
 
 @inproceedings{myreen2007hoare,
-  title = {Hoare Logic for Realistically Modelled Machine Code},
+  title = {Hoare Logic for Realistically Modelled Machine Code},
   author = {Myreen, Magnus O. and Gordon, Michael J. C.},
   editor = {Grumberg, Orna and Huth, Michael},
   booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
@@ -256,8 +271,7 @@
   doi = {10.1007/978-3-540-71209-1_44},
   venue = {Braga, Portugal},
   eventdate = {2007-03-24/2007-04-01},
-  publisher = Springer,
-  location = SpringerLoc,
+  xdata = {springer},
   pages = {568-582}
 }
 
@@ -272,12 +286,11 @@
   pages = {385-394},
   doi = {10.1145/360248.360252},
   acmid = 360252,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{shoshitaishvili2016state,
-  title= {So{K}: (State of) The Art of War: Offensive Techniques in Binary Analysis},
+  title= {{SoK}: (State of) The Art of War: Offensive Techniques in Binary Analysis},
   author = {Shoshitaishvili, Yan and Wang, Ruoyu and Salls, Christopher and
   Stephens, Nick and Polino, Mario and Dutcher, Audrey and Grosen, John and
   Feng, Siji and Hauser, Christophe and Kruegel, Christopher and Vigna, Giovanni},
@@ -288,12 +301,11 @@
   venue = {San Jose, CA, USA},
   doi = {10.1109/SP.2016.17},
   url = {https://angr.io/},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{wang2017angr,
-  title = {{A}ngr -- The Next Generation of Binary Analysis},
+  title = {{Angr} -- The Next Generation of Binary Analysis},
   author = {Wang, Fish and Shoshitaishvili, Yan},
   booktitle = {2017 IEEE Cybersecurity Development},
   shorttitle = {SecDev},
@@ -302,8 +314,7 @@
   eventdate = {2017-09-24/2017-09-26},
   venue = {Cambridge, MA, USA},
   doi = {10.1109/SecDev.2017.14},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{wang2017ramblr,
@@ -323,28 +334,17 @@
   urldate = {2019-08-22}
 }
 
-@inproceedings{clinger1998tail,
-  title = {Proper Tail Recursion and Space Efficiency},
-  author = {Clinger, William D.},
-  editor = {Berman, A. Michael},
-  booktitle = {Programming Language Design and Implementation},
-  booktitleaddon = {Proceedings of the ACM SIGPLAN 1998 Conference},
-  shorttitle = {PLDI '98},
-  year = 1998,
-  isbn = {0-89791-987-4},
-  venue = {Montreal, Quebec, Canada},
-  eventdate = {1998-06-17/1998-06-19},
-  pages = {174-185},
-  acmid = 277719,
-  doi = {10.1145/277650.277719},
-  publisher = ACM,
-  location = ACMLoc,
+@thesis{probst2001proper,
+  title={Proper Tail Recursion in {C}},
+  author={Probst, Mark},
+  date={2001-02-02},
+  institution={Institute of Computer Languages, TU Wien}
 }
 
 @book{chisnall2008definitive,
   title = {The Definitive Guide to the Xen Hypervisor},
   author = {Chisnall, David},
-  year = 2008,
+  date = 2008,
   publisher = {Pearson Education},
   location = {London, England, UK}
 }
@@ -372,8 +372,7 @@
   shortseries = {LNCS},
   number = 4963,
   doi = {10.1007/978-3-540-78800-3_24},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @online{capstone,
@@ -390,7 +389,7 @@
   version = {2.6},
   author = {Barrett, Clark and Fontaine, Pascal and Tinelli, Cesare},
   numpages = 104,
-  day = {2017-07-18},
+  date = {2017-07-18},
   url = {http://smtlib.cs.uiowa.edu/papers/smt-lib-reference-v2.6-r2017-07-18.pdf},
   urldate = {2019-08-22}
 }
@@ -398,6 +397,7 @@
 @online{smtlib:bitvector-logic,
   title = {{QF\_UFBV} | {SMT-LIB} The Satisfiability Modulo Theories Library},
   author = {Cesare Tinelli},
+  organization = {The SMT-LIB Initiative},
   url = {http://smtlib.cs.uiowa.edu/logics-all.shtml#QF_UFBV},
   date = {2017-07-18},
   urldate = {2019-08-22}
@@ -406,6 +406,7 @@
 @online{smtlib:bitvector-theory,
   title = {{FixedSizeBitVectors} | {SMT-LIB} The Satisfiability Modulo Theories Library},
   author = {Silvio Ranise and Cesare Tinelli and Clark Barrett},
+  organization = {The SMT-LIB Initiative},
   date = {2017-06-13},
   url = {http://smtlib.cs.uiowa.edu/theories-FixedSizeBitVectors.shtml},
   urldate = {2019-08-22}
@@ -425,8 +426,7 @@
   venue = {Paris, France},
   eventdate = {2001-09-10/2001-09-13},
   pages = {1-19},
-  publisher = Springer,
-  location = SpringerLoc,
+  xdata = {springer},
   isbn = {978-3-540-44802-0},
   doi = {doi.org/10.1007/3-540-44802-0}
 }
@@ -444,8 +444,7 @@
   date = {2017-03-19},
   venue = {Uppsala, Sweden},
   eventdate = {2017-04-22/2017-04-29},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{cowan1998stackguard,
@@ -470,7 +469,7 @@
   date = {2016-03-01},
   doi = {10.1007/s10817-015-9360-2},
   publisher = {Springer},
-  location = {Netherlands}
+  location = KluwerLoc
 }
 
 @online{butler:fm,
@@ -511,12 +510,12 @@
   number = 2283,
   date = {2002-01},
   doi = {10.1007/3-540-45949-9},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer},
+  url = {https://isabelle.in.tum.de/}
 }
 
 @article{wenzel2007isabelle,
-  title = {Isabelle/{I}sar---A Generic Framework for Human-Readable Proof Documents},
+  title = {Isabelle/{Isar}---A Generic Framework for Human-Readable Proof Documents},
   author = {Wenzel, Makarius},
   journaltitle = {From Insight to Proof---Festschrift in Honour of Andrzej Trybulec},
   volume = 10,
@@ -542,8 +541,7 @@
   pages = {166-192},
   date = {1996-01},
   doi = {10.1145/227595.227603},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @book{boyer1979computational,
@@ -567,8 +565,7 @@
   pages = {97-111},
   doi = {10.1049/sej.1988.0012},
   ISSN = {0268-6961},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{carre1986spade,
@@ -589,8 +586,8 @@
   pages = "411-428",
   issn = "1573-0670",
   doi = "10.1007/BF00243131",
-  publisher = {Kluwer Academic Publishers},
-  location = {Netherlands}
+  publisher = Kluwer,
+  location = KluwerLoc
 }
 
 @article{bevier1989short,
@@ -604,8 +601,8 @@
   origdate = {1989-04-21},
   issn = {1573-0670},
   doi = {doi.org/10.1007/BF00243135},
-  publisher = {Kluwer Academic Publishers},
-  location = {Netherlands}
+  publisher = Kluwer,
+  location = KluwerLoc
 }
 
 @article{bevier1989kit,
@@ -618,8 +615,7 @@
   pages = {1382-1396},
   doi = {10.1109/32.41331},
   ISSN = {0098-5589},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @phdthesis{bevier1987verified,
@@ -640,8 +636,8 @@
   pages="429-460",
   issn="1573-0670",
   doi="10.1007/BF00243132",
-  publisher = {Kluwer Academic Publishers},
-  location = {Netherlands}
+  publisher = Kluwer,
+  location = KluwerLoc
 }
 
 @article{young1989generator,
@@ -655,8 +651,8 @@
   pages="493-518",
   issn="1573-0670",
   doi="10.1007/BF00243134",
-  publisher = {Kluwer Academic Publishers},
-  location = {Netherlands}
+  publisher = Kluwer,
+  location = KluwerLoc
 }
 
 @techreport{good1986gypsy,
@@ -685,8 +681,8 @@
   pages="461-492",
   issn="1573-0670",
   doi="10.1007/BF00243133",
-  publisher = {Kluwer Academic Publishers},
-  location = {Netherlands}
+  publisher = Kluwer,
+  location = KluwerLoc
 }
 
 @inproceedings{matthews2006verification,
@@ -704,8 +700,7 @@
   venue = {Phnom Penh, Cambodia},
   eventdate = {2006-11-13/2006-11-17},
   doi = {10.1007/11916277_25},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{goel2014syscalls,
@@ -719,8 +714,7 @@
   eventdate = {2014-10-21/2014-10-24},
   pages = {91-98},
   doi = {10.1109/FMCAD.2014.6987600},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @phdthesis{goelphd,
@@ -762,8 +756,7 @@
   venue = {Portland, OR, USA},
   eventdate = {2008-11-17/2008-11-20},
   doi = {10.1109/FMCAD.2008.ECP.24},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{myreen2012decompilation,
@@ -775,14 +768,13 @@
   date = {2013-02-19},
   venue = {Cambridge, UK},
   eventdate = {2012-10-22/2012-10-25},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @book{ACL2,
   title = {Computer-Aided Reasoning: An Approach},
   author = {Matt Kaufmann and Panagiotis Manolios and J Strother Moore},
-  publisher = {Kluwer Academic Publishers},
+  publisher = Kluwer,
   location = SpringerLoc,
   year = 2000
 }
@@ -802,8 +794,7 @@
   venue = {Montreal, Canada},
   eventdate = {2008-08-18/2008-08-21},
   doi = {10.1007/978-3-540-71067-7_6},
-  organization = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{sewell2013tvv,
@@ -819,8 +810,7 @@
   pages = {471-482},
   numpages = 12,
   acmid = 2462183,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{feng2006modular,
@@ -836,15 +826,14 @@
   pages = {401-414},
   date = {2006-06},
   doi = {10.1145/1133981.1134028},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @techreport{feng2005sbca,
   title       = {Modular Verification of Assembly Code with Stack-Based Control Abstractions},
   author      = {Xinyu Feng and Zhong Shao and Alexander Vaynberg and Sen Xiang and Zhaozhong Ni},
   number      = {YALEU/DCS/TR-1336},
-  institution = {Yale University Department of Computer Science},
+  institution = {Department of Computer Science, Yale University},
   location    = {New Haven, CT, USA},
   date        = {2005-11},
   pagetotal   = 24,
@@ -862,8 +851,7 @@
   venue = {Paris, France},
   eventdate = {1997-01-15/1997-01-17},
   doi = {10.1145/263699.263712},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @book{chlipala2013certified,
@@ -875,7 +863,7 @@
 }
 
 @inproceedings{klein2009sel4,
-  title={se{L}4: Formal Verification of an {OS} Kernel},
+  title={{seL4}: Formal Verification of an {OS} Kernel},
   author={Klein, Gerwin and Elphinstone, Kevin and Heiser, Gernot and Andronick, June and Cock, David and Derrin, Philip and Elkaduwe, Dhammika and Engelhardt, Kai and Kolanski, Rafal and Norrish, Michael and others},
   booktitle={Operating Systems Principles},
   booktitleaddon={Proceedings of the 22nd ACM SIGOPS Symposium},
@@ -885,8 +873,7 @@
   venue={Big Sky, MT, USA},
   eventdate={2009-10-11/2009-10-14},
   doi={10.1145/1629575.1629596},
-  publisher=ACM,
-  location=ACMLoc
+  xdata = {acm}
 }
 
 @article{Klein_AEMSKH_14,
@@ -901,8 +888,7 @@
   date             = {2014-02},
   pages            = {2:1-2:70},
   articleno        = 2,
-  publisher        = ACM,
-  location         = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{greenaway2012bridging,
@@ -920,8 +906,7 @@
   venue = {Princeton, NJ, USA},
   eventdate = {2012-08-13/2012-08-15},
   doi = {10.1007/978-3-642-32347-8_8},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @INPROCEEDINGS{shi2012orientais,
@@ -935,8 +920,7 @@
   isbn = {978-2-9541-8100-4},
   venue = {Paris, France},
   eventdate = {2012-07-18/2012-07-20},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @INPROCEEDINGS{shi2012xbil,
@@ -949,8 +933,7 @@
   pages = {211-219},
   venue = {Paris, France},
   eventdate = {2012-07-18/2012-07-20},
-  publisher = IEEE,
-  location = IEEELoc  
+  xdata = {ieee}
 }
 
 @inproceedings{rushby1981dvss,
@@ -967,8 +950,7 @@
   acmid = 806586,
   venue = {Pacific Grove, CA, USA},
   eventdate = {1981-12-14/1981-12-16},
-  publisher = ACM,
-  location = ACMLoc,
+  xdata = {acm}
 } 
 
 @techreport{rushby1992noninterference,
@@ -992,8 +974,7 @@
   numpages = 10,
   doi = {10.1145/2517300.2517302},
   acmid = 2517302,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 } 
 
 @inproceedings{dam2013formal,
@@ -1008,8 +989,7 @@
   venue = {Berlin, Germany},
   eventdate = {2013-11-04/2013-11-08},
   doi = {10.1145/2508859.2516702},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{baumann2016high,
@@ -1022,8 +1002,7 @@
   doi={10.1109/EuCNC.2016.7561034},
   venue={Athens, Greece},
   eventdate={2016-06-27/2016-06-30},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{brumley2011bap,
@@ -1042,8 +1021,7 @@
   doi = {10.1007/978-3-642-22110-1_37},
   venue={Snowbird, UT, USA},
   eventdate={2011-07-14/2011-07-20},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{fox2010arm,
@@ -1062,8 +1040,7 @@
   pages = {243-258},
   isbn = {978-3-642-14052-5},
   doi = {10.1007/978-3-642-14052-5_18},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{fox2015improved,
@@ -1096,8 +1073,7 @@
   year = 2007,
   venue = "Berlin, Germany",
   eventdate = "2007-07-03/2007-07-07",
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @InProceedings{ganesh2007stp,
@@ -1110,7 +1086,7 @@
 }
 
 @inproceedings{leroy:compcert,
-  TITLE = {Comp{C}ert - A Formally Verified Optimizing Compiler},
+  TITLE = {{CompCert} - A Formally Verified Optimizing Compiler},
   AUTHOR = {Leroy, Xavier and Blazy, Sandrine and K\"astner, Daniel and Schommer, Bernhard and Pister, Markus and Ferdinand, Christian},
   eprint = {hal-01238879},
   eprinttype = {hal},
@@ -1122,7 +1098,6 @@
   NUMPAGES = 8,
   date = {2016-01},
   publisher = {HAL},
-  PDF = {\url{https://hal.inria.fr/hal-01238879/file/erts2016_compcert.pdf}},
   HAL_ID = {hal-01238879},
   HAL_VERSION = {v1},
 }
@@ -1140,8 +1115,7 @@
   pages = {179-191},
   acmid = 2535841,
   doi = {10.1145/2535838.2535841},
-  publisher = ACM,
-  location = ACMLoc,
+  xdata = {acm},
   url = {https://cakeml.org/}
 }
 
@@ -1169,15 +1143,13 @@
   number = 5352,
   venue = {Hyderabad, India},
   eventdate = {2008-12-16/2008-12-20},
-  publisher = Springer,
-  location = SpringerLoc,
+  xdata = {springer},
   date = {2008-12},
   isbn = {978-3-540-89861-0},
   note = {Keynote invited paper}
 }
 
 @online{BitBlazeWebSite,
-  key = {BitBlaze},
   title = {{BitBlaze}: Binary Analysis for Computer Security},
   url = {http://bitblaze.cs.berkeley.edu/},
   date = {2013-07-16},
@@ -1199,8 +1171,7 @@
   venue = {Boston, MA, USA},
   eventdate = {2004-07-13/2004-07-17},
   doi = {10.1007/978-3-540-27813-9_49},
-  publisher = Springer,
-  location = SpringerLoc
+  xdata = {springer}
 }
 
 @inproceedings{barrett2007cvc3,
@@ -1227,8 +1198,7 @@
   isbn="978-3-642-20398-5",
   doi="10.1007/978-3-642-20398-5_33",
   url="https://fbinfer.com/",
-  publisher=Springer,
-  location=SpringerLoc
+  xdata = {springer}
 }
 
 @article{hovemeyer2004findbugs,
@@ -1243,8 +1213,7 @@
   url = {http://findbugs.sourceforge.net/},
   doi = {10.1145/1052883.1052895},
   acmid = 1052895,
-  publisher = ACM,
-  location = ACMLoc,
+  xdata = {acm}
 } 
 
 @article{evans2002static,
@@ -1257,8 +1226,7 @@
   pages={42-51},
   doi={10.1109/52.976940},
   ISSN={0740-7459},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{oneill1988verification,
@@ -1292,8 +1260,7 @@
   venue = {Atlantic City, NJ, USA},
   eventdate = {1972-05-16/1972-05-18},
   doi = {10.1145/1478873.1478920},
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @article{feustel1973advantages,
@@ -1305,8 +1272,7 @@
   pages = {644-656},
   date = {1973-07},
   doi = {10.1109/TC.1973.5009130},
-  publisher = IEEE,
-  location = IEEELoc
+  xdata = {ieee}
 }
 
 @online{thornton2008rice,
@@ -1331,8 +1297,7 @@
   numpages = 40,
   doi = {10.1145/1609956.1609960},
   acmid = 1609960,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @Inbook{clarke2012modelchecking,
@@ -1345,8 +1310,7 @@
   series = {Lecture Notes in Computer Science},
   shortseries = {LNCS},
   number = 7682,
-  publisher=Springer,
-  location=SpringerLoc,
+  xdata = {springer},
   pages="1--30",
   isbn="978-3-642-35746-6",
   doi="10.1007/978-3-642-35746-6_1"
@@ -1382,8 +1346,7 @@
   ISSN={2163-2871},
   venue={Matsue, Japan},
   eventdate={2014-11-17/2014-11-19},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
 }
 
 @inproceedings{zhao2013iot,
@@ -1395,8 +1358,7 @@
   doi={10.1109/CIS.2013.145},
   venue={Leshan, China},
   eventdate={2013-12-14/2013-12-15},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
 }
 
 @online{smackers2019,
@@ -1430,8 +1392,7 @@
   ISSN={1558-1101},
   venue={Florence, Italy},
   eventdate={2019-03-25/2019-03-29},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
 }
 
 @techreport{ieee:psl,
@@ -1441,8 +1402,7 @@
   date={2010-04-06},
   pages={1-182},
   doi={10.1109/IEEESTD.2010.5446004},
-  institute=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
 }
 
 @article{fromherz2019verified,
@@ -1460,8 +1420,7 @@
   numpages = 30,
   doi = {10.1145/3290376},
   acmid = 3290376,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 } 
 
 @online{fstar,
@@ -1497,8 +1456,7 @@
   numpages = 17,
   doi = {10.1145/2908080.2908100},
   acmid = 2908100,
-  publisher = ACM,
-  location = ACMLoc
+  xdata = {acm}
 }
 
 @Article{blazy2009clight,
@@ -1551,8 +1509,7 @@
   numpages = 9,
   doi = {10.1145/1631716.1631721},
   acmid = 1631721,
-  publisher = ACM,
-  address = ACMLoc
+  xdata = {acm}
 }
 
 @inproceedings{schlich2007automotive,
@@ -1566,6 +1523,91 @@
   pages={209-216},
   doi={10.1109/SIES.2007.4297337},
   ISSN={2150-3109},
-  publisher=IEEE,
-  location=IEEELoc
+  xdata = {ieee}
+}
+
+@online{llvm:functions,
+  title = {LLVM Language Reference Manual -- LLVM 10 documentation},
+  titleaddon = {Functions},
+  url = {https://llvm.org/docs/LangRef.html#functions},
+  date = {2019-08-23},
+  urldate = {2019-08-24}
+}
+
+@online{llvm:terminators,
+  title = {LLVM Language Reference Manual -- LLVM 10 documentation},
+  titleaddon = {Terminators},
+  url = {https://llvm.org/docs/LangRef.html#terminators},
+  date = {2019-08-23},
+  urldate = {2019-08-24}
+}
+
+@inproceedings{reid2016arm,
+  title = {Trustworthy Specifications of {ARM} {v8-A} and {v8-M} System Level Architecture},
+  authors = {Alastair Reid},
+  booktitle = {Formal Methods in Computer-Aided Design},
+  booktitleaddon = {Proceedings of the 16th International Conference},
+  shorttitle = {FMCAD 2016},
+  affiliation = {ARM Ltd},
+  isbn = {978-0-9835678-6-8},
+  venue = {Mountain View, CA, USA},
+  eventdate = {2016-10-03/2016-10-06},
+  pages = {161-168},
+  url = {https://alastairreid.github.io/papers/FMCAD_16/},
+  date = {2016-10},
+  publisher = {FMCAD Inc},
+  location = {Austin, TX, USA}
+}
+
+@article{bowen1985cards,
+  title = {Standard Microprocessor Programming Cards},
+  author = {Jonathan Bowen},
+  journaltitle = {Microprocessors and Microsystems},
+  volume = 9,
+  number = 6,
+  date = {1985-07/1985-08},
+  pages = {274-289},
+  publisher = {Elsevier B.V.},
+  location = {Amsterdam, Netherlands},
+  doi = {10.1016/0141-9331(85)90116-4}
+}
+
+@mvbook{intel2019manual,
+  title = {Intel 64 and IA-32 Architectures},
+  subtitle = {Software Developer's Manual},
+  volumes = 4,
+  origdate = {2016-10-12},
+  date = {2019-05-21},
+  url = {https://software.intel.com/en-us/articles/intel-sdm},
+  urldate = {2019-08-25},
+  publisher = {Intel Corporation}
+}
+
+@article{jamil1995rc,
+  title={{RISC} versus {CISC}},
+  subtitle={Why less is more},
+  author={Tariq Jamil},
+  journal={IEEE Potentials},
+  date={1995-08/1995-09},
+  volume=14,
+  number=3,
+  pages={13-16},
+  doi={10.1109/45.464688},
+  ISSN={0278-6648},
+  xdata = {ieee}
+}
+
+@inproceedings{blem2013struggles,
+  title={Power Struggles: Revisiting the {RISC} vs. {CISC} Debate on Contemporary {ARM} and x86 Architectures},
+  author={Emily Blem and Jaikrishnan Menon and Karthikeyan Sankaralingam},
+  booktitle={High Performance Computer Architecture},
+  booktitleaddon={IEEE 19th International Symposium},
+  shorttitle={HPCA 2013},
+  date={2013-06-03},
+  pages={1-12},
+  doi={10.1109/HPCA.2013.6522302},
+  ISSN={1530-0897},
+  venue={Shenzhen, China},
+  eventdate={2013-02-23/2013-02-27},
+  xdata={ieee}
 }

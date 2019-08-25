@@ -199,12 +199,12 @@ That work was based on an earlier one for an ARMv7 separation kernel,
 PROSPER \autocite{dam2013hypervisor,dam2013formal}.
 
 Around the same time, \textcite{goel2014syscalls,goelphd} produced formal semantics
-for most user-mode x86-64 instructions as well as for commonly-used system calls.
+for most user-mode \arch\ instructions as well as for commonly-used system calls.
 Their work allows mechanized reasoning over compiled programs
 in the ACL2 theorem prover \autocite{ACL2}.
 
 Additionally, earlier this year, \textcite{fromherz2019verified} embedded a subset
-of the x86-64 \ac{isa} in the functional, verification-oriented language
+of the \arch\ \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to perform a proof of correctness
 over the commonly-used cryptographic routine AES-GCM.
@@ -214,7 +214,7 @@ This dissertation presents two formal approaches to function-oriented verificati
 of the assembly-level property we call \emph{memory preservation},
 described in \cref{memory_usage}:
 \emph{control-flow-driven} verification and \emph{syntax-driven} verification.
-Both approaches use some form of control-flow analysis over functions in x86-64 assembly
+Both approaches use some form of control-flow analysis over functions in \arch\ assembly
 to generate incomplete proofs.
 Those proofs are then loaded into the interactive theorem prover Isabelle/HOL
 and completed there. The proof strategies for both approaches involve
@@ -390,7 +390,7 @@ or an average of \num{16} manual lines of proof for every loop handled,
 of which there were \num{65}.
 
 To the best of my knowledge, this is the first work to achieve that degree of automation
-for optimized x86-64 binaries produced by production code.
+for optimized \arch\ binaries produced by production code.
 
 \section{Organization of Dissertation}
 Following this introduction in \cref{ch:related} is a review of tools and work

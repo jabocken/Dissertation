@@ -54,6 +54,12 @@
 }
 \DeclareAcronym{aec2}{short=Amazon EC2, long=Amazon Elastic Compute Cloud}
 \DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs}
+\DeclareAcronym{aot}{
+  short            = AOT,
+  short-indefinite = an,
+  long             = ahead-of-time,
+  long-indefinite  = an
+}
 \DeclareAcronym{atp}{
   short            = ATP,
   short-indefinite = an,
@@ -139,6 +145,7 @@
   long             = interactive theorem proving,
   long-indefinite  = an
 }
+\DeclareAcronym{jit}{short=JIT, long=just-in-time}
 \DeclareAcronym{jvm}{short=JVM, long=Java virtual machine}
 \DeclareAcronym{lfp}{
   short            = LFP,
@@ -208,6 +215,8 @@
 \DeclareAcronym{vcg}{short=VCG, long=verification condition generator}
 \DeclareAcronym{vm}{short=VM, long=virtual machine}
 \DeclareAcronym{vmm}{short=VMM, long=virtual machine monitor}
+\DeclareAcronym{cisc}{short=CISC, long=complex instruction set computer}
+\DeclareAcronym{risc}{short=RISC, long=reduced instruction set computer}
 
 \lstdefinelanguage
   [x64]{Assembler}     % add an "x64" dialect of Assembler
@@ -235,12 +244,16 @@
   stringstyle=\color{brown},
 }
 
+%% name shorthands and stuff
+\newcommand*\arch{x86-64}
+
 \newcommand*\mcsquare{\textsc{[mc]square}}
 
 \newcommand{\xenpercentage}{\SI{71}{\percent}}
 \newcommand{\xenpercentagenot}{\SI{29}{\percent}}
 
-\newcommand{\inlineasm}[1]{\lstinline[style=x64]|#1|}
+\newcommand*\inlineasm[1]{\lstinline[style=x64]|#1|}
+\newcolumntype{A}{>{\begingroup\ttfamily\bfseries\color{blue}}l<{\endgroup}}
 
 %% Math commands
 \newcommand{\letin}[2]{\textbf{let} \(#1\) \textbf{such that} \(#2\)}
@@ -403,7 +416,7 @@
   \frontmatter
   \maketitle
 
-  \microtypesetup{protrusion=false} % avoiding potential line length alterations in the lists
+  \microtypesetup{protrusion=false} % suggested by the docs to avoid the list dots getting misaligned
   \tableofcontents
   \listoffigures
   \listoftables
