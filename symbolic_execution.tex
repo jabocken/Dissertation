@@ -1,29 +1,34 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-\todo{Add preamble: give overview first, then outline.
+\todo{Add preamble: give intro then overview/outline first.
   Maybe combine the two if it feels like doing otherwise is too much.}
+
+\todo{give some attribution too}
 
 \begin{example}[Aggregation]\label{ex:aggregation}
   Consider the following two instructions:
   \begin{lstlisting}[style=x64, gobble=4]
-    xor eax, eax
+    xor ax, ax
     add al, 1
   \end{lstlisting}
   These instructions write to the 64-bit register \inlineasm{rax}.
-  Registers \inlineasm{eax} and \inlineasm{al} respectively refer
-  to the low 32 and 8 bits of that register.
+  Registers \inlineasm{ax} and \inlineasm{al} respectively refer
+  to the low~16 and~8 bits of that register.
   Symbolic execution produces the following assignment:
-  $\mathrax\coloneqq\takebits{63,32}\mathrax\concat 1_{32}$.
-  Here $\takebits{63,32}$ denotes taking the higher 32 bits%
+  $\mathrax\coloneqq\takebits{63,16}\mathrax\concat 1_{16}$.
+  Here $\takebits{63,16}$ denotes taking the higher 48 bits%
   \nomenclature{$\takebits{h,l}w$}{Indicates taking bits in word~$w$
     from bit~$l$ to bit~$h$ using 0-indexing}
   and~$\concat$ denotes concatenation,%
   \nomenclature{$\concat$}{Indicates bitstring concatenation}
-  with $1_{32}$ being the number one zero-extended to~32 bits.
-  The \inlineasm{xor} instruction sets the lower~$32$ bits of the register to zero
+  with $1_{16}$ being the number one zero-extended to~16 bits.
+  The \inlineasm{xor} instruction sets the lower~16 bits of the register to zero
   while \inlineasm{add} increments the lower byte by one.
-  Both instructions keep the higher~32 bits intact.
-  The aggregate result is overwriting the lower~32 bits of the register
-  with the 32-bit representation of the number one.
+  Both instructions keep the higher~48 bits intact.
+  The aggregate result is overwriting the lower~16 bits of the register
+  with the 16-bit representation of the number one.
+
+  Note that if this had used \inlineasm{eax} instead, the upper 32~bits of \inlineasm{rax} would have been zeroed out as well
+  due to the semantics of operations on 32-bit registers in \arch.
 \end{example}
 
 \section{Machine Model}\label{se:machine_model}
