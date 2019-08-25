@@ -1,22 +1,34 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
 The memory usage analysis approach presented in this chapter
-features a Floyd-style methodology as described in \cref{se:cfg_invariant}.
-This methodology allows for minimization of symbolic execution%
-\index{symbolic execution} while still ensuring correctness.
-It also provides proper loop handling.
-
-An overview of the methodology can be seen in \cref{fig:cfg_overview}.
-The main goal of the approach is to prove the property of \emph{memory preservation},%
-\index{memory!preservation}.
-In short, this property ensures only documented regions of memory are modified;%
+features a Floyd-style methodology as described in \cref{se:cfg_invariant}
+to prove the previously-mentioned property of memory preservation%
+\index{memory!preservation}
+for individual functions.
+That property ensures that only documented regions of memory are modified;%
 \index{memory!region}
 anything outside of those regions remains unchanged.
-This property has the potential to be used
-to prove the absence of common memory-related issues,
-such as buffer overflows or some forms of data leakage.
 
-My three main contributions to the memory preservation work presented here
-were:
+The methodology can be applied to functions with loops and subcalls,
+including directly-recursive calls.
+It can be used to prove the absence of common memory-related issues,
+such as buffer and stack overflows. In cases where overflow may occur,
+the methodology documents the assumptions required to prevent it.
+For efficiency, it structures the \emph{Floyd invariant} for a function
+such that every path through the program is symbolically executed%
+\index{symbolic execution}
+only once.
+
+A further overview of control-flow-driven verification
+can be seen in \cref{se:cfg_overview},
+with formal definitions of the needed constructs presented in \cref{se:cfg_defs}.
+Following that, \cref{se:cfg_composition} describes how the method uses composition
+on the function level and within function bodies.
+Two examples providing a brief demonstration of the methodology
+can be found in \cref{se:cfg_examples}, while a real-world application
+to the HermitCore unikernel library \autocite{lankes2016hermitcore}
+is presented in \cref{se:cfg_application}.
+
+My three main contributions to the memory preservation work presented here were:
 \begin{enumerate*}
   \item the development of a tool for producing proof skeletons
   for memory preservation, interfacing with the analysis tool
@@ -24,28 +36,29 @@ were:
   \item the development of structured proof strategies
   to flesh out and verify those skeleton proofs,
   along with the development of guidelines
-  for invariants that provide for function-level composition (\cref{se:cfg_composition});
+  for invariants that provide for
+  function-level composition (\cref{se:cfg_composition});
   and
   \item the application of the methodology to functions in
   \cref{sse:pow2_example,se:cfg_application}.
 \end{enumerate*}
 
-\section{Overview}\label{se:cfg_overview}
-By building on the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state},%
+\section{Overview of Methodology}\label{se:cfg_overview}
+The first step in the process of analysis for a function
+is disassembly of an x86-64 binary containing it
+using a modified version of the \lstinline|reassembly| analysis
+\autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state}.%
 \index{\texttt{angr}}
-the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
-The first step is disassembly of an x86-64 binary using
-a tweaked version of the \texttt{angr}
-\lstinline|reassembly| analysis \autocite{wang2017ramblr}
-provided by \textcite{roessle2019}\footnote{%
-  This is required to use the Isabelle parser provided by that work.%
-}.%
+That modified version was provided by \textcite{roessle2019}
+for generating assembly usable with their Isabelle parser.%
 \index{\texttt{angr}!\texttt{reassembly}}
+By building on \texttt{angr},
+the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
 
 To achieve minimal symbolic execution,
 the verification methodology features \emph{cutpoints}%
 \index{cutpoint}
-automatically selected by a Python script that relies on
+automatically selected by a Python package that relies on
 \texttt{angr}'s \lstinline|CFGEmulated| control flow analysis.%
 \index{\texttt{angr}!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
@@ -76,6 +89,14 @@ but only when it is supported by the compiler in use\footnote{%
   via the \texttt{-foptimize-sibling-calls} flag%
 } and is applicable to the functions under consideration
 (which is not the case for the examples presented in this paper).
+An advantage of this, however, is that a proof over a recursive function
+essentially requires showing termination
+and thus the avoidance of stack overflows\footnote{%
+  On a conceptual level, at least. Most modern language runtimes and \acp{os}
+  put limits on stack size as sanity checks;
+  this can be handled in control-flow-driven verification
+  by adding additional assumptions to the analysis.
+}.
 
 The process that selects cutpoints%
 \index{cutpoint}
@@ -113,20 +134,6 @@ The work is still not trivial, however.
   \end{tikzpicture}
   \caption{Overview of methodology}\label{fig:cfg_overview}
 \end{figure}
-
-This methodology was applied to two example functions
-as well as to multiple functions
-from the HermitCore unikernel library \autocite{lankes2016hermitcore}.%
-\index{HermitCore}%
-\index{unikernel}
-HermitCore is \iac{os} kernel library aiming to provide real-time guarantees for high-performance computing.
-Documentation of the two example functions can be found in \cref{se:cfg_examples},
-while the HermitCore function work can be found in \cref{se:cfg_application}.
-These functions have a variety of features such as loops,%
-\index{loop}
-non-trivial data structures, pointers, subcalls, and even recursion in some cases.%
-\index{function!call}%
-\index{recursion}
 
 \section{Formal Definitions}\label{se:cfg_defs}
 A formal definition of memory preservation requires a formal basis to work with,
@@ -217,11 +224,12 @@ allowing a symbolic description of the loop's behavior.
 When combined with a general methodology
 of structured preconditions and postconditions showing that,
 for each annotated state, the succeeding annotated state satisfies its state predicate,
-a Hoare triple can be inferred for the program as a whole
-(\cref{thm:floyd_hoare}).
+a Hoare triple can be inferred for the program as a whole (\cref{thm:floyd_hoare}).
 
-The Floyd invariant for a function is a partial function
-that takes the form $I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
+The \emph{Floyd invariant}%
+\index{Floyd!invariant}
+for a function is a partial function that takes the form
+$I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
 \nomenclature{$L$}{Type of instruction addresses in a program; a 64-bit word}%
 \nomenclature{$\mathbb{B}$}{Type of boolean values, True and False}
 This function maps from instruction addresses with invariants
@@ -328,7 +336,7 @@ the following property holds:
 \end{enumerate}
 
 \section{Composition}\label{se:cfg_composition}
-As stated above, composition is crucial for scalability.%
+As stated above, composition is used here for scalability.%
 \index{composition}
 On the function call level, compositionality ensures that,
 when a function is called,
@@ -1004,17 +1012,13 @@ it requires setting up an invariant, which traditionally is a hard problem in it
 Requirements for memory preservation invariants are provided for several examples.
 For recursive functions, more involved invariants are required,
 along with \ac{itp} to show preservation of the stack and frame pointers.
-Invariants may include preconditions necessary for excluding exceptional behavior.
-Such preconditions are exposed by applying the methodology to a disassembled binary,
+Invariants may include preconditions necessary for excluding exceptional behavior,
+which can include stack or buffer overflows.
+Such preconditions are exposed by applying the methodology to a disassembled binary
 instead of deriving them from documents or source code annotations.
 
-The approach was applied to functions of HermitCore, a unikernel \ac{os}.
+The approach was applied to functions of HermitCore, a unikernel~\ac{os}.
 Memory preservation was formally proven for functions with loops, recursion,
 C structs and unions, and dynamic memory operations.
-Both optimized and non-optimized versions were verified.
-
-% TODO: move to dissertation conclusions?
-Some major additions to the framework in this chapter
-would be handling of concurrency and related instruction variants.
-Additionally, proper modeling of \ac{vm} and hypervisor calls in logic
-would allow verification of a wider range of functions from the HermitCore library.
+All verified functions were verified with non-optimized compilation,
+and some had their optimized versions verified as well.
