@@ -236,12 +236,15 @@ operating on a restricted set of control flow constructs,
 which can result in extra symbolic execution.
 
 \subsection{Memory Usage and Preservation}\label{memory_usage}
-\emph{Memory usage} characterizes the regions in memory that are read and written by a program.
+\emph{Memory usage} characterizes the regions in memory that are read
+and written by a program.
 An extension of memory usage is the property of \emph{memory preservation},
-which states that the values written by that program are constrained to those memory regions.
+which states that the values written by that program are constrained
+to those memory regions.
 The following sections elaborate on the usefulness of memory preservation
 as a platform for further verification efforts,
-after which the control-flow-driven and syntax-driven methodologies are discussed further.
+after which the control-flow-driven and syntax-driven methodologies
+are discussed further.
 
 \subsubsection{Security}
 Unbounded memory usage can lead to vulnerabilities

@@ -417,8 +417,8 @@ but those are not the norm.
   Consider a function~$f$ starting in a text section at location~$l_0$.
   The function is called from a different text section
   by the instruction \lstinline{call f} at location~$l_\var{call}$.
-  This means the return address for the call is $l_\var{call}+5$%
-  \footnote{the \texttt{call} instruction is five bytes long}.
+  This means the return address for the call is $l_\var{call}+5$.%
+  \footnote{the \texttt{call} instruction is five bytes long}
   After execution of \lstinline{call f}, the program will be at location~$l_0$
   and the stack pointer will have some value $\rspo$.
   In order to apply compositionality to function calls,
@@ -714,7 +714,7 @@ To start with, $\rbxpops$ characterizes the multiplicands currently stored on th
 for any particular recursive call,
 both in the initial recursing loop as well as in the second loop
 as the recursive calls return.
-The following functions, $\operatorname{ret\_address}$ and $\retsites$,
+The following functions, $\retaddress$ and $\retsites$,
 establish that return address~15 is pushed
 to the correct memory location for every call except the first.
 For the first call, the topmost stack frame,
@@ -726,7 +726,7 @@ the initial return address must also be properly stored.
   \label{eq:rbxpops}
 \end{multline}
 \begin{multline}
-  \operatorname{ret\_address}(\var{rsp},\rspo,\var{offset},n,x,i)\equiv \\
+  \retaddress(\var{rsp},\rspo,\var{offset},n,x,i)\equiv \\
   \text{if }\var{rsp}+(n-x-i)*48-\var{offset}=
   \rspo\text{ then }\retaddr \text{ else } 15
   \label{eq:ret_address}
@@ -735,7 +735,7 @@ the initial return address must also be properly stored.
   \retsites(\var{offset},\rspo,n,x)\equiv \\
   \forall i\le n-x\cdot
     \readmem{\mathrsp+(n-x-i)*48-\var{offset}}{8}=
-    \operatorname{ret\_address}(\mathrsp,\rspo,\var{offset},n,x,i)
+    \retaddress(\mathrsp,\rspo,\var{offset},n,x,i)
   \label{eq:retsites}
 \end{multline}
 
