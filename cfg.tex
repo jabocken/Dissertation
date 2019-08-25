@@ -51,7 +51,7 @@ My three main contributions to the memory preservation work presented here were:
 The first step in the process of analysis for a function
 is disassembly of an \arch\ binary containing it.
 This is done using a modified version of the \lstinline|reassembly| analysis
-\autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state}.%
+\autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state,wang2017angr}.%
 \index{\texttt{angr}}
 That modified version was provided by \textcite{roessle2019}
 for generating assembly usable with their Isabelle parser.%
@@ -1003,7 +1003,7 @@ a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
 In most cases, that proof can be handled by Isabelle/HOL
 using standard off-the-shelf libraries,
-either ones included with Isabelle or ones from the \ac{afp} \autocite{afp}
+either ones included with Isabelle or ones from the \ac{afp}
 (though not necessarily efficiently).
 Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation

@@ -445,8 +445,7 @@ There is also an alternative to using parent regions:
 giving each small region its own ID.
 This avoids having to provide explicit parent relationships
 except for those cases where reads or writes of different size
-from or to the same region occur.
-\Cref{ch:syntax} takes that approach.
+from or to the same region occur. \Cref{ch:syntax} takes that approach.
 
 \subsubsection{Overflow}
 As a note, many of the formal rewrite rules regarding memory usage
@@ -454,7 +453,8 @@ have an internal requirement that the supplied memory regions not overflow.
 That is, for any memory region~$r$,
 its address plus its size must be less than $2^{64}$.
 This is represented as $\nbo r$ and may be required as an explicit assumption
-in some cases.
+in some cases. With the appropriate manual or generated region relations,
+however, it should not normally be necessary.
 
 \section{Summary}
 This chapter introduced symbolic execution,

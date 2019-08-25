@@ -65,10 +65,10 @@ Model checking, in particular, suffers from what is known as the
 Though there have been significant improvements in model-checking performance
 in the past decades, model checkers still have issues with large, complex systems.
 
-On the opposite side of the interactivity level is \emph{\ac{itp}}.
+On the opposite side of the interactivity level is \ac{itp}.
 Interactive theorem provers and proof assistants
 like Isabelle/HOL \autocite{nipkow2002isabelle}, Coq \autocite{chlipala2013certified},
-and HOL4  \autocite{slind2008brief} are powerful tools for producing meaningful proofs.
+and HOL4 \autocite{slind2008brief} are powerful tools for producing meaningful proofs.
 Unfortunately, their learning curves are not exactly flat.
 The average software developer will not want to have to spend the time
 learning how to write formal proofs just to eliminate some bugs from their programs.
@@ -259,7 +259,7 @@ Memory preservation could serve as a foundation for formal security analyses
 that could be used to expose vulnerabilities involving malicious writes.
 
 Another important property that memory preservation could help with
-is \emph{\ac{cfi}} \autocite{abadi2009cfi}. \Ac{cfi} ensures that software execution
+is \ac{cfi}. \Ac{cfi} ensures that software execution
 follows a predetermined \ac{cfg} using static analysis and runtime checks.
 The dynamic checking could be made more efficient
 by first proving the property in \cref{ex:rop} for those functions it is applicable to

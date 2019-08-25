@@ -6,7 +6,9 @@ Verification of assembly has been an active research field for decades.
 discussed in the following sections.
 Up first in \cref{se:previous_assembly}
 are some previous formal verification efforts that target assembly.
-Following that is work in which assembly verification played a role
+Following that is work on a lower level,
+verification of the hardware that runs machine code, in \cref{se:hardware}.
+After that is work in which assembly verification played a role
 in a larger verification context, \cref{se:integrated_assembly},
 and then verified compilation and static analysis tools are discussed
 in \cref{se:verified,se:static_analysis}.
@@ -15,8 +17,7 @@ in \cref{se:verified,se:static_analysis}.
 \textcite{clutterbuck1988verification} performed formal verification
 of assembly programs using SPACE-8080, a verifiable,
 analyzable subset of the Intel 8080 \ac{isa}.
-Their work used \ac{spade}\autocite{carre1986spade},
-a set of software tools for ``the efficient development,
+Their work used \ac{spade}, a set of software tools for ``the efficient development,
 analysis, and formal verification of high-integrity software''.
 \Ac{spade} provides \iac{fdl} for modeling programs
 in order to analyze and formally verify them
@@ -50,8 +51,7 @@ presented operational semantics and mechanized reasoning
 for approximately \SI{80}{\percent} of the instructions of the MC68020 microprocessor,
 over 85.
 They implemented those semantics and mechanized their approach
-in \ac{nqthm} \autocite{boyer1979computational},
-a precursor to the theorem prover ACL2 \autocite{ACL2}.
+in \ac{nqthm}, a precursor to the theorem prover ACL2 \autocite{ACL2}.
 They then applied their mechanized reasoning to check functional correctness
 for a binary search, quicksort, a standard C string library, and others.
 These early efforts required significant interaction,
@@ -98,7 +98,8 @@ Interactive theorem proving over semantics of assembly instructions
 does not scale under normal circumstances
 due to the amount of intricate user interaction involved.
 
-Fully automated approaches to formal verification, however, do not necessarily scale either.
+Fully automated approaches to formal verification, however,
+do not necessarily scale either.
 The recent automated approach AUSPICE provided by \textcite{tan2015auspice}
 takes about 6 hours to run on a 533-instruction string search algorithm.
 This is despite the fact that they were targeting weaker safety properties
@@ -106,7 +107,7 @@ rather than going for functional correctness.
 They even used a full formulation of Hoare logic, much as is done in \cref{ch:syntax}.
 
 Though it is not a verification methodology by itself,
-there is also \emph{\ac{dil}} \autocite{myreen2008decompilation,myreen2012decompilation}.
+there is also \ac{dil}.
 Developed by Myreen et al.\ in the HOL4 theorem prover \autocite{slind2008brief},
 \ac{dil} uses operational semantics of machine code
 to lift programs into a functional form.
@@ -117,8 +118,8 @@ and allows for verification of properties in a theorem prover that utilizes that
 \Ac{dil} has been used for both ARM and x86 \ac{isa} machine models
 and applied to various large examples,
 including benchmarks such as a garbage collector as well as the Skein hash function.
-It has even been used as a component
-in a binary-level verification methodology over the seL4 microkernel \autocite{sewell2013tvv}.
+It has even been used as a component in a binary-level verification methodology
+over the seL4 microkernel \autocite{sewell2013tvv}.
 
 Also, \textcite{feng2006modular,feng2005sbca} presented stack abstractions
 for modular verification of assembly code
@@ -148,7 +149,8 @@ to software compiled for an automotive microcontroller \autocite{schlich2007auto
 The three programs they focused on for their case study
 were designed to record speed measurements from sensors on four wheels,
 calculate the actual speed, and then transmit it over \iac{can} bus.\footnote{%
-  \Iac{can} bus is a standard bus for electronic communications in automotive applications.%
+  \Iac{can} bus is a standard bus for electronic communications
+  in automotive applications.%
 }
 Some of the programs required simplification to be checkable,
 so for consistency they applied, or at least attempted to apply,
@@ -212,7 +214,7 @@ PROSPER, at the assembly level.
 Separation kernels are similar to hypervisors,
 providing isolation for individual components of a system and ensuring
 only those components that are allowed to communicate do \autocite{rushby1981dvss}.
-Their methodology integrated HOL4 with the \ac{bap} \autocite{brumley2011bap}.
+Their methodology integrated HOL4 with \ac{bap}.
 \Ac{bap} utilizes a custom intermediate language
 that provides an architecture-agnostic representation of machine instructions
 and their side effects.
@@ -228,8 +230,9 @@ the separation kernel was verified against.
 An extension to the work is found in the HAPSOC project by \textcite{baumann2016high},
 who did a similar proof for the ARMv8-A model provided by \textcite{fox2015improved}.
 
-Finally, \textcite{bevier1989approach} presented a systems approach to software verification
-that targeted correctness all the way down to the hardware level.
+Finally, \textcite{bevier1989approach} presented a systems approach
+to software verification that targeted correctness
+all the way down to the hardware level.
 All of their work was implemented in \ac{nqthm}.
 \Textcite{hunt1989microprocessor} developed a general-purpose, 32-bit microprocessor,
 FM8502, and proved that its gate-level specification
@@ -317,9 +320,9 @@ for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
 \section{Static Analysis}\label{se:static_analysis}
 %TODO: No time to elaborate on static analysis, oh well
 Static analysis of binary code has also an active research field
-for decades  \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+for decades \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
 
-The BitBlaze project  \autocite{song2008bitblaze,BitBlazeWebSite}
+The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
 provides a tool called Vine which constructs control flow graphs
 for supplied programs and lifts x86 instructions to its own \ac{il}.
 Though Vine itself is not formally verified,
@@ -328,7 +331,7 @@ as well as CVC \autocite{barrett2004cvcl,barrett2007cvc3}.
 
 Meanwhile, the tool Infer \autocite{calcagno2011infer}, developed at Facebook,
 provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
-It utilizes separation logic  \autocite{reynolds2002separation}
+It utilizes separation logic \autocite{reynolds2002separation}
 and bi-abduction to perform its analyses in an automated fashion.
 It is designed to be integrated into compiler toolchains
 in order to provide immediate feedback even in \ac{ci} scenarios.

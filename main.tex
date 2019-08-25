@@ -36,6 +36,8 @@
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
 
+\acsetup{first-long-format=\emph, format-include-endings} % Can't seem to get the first-long-format to apply to a plural form
+
 % Hack to fix ylabel positioning with current version of pgf
 \makeatletter
 \def\pgfsys@hboxsynced#1{%
@@ -53,7 +55,7 @@
   long-indefinite  = an
 }
 \DeclareAcronym{aec2}{short=Amazon EC2, long=Amazon Elastic Compute Cloud}
-\DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs}
+\DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs, cite={afp}}
 \DeclareAcronym{aot}{
   short            = AOT,
   short-indefinite = an,
@@ -66,17 +68,33 @@
   long             = automated theorem prover,
   long-indefinite  = an
 }
-\DeclareAcronym{bap}{short=BAP, long=Binary Analysis Platform}
+\DeclareAcronym{asl}{
+  short            = ASL,
+  short-indefinite = an,
+  long             = ARM Specification Language,
+  long-indefinite  = an,
+  cite = {reid2016arm}
+}
+\DeclareAcronym{bap}{
+  short = BAP,
+  long = the Binary Analysis Platform,
+  cite = {brumley2011bap}
+}
 \DeclareAcronym{can}{short=CAN, long=Controller Area Network}
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
-\DeclareAcronym{cfi}{short=CFI, long=control-flow integrity}
+\DeclareAcronym{cfi}{short=CFI, long=control-flow integrity, cite={abadi2009cfi}}
 \DeclareAcronym{ci}{short=CI, long=continuous integration}
 \DeclareAcronym{csp}{short=CSP, long=communicating sequential processes}
 \DeclareAcronym{cpu}{short=CPU, long=central processing unit}
 \DeclareAcronym{dm}{short=DM, long=device model}
-\DeclareAcronym{dil}{short=DiL, long=decompilation into logic}
+\DeclareAcronym{dil}{
+  short = DiL,
+  long = decompilation into logic,
+  cite = {myreen2008decompilation,myreen2012decompilation}
+}
 \DeclareAcronym{dvr}{short=DVR, long=dead variable reduction}
-\DeclareAcronym{fdl}{
+\DeclareAcronym{elf}{short=ELF, long=Executable and Linkable Format}
+ \DeclareAcronym{fdl}{
   short            = FDL,
   short-indefinite = an,
   long             = functional description language
@@ -156,7 +174,11 @@
 \DeclareAcronym{mrr}{short=MRR, long=memory region relation}
 \DeclareAcronym{navsea}{short=NAVSEA, long=the Naval Sea Systems Command}
 \DeclareAcronym{neec}{short=NEEC, long=the Naval Engineering Education Consortium}
-\DeclareAcronym{nqthm}{short=Nqthm, long=the Boyer-Moore theorem prover}
+\DeclareAcronym{nqthm}{
+  short = Nqthm,
+  long = the Boyer-Moore theorem prover,
+  cite = {boyer1979computational}
+}
 \DeclareAcronym{os}{
   short            = OS,
   short-indefinite = an,
@@ -198,7 +220,11 @@
   short-indefinite = an,
   long             = satisfiability modulo theories
 }
-\DeclareAcronym{spade}{short=SPADE, long=the Southampton Program Analysis Development Environment}
+\DeclareAcronym{spade}{
+  short = SPADE,
+  long = the Southampton Program Analysis Development Environment,
+  cite = {carre1986spade}
+}
 \DeclareAcronym{sse}{
   short            = SSE,
   short-indefinite = an,
