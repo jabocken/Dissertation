@@ -11,4 +11,4 @@ cleanall: cleanext
 	latexmk -C
 
 cleanext:
-	rm extern/*
+	rm -f extern/*

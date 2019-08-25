@@ -62,15 +62,11 @@
 \RequirePackage[margin=1in,headheight=15pt]{geometry}
 
 %% Modern citations
-%\RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX
+\RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX; also avoids biber warnings when using accents and stuff
 \RequirePackage[
   citestyle=num-comp-fix, % Using custom numeric-comp with auto nb-spacing for \cite and \parencite
-  maxbibnames=10
-]{biblatex} % if issues occur with inputenc, try the safeinputenc option
-
-% To work better with bibs having acm/etc. URLs; those can then use the eprint/eprinttype fields
-\DeclareFieldFormat{eprint:hal}{https://hal.inria.fr/}
-\DeclareFieldFormat{eprint:acm}{http://dl.acm.org/citation.cfm?id=}
+  maxbibnames=99 % Avoids `et al.` in bibliography
+]{biblatex} % if issues occur with utf8 inputenc, try the safeinputenc option
 
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
