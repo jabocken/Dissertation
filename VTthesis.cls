@@ -88,7 +88,7 @@
 % Font setup
 \RequirePackage[T1]{fontenc} % nice font encoding
 \RequirePackage{lmodern}     % Nice vector fonts
-\RequirePackage{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern.
+\RequirePackage[tracking]{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern.
 
 %package required for nomenclature entry
 \RequirePackage[intoc]{nomencl}
@@ -196,9 +196,6 @@
     {\\<rangle>}{$\rangle$}1
     {\\<^sub>0}{$_0$}1
     {\\<longrightarrow>}{$\longrightarrow$}2
-%    
-    {P_123e}{${P_\mathtt{123e}}$}3
-    {P_1246}{${P_\mathtt{1246}}$}3
 }
 
 % \author,\title are defined in book; here are the rest of the front matter defining macros:
@@ -328,7 +325,7 @@
 \newenvironment{frontpage}[1]{%
   \clearpage\thispagestyle{empty}%
   \fpbookmark{#1}%
-  \center
+  \center % using env macros rather than begin/end means no new group is created
 }{\endcenter}
 \newcommand\abstractpage[2]{\begin{frontpage}{#1}%
     {\Large \@title}

@@ -1,25 +1,27 @@
 \chapter{Control-Flow-Driven Verification}\label{ch:cfg}
 The memory usage analysis approach presented in this chapter
-features a Floyd-style methodology as described in \cref{se:cfg_invariant}
-to prove the previously-mentioned property of memory preservation%
+provides a Floyd-style methodology featuring annotations on specific instructions.
+It is designed for the proving of memory preservation%
 \index{memory!preservation}
-for individual functions.
+over individual assembly functions.
 That property ensures that only documented regions of memory are modified;%
 \index{memory!region}
 anything outside of those regions remains unchanged.
 
-The methodology can be applied to functions with loops and subcalls,
+This control-flow-driven verification
+can be applied to functions with loops and subcalls,
 including directly-recursive calls.
 It can be used to prove the absence of common memory-related issues,
 such as buffer and stack overflows. In cases where overflow may occur,
-the methodology documents the assumptions required to prevent it.
-For efficiency, it structures the \emph{Floyd invariant} for a function
-such that every path through the program is symbolically executed%
+the methodology helps extract the assumptions required to prevent that.
+For efficiency, it determines the annotation locations,
+called \emph{cutpoints},%
+\index{cutpoint}
+such that every path through the program
+is symbolically executed only once.%
 \index{symbolic execution}
-only once.
 
-A further overview of control-flow-driven verification
-can be seen in \cref{se:cfg_overview},
+An overview of the methodology's steps can be seen in \cref{se:cfg_overview},
 with formal definitions of the needed constructs presented in \cref{se:cfg_defs}.
 Following that, \cref{se:cfg_composition} describes how the method uses composition
 on the function level and within function bodies.
@@ -27,6 +29,8 @@ Two examples providing a brief demonstration of the methodology
 can be found in \cref{se:cfg_examples}, while a real-world application
 to the HermitCore unikernel library \autocite{lankes2016hermitcore}
 is presented in \cref{se:cfg_application}.
+Our observations regarding usage of the methodology on that case study
+are given in \cref{se:usability}.
 
 My three main contributions to the memory preservation work presented here were:
 \begin{enumerate*}
@@ -45,8 +49,8 @@ My three main contributions to the memory preservation work presented here were:
 
 \section{Overview of Methodology}\label{se:cfg_overview}
 The first step in the process of analysis for a function
-is disassembly of an x86-64 binary containing it
-using a modified version of the \lstinline|reassembly| analysis
+is disassembly of an \arch\ binary containing it.
+This is done using a modified version of the \lstinline|reassembly| analysis
 \autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state}.%
 \index{\texttt{angr}}
 That modified version was provided by \textcite{roessle2019}
@@ -55,10 +59,9 @@ for generating assembly usable with their Isabelle parser.%
 By building on \texttt{angr},
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
 
-To achieve minimal symbolic execution,
-the verification methodology features \emph{cutpoints}%
+To achieve minimal symbolic execution, cutpoints%
 \index{cutpoint}
-automatically selected by a Python package that relies on
+are automatically selected by a Python package that relies on
 \texttt{angr}'s \lstinline|CFGEmulated| control flow analysis.%
 \index{\texttt{angr}!CFGEmulated}
 The cutpoints are described in \cref{se:cfg_invariant}.
@@ -68,34 +71,8 @@ Basic starting predicates for those preconditions and postconditions%
 as well as the cutpoints are generated,
 but the bulk of the information must be added manually.
 Larger-scale scalability is achieved by using function-level compositionality.
-Even recursive functions are supported, albeit with a caveat.%
+Even recursive functions are supported, albeit with difficulty.%
 \index{recursion}
-
-The caveat on recursion is that it requires a significant amount of work,
-much greater than that needed for loops or function calls alone.
-Recursive functions are equivalent to one or more loops that utilize a stack.
-This significantly complicates the necessary invariants
-due to the fact that program stacks, when used with most modern \acp{isa},
-are stored in regular memory.
-Even when recursive code primarily uses registers
-to hold most of the intermediate values and local variables,
-those locals must be stored on the stack with each recursive call%
-\index{stack}
-and potentially restored on return.
-Tail call%
-\index{recursion!tail call}
-optimization, implemented in most major C and C++ compilers, can help with that
-by converting recursive implementations into loop-based ones that only use
-one stack frame for the recursion.
-Unfortunately, that only applies when the functions under consideration use
-the appropriate formulations proper tail calls require \autocite{probst2001proper}.
-Neither of the recursive functions examined in this chapter met those requirements.
-
-On a nicer note, an advantage of the requirements for proofs over recursion
-is that they essentially require showing termination of the recursion
-and thus the (conceptual) avoidance of stack overflows.
-Proving lack of overflow for a specific stack size
-would require some additional assumptions in the analysis.
 
 The process that selects cutpoints%
 \index{cutpoint}
@@ -120,7 +97,7 @@ The work is still not trivial, however.
     rounded corners,
     minimum height=2cm
   }]
-    \node[myblock] (binary) {x86-64 binary};
+    \node[myblock] (binary) {\arch\ binary};
     \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python package};
     \node[myblock, right of=cfg] (isa) {Isabelle};
     \node[myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
@@ -131,7 +108,7 @@ The work is still not trivial, however.
     \draw[transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
     \draw[transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
-  \caption{Overview of methodology}\label{fig:cfg_overview}
+  \caption{Overview of control-flow-driven memory preservation verification}\label{fig:cfg_overview}
 \end{figure}
 
 \section{Formal Definitions}\label{se:cfg_defs}
@@ -246,7 +223,7 @@ that represent the arguments passed to the function.
   \nomenclature{$\bot$}{Used here to represent an empty value,
     such as the result of calling a partial function with a value it does not have an actual result for or in general the \texttt{None} value of an optional type}
   and $\loc\sigma$ is the current program location,
-  stored in \inlineasm{rip} on x86-64 systems.
+  stored in \inlineasm{rip} on \arch\ systems.
 \end{definition}
 In words, if the Floyd invariant holds on the current state,
 then running to the next annotated location will not produce an exception.
@@ -350,7 +327,7 @@ which sequentially executes an if-statement and some program~$P$:
 \begin{lstlisting}[
   escapechar=|,
   gobble=2,
-  caption=Simple Pseudocode,
+  caption=Simple pseudocode,
   label=compositional_pseudocode
 ]
   if |$b$| then |$x$| else |$y$|; |$P$|
@@ -405,21 +382,25 @@ Doing so is still possible, however.
   As~$H'$ is stronger than~$H$, compositionality is possible.
 \end{example}
 
-\subsection{Function Calls}
+\subsection{Function Calls}\label{cfg:function_calls}
 Generally, compositionality over function calls requires proving
-that the stack pointer remains unchanged after execution of every function call.%
+that the stack pointer, after execution of a return,%
 \index{stack!pointer}
-There are some exceptions for optimized tail calls
-in which a called function returns to the caller of its callee,
-but those are not the norm.
+has the same value it did before the corresponding function call.
+Practically, this means proving that the body of the function
+results in $\mathrsp=\rspo+8$.
+This can be proven even for functions with optimized tail calls
+that just swap the final \inlineasm{call}+\inlineasm{ret}
+combo for a jump as long as the body of the called function
+is treated as part of the callee.
 \begin{example}
   Consider a function~$f$ starting in a text section at location~$l_0$.
   The function is called from a different text section
-  by the instruction \lstinline{call f} at location~$l_\var{call}$.
+  by the instruction \inlineasm{call f} at location~$l_\var{call}$.
   This means the return address for the call is $l_\var{call}+5$.%
   \footnote{the \texttt{call} instruction is five bytes long}
-  After execution of \lstinline{call f}, the program will be at location~$l_0$
-  and the stack pointer will have some value $\rspo$.
+  After execution of \inlineasm{call f}, the program will be at location~$l_0$
+  and the stack pointer, \inlineasm{rsp}, will have some value $\rspo$.
   In order to apply compositionality to function calls,
   the pre- and postcondition have to meet the following requirements.
   First, the precondition must imply that the return address is pushed on the stack
@@ -456,6 +437,13 @@ due to unsupported features or lack of time.
 External functions are simply assumed to have correct behavior
 and are thus left out of the existing analysis,
 leaving those functions in the \ac{tcb}.
+One issue that may occur is a desired function
+making an optimized tail call to an external function,
+which cannot be treated as part of the callee and prevents verification.
+One possible solution, used in the next chapter,
+is to revert the jump to \inlineasm{call}+\inlineasm{ret}.
+As the underlying function is assumed to be correct,
+this will result in the proper \inlineasm{rsp} restoration.
 
 \section{Examples}\label{se:cfg_examples}
 The following sections present some basic explanation
@@ -492,7 +480,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
   style=x64,
   gobble=2,
   float=*,
-  caption=\texttt{pow2} in Assembly,
+  caption=\texttt{pow2} in \arch\ assembly,
   label=lst:pow2a,
   firstnumber=0
 ]
@@ -564,7 +552,7 @@ the function is also shown to preserve the value of the stack pointer.
       b ->[out=-16, in=16, looseness=3] b;
     };
   \end{tikzpicture}
-  \caption{Floyd invariant for \texttt{pow2}}\label{fig:pow2cfg}
+  \caption{Floyd invariant for \texttt{pow2} in \acs*{cfg} form}\label{fig:pow2cfg}
 \end{figure}
 Given the parent regions presented above, the proof that the Floyd invariant holds
 is executed automatically using the symbolic execution engine
@@ -607,7 +595,7 @@ In this case, the function performs a recursive factorial calculation on the val
 stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|rdi|).
 \begin{lstlisting}[
   style=x64,
-  caption=Assembly of Factorial Example,
+  caption=\arch\ assembly of factorial example,
   label=lst:factasm,
   float,
   escapechar=|,
@@ -692,8 +680,7 @@ from~$\rspo$ due to the function's recursive nature.
       ] b;
     };
   \end{tikzpicture}
-  \caption{Floyd invariant for factorial}
-  \label{fig:factcfg}
+  \caption{Floyd invariant for factorial in \acs*{cfg} form}\label{fig:factcfg}
 \end{figure*}
 The set~$M$ of separated parent regions is characterized by the following assumptions:
 \begin{subequations}
@@ -791,7 +778,7 @@ The unikernel library HermitCore \autocite{lankes2016hermitcore} was chosen%
 \index{HermitCore}
 to demonstrate the applicability of this methodology
 due to its established functionality and decent size.
-Designed for the x86-64 \ac{isa}, HermitCore is mostly written in C.
+Designed for the \arch\ \ac{isa}, HermitCore is mostly written in C.
 While it does use some inline assembly, not uncommon in kernel code,
 that is no issue for the assembly-level methodology presented here.
 The subset of HermitCore functions that were verified feature features
@@ -801,7 +788,7 @@ but twelve of those functions were also analyzed in their optimized forms.
 This was done to show that the more complex code produced by optimizing compilers
 can also potentially be handled.
 The proofs and all associated code
-are available at \url{https://doi.org/10.6084/m9.figshare.7356110.v4}.
+are available on Figshare \autocite{bockenek2019artifact}.
 
 \subsection{Functions Analyzed}
 The functions from Hermitcore that were selected for analysis
@@ -938,19 +925,21 @@ requires a loop invariant in addition to the pre- and postconditions.
     \end{tikzpicture}
     \caption{\lstinline|buddy_large_avail|}\label{fig:buddy_large_avail}
   \end{subfigure}
-  \caption{Example Floyd invariants}
+  \caption{Floyd invariants for the described case study functions in \acs*{cfg} form}
 \end{figure*}
 
-\subsection{On Usability}
+\section{On Usability}\label{se:usability}
 The three main aspects of per-function user interaction for this methodology are
 \begin{enumerate*}
   \item defining a Floyd invariant,
-  \item defining memory region set~$M$, and
-  \item proving memory preservation.
+  \item strengthening the precondition,%
+    \footnote{Includes adding additional memory regions and region relationships}, and
+  \item finishing the proof of memory preservation.
 \end{enumerate*}
 The functions analyzed in the above case study provided some significant insight
 into the usability of those aspects.
 
+\subsection{Defining the Invariant}
 While restricting the verification effort to memory preservation
 does reduce the effort required to provide Floyd invariants, it does not eliminate it.
 This is more of a problem for loops with complex behavior
@@ -958,24 +947,42 @@ and is a significant problem for recursive functions.
 With non-looping control flow,
 the primary effort required for invariant predicates is showing how input arguments
 are carried through the program (stored on the stack, in registers, etc.).%
-\index{stack}
+\index{stack}%
+\index{register}
 With loops, the exact formulation relies on development of a symbolic representation
 of the behavior of the loop as it relates to memory accesses.
-Recursive functions are the most complex
-due to the flat, non-abstract memory model used in this work
-requiring manual reasoning over stack frames.
-Both the stack and frame pointers must be preserved throughout the recursion,%
-\index{stack!pointer}%
-\index{frame!pointer}
-and all return addresses must be properly pushed on and popped off the stack as needed.
 
+Meanwhile, recursive functions that cannot be flattened into tail recursion \autocite{probst2001proper},
+such as those described in this chapter,
+are equivalent to two loops operating on the stack.
+Of course, every loop needs an invariant.
+The first loop invariant must characterize every call of the recursive function,
+which pushes data onto the stack, and the second every return, which pops data off.
+
+At a minimum, the individual stack and frame pointers,
+as well as all the return addresses, must be shown to
+be preserved for their extant,%
+\index{stack!pointer}%
+\index{frame!pointer}%
+\index{function!return address}
+being pushed on and popped off the stack.
+Any additional stored conditions
+that may affect memory usage must be kept track of as well.
+
+On a nicer note, an advantage of the requirements for proofs over recursion
+is that they essentially require showing termination of the recursion
+and thus the (conceptual) avoidance of stack overflows.
+Proving lack of overflow for a specific stack size
+would require some additional clauses in the analysis.
+
+\subsection{Strengthening the Precondition}
 Another aspect of Floyd invariant development
-that is not easily determined ahead of time is strengthening of the precondition.
+that is not easily determined ahead of time is how the function precondition
+must be strengthened.%
 \index{precondition!strengthening}
 Making reasoned guesses about the necessary precondition clauses is one way to proceed,
 and source code annotations as well as reference documentation
-may provide additional help,
-but sometimes it is necessary to just symbolically execute
+may provide additional help, but sometimes it is necessary to just symbolically execute
 until non-determinism is encountered.
 At that point, the cause of the non-determinism can be identified
 and the precondition can be strengthened in such a way so as to eliminate%
@@ -987,8 +994,10 @@ it may well expose implicit or undocumented preconditions.
 Formulation of the memory region set~$M$ as well as parent relationships,
 if necessary, are also generally manual.
 If a necessary region is not present,
-symbolic execution will again result in non-determinism,
+symbolic execution will result in non-determinism,
 requiring another round of user input.
+
+\subsection{Finishing the Proof}
 After symbolic execution for a basic block has completed,
 a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
