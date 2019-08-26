@@ -8,6 +8,12 @@ By eliminating the need to trust the compiler
 and the semantics of whatever source language the program was written in,
 you can drastically decrease the \ac{tcb} in use.
 
+Additionally, the property of memory preservation cannot be determined automatically
+under all circumstances. It is an undecidable property.
+Because of this and the overheads that \ac{itp} can have,
+we designed \emph{semi-automated} methodologies for that purpose.
+Those methodologies are briefly revisited below.
+
 \section{Contributions Revisited}
 This dissertation presented two methods for proving memory preservation,
 control-flow-driven verification and syntax-driven verification.
@@ -62,9 +68,9 @@ it must assume that that region is used. It must \emph{overapproximate}.%
 It does not matter if the cause was an underdeveloped state
 or too large of one to easily reason about.
 
-There are multiple potential ways to reduce that overapproximation detailed below.
+There are two potential ways to reduce that overapproximation detailed below.
 
-\subsection{Strengthen Invariants Via Abstract Interpretation}
+\subsection{Strengthen Invariants}
 In order to enhance automation, we currently generate very weak invariants.
 While this works reasonably well, being able to generate stronger invariants
 would be advantageous. Stronger invariants mean stricter memory preservation proofs.
@@ -76,7 +82,13 @@ The methodology used by Crab (\url{https://github.com/seahorn/crab})
 for loop invariant restriction may prove useful for this purpose
 \autocite{gange2016abstract}.
 
-In abstract interpretation,
+Abstract interpretation is a form of approximation
+in which the possible values for some variables in a program
+are constrained to, for example, a polyhedral range.
+It functions somewhat like a partial execution of the program under test
+in order to determine semantic information.
+It is sound and complete, meaning there would be no drawbacks to using it
+aside from perhaps additional execution time.
 
 \subsection{Model a More Realistic Memory Model}
 Most applications do not run in isolation. Their behavior is limited by
@@ -94,3 +106,14 @@ as the stack limits that are changed at runtime come in two forms.
 There is a \emph{soft} limit on stack size that unprivileged users
 can modify, but there is also a \emph{hard} limit
 that requires root access to modify.
+
+Additional features that would be desirable
+would be the ability to treat memory as \emph{allocated} and \emph{deallocated}.
+On modern systems, this is usually handled on the page level,
+meaning via virtual memory management.
+Modeling virtual memory would likely not be a good idea,
+as we are currently focusing on userspace analysis.
+
+The main restriction that would be interesting to model, however,
+would be the restriction of addresses to their lower 48 bits for actual addressing,
+with the remaining 16 bits being equal in value to the 48th bit.

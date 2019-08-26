@@ -1,5 +1,28 @@
 \chapter{Introduction}
+Proving that a non-trivial program has no bugs is not an easy task.
+As technology continues to improve, software will continue to increase in complexity.
+Providing methods to ease the work of reasoning over programs is a necessity in the modern world.
+This is particularly important for programs that are intended for high-reliability applications,
+such as avionics, medical equipment, or other safety-critical systems.
+Formal verification allows reasoning over programs with a high degree of assurance.
 
+This dissertation introduces the property of \emph{memory preservation}
+as well as methodologies for formally verifying this property over real-world programs.
+Memory preservation expresses that the memory a program writes to is bounded by prespecified regions.
+
+Memory preservation cannot be proven fully automatically as it is an undecidable property,
+mandating an \emph{interactive} but \emph{scalable} approach.
+It also must be proven at the assembly level as it relies on concrete memory layout.
+
+Formal verification of software has been an active research field for decades.
+This dissertation aims to provide a formal verification method
+that is specifically tailored to memory preservation.
+This allows more automation and scalability.
+For example, we have shown that we can formally verify
+approximately \num{12000} lines of assembly code
+obtained by decompiling binaries of the XEN hypervisor with minimal user interaction.
+To the best of our knowledge, there exists no current state-of-the-art method
+that specifically aims at formal verification of memory preservation.
 
 \section{Motivation}
 As a basic property, memory preservation has potential applications to security analyses,
@@ -21,6 +44,11 @@ that could be used to expose vulnerabilities involving malicious writes.
 Another important property that memory preservation could help with
 is \ac{cfi}. \Ac{cfi} ensures that software execution
 follows a predetermined \ac{cfg} using static analysis and runtime checks.
+At a minimum, this requires proving that a program cannot overwrite its stack pointer
+or that a called function does not overwrite local variables of its caller.
+In other words, it must be proven that the memory writes of a program
+are confined to prespecified regions, which is exactly what memory preservation states.
+This can aid in avoiding \ac{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
 On a high level, it states that a group of users using a certain set of commands
@@ -80,7 +108,10 @@ but it is not a feasible approach \autocite{ouimet2008formal}.
 As per Rice's theorem \autocite{rice1953classes},
 memory preservation is ultimately an undecidable property.
 One alternative would be to use \ac{itp}, but that does not scale well either
-due to the amount of intricate user interaction required.
+due to the amount of intricate user interaction involved.
+This dissertation proposes a \emph{semi-automated} approach.
+It uses \iac{itp} environment,
+but with code generation to generate as much of the proof code as possible.
 
 \section{Assembly-Level Verification}
 Properties that reason over the concrete memory used by a program,
@@ -170,11 +201,12 @@ for most user-mode \arch\ instructions as well as for commonly-used system calls
 That work allows mechanized reasoning over compiled programs
 in the ACL2 theorem prover \autocite{ACL2}.
 
-A year after that, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
+Soon after, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
 for automated verification of safety properties on the assembly level.
-That work took six hours to execute on \num{533} instructions,
-but was applicable to unmodified code.
-
+AUSPICE took six hours to execute on \num{533} instructions, but was applicable to unmodified code.
+Our methodology in \cref{ch:syntax} is also applicable to unmodified code,
+as long as that code is assembly.
+ 
 More recently, \textcite{baumann2016high} provided an ARMv8-based hypervisor
 that was formally verified on the machine code level
 to ensure isolation of guest \acp{os}.
@@ -186,6 +218,9 @@ of the \arch\ \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to perform a proof of correctness
 over the commonly-used cryptographic routine AES-GCM.
+Their usage of \iac{vcg} is similar to ours in \cref{ch:syntax},
+but ours did not need to be separately formally verified as we implemented
+it with proven-true Hoare rules.
 
 \section{Contributions}
 This dissertation presents two formal approaches to per-function verification

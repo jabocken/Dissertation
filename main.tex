@@ -8,7 +8,7 @@
 %
 % All elements in the Title, Abstract, and Keywords MUST be formatted as text and NOT as math.
 
-\documentclass[prelim]{VTthesis}
+\documentclass[prelim,pageskip]{VTthesis}
 
 \usepackage{comment}               % for commenting out large amounts of stuff
 \usepackage{suffix}                % For defining command versions with *s
@@ -471,16 +471,16 @@
   at automatically-selected cutpoints.
   The memory regions and any additional preconditions
   must also be determined manually.
-  This methodology was applied to 71 functions from the HermitCore unikernel library,
-  including one recursive one, covering more than 2379 assembly instructions.
+  This methodology was applied to 63 functions from the HermitCore unikernel library,
+  including one recursive one, covering \num{2379} assembly instructions.
 
   % Second contribution
   The second contribution of this dissertation is a syntax-driven verification
   approach with fully-automated invariant and memory region generation.
   It produces formal memory usage certificates that can be verified in Isabelle/HOL
   with minimal effort, the main manual work being weakening any loop invariants.
-  This was not applied to any recursive functions but was successfully applied
-  to 251 functions from the Xen hypervisor project, covering a total of \num{12252} assembly instructions.%
+  This was successfully applied to 251 functions from the Xen hypervisor project,
+  covering a total of \num{12252} assembly instructions.%
 }
 
 % TODO
