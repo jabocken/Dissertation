@@ -99,15 +99,18 @@ Ultimately, the main difference between the above-mentioned existing approaches
 and the methodologies presented in this dissertation lies in the degree of automation.
 Interactive theorem proving over semantics of assembly instructions
 does not scale under normal circumstances
-due to the amount of intricate user interaction involved.
+due to the amount of intricate user interaction required.
 
 Fully automated approaches to formal verification, however,
 do not necessarily scale either.
 The recent automated approach AUSPICE provided by \textcite{tan2015auspice}
 takes about 6 hours to run on a 533-instruction string search algorithm.
-This is despite the fact that they were targeting weaker safety properties
+This is despite the fact that, similar to our approaches, % todo: this sounds weird
+they were targeting weaker safety properties
 rather than going for functional correctness.
-They even used a full formulation of Hoare logic, much as is done in \cref{ch:syntax}.
+As another similarity to our approach in \cref{ch:syntax},
+they too used a full set of Hoare rules in their analysis.
+% todo: check the Hoare rules thing?
 
 Though it is not a verification methodology by itself,
 there is also \ac{dil}.
@@ -202,11 +205,14 @@ They measured performance of their verified algorithms, as one of them could be
 transpiled to C. They also measured the performance of various versions
 of their \ac{vcg}, and found that optimizing the \ac{smt} queries did improve performance
 significantly.
+
 Unlike our works in \cref{ch:cfg,ch:syntax}, the authors of this paper
 had to do extra reasoning to ensure the C and assembly code models were interoperable.
 As we operated directly on full assembly, we did not have to worry about
-that kind of interfacing. Both this work and the work presented in \cref{ch:syntax} used explicit \iac{vcg}, but ours was proven correct by its Isabelle/HOL definitions;
-we did not have to perform any additional work to ensure correctness of the methodology.
+that kind of interfacing. Both this work and the work presented in \cref{ch:syntax} used an explicit \ac{vcg},
+but ours was proven correct by its Isabelle/HOL definitions;
+we did not have to perform any additional work to ensure correctness
+of the methodology.
 Of course, as we implemented ours in an interactive theorem prover,
 we could guide the \ac{vc} generation and discharging as needed.
 

@@ -2,11 +2,11 @@
 Proving that a non-trivial program has no bugs is not an easy task,
 and as technology continues to improve,
 software will continue to increase in complexity.
-Providing methods to ease the work of reasoning over programs is a necessity
-in the modern world.
+Providing methods to ease the work of reasoning over programs
+with reliability is a necessity in the modern world.
 This is particularly important for programs
 that are intended for high-reliability applications,
-such as avionics or medical equipment.
+such as in avionics or medical equipment.
 
 \section{Motivation}
 Using formal, mathematical techniques to reason about and prove properties of programs
@@ -28,7 +28,7 @@ and other applications requiring the highest level of security,
 the world does seem to be slowly moving in that direction
 \autocite{smackers2019,khazeev2019acceptance}.
 Putting in the work to increase their automation and usability
-would have advantages beyond just the research community.
+would have advantages for more than just the research community.
 
 \subsection{Importance}
 Increasing complexity in software development makes programs harder to reason about.
@@ -78,12 +78,13 @@ automating the bulk of the proof effort while still allowing user interaction,
 may be the best way to go.
 This does require a significant amount of up-front verification work, however.
 Developing a proof-generation framework that allows easy interaction
-without the need for any in-depth work is pretty much impossible.
+without the need for any in-depth work is infeasible, if not impossible.
 The most that can be achieved is a minimization of the work needed.
-With the right properties chosen, however, it is possible to greatly minimize that work.
 
-Choosing those properties wisely can even allow significant verification effort
-on the \emph{assembly level}.
+By narrowing the focus of verification, however, it may be possible to significantly
+minimize that work.
+
+With the right properties chosen, however, it is possible to greatly minimize that work, even when targeting something as low-level as assembly.
 
 \section{Assembly-Level Verification}
 There are many approaches for formal verification that target source code
@@ -339,10 +340,13 @@ on the underlying assembly instructions
 and showing that no regions beyond those needed to complete the proof are modified.
 
 %Semi-Automated Formal Verification for Memory Preservation
-In order to reason about that memory usage so we can prove memory preservation in a theorem prover,
+In order to reason about that memory usage
+so we can prove memory preservation in a theorem prover,
 the structure of the proof must be extracted from the assembly programs.
-For that purpose, our code generation tool for this work produces the outline of a proof
-based on the control flow of the analyzed programs. This is achieved using off-the-shelf tools.
+For that purpose,
+our code generation tool for this work produces the outline of a proof
+based on the control flow of the analyzed programs.
+This is achieved using off-the-shelf tools.
 
 That proof outline specifies where the program should be annotated
 and provides some initial conditions based on register values.
@@ -386,8 +390,11 @@ This greatly simplified our proof strategies for proving memory preservation.
 
 The change in methodology alone would not have been enough, however.
 As stated, we also generate much more information.
-The additional information is primarily for the regions and annotation contents,
-greatly reducing the work and end user must perform compared to our initial approach.
+That additional information consists of the full set of memory regions
+for each basic block, the corresponding \acp{mrr},
+and the block's preconditions and postconditions.
+Having that information generated for them greatly reduces the work an end user
+must put in compared to our initial approach.
 
 %Analysis of Xen Binaries
 Unlike the previous work, this one was applied to assembly obtained
@@ -396,14 +403,24 @@ Xen Project hypervisor build process \autocite{chisnall2008definitive}.
 Of the \num{352} functions present in those binaries,
 \num{251} or \xenpercentage\ were verified.
 Ultimately, over \num{12252} optimized instructions were covered
-with \num{1047} manual lines of proof required.
+with only \num{1047} manual lines of proof required.
 That is an approximate ratio of one manual line of proof
 for every \num{12} instructions handled,
 or an average of \num{16} manual lines of proof for every loop handled,
 of which there were \num{65}.
 
-To the best of my knowledge, this is the first work to achieve that degree of automation
-for optimized \arch\ binaries produced by production code.
+To the best of my knowledge, this is the first work to achieve
+that degree of automation for optimized \arch\ binaries produced by production code.
+While \textcite{tan2015auspice} produced a fully-automated methodology
+for binary analysis, it was much slower than our approach here,
+meaning they would take longer to cover the same amount of functions
+even though they had more automation.
+Under normal circumstances, this approach can complete the proofs for two functions
+with a total of \num{97} assembly instructions in less than ten minutes.
+That is \SI{9.7}{insts\per\minute} compared to \SI{1.48}{insts\per\minute}
+for AUSPICE, \num{6.55} times as fast. We did have some functions that took
+an overly long period of time due to the suboptimality of \acl{scf}
+with respect to minimizing symbolic execution, but those were atypical.
 
 \section{Organization of Dissertation}
 Following this introduction in \cref{ch:related} is a review of tools and work
