@@ -56,6 +56,12 @@
 }
 \DeclareAcronym{aec2}{short=Amazon EC2, long=Amazon Elastic Compute Cloud}
 \DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs, cite={afp}}
+\DeclareAcronym{api}{
+  short            = API,
+  short-indefinite = an,
+  long             = application programming interface,
+  long-indefinite  = an
+}
 \DeclareAcronym{aot}{
   short            = AOT,
   short-indefinite = an,
@@ -104,10 +110,15 @@
   short-indefinite = an,
   long             = formal memory usage certificate
 }
+\DeclareAcronym{fpu}{
+  short            = FPU,
+  short-indefinite = an,
+  long             = floating-point unit
+}
 \DeclareAcronym{fsm}{
   short            = FSM,
   short-indefinite = an,
-  long             = finite state machine
+  long             = finite-state machine
 }
 \DeclareAcronym{hol}{
   short            = HOL,
@@ -390,14 +401,16 @@
 \newcommand{\todo}[1]{{\bfseries\color{purple}#1}} % Allowing paragraphs in todos
 \newcommand*{\fturl}[1]{\footnote{\url{#1}}}
 
-% TODO
-% Title of your thesis
-\title{Title of your thesis goes here}
-
-% TODO
-% You should include 3-5 keywords, separated by commas
-\keywords{Some Keywords, Subject matter, etc.}
-
+\title{%
+  Formal Verification of Memory Preservation for \arch\ Assembly via Proof Generation%
+}
+\keywords{%
+  Formal Verification,
+  \arch\ Assembly,
+  Interactive Theorem Proving,
+  Proof Generation,
+  Memory Preservation%
+}
 \author{Joshua Alexander Bockenek}
 \program{Computer Engineering}
 \degree{Doctor of Philosophy}

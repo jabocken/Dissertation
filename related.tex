@@ -184,13 +184,31 @@ Their focus was specifically on stack memory rather than memory in general.
 On a level lower than the assembly code level, or even the machine code level,
 is the work done by hardware designers and testers
 to verify the products that run those codes.
-Quite often this is done with model checkers and \ac{smt} solvers.
+Quite often this is done with model checkers.
 
-ARM recently released several of their \acp{isa} in a machine-parsable,
-executable format called \ac{asl}.
-It took them five years to 
-While not directly verifiable, such a format greatly aided in the development of
-that is \autocite{reid2016endtoend}.
+For example, ARM recently released several of their \acp{isa} in a machine-parsable,
+executable format called \ac{asl}, a result that took five years to develop.
+While not directly verifiable, the documents were automatically translated into
+a verifiable form for use with a verification tool
+called ISA-Formal \autocite{reid2016endtoend}.
+ISA-Formal is intended to verify processor pipeline control
+and has been successfully used for that purpose on multiple versions of the ARM \ac{isa}.
+At its core, it uses bounded model checking for instruction sequence exploration.
+They accomplished this by developing a translator from \ac{asl}
+to the subset of System-Verilog that can be handled by commercial Verilog model checkers.
+
+Not all of the components they worked with could be handled by the model checkers,
+however; they restricted its usage to \ac{isa} analysis.
+Alternative verification techniques were used for the components that the model checkers
+could not handle, such as the \acp{fpu} and memory system.
+These alternative techniques involved raising the abstraction level
+and/or reducing the explored state space,
+as their goal was not necessarily to detect all bugs in those specific units.
+Instead, they wanted to check the correctness of the logic connecting them
+to other processor elements, which they were successful at.
+
+More recently, the Sail \ac{isa} specification language has been used to
+\todo{more!}
 
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
@@ -205,8 +223,7 @@ instead of code written with verification in mind.
 For example, the seL4 source code does not allow taking the addresses of stack variables
 (such as in \cref{fig:example2-c}):
 their approach requires a static separation of stack and heap instead.
-% seL4 actually does support function pointers, so I removed that sentence
-\todo{more}
+
 
 \textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
 called ORIENTAIS.
@@ -330,45 +347,75 @@ not explicitly designed to be verified. While we did isolate functions
 for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
 
 \section{Static Analysis}\label{se:static_analysis}
-%TODO: No time to elaborate on static analysis, oh well
-Static analysis of binary code has also an active research field
-for decades \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+Non-formal static analysis of binary code for the detection of bugs
+has also been an active research field for decades
+\autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+This section covers some of the projects in that field from the past fifteen years.
 
 The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
-provides a tool called Vine which constructs control flow graphs
-for supplied programs and lifts x86 instructions to its own \ac{il}.
+provides a tool called Vine which lifts x86 instructions to its own \ac{il} for assembly
+in order to perform analyses on a higher level.
+That language is fully-featured and can itself be compiled back down to assembly
+if so desired.
+In terms of analyses, Vine can construct \acp{cfg} for the lifted programs,
+perform compiler-style dataflow analysis, generate dependency graphs,
+and slice programs \autocite{weiser1981slicing,tip1995survey}.
 Though Vine itself is not formally verified,
 it does support interfacing with the aforementioned \ac{smt} solver \ac{stp}
-as well as CVC \autocite{barrett2004cvcl,barrett2007cvc3}.
+as well as CVC Lite \autocite{barrett2004cvcl} and CVC3 \autocite{barrett2007cvc3}.
+This allows for formal verification.
 
-Meanwhile, the tool Infer \autocite{calcagno2011infer}, developed at Facebook,
-provides in-depth static analysis of LLVM code to detect bugs in C and C++ programs.
+Meanwhile, the tool Infer \autocite{calcagno2011infer}, now developed at Facebook,
+provides in-depth static analysis of LLVM code to detect bugs in programs
+written in a variety of languages.
 It utilizes separation logic \autocite{reynolds2002separation}
 and bi-abduction to perform its analyses in an automated fashion.
 It is designed to be integrated into compiler toolchains
 in order to provide immediate feedback even in \ac{ci} scenarios.
+For all the languages it handles, it checks for null pointer accesses
+and other null-related issues as well as checking for language-specific
+concurrency issues.
+For C-style languages with a lower level of abstraction,
+it also looks for memory leaks, performs linting for violations of coding conventions,
+and checks for calls to mobile device \acp{api} that are not available
+for the target device \ac{os}.
+In Android code and Java in general, it ensures annotations can be reached,
+looks out for mutability issues, and checks for resource leaks.
 
 The static analysis tool FindBugs, written for Java code,
-takes a bit of a different approach from those other two \autocite{hovemeyer2004findbugs}.
-Rather than relying on formal methods,
-it searches for common (bad practice) code idioms to detect likely bugs.
-Some of the common errors it highlights include null pointer dereferences,
+takes a bit of a different approach from those other two
+\autocite{hovemeyer2004findbugs}.
+Rather than performing control flow or dataflow analyses,
+it searches Java bytecode for common (bad practice) code idioms
+in order to detect likely bugs. Much like Infer,
+some of the common errors it highlights include null pointer dereferences,
 objects that compare equal not having equal hash codes,
 and inconsistent synchronization.
+It even provides a bug database that can be used to keep track of its warnings
+throughout multiple iterations of development.
 
-Another tool, Splint \autocite{evans2002static}, detects buffer overflows
+A somewhat older tool, Splint \autocite{evans2002static} detects buffer overflows
 and similar potential security flaws in C code.
-It relies on annotated preconditions to derive postconditions
+Splint relies on annotated preconditions to derive postconditions
 based on the syntactic structure of the code.
+While that resembles the formal technique of Hoare logic,
+described later on in this dissertation (\cref{se:hoare}),
+their method was based on heuristics and was not designed to detect all bugs,
+as they desired to balance performance with accuracy.
+The annotations Splint uses are memory-focused, such as allowing users to specify
+that certain variables should never be null or providing an emulation of
+\lstinline|unique_ptr| functionality.
 
 The main difference between these static analysis tools and formal verification
 is that these tools are generally highly suited to finding bugs
-but are not able to prove their absence.
+but are not able to prove their absence. Of course, proving the absence of bugs
+is harder than finding them even with formal techniques.
+Even then, 
 They generally apply techniques that are formally unsound, such as depth-bounded searches.
 
 \begin{table*}
   \centering
-  \caption{Overview of Related Assembly and Additional Work}\label{related-table}
+  \caption{Overview of related assembly verification and other work}\label{related-table}
   \begin{tabular}{l l l l l}
     \toprule
     \thead{Work} & \thead{Target} & \thead{Approach} & \thead{Applications} & \thead{Verified code} \\
@@ -388,6 +435,7 @@ They generally apply techniques that are formally unsound, such as depth-bounded
     \textbf{\cref{ch:cfg}} & \arch & \ac*{itp} & HermitCore & \num{2379}+ insts \\
     \textbf{\cref{ch:syntax}} & \arch & \ac*{itp}+CG & Xen & \num{12252} insts \\
     \midrule
+    Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs*{sloc} \\
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & \num{8000} \acs*{sloc}, 60 insts \\
     Dam et al. & ARMv7 & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
@@ -404,7 +452,7 @@ They generally apply techniques that are formally unsound, such as depth-bounded
         \acs*{sloc} &=& Source Lines of Code        & \acs*{atp} &=& Automated Theorem Proving \\
         UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
         TV   &=& Translation Validation							& MC 	&=& Model Checking \\
-        SA   &=& Static Analysis & & &
+        SA   &=& Static Analysis                    & \acs*{asl} &=& \acl*{asl}
       \end{tabular}
     }
   \end{tabular}

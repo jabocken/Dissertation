@@ -33,7 +33,7 @@ for a language.
 \subsubsection{Denotational}
 
 \subsubsection{Axiomatic}
-Axiomatic semantics provide meaning 
+Axiomatic semantics provide meaning to 
 The canonical example is \emph{Hoare logic}.%
 \index{Hoare!logic}
 
@@ -65,22 +65,36 @@ allows aggregation of the individual state changes involved in the execution.
 
 \subsection{Floyd Flowcharts}\label{se:floyd}
 
+
 \subsection{Hoare Logic}\label{se:hoare}
 A form of \emph{axiomatic semantics},
 \index{semantics!axiomatic}
 Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare}%
 \index{Hoare!logic}
-describes the behavior of a program
-in terms of a set of rules that are applied iteratively
-in order to syntactically decompose the program into its constituent behaviors.
+describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!triple}
+\begin{definition}[Basic Hoare triple]
+  Given assertions on state~$P$ and~$Q$ and a program~$C$,
+  $\htriple{P}C{Q}$ means that executing~$C$ on a state where~$P$ holds
+  will result in a state where~$Q$ holds (as long as~$C$ terminates, that is).
 
-A \emph{Hoare triple} denotes a pre- and postcondition for a certain program.%
-\index{Hoare!triple}%
-\index{precondition}%
-\index{postcondition}
-Let~$P$ and~$Q$ be state predicates.
+  In a more formal form and using $C(\sigma)$ to represent the result
+  of executing program~$C$ from initial state~$\sigma$, we have:
+  \begin{equation*}
+    \htriple{P}C{Q}\equiv P(\sigma)\wedge C(\sigma)\neq\infloop\longrightarrow
+    Q(C(\sigma)).
+  \end{equation*}
+\end{definition}
 
+To prove that triple, deductive reasoning with \emph{Hoare rules},%
+\index{Hoare!rule}
+or axioms, is used to syntactically decompose the program into its constituent behaviors.
+
+
+The Hoare logic methodologies 
 \todo{more}
+
+As Hoare logic was heavily inspired by Floyd's flowcharts, it is sometimes referred to
+as \emph{Floyd-Hoare logic}.
 
 \subsubsection{Verification Condition Generation}
 %TODO
@@ -100,6 +114,15 @@ being the canonical methodology.\todo{need citation}
 \Ac{smt} solvers are designed to solve the \acl{smt} decision problem.
 That is, 
 
+\subsection{Model Checking}
+Model checkers work by taking a formal description of \iac{fsm}
+and a formal specification of some property 
+
+\todo\dots
+
+The ``state explosion'' problem has been a well-known issue
+in the model-checking community \autocite{clarke2012modelchecking} 
+
 \subsection{Theorem Proving}
 %
 \index{theorem prover}
@@ -107,7 +130,7 @@ That is,
 \subsubsection{Automated versus Interactive}
 \index{theorem prover!interactive}
 
-\subsubsection{Isabelle and HOL}
+\subsubsection{Isabelle and \acs*{hol}}
 The theorem prover utilized in this work
 was Isabelle 2018 \autocite{nipkow2002isabelle}.%
 \index{Isabelle/HOL}
@@ -159,9 +182,7 @@ which \todo\dots.
 They have long been published as human-readable documents
 \autocite{bowen1985cards,intel2019manual},
 though ARM recently released several of their \acp{isa} in a machine-parsable,
-executable format \autocite{reid2016arm}. While not directly verifiable,
-such a format greatly aids in developing a model that is \autocite{reid2016endtoend}
-(in the case of the cited paper, for a model checker.).
+executable format \autocite{reid2016arm}.
 
 
 
@@ -228,7 +249,7 @@ range of values for addressing, as addresses are 64~bits in size,
 current implementation restrictions limit physical processors to
 52~bits for their address bus and~48 for virtual memory.
 
-\paragraph{Registers}
+\paragraph{Registers}\label{par:reg}
 Registers in \arch\ \todo\dots
 \begin{table*}
   \centering
@@ -295,25 +316,27 @@ Much of the memory work in this document relates to the concept of \emph{basic b
 \index{basic block}
 A basic block is defined here as a sequence of assembly instructions
 whose behavior can be described using only state transitions and branches.
-A block always terminates and has no internal loops.
-This definition differs slightly from the definition used by compilers such as LLVM,
-in which basic blocks have the additional restriction that
+An additional restriction is that they have no internal loops;
+they will always terminate, either due to successful completion or early failure.
+This definition differs slightly from the definition used by compilers such as LLVM.
+The compiler definition is stricter, as it requires that
 each block must terminate with a control flow instruction
-(or fall through, on the assembly level) and contain no other control flow instructions
+(or fall through, on the assembly level)
+and must not contain any other control flow instructions
 \autocite{llvm:functions,llvm:terminators}.
 
 \todo\dots
 
 \subsection{Tail Call Optimization}
 Tail call%
-\index{recursion!tail call}
+\index{tail call optimization}
 optimization, implemented in most major C and C++ compilers, is a technique
 for converting recursive functions into loop-based ones that only use
 a set number of stack frames.
 Unfortunately, that can only be applied to functions that fit the requirements
 for proper tail calls \autocite{probst2001proper},
 as imperative languages like C were not designed with such features in mind.
-
-\todo{little more? I reference it later in the dissertation}
+The technique also supports optimizing non-recursive tail calls, however,
+and that has a lower bar.
 
 \section{Summary}

@@ -1,3 +1,17 @@
-Knowledge of the memory used by a program provides a basis for security analyses
-and compositional verification.
+% Motivation
+Formal characterization of the memory used by a program is an important basis for security analyses and compositional verification. Proving that it only modifies memory within specified regions, the property of \emph{memory preservation},
+is an important aspect of that. However, accurately proving memory preservation, however,
+requires multiple 
+
+% First contribution
+I first present a control-flow-driven verification approach with mostly manual invariant specification at automatically-selected cutpoints 
+
+% Second contribution
+
+% Proposed future work
+
+
+
+
+Knowledge of the memory used by a program provides a basis 
 This dissertation presents the properties of \emph{memory usage} and \emph{memory preservation} and the verification methods used to prove memory preservation over compiled programs.

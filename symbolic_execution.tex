@@ -1,6 +1,10 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-\todo{Add preamble: give intro then overview/outline first.
-  Maybe combine the two if it feels like doing otherwise is too much.}
+This chapter covers the methodology used in \cref{ch:cfg,ch:syntax}
+to formally determine the state changes caused by individual basic blocks.
+
+formal model of an \arch\ machine
+our verification work relies on and how that model's state can be manipulated.
+Most importantly, it 
 
 \todo{give some attribution too}
 
@@ -10,7 +14,8 @@
     xor ax, ax
     add al, 1
   \end{lstlisting}
-  These instructions write to the 64-bit register \inlineasm{rax}.
+  These instructions write to the 64-bit register \inlineasm{rax},
+  introduced in \cref{par:reg}.
   Registers \inlineasm{ax} and \inlineasm{al} respectively refer
   to the low~16 and~8 bits of that register.
   Symbolic execution produces the following assignment:
@@ -148,8 +153,8 @@ The model does not currently provide any memory protection schemes,%
 \index{memory!protection}
 such as those used in modern hardware,
 and there is nothing to prevent a write from overwriting the program itself.
-For that reason, the works presented in this document must assume that the loaded assembly
-is never modified.
+For that reason, the works presented in this dissertation
+must assume that the loaded assembly is never modified.
 
 \section{Rewrite Rules}\label{se:rewrite}
 The basic rules supplied by the formal machine model are not well-suited to verification;
