@@ -344,11 +344,11 @@ In order to reason about that memory usage
 so we can prove memory preservation in a theorem prover,
 the structure of the proof must be extracted from the assembly programs.
 For that purpose,
-our code generation tool for this work produces the outline of a proof
+our code generation tool for this work produces the skeleton of a proof
 based on the control flow of the analyzed programs.
 This is achieved using off-the-shelf tools.
 
-That proof outline specifies where the program should be annotated
+That proof skeleon specifies where the program should be annotated
 and provides some initial conditions based on register values.
 It also provides the proof steps to properly perform symbolic execution
 and starts the user off with a basic set of regions determined from variables in the stack frame.
