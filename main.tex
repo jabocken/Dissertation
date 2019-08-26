@@ -25,7 +25,6 @@
 \usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
 \usepackage{threeparttable}        % For tables with notes
-\usepackage[inline]{enumitem}
 
 \usepackage[index,single,hyperref]{acro}                  % For acronyms; hyperref option doesn't work right with XeLaTeX
 
@@ -57,6 +56,7 @@
 \DeclareAcronym{aec2}{short=Amazon EC2, long=Amazon Elastic Compute Cloud}
 \DeclareAcronym{aes}{short=AES, long=Advanced Encryption Standard}
 \DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs, cite={afp}}
+\DeclareAcronym{alu}{short=ALU, long=arithmetic logic unit}
 \DeclareAcronym{api}{
   short            = API,
   short-indefinite = an,
@@ -93,6 +93,7 @@
   long = the Binary Analysis Platform,
   cite = {brumley2011bap}
 }
+\DeclareAcronym{bcd}{short=BCD, long=binary-coded decimal}
 \DeclareAcronym{can}{short=CAN, long=Controller Area Network}
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
 \DeclareAcronym{cfi}{short=CFI, long=control-flow integrity, cite={abadi2009cfi}}
@@ -139,10 +140,8 @@
 }
 \DeclareAcronym{gcc}{short=GCC, long=the GNU Compiler Collection}
 \DeclareAcronym{gcm}{short=GCM, long=Galois/Counter Mode}
-\DeclareAcronym{gfp}{
-  short            = GFP,
-  long             = greatest fixed point
-}
+\DeclareAcronym{gfp}{short=GFP, long=greatest fixed point}
+\DeclareAcronym{gpu}{short=GPU, long=graphics processing unit}
 \DeclareAcronym{icc}{
   short            = ICC,
   short-indefinite = an,
@@ -191,6 +190,7 @@
 }
 \DeclareAcronym{mc}{short=MC, long=model checking}
 \DeclareAcronym{mrr}{short=MRR, long=memory region relation}
+\DeclareAcronym{msb}{short=MSB, long=most significant bit}
 \DeclareAcronym{navsea}{short=NAVSEA, long=the Naval Sea Systems Command}
 \DeclareAcronym{neec}{short=NEEC, long=the Naval Engineering Education Consortium}
 \DeclareAcronym{nqthm}{
@@ -232,7 +232,7 @@
   short-indefinite = an,
   long             = syntactic control flow
 }
-\DeclareAcronym{simd}{short=SIMD, long=single instruction multiple data}
+\DeclareAcronym{simd}{short=SIMD, long={single instruction, multiple data}}
 \DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
 \DeclareAcronym{smt}{
   short            = SMT,
@@ -271,7 +271,7 @@
   {morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD,% will add more insts as needed
       POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS,%
       MOVAPD,MOVDQA,
-      dil,%
+      dil,eflags,rflags,cpuid,%
       rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp,rip,%
       r8,r8d,r8w,r8b,r9,r9d,r9w,r9b,%
       r10,r10d,r10w,r10b,r11,r11d,r11w,r11b,%
@@ -298,6 +298,8 @@
 \newcommand{\xenpercentage}{\SI{71}{\percent}}
 \newcommand{\xenpercentagenot}{\SI{29}{\percent}}
 
+\newcommand*\keywordstyle{\ttfamily\bfseries\color{blue}}
+\newcommand\keyword[1]{{\keywordstyle#1}}
 \newcommand*\inlineasm[1]{\lstinline[style=x64]|#1|}
 \newcolumntype{A}{>{\begingroup\ttfamily\bfseries\color{blue}}l<{\endgroup}}
 
@@ -395,6 +397,9 @@
 \newcommand{\mathrsp}{\text{\inlineasm{rsp}}}
 \newcommand{\mathdil}{\text{\inlineasm{dil}}}
 \newcommand{\mathdl}{\text{\inlineasm{dl}}}
+\newcommand{\mathfs}{\text{\inlineasm{fs}}}
+\newcommand{\mathgs}{\text{\inlineasm{gs}}}
+\newcommand{\mathGPR}{\mathtt{GPR}}
 
 \newcommand{\fso}{\var{fs}_0}
 \newcommand{\rdio}{\var{rdi}_0}

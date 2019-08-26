@@ -1,12 +1,14 @@
 \chapter{Background}\label{ch:background}
-This part of my dissertation provides domain-specific information necessary to understand
-the work presented in it.
-\todo{more intro}
-
+This part of my dissertation provides domain-specific information necessary to understand the work presented in it.
 It is grouped into the two main categories of
 formal methods (\cref{se:formal_methods})
 and assembly language (\cref{se:assembly_language}).
-\todo{more on overview}
+
+The section on formal methods explains formal semantics,
+symbolic execution, and the basics of Floyd and Hoare proving.
+It also talks a bit about \ac{smt} solvers, model checking, and theorem proving.
+
+The section on assembly language talks about 
 
 \section{Formal Methods}\label{se:formal_methods}
 To quote \textcite{butler:fm},
@@ -30,7 +32,11 @@ This form of semantics is modeled as a set of state changes.
 \todo{not really right}
 
 \paragraph{Big-Step}
+Also called \emph{natural} semantics, these describe the overall results of execution.
+
 \paragraph{Small-Step}
+Also called \emph{structural operational} semantics, these describe the individual steps
+of execution.
 
 \subsubsection{Denotational}
 In this form of semantics, the language under consideration
@@ -193,17 +199,19 @@ They have long been published as human-readable documents
 though ARM recently released several of their \acp{isa} in a machine-parsable,
 executable format \autocite{reid2016arm}.
 
-
-
-
-The general features specified include the supported data types,
-what state there is (such as the main memory and registers)
-and their semantics (such as the memory consistency and addressing modes), the instruction set (the set of machine instructions that comprises a computer's machine language), and the input/output model. \todo{rewrite, need citation from Wikipedia}
-
-
-
-
-
+\Iac{isa} can specify many things about the processor they describe.
+The data types supported by the processor are included in that,
+such as integers and floating-point values of specific sizes.
+The processor state is another major one, including how much main memory and registers
+are available; maybe even details of the cache(s) if it's an architecture
+where caching (on certain levels) is a manual process, such as is traditional
+for \acp{gpu}.
+The semantics of the architecture are another, such as the memory consistency model
+(complicated enough for \arch\ that formalizing it was a challenge
+\autocite{sewell2010tso,owens2009tso,owens2009tsoextended})
+and the addressing modes.
+The actual set of instructions supported by the \ac{isa}
+and how it communicates with external devices are also important.
 
 Historically, there have been two main types of \acp{isa}:
 \acp{cisc} and \acp{risc} \autocite{jamil1995rc}.
@@ -244,24 +252,49 @@ The rest of this section describes features and properties of \arch\ that are re
 to this dissertation.
 
 \subsubsection{State}
-\todo\dots
+For the purposes of this dissertation,
+the important components of \arch\ state are the memory model
+and the registers available for use.
+
 \paragraph{Memory}
-\todo\dots
+Addressing in \arch\ takes the form of \cref{eq:addressing}.
+\begin{equation}\label{eq:addressing}
+a = \left\{\frac{\begin{matrix}
+  \mathfs: \\ \mathgs:
+  \end{matrix}\begin{bmatrix}
+  \vdots \\ \mathGPR \\ \vdots
+  \end{bmatrix}+\left(
+  \begin{bmatrix}
+  \vdots \\ \mathGPR \\ \vdots
+  \end{bmatrix}*\begin{bmatrix}
+  1 \\ 2 \\ 4 \\ 8
+  \end{bmatrix}
+  \right)}{\mathrip}\right\}+\text{ displacement}
+\end{equation}
+In this \ac{isa}, while addresses are all 64 bits long,
+only 52 of those bits are actually usable for physical addressing.
+Additionally, while it provides \emph{virtual memory}
+so that every process gets its own  address space,
+hiding the details of its memory management and paging
+from user-mode programs, that virtual memory only gets 48 bits for addressing;
+the rest must be sign-extended from the \ac{msb} of that 48-bit value
+or else the address will be rejected.
 
+While the actual instructions have no problems accepting 64-bit address operands,
+the issue lies in how paging is implemented and the usage of high address bits
+as storage for metadata. Allowing a full 64-bit address space would require additional
+storage space for the information that is currently stored in those bits.
+It is not impossible that it will happen eventually, however.
 
-% Size restrictions
-Currently, though addresses in the \arch\ \ac{isa} are ostensibly 64 bits in length,
-not all of those bits are available for addressing.
-The physical address bus itself is only 48 bits
-\todo\dots
-
-While the \arch\ \ac{isa} could potentially use the full $2^{64}-1$
-range of values for addressing, as addresses are 64~bits in size,
-current implementation restrictions limit physical processors to
-52~bits for their address bus and~48 for virtual memory.
+For now, the works in this dissertation make a simplifying assumption that all 64 bits
+are available for addressing. Properly modeling the 48-bit restriction would
+require additional word arithmetic, though would not be infeasible.
+We also do not deal with memory consistency, as the symbolic execution engine
+in \cref{ch:symbolic_execution} does not implement out-of-order execution
+or any similar optimizations.
 
 \paragraph{Registers}\label{par:reg}
-The standard registers in \arch\ are 64 bits in size,
+The standard registers in \arch\ (\cref{tbl:regs}) are 64 bits in size,
 but their lower bits can be referenced alone if need be.
 If you write to one of the available 32-bit registers,
 it will zero out the upper~32 bits, but if you write to a 16- or 8-bit register,
@@ -269,8 +302,8 @@ the rest of the contents will be preserved.
 \begin{table*}
   \centering
   \renewcommand\theadfont{\normalcolor\normalsize\normalfont}
+  \caption{The \arch\ registers (excluding \ac{simd})}\label{tbl:regs}
   \begin{threeparttable}
-    \caption{The \arch\ registers (excluding \ac{simd})}\label{tbl:regs}
     \begin{tabular}{lAAAAA}
       \toprule
       \thead{Purpose} & \thead{\SI{64}\bit} & \thead{\SI{32}\bit} &
@@ -282,6 +315,14 @@ the rest of the contents will be preserved.
       General Purpose\tnote{d} & rdx & edx & dx & dh & dl \\
       General Purpose\tnote{e} & rdi & edi & di && dil \\
       General Purpose\tnote{f} & rsi & esi & si && sil \\
+      General Purpose & r8 & r8d & r8w && r8b \\
+      General Purpose & r9 & r9d & r9w && r9b \\
+      General Purpose & r10 & r10d & r10w && r10b \\
+      General Purpose & r11 & r11d & r11w && r11b \\
+      General Purpose & r12 & r12d & r12w && r12b \\
+      General Purpose & r13 & r13d & r13w && r13b \\
+      General Purpose & r14 & r14d & r14w && r14b \\
+      General Purpose & r15 & r15d & r15w && r15b \\
       Base Pointer & rbp & ebp & bp && spl \\
       Stack Pointer & rsp & esp & sp && bpl \\
       Program Counter/Inst.\ Pointer & rip & eip & ip && \\
@@ -315,42 +356,158 @@ the rest of the contents will be preserved.
 \end{table*}
 
 \subsubsection{Flags}
-Stored in the \inlineasm{rflags} register on \arch,
+Stored in the \inlineasm{rflags} register on \arch, these bits (\cref{tbl:flags})
+indicate, and in some cases control, processor state.
+\keyword{CF}, \keyword{OF}, \keyword{PF}, \keyword{SF}, and \keyword{ZF} are all used
+for specific conditional branches.
 \begin{table*}
   \centering
-  \caption{The flags}\label{tbl:flags}
-  \begin{tabular}{l}
-    \toprule
-    \todo\dots \\
-    \midrule
-    \todo\dots \\
-    \bottomrule
-  \end{tabular}
+  \renewcommand\theadfont{\normalcolor\normalsize\normalfont}
+  \caption{Flags for \arch}\label{tbl:flags}
+  \begin{threeparttable}
+    \begin{tabular}{rAl}
+      \toprule
+      \thead{Bit} & \thead{Label} & \thead{Description} \\
+      \midrule
+      0 & CF & Carry flag\tnote{*} \\
+      1 &    & Reserved, always 1 in \inlineasm{eflags} \\
+      2 & PF & Parity flag\tnote{\dag} \\
+      3 &    & Reserved \\
+      4 & AF & Adjust flag\tnote{\ddag} \\
+      5 &    & Reserved \\
+      6 & ZF & Zero flag; indicates result was 0 \\
+      7 & SF & Sign flag; indicates \ac{msb} of result was 1 \\
+      8 & TF & Trap flag; permits operation of a processor in single-step mode \\
+      9 & IF & Interrupt enable flag\tnote{\S} \\
+      10 & DF & Direction flag; controls the direction of string processing \\
+      11 & OF & Overflow flag; indicates result overflowed \\
+      12-13 & IOPL & I/O privilege level; shows I/O privilege level of current program or task \\
+      14 & NT & Nested task flag\tnote{\textbardbl} \\
+      15 &    & Reserved, always 1 on 8086 and 186, always 0 on later models \\
+      16 & RF & Resume flag; enables turning off certain exceptions while debugging code \\
+      17 & VM & Virtual 8086 mode flag\tnote{\textpilcrow} \\
+      18 & AC & Alignment check (486SX+ only) \\
+      19 & VIF & Virtual interrupt flag (Pentium+) \\
+      20 & VIP & Virtual interrupt pending (Pentium+) \\
+      21 & ID & Able to use \inlineasm{cpuid} instruction (Pentium+) \\
+      \bottomrule
+    \end{tabular}
+      \begin{tablenotes}
+        \item[*] Indicates arithmetic carry/borrow has been generated out of \ac{alu}'s
+          \ac{msb}
+        \item[\dag] Set if the number of set bits in the least significant byte is even
+        \item[\ddag] Indicates when an arithmetic carry or borrow has been generated
+          out of the four least significant bits (lower nibble).
+          Primarily used to support \ac{bcd} arithmetic.
+        \item[\S] Determines if the \ac{cpu} will handle maskable hardware interrupts
+        \item[\textbardbl] In protected mode, indicates one system task
+          has invoked another via \inlineasm{call} rather than \inlineasm{jmp}.
+        \item[\textpilcrow] In protected mode, allows the execution of real mode
+          applications that are incapable of running directly in protected mode
+          (a form of hardware virtualization).
+      \end{tablenotes}
+  \end{threeparttable}
 \end{table*}
 
 \subsubsection{Instructions}
-\todo\dots
+This section covers some of the important \arch\ instructions.
 
-\paragraph{Function Builders}
-\todo{push, pop, call, ret, enter, leave}
+\paragraph{Function and Stack}
+\begin{description}[align=right, font=\keywordstyle]
+  \item[call] Pushes the address of the next instruction onto the stack,
+    decrementing \inlineasm{rsp}, and then jumps to its operand.
+  \item[enter] Modifies stack for entry to procedure
+    for high level language. Takes two operands: the amount of storage to be allocated on the stack and the nesting level of the procedure.
+  \item[push] Pushes its operand onto the stack,
+    decrementing \inlineasm{rsp}.
+  \item[pop] Pops the current value off the stack,
+    incrementing \inlineasm{rsp}, and stores the popped value in its operand.
+  \item[leave] Releases local stack storage created by the previous
+    \inlineasm{enter} instruction.
+  \item[ret] Pops the current value off the stack,
+    incrementing \inlineasm{rsp}, and jumps to it.
+\end{description}
 
-\paragraph{Control Flow}
+\paragraph{Jumps}
+\begin{description}[align=right, font=\keywordstyle]
+  \item[jo] Jump if overflow ($\mathtt{OF}$)
+  \item[jno] Jump if not overflow ($\neg\mathtt{OF}$)
+  \item[js] Jump if sign ($\mathtt{SF}$)
+  \item[jns] Jump if not sign ($\neg\mathtt{SF}$)
+  \item[je] Jump if equal ($\mathtt{ZF}$)
+  \item[jz] Jump if zero
+  \item[jne] Jump if not equal ($\neg\mathtt{ZF}$)
+  \item[jnz] Jump if not zero
+  \item[jb] Jump if below ($\mathtt{CF}$)
+  \item[jnae] Jump if not above or equal
+  \item[jc] Jump if carry
+  \item[jnb] Jump if not below ($\neg\mathtt{CF}$)
+  \item[jae] Jump if above or equal
+  \item[jnc] Jump if not carry
+  \item[jbe] Jump if below or equal ($\mathtt{CF}\vee\mathtt{ZF}$)
+  \item[jna] Jump if not above
+  \item[ja] Jump if above ($\neg\mathtt{CF}\wedge\neg\mathtt{ZF}$)
+  \item[jnbe] Jump if not below or equal
+  \item[jl] Jump if less ($\mathtt{SF}\neq\mathtt{OF}$)
+  \item[jnge] Jump if not greater or equal
+  \item[jge] Jump if greater or equal ($\mathtt{SF}=\mathtt{OF}$)
+  \item[jnl] Jump if not less
+  \item[jle] Jump if less or equal ($\mathtt{ZF}\vee\mathtt{SF}\neq\mathtt{OF}$)
+  \item[jng] Jump if not greater
+  \item[jg] Jump if greater ($\neg\mathtt{ZF}\wedge\mathtt{SF}=\mathtt{OF}$)
+  \item[jnle] Jump if not less or equal
+  \item[jp] Jump if parity ($\mathtt{PF}$)
+  \item[jpe] Jump if parity even
+  \item[jnp] Jump if not parity ($\neg\mathtt{PF}$)
+  \item[jpo] Jump if parity odd
+  \item[jcxz] Jump if \inlineasm{cx} register is 0
+  \item[jecxz] Jump if \inlineasm{ecx} register is 0
+\end{description}
 
-\paragraph{\ac{simd}}
-These instructions, which operate on multiple 64-bit chunks,
-\todo\dots
+\paragraph{\Acf{simd}}
+These instructions, which operate on multiple 32- or 64-bit chunks,
+allow for a degree of vectorization (up to eight 64-bit values
+or 16~32-bit values at once on modern versions of \arch\ with AVX-512).
+When AVX-512 is supported, there are~32 512-bit \keyword{zmmN} registers available,
+each of which can also be accessed as a 256-bit \keyword{ymmN}
+or a 128-bit \keyword{xmmN} register.
+Those functions from the case studies that use \ac{simd} instructions
+only go up to \keyword{xmm}. In some cases, they are just used for internal moving
+of several values at once, but several of the functions rely on \ac{simd} instructions
+to support variable-length argument lists.
 
-\subsection{The System~V \acs*{abi}}
-While \iac{isa} specifies the features of a processor and what they do,
-it says nothing about how to use it.
-\todo{more}
+\subsection{The System~V AMD64 Application Binary Interface}
+While \iac{isa} specifies the features of a processor and what it can do,
+there is plenty more that must be standardized for easy interoperability of
+software. \Iac{abi} specifies the interfaces for different components
+in a software system, though not always formally. Those interfaces include
+the binary format of \emph{object files}, the format of program libraries,
+how system calls are made, and the standard \emph{calling convention},
+how function calls are structured on the machine code level.
 
-Originating from UNIX System~V, the System~V \ac{abi}
-is actively-maintained and widely used on many Unix-based systems,
-including all Linux distributions \autocite{systemv-ABI-git}.
-The version used in this dissertation was for \arch.
-The relevant aspects were the layout of \ac{elf} sections and the calling convention.
-\todo{describe more}
+As the programs used in \cref{ch:cfg,ch:syntax} were compiled and run on Linux,
+this dissertation focuses on the System~V AMD64 \ac{abi} \autocite{systemv-ABI-git},
+which is the standard for most Unix-based systems.
+The relevant aspects are the fact that the System~V \ac{abi} uses the \ac{elf}
+format for binaries, though we do not care about that
+once we are dealing with assembly, and the calling convention.
+The important aspects of the calling convention for this \ac{abi}
+are the following:
+
+The first six integer or pointer arguments are stored in \inlineasm{rdi},
+\inlineasm{rsi}, \inlineasm{rdx}, \inlineasm{rcx}, \inlineasm{r8},
+and \inlineasm{r9}, in that order.
+\inlineasm{r10} is used as a static chain pointer when there are nested functions.
+Certain floating-point arguments will be stored in
+\keyword{xmm0-7}. Any additional arguments will be passed along on the stack.
+
+Integral values up to 64 bits are stored in \inlineasm{rax} while those up to 128 bits
+are split between \inlineasm{rax} and \inlineasm{rdx}.
+Floating-point return values are stored in \inlineasm{xmm0} and \inlineasm{xmm1}.
+
+Registers \inlineasm{rbx}, \inlineasm{rbp}, and \keyword{r12-r15} are
+\emph{callee-saved}, meaning they must be pushed and popped locally to preserve their
+values between function calls. All other registers must be saved by the caller.
 
 \subsection{\Ac{gcc}}
 The compiler used to build the case studies in \cref{ch:cfg,ch:syntax} is important,
@@ -375,8 +532,6 @@ each block must terminate with a control flow instruction
 and must not contain any other control flow instructions
 \autocite{llvm:functions,llvm:terminators}.
 
-\todo\dots
-
 \subsection{Tail Call Optimization}
 Tail call%
 \index{tail call optimization}
@@ -390,3 +545,7 @@ The technique also supports optimizing non-recursive tail calls, however,
 and that has a lower bar.
 
 \section{Summary}
+This chapter gave an introduction to formal methods, including formal semantics,
+symbolic execution, Floyd verification, Hoare logic, model checking, and theorem provers.
+It also described some basic aspects of the \arch\ \ac{isa} and System~V AMD64 \ac{abi}
+as well as some general details on assembly.

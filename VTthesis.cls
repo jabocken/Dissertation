@@ -71,8 +71,7 @@
 %% AMSLaTeX math environments and symbols
 \RequirePackage{amsmath,amsthm,amssymb,amsfonts}
 \RequirePackage[normalem]{ulem}
-\RequirePackage{enumerate}
-\RequirePackage{paralist}
+\RequirePackage[inline]{enumitem}
 \RequirePackage[titletoc,page]{appendix}
 
 % Proper spacing between different chapters in extra lists (courtesy of https://tex.stackexchange.com/a/88563)
