@@ -186,7 +186,11 @@ that rely on the aforementioned simplification rules.
 Using these lemmas improves performance when performing symbolic execution
 as they greatly reduce the number of simplification rules that must be applied.
 
-%todo: an additional section about some of the mathematical simplification rules would have been nice, like the stuff regarding shifts and casts.
+%\subsection{Word Arithmetic Simplification}
+%Word arithmatic is not easy to reason about formally,
+%and the Isabelle/HOL Word library lacks many simplification rules for operations
+%performed by assembly instructions, particularly when casting is involved.
+%todo: more eventually?
 
 \subsection{Memory Aliasing}\label{memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%

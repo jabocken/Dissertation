@@ -267,8 +267,21 @@ and then leaving out any return-oriented checks for those functions it holds on.
 This could be one way of avoiding \ac{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
-It requires reasoning over which parts of the memory are used by which functions \autocite{rushby1992noninterference},
-and memory preservation is ideal for such a scenario.
+On a high level, it states that a group of users using a certain set of commands
+\emph{does not interfere} with another group of users if the the first group's actions
+have no effect on what the second group of users can see
+\autocite{goguen1982security,rushby1992noninterference}.
+On a functional level, that could be interpreted as a statement that a non-interfering function does not modify any memory that is accessed
+by the function not being interfered with.
+Memory preservation is specifically about showing that all memory outside of
+specific regions is not modified by the function
+or functions associated with those regions, so proving that the region sets
+for two functions are disjoint
+would essentially prove noninterference for those two functions.\footnote{%
+  A weaker property would be showing that one of the functions does not write
+  to any of the memory regions read by the other, but that would actually be harder
+  as we do not currently differentiate between regions that are read and written.%
+}
 
 \subsubsection{Composition}\label{sse:composition}
 Scalability in verification is only feasible with composition;
