@@ -471,7 +471,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
     \toprule
     \thead{Work} & \thead{Target} & \thead{Approach} & \thead{Applications} & \thead{Verified code} \\
     \midrule
-    Clutterbuck\&Carr\'e & SPACE-8080 & \acs*{itp}+\acs*{vcg} & Example func & \num{33} insts \\
+    Clutterbuck,Carr\'e & SPACE-8080 & \acs*{itp}+\acs*{vcg} & Example func & \num{33} insts \\
     O'Neill et al. & Z8002 & \acs*{itp}+\acs*{vcg} & Jet engine code & \\
     Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
@@ -479,20 +479,20 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
     Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
-    Schlich et al. & ATmega16 & MC & Auto funcs & Around \num{8000} insts \\
+    Schlich et al. & ATmega16 & MC & Auto funcs & Around 8k insts \\
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+MC & Example progs &
       \makecell[l]{\num{2630} \acs*{sloc}\\
         \num{935} \acs*{sloc}} \\
     Fromherz et al. & C/\arch & ATP+\acs*{vcg} & \acs{aes} funcs & \\
     \textbf{\cref{ch:cfg}} & \arch & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
-    \textbf{\cref{ch:syntax}} & \arch & CG+\acs*{itp}+\acs{vcg} & Xen & \num{12252} insts \\
+    \textbf{\cref{ch:syntax}} & \arch & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
     Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs*{sloc} \\
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
-    Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & \num{8000} \acs*{sloc}, 60 insts \\
+    Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs*{sloc}, 60 insts \\
     Dam et al. & ARMv7 & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
     Baumann et al. & ARMv8-A & \acs*{atp}+UC & HAPSOC & \num{8000} \acs*{sloc} \\
-    Bevier et al. & PDP-11-like & \acs*{itp}+TV & Full system & \num{3000}+ \acs*{sloc}/insts \\
+    Bevier et al. & PDP-11-like & \acs*{itp}+TV & Full system & 3k+ \acs*{sloc}/insts \\
     \bottomrule
     \multicolumn{5}{c}{
       \small

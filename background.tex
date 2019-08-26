@@ -336,7 +336,7 @@ it will zero out the upper~32 bits, but if you write to a 16- or 8-bit register,
 the rest of the contents will be preserved.
 \begin{table*}
   \centering
-  \renewcommand\theadfont{\normalcolor\normalsize\normalfont}
+  \appto\theadfont{\normalcolor\normalfont}
   \caption{The \arch\ registers (excluding \ac{simd})}\label{tbl:regs}
   \begin{threeparttable}
     \begin{tabular}{lAAAAA}
@@ -397,7 +397,7 @@ indicate, and in some cases control, processor state.
 for specific conditional branches.
 \begin{table*}
   \centering
-  \renewcommand\theadfont{\normalcolor\normalsize\normalfont}
+  \appto\theadfont{\normalcolor\normalfont}
   \caption{Flags for \arch}\label{tbl:flags}
   \begin{threeparttable}
     \begin{tabular}{rAl}
