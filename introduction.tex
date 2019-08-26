@@ -1,11 +1,5 @@
 \chapter{Introduction}
-Characterizing the regions in memory that are read and written by a program
-allows reasoning over those regions.
-When you can reason over those regions, you can prove \emph{memory preservation}:
-that the values written by that program are constrained to its memory regions
-and it does not modify any other regions in memory.
-When you can prove memory preservation, you can work towards even larger analyses.
-Of course, that first requires being able to prove that property.
+
 
 \section{Motivation}
 As a basic property, memory preservation has potential applications to security analyses,
@@ -27,10 +21,6 @@ that could be used to expose vulnerabilities involving malicious writes.
 Another important property that memory preservation could help with
 is \ac{cfi}. \Ac{cfi} ensures that software execution
 follows a predetermined \ac{cfg} using static analysis and runtime checks.
-The dynamic checking could be made more efficient
-by first proving the property in \cref{ex:rop} for those functions it is applicable to
-and then leaving out any return-oriented checks for those functions it holds on.
-This could be one way of avoiding \ac{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
 On a high level, it states that a group of users using a certain set of commands
@@ -87,19 +77,14 @@ which is out of scope of this dissertation.
 \section{Challenges}
 A fully-automated verification effort to prove memory preservation would be ideal,
 but it is not a feasible approach \autocite{ouimet2008formal}.
-As per Rice's theorem \autocite{rice1953classes}, memory preservation is ultimately an undecidable property.
-One alternative would be to use \ac{itp}, but that does not scale well either.
-
-Targeting an approach somewhere in the middle,
-automating the bulk of the proof effort while still allowing user interaction,
-is the best way to go. This does require a significant amount of up-front verification work, however.
-Developing a proof-generation framework that allows easy interaction
-without the need for any in-depth work is infeasible, if not impossible.
-The most that can be achieved is a minimization of the work needed.
+As per Rice's theorem \autocite{rice1953classes},
+memory preservation is ultimately an undecidable property.
+One alternative would be to use \ac{itp}, but that does not scale well either
+due to the amount of intricate user interaction required.
 
 \section{Assembly-Level Verification}
-Properties that reason over the concrete memory used by a program, such as memory preservation,	
-cannot be satisfactorily expressed on the source-code level.
+Properties that reason over the concrete memory used by a program,
+such as memory preservation, cannot be satisfactorily expressed on the source-code level.
 This is because even programs in a relatively low-level language like C
 have abstractions on memory for local variables and function calls.
 How and where that memory is allocated may be compiler, \ac{abi}, and \ac{isa}-specific.
@@ -109,7 +94,8 @@ While one way of resolving that issue would be to choose a specific compiler
 and provide a formal analysis of how it arranges memory (or write a compiler to do so),
 that method places restrictions on the build process.
 Targeting assembly or machine code directly, as done in this dissertation,
-allows bypassing the build process, which also opens the door for verification of legacy code.
+allows bypassing the build process,
+which also opens the door for verification of legacy code.
 \begin{example}\label{ex:rop}
   As a further illustration, consider formulating a property
   that a function cannot overwrite its own return address.
@@ -117,10 +103,12 @@ allows bypassing the build process, which also opens the door for verification o
   including the values of the stack and frame pointers,
   thus making it an \emph{assembly-level} property.
 \end{example}
-As a side benefit, targeting assembly means that there is no need to trust all the steps between
+As a side benefit,
+targeting assembly means that there is no need to trust all the steps between
 writing source code and obtaining a binary from it.
 Doing so reduces the \ac{tcb} without needing to use a compiler
-that has been formally proven to maintain the semantics of the source code in the binaries it produces.
+that has been formally proven to maintain
+the semantics of the source code in the binaries it produces.
 
 \subsection{Challenges}\label{asm_challenges}
 The biggest challenge in assembly-level verification is
@@ -134,7 +122,8 @@ with their corresponding \acp{isa},
 having minimal differences in semantics but not being easy to reason about directly.
 
 As an example of the semantic gap,
-assembly code generally lacks the structured control flow found in languages on a higher level of extraction.
+assembly code generally lacks the structured control flow
+found in languages on a higher level of extraction.
 Instead, all control flow on the assembly level is performed using conditional
 or unconditional branches, either to a predetermined location or to a calculated label.
 
@@ -156,7 +145,8 @@ and even the number of bytes and the address to read from or write to can be var
 A user could go as far as supplying the result of a floating-point computation
 as the address operand of an instruction that loads or stores memory.
 Historically, there have been computers that associated type information
-with memory locations in hardware \autocite{feustel1972rice,feustel1973advantages,thornton2008rice},
+with memory locations in hardware
+\autocite{feustel1972rice,feustel1973advantages,thornton2008rice},
 but we do not have that luxury on typical modern systems.
 
 An additional issue with assembly,
@@ -175,14 +165,9 @@ Any verification effort that wishes to reason about low-level memory properties
 must provide its own abstractions and assumptions on layout.
 
 \subsection{Current Approaches to Assembly Verification}
-Some years ago, \textcite{shi2012orientais} provided a verification methodology
-for a real-time \ac{os} designed for automotive applications.
-Part of their verification methodology involved lifting machine code into an intermediate
-representation called xBIL \autocite{shi2012xbil}.
-
-A little later, \textcite{goel2014syscalls,goelphd} produced formal semantics
+In 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
 for most user-mode \arch\ instructions as well as for commonly-used system calls.
-Their work allows mechanized reasoning over compiled programs
+That work allows mechanized reasoning over compiled programs
 in the ACL2 theorem prover \autocite{ACL2}.
 
 A year after that, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
@@ -229,7 +214,8 @@ which can result in extra symbolic execution.
 
 \subsection{Control-Flow-Driven Verification}
 This methodology for verification of memory preservation relies on treating function bodies
-as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
+as \acp{cfg} with basic blocks as the nodes,
+much as compilers do when performing their analyses.
 In order to reason about the \acp{cfg},
 they are annotated with predicates on state at specific locations,
 between which the program will be symbolically executed.
@@ -259,19 +245,22 @@ This is achieved using off-the-shelf tools.
 That proof skeleon specifies where the program should be annotated
 and provides some initial conditions based on register values.
 It also provides the proof steps to properly perform symbolic execution
-and starts the user off with a basic set of regions determined from variables in the stack frame.
+and starts the user off with a basic set of regions
+determined from variables in the stack frame.
 The two steps remaining, however, are up to the user.
-Those steps are formulating any remaining memory regions to successfully complete symbolic execution
+Those steps are formulating any remaining memory regions
+to successfully complete symbolic execution
 and fleshing out the annotations on state so that the symbolic execution of later blocks
 can continue from that of earlier ones.
 
 %Analysis of HermitCore Functions
-The control-flow-driven methodology was applied to \num{71} functions
+The control-flow-driven methodology was applied to \num{63} functions
 extracted from the HermitCore  \autocite{lankes2016hermitcore}
 unikernel library \autocite{madhavapeddy2014unikernels},
 covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
-Of those functions, 18 had loops and 33 had subcalls.
-Optimized variants were also verified for 12 of the functions involved.
+Of those functions,~18 had loops and~33 had subcalls.
+Optimized variants were also verified for~12 of the functions involved,
+resulting in \num{75} functions verified.
 There was even one function that featured recursion,
 which turned out to be the most challenging function to handle.
 Other than the recursive function, the most challenging ones to handle
@@ -281,11 +270,13 @@ is not easy when a significant amount of memory operations are performed.
 The closest related work to this, that of \textcite{matthews2006verification},
 resulted in the verification of only \num{20} functions,
 with \num{631} assembly-level instructions in total.
-That is only \SI{28}{\percent} of the functions, or \SI{26.5}{\percent} of the instructions,
-that we verified here.
+That is only \SI{26.67}{\percent} of the functions,
+or under \SI{26.5}{\percent} of the instructions, that we verified here.
 On top of that, the \acp{isa} they worked with are not as low-level as the \arch\ \ac{isa}.
-While they verified functional correctness instead of a weaker property like memory preservation,
-they also specifically reduced the complexity of the most complicated set of functions they verified
+While they verified functional correctness
+instead of a weaker property like memory preservation,
+they also specifically reduced the complexity
+of the most complicated set of functions they verified
 by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
 
 \subsection{Syntax-Driven Verification}

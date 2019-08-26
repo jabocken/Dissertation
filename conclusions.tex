@@ -1,15 +1,54 @@
 \chapter{Conclusions}\label{ch:conclusions}
-Formal verification of assembly code can produce highly reliable claims over software.
+Certain properties, such as memory preservation, can only be proven on the assembly level.
+This is due to memory preservation requiring a concrete representation of memory.
+Unfortunately, assembly-level verification is a fundamentally harder problem
+than source-level verification due to the low level of abstraction.
+However, it can also produce highly reliable claims over software.
 By eliminating the need to trust the compiler
 and the semantics of whatever source language the program was written in,
 you can drastically decrease the \ac{tcb} in use.
-However, assembly-level verification is a fundamentally harder problem
-than source code verification.
-
-\todo\dots
 
 \section{Contributions Revisited}
-\todo\dots
+This dissertation presented two methods for proving memory preservation,
+control-flow-driven verification and syntax-driven verification.
+Both approaches rely on the same symbolic execution model and memory-related rewrite rules
+documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
+
+Technically they also both use Hoare triples, but only \cref{ch:syntax}
+uses proper Hoare rules. \cref{ch:cfg} uses a modified style
+that takes a halting condition~$H$ instead of a syntactic construct in the middle.
+
+\subsection{Control-Flow-Driven Verification}
+This methodology uses a Floyd-style approach \autocite{floyd1967assigning}
+with automatically-selected cutpoints.
+It is very similar to the work of \textcite{matthews2006verification},
+but with a focus on memory preservation specifically.
+The rewrite rules over memory accesses from \cref{memory_rewrite}
+result in additional \acp{vc} that would not be present in their framework.
+Those \acp{vc} require time-consuming word arithmetic
+when the appropriate preconditions/assumptions are not present.
+The preconditions/assumptions simply establish separation and enclosure relations
+for the necessary memory regions.
+
+This methodology was applied to \num{63} functions
+extracted from the HermitCore unikernel library, plus \num{12} optimized versions,
+resulting in more than \num{2379} assembly instructions verified.
+
+\subsection{Syntax-Driven Verification}
+Rather than using a more general \ac{cfg} to guide the verification,
+a more structured \ac{scf} is extracted from the assembly under test.
+This \ac{scf} is used as one of the generated \ac{fmuc}'s proof ingredients.
+The other proof ingredients are the generated memory regions,
+\acp{mrr}, and block conditions.
+With the invariant generation as it currently is,
+the only user interaction required under normal circumstances
+is weakening the condition for a loop entry block
+by merging it with the condition for all of the loop's exit blocks.
+
+This methodology was applied to 251 functions from the Xen Project binaries examined,
+\xenpercentage\ of the total functions from the examined binaries.
+Ultimately, \num{12252} instructions were covered
+with only \num{1047} manual lines of proof required.
 
 \section{Proposed Post-Preliminary Exam Work}
 As a formal property, memory preservation
@@ -17,15 +56,27 @@ has been proven to never miss any memory regions written to,
 assuming the correctness of the semantics and model it is applied
 to \autocite{bockenek2019preservation,popl2019underreview}.
 Put another way, however, this means that the methodology \emph{must} be conservative.
-If it cannot make a determination about the usage status of some part of memory,
-either due to an underdeveloped state or too large of one to easily reason about,
+If it cannot make a determination about the usage status of some region of memory,
 it must assume that that region is used. It must \emph{overapproximate}.%
 \index{overapproximation}
-In order to reduce that overapproximation, the conditions on blocks
+It does not matter if the cause was an underdeveloped state
+or too large of one to easily reason about.
 
-\subsection{Strengthen Invariants}
-In order to improve automation, we currently generate very weak invariants.
-While this worked for \cref{ch:syntax},
+There are multiple potential ways to reduce that overapproximation detailed below.
+
+\subsection{Strengthen Invariants Via Abstract Interpretation}
+In order to enhance automation, we currently generate very weak invariants.
+While this works reasonably well, being able to generate stronger invariants
+would be advantageous. Stronger invariants mean stricter memory preservation proofs.
+
+One possible way to generate stronger invariants would be to use
+\emph{abstract interpretation}\index{abstract interpretation}
+\autocite{cousot1976static,cousot1977aiu}.
+The methodology used by Crab (\url{https://github.com/seahorn/crab})
+for loop invariant restriction may prove useful for this purpose
+\autocite{gange2016abstract}.
+
+In abstract interpretation,
 
 \subsection{Model a More Realistic Memory Model}
 Most applications do not run in isolation. Their behavior is limited by
@@ -38,5 +89,8 @@ most modern \ac{os} kernels put limits on stack size as sanity checks.
 The kernel limits are generally configurable,
 both at compile time as well as at runtime, but can require privileged access.
 Properly modeling those restrictions
-would potentially require formulating a more in-depth memory model.
-This would be useful to 
+would potentially require formulating a more in-depth memory model
+as the stack limits that are changed at runtime come in two forms.
+There is a \emph{soft} limit on stack size that unprivileged users
+can modify, but there is also a \emph{hard} limit
+that requires root access to modify.

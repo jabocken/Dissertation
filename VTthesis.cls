@@ -395,7 +395,7 @@
 \renewcommand\maketitle{%
   \titlepage
   \ifbool{@abs}{\abstractpage{Abstract}\@abstract}{}
-  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud}{}
+%  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud}{} hidden for now
   \ifbool{@ded}\dedpage{}
   \ifbool{@ack}{\chapter*{Acknowledgments}\@acknowledge}{}
 }

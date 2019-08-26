@@ -784,7 +784,7 @@ While it does use some inline assembly, not uncommon in kernel code,
 that is no issue for the assembly-level methodology presented here.
 The subset of HermitCore functions that were verified feature features
 such as loops, pointers, complex data structures, function calls, and recursion.
-The 71 functions analyzed were generally compiled unoptimized,
+The~63 functions analyzed were generally compiled unoptimized,
 but twelve of those functions were also analyzed in their optimized forms.
 This was done to show that the more complex code produced by optimizing compilers
 can also potentially be handled.
@@ -856,7 +856,7 @@ as most of the functions would otherwise have their bodies inlined.
       \lstinline|syscall.c| & 23 & 293 & 857 & 5 && 19 & 7 & 17 & \\
       \lstinline|tasks.c| & 10 & 122 & 396 & 2 && 3 & 9 & 4 & \\
       \lstinline|spinlock.h| & 8 & 89 & 254 & 2 && 8 & 2 & 6 & \\
-      Total & 71 & 760 & 2379 & 18 & 1 & 46 & 21 & 33 & 12 \\
+      Total & 63 & 760 & 2379 & 18 & 1 & 46 & 21 & 33 & 12 \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}
