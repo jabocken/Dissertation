@@ -1,114 +1,104 @@
 \chapter{Introduction}
-Proving that a non-trivial program has no bugs is not an easy task,
-and as technology continues to improve,
-software will continue to increase in complexity.
-Providing methods to ease the work of reasoning over programs
-with reliability is a necessity in the modern world.
-This is particularly important for programs
-that are intended for high-reliability applications,
-such as in avionics or medical equipment.
+Characterizing the regions in memory that are read and written by a program
+allows reasoning over those regions.
+When you can reason over those regions, you can prove \emph{memory preservation}:
+that the values written by that program are constrained to its memory regions
+and it does not modify any other regions in memory.
+When you can prove memory preservation, you can work towards even larger analyses.
+Of course, that first requires being able to prove that property.
 
 \section{Motivation}
-Using formal, mathematical techniques to reason about and prove properties of programs
-greatly increases their reliability and trustworthiness.
-The downside is the high degree of effort required to achieve that level of reliability.
-Achieving reasonable formal analyses without requiring an excessive degree of effort
-would surely encourage more people to use those analyses.
+As a basic property, memory preservation has potential applications to security analyses,
+compositional reasoning, and even concurrency.
+These potential applications are described in more detail below.
 
-As an example, several years ago Facebook integrated the static analysis tool Infer
-into their \ac{ci} toolchain \autocite{calcagno2011infer}.
-That tool, which uses formal techniques to identify potential bugs
-that other static analysis tools may not detect,
-requires minimal user interaction to function.
-If this could be done with more forms of formal analysis,
-it would make the world of software development a better place.
+\subsection{Security}
+Unbounded memory usage can lead to vulnerabilities
+such as buffer overflows and data leakage.
+One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}.
+Heartbleed was caused by a lack of bounds checking on a string array
+requested as output as part of a ``heartbeat'' message.
+This, combined with a custom memory manager
+that also had no security protections against out-of-bounds memory accesses,
+lead to potential leakage of sensitive data such as passwords and encryption keys.
+Memory preservation could serve as a foundation for formal security analyses
+that could be used to expose vulnerabilities involving malicious writes.
 
-While formal methods are not yet widely used in industry outside of hardware design
-and other applications requiring the highest level of security,
-the world does seem to be slowly moving in that direction
-\autocite{smackers2019,khazeev2019acceptance}.
-Putting in the work to increase their automation and usability
-would have advantages for more than just the research community.
+Another important property that memory preservation could help with
+is \ac{cfi}. \Ac{cfi} ensures that software execution
+follows a predetermined \ac{cfg} using static analysis and runtime checks.
+The dynamic checking could be made more efficient
+by first proving the property in \cref{ex:rop} for those functions it is applicable to
+and then leaving out any return-oriented checks for those functions it holds on.
+This could be one way of avoiding \ac{rop} attacks without excessive runtime overhead.
 
-\subsection{Importance}
-Increasing complexity in software development makes programs harder to reason about.
-Sir Charles Antony Richard Hoare
-once bemoaned the state of software development in his time \autocite{hoare1980clothes},
-the favoring of adding fancy language features over minimizing the possibility of bugs.
-To quote him:
-\begin{quote}
-  There is nothing a mere scientist can say that will stand against the flood
-  of a hundred million dollars. But there is one quality that cannot be purchased
-  in this way---and that is reliability. The price of reliability is the pursuit of
-  the utmost simplicity. It is a price which the very rich find most hard to pay.
-\end{quote}
-This was said almost forty years ago, but things do not seem to have changed much.
-The recent debacles with Meltdown and Spectre  \autocite{lipp2018meltdown,kocher2018spectre}
-are yet another case of a push for additional performance having unexpected,
-negative consequences.
-Admittedly, those were hardware rather than software issues,
-but in a way that is even worse. Once identified, a software problem can be resolved
-with an update or patch, but hardware issues are much harder to fix.
+The property of \emph{noninterference} is also a useful one for security.
+On a high level, it states that a group of users using a certain set of commands
+\emph{does not interfere} with another group of users if the the first group's actions
+have no effect on what the second group of users can see
+\autocite{goguen1982security,rushby1992noninterference}.
+On a functional level, that could be interpreted as a statement that a non-interfering function does not modify any memory that is accessed
+by the function not being interfered with.
+Memory preservation is specifically about showing that all memory outside of
+specific regions is not modified by the function
+or functions associated with those regions, so proving that the region sets
+for two functions are disjoint
+would essentially prove noninterference for those two functions.\footnote{%
+  A weaker property would be showing that one of the functions does not write
+  to any of the memory regions read by the other, but that would actually be harder
+  as we do not currently differentiate between regions that are read and written.%
+}
 
-Ultimately, given how modern life involves being surrounded by devices
-running all kinds of software, there is a need for accurate analysis
-of the properties of the programs we use in our everyday lives.
-\Ac{iot} devices in particular have not had a particularly good reputation
-when it comes to security \autocite{zhang2014iot,zhao2013iot}, despite their popularity.
-Lowering the bar for verifying the safety and security of everyday devices
-would improve quality of life and grant greater peace of mind.
+\subsection{Composition}\label{sse:composition}
+Scalability in verification is only feasible with composition;
+proofs of functional correctness or some other property over a large suite of software
+require decomposing that suite into manageable chunks.
+Separation logic provides a \emph{frame rule} that supports such%
+\index{separation logic!frame rule}
+decomposition \autocite{o2001local,reynolds2002separation,krebbers2017essence}.
+In words, the frame rule states that,
+if a program or program fragment can be confined to a certain part of a state,
+properties of that program or program fragment carry over
+when used as part of a larger system involving that state.
+Memory preservation allows for discharging the most involved part of the frame rule,
+at least in terms of individual assembly functions.
+That is, it shows that the memory preservation of those functions is constrained
+to specific regions in memory.
+This could then serve as a basis
+for a larger proof effort over multi-function assembly programs.
 
-\subsection{Challenges}
-Highly-automated verification efforts are desirable, but do not necessarily scale.
-Model checking, in particular, suffers from what is known as the
-``state explosion'' problem \autocite{clarke2012modelchecking}.
-Though there have been significant improvements in model-checking performance
-in the past decades, model checkers still have issues with large, complex systems.
+\subsection{Concurrency}
+Reasoning over concurrent programs is complicated
+due to the potential interactions between threads.
+While there are ways of handling such interactions in a structured manner
+via kernel- or library-provided \ac{ipc},
+one method commonly used for the sake of efficiency is \emph{shared memory}.
+Shared memory, in the context of this work,
+refers to threads or processes sharing either a full memory space
+or portions of one (via memory mapping)
+that can be written to and read from freely by any thread or process with access to it.
+Usage of shared memory can result in \emph{unintended} interactions between threads.
+Memory preservation could be adapted to show the absence of such interactions
+by proving that multiple threads only write
+to specifically-allowed regions of shared memory.
+Doing so would, of course, require a proper model of concurrency,
+which is out of scope of this dissertation.
 
-On the opposite side of the interactivity level is \ac{itp}.
-Interactive theorem provers and proof assistants
-like Isabelle/HOL \autocite{nipkow2002isabelle}, Coq \autocite{chlipala2013certified},
-and HOL4 \autocite{slind2008brief} are powerful tools for producing meaningful proofs.
-Unfortunately, their learning curves are not exactly flat.
-The average software developer will not want to have to spend the time
-learning how to write formal proofs just to eliminate some bugs from their programs.
+\section{Challenges}
+A fully-automated verification effort to prove memory preservation would be ideal,
+but it is not a feasible approach.
+As per Rice's theorem \autocite{rice1953classes}, memory preservation is ultimately an undecidable property.
+One alternative would be to use \ac{itp}, but that does not scale for large systems either.
 
 Targeting an approach somewhere in the middle,
 automating the bulk of the proof effort while still allowing user interaction,
-may be the best way to go.
-This does require a significant amount of up-front verification work, however.
+is the best way to go. This does require a significant amount of up-front verification work, however.
 Developing a proof-generation framework that allows easy interaction
 without the need for any in-depth work is infeasible, if not impossible.
 The most that can be achieved is a minimization of the work needed.
 
-By narrowing the focus of verification, however, it may be possible to significantly
-minimize that work.
-
-With the right properties chosen, however, it is possible to greatly minimize that work, even when targeting something as low-level as assembly.
-
 \section{Assembly-Level Verification}
-There are many approaches for formal verification that target source code
-and higher level languages in general.
-This dissertation, however, focuses on \emph{assembly-level} verification.
-
-Targeting assembly means that there is no need to trust all the steps between
-writing source code and obtaining a binary from it.
-Doing so reduces the \ac{tcb} without needing to use a compiler
-that has been formally proven to maintain the semantics of the source code
-in the binaries it produces. On the flip side, analyzing code on the assembly level
-is harder than analyzing source code.
-While the individual instructions are usually simpler
-than any individual higher-level statement could be,
-there are a lot more of them and they lack some of the abstraction
-that can help simplify reasoning on a higher level. \Cref{asm_challenges}
-covers some of the issues with verification on the assembly level.
-
-Even so, there are properties that can only be identified on the assembly level
-due to how close assembly is to the machine it is executed on,
-as detailed in the following section.
-
-\subsection{Importance}
-Properties that reason over the concrete memory used by a program
+Properties that reason over the concrete memory used by a program, such as memory preservation,	
 cannot be satisfactorily expressed on the source-code level.
 This is because even programs in a relatively low-level language like C
 have abstractions on memory for local variables and function calls.
@@ -119,7 +109,7 @@ While one way of resolving that issue would be to choose a specific compiler
 and provide a formal analysis of how it arranges memory (or write a compiler to do so),
 that method places restrictions on the build process.
 Targeting assembly or machine code directly, as done in this dissertation,
-allows bypassing the build process, opening the door for verification of legacy code.
+allows bypassing the build process, which also opens the door for verification of legacy code.
 \begin{example}\label{ex:rop}
   As a further illustration, consider formulating a property
   that a function cannot overwrite its own return address.
@@ -127,6 +117,10 @@ allows bypassing the build process, opening the door for verification of legacy 
   including the values of the stack and frame pointers,
   thus making it an \emph{assembly-level} property.
 \end{example}
+As a side benefit, targeting assembly means that there is no need to trust all the steps between
+writing source code and obtaining a binary from it.
+Doing so reduces the \ac{tcb} without needing to use a compiler
+that has been formally proven to maintain the semantics of the source code in the binaries it produces.
 
 \subsection{Challenges}\label{asm_challenges}
 The biggest challenge in assembly-level verification is
@@ -140,11 +134,9 @@ with their corresponding \acp{isa},
 having minimal differences in semantics but not being easy to reason about directly.
 
 As an example of the semantic gap,
-assembly code generally lacks the structured control flow found in languages
-on a higher level of extraction.
+assembly code generally lacks the structured control flow found in languages on a higher level of extraction.
 Instead, all control flow on the assembly level is performed using conditional
-or unconditional branches, either to a predetermined location
-or to a calculated label.
+or unconditional branches, either to a predetermined location or to a calculated label.
 
 A further example would be source code containing division operations
 being compiled to run on a processor that does not provide hardware division.
@@ -183,15 +175,20 @@ Any verification effort that wishes to reason about low-level memory properties
 must provide its own abstractions and assumptions on layout.
 
 \subsection{Current Approaches to Assembly Verification}
-A few years ago, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
-for automated verification of safety properties on the assembly level.
-That work took six hours to execute on \num{533} instructions,
-but was applicable to unmodified code.
-
-A little before that, \textcite{shi2012orientais} provided a verification methodology
+Some years ago, \textcite{shi2012orientais} provided a verification methodology
 for a real-time \ac{os} designed for automotive applications.
 Part of their verification methodology involved lifting machine code into an intermediate
 representation called xBIL \autocite{shi2012xbil}.
+
+A little later, \textcite{goel2014syscalls,goelphd} produced formal semantics
+for most user-mode \arch\ instructions as well as for commonly-used system calls.
+Their work allows mechanized reasoning over compiled programs
+in the ACL2 theorem prover \autocite{ACL2}.
+
+A year after that, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
+for automated verification of safety properties on the assembly level.
+That work took six hours to execute on \num{533} instructions,
+but was applicable to unmodified code.
 
 More recently, \textcite{baumann2016high} provided an ARMv8-based hypervisor
 that was formally verified on the machine code level
@@ -199,21 +196,15 @@ to ensure isolation of guest \acp{os}.
 That work was based on an earlier one for an ARMv7 separation kernel,
 PROSPER \autocite{dam2013hypervisor,dam2013formal}.
 
-Around the same time, \textcite{goel2014syscalls,goelphd} produced formal semantics
-for most user-mode \arch\ instructions as well as for commonly-used system calls.
-Their work allows mechanized reasoning over compiled programs
-in the ACL2 theorem prover \autocite{ACL2}.
-
 Additionally, earlier this year, \textcite{fromherz2019verified} embedded a subset
 of the \arch\ \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to perform a proof of correctness
 over the commonly-used cryptographic routine AES-GCM.
 
-\section{Research Contributions}
-This dissertation presents two formal approaches to function-oriented verification
-of the assembly-level property we call \emph{memory preservation},
-described in \cref{memory_usage}:
+\section{Contributions}
+This dissertation presents two formal approaches to per-function verification
+of the assembly-level property we call memory preservation:
 \emph{control-flow-driven} verification and \emph{syntax-driven} verification.
 Both approaches use some form of control-flow analysis over functions in \arch\ assembly
 to generate incomplete proofs.
@@ -228,96 +219,13 @@ and how they perform symbolic execution.
 The first approach, control-flow-driven verification,
 requires significantly more user user input but has the potential for much stronger invariants.
 Meanwhile, the second approach, syntax-driven verification,
-has a significantly higher level of proof automation
+has a significantly higher level of proof automation via the generation of \acp{fmuc}
 but is not as suited for stronger invariant production.
 Symbolic execution is also more efficient in the control-flow-driven approach
-as it more closely follows the structure of the function \ac{cfg}.
+as it more closely follows the structure of the function's \ac{cfg}.
 In contrast, the syntax-driven approach must deal with
 operating on a restricted set of control flow constructs,
 which can result in extra symbolic execution.
-
-\subsection{Memory Usage and Preservation}\label{memory_usage}
-\emph{Memory usage} characterizes the regions in memory that are read
-and written by a program.
-An extension of memory usage is the property of \emph{memory preservation},
-which states that the values written by that program are constrained
-to those memory regions.
-The following sections elaborate on the usefulness of memory preservation
-as a platform for further verification efforts,
-after which the control-flow-driven and syntax-driven methodologies
-are discussed further.
-
-\subsubsection{Security}
-Unbounded memory usage can lead to vulnerabilities
-such as buffer overflows and data leakage.
-One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}.
-Heartbleed was caused by a lack of bounds checking on a string array
-requested as output as part of a ``heartbeat'' message.
-This, combined with a custom memory manager
-that also had no security protections against out-of-bounds memory accesses,
-lead to potential leakage of sensitive data such as passwords and encryption keys.
-Memory preservation could serve as a foundation for formal security analyses
-that could be used to expose vulnerabilities involving malicious writes.
-
-Another important property that memory preservation could help with
-is \ac{cfi}. \Ac{cfi} ensures that software execution
-follows a predetermined \ac{cfg} using static analysis and runtime checks.
-The dynamic checking could be made more efficient
-by first proving the property in \cref{ex:rop} for those functions it is applicable to
-and then leaving out any return-oriented checks for those functions it holds on.
-This could be one way of avoiding \ac{rop} attacks without excessive runtime overhead.
-
-The property of \emph{noninterference} is also a useful one for security.
-On a high level, it states that a group of users using a certain set of commands
-\emph{does not interfere} with another group of users if the the first group's actions
-have no effect on what the second group of users can see
-\autocite{goguen1982security,rushby1992noninterference}.
-On a functional level, that could be interpreted as a statement that a non-interfering function does not modify any memory that is accessed
-by the function not being interfered with.
-Memory preservation is specifically about showing that all memory outside of
-specific regions is not modified by the function
-or functions associated with those regions, so proving that the region sets
-for two functions are disjoint
-would essentially prove noninterference for those two functions.\footnote{%
-  A weaker property would be showing that one of the functions does not write
-  to any of the memory regions read by the other, but that would actually be harder
-  as we do not currently differentiate between regions that are read and written.%
-}
-
-\subsubsection{Composition}\label{sse:composition}
-Scalability in verification is only feasible with composition;
-proofs of functional correctness or some other property over a large suite of software
-require decomposing that suite into manageable chunks.
-Separation logic provides a \emph{frame rule} that supports such%
-\index{separation logic!frame rule}
-decomposition \autocite{o2001local,reynolds2002separation,krebbers2017essence}.
-In words, the frame rule states that,
-if a program or program fragment can be confined to a certain part of a state,
-properties of that program or program fragment carry over
-when used as part of a larger system involving that state.
-Memory preservation allows for discharging the most involved part of the frame rule,
-at least in terms of individual assembly functions.
-That is, it shows that the memory preservation of those functions is constrained
-to specific regions in memory.
-This could then serve as a basis
-for a larger proof effort over multi-function assembly programs.
-
-\subsubsection{Concurrency}
-Reasoning over concurrent programs is complicated
-due to the potential interactions between threads.
-While there are ways of handling such interactions in a structured manner
-via kernel- or library-provided \ac{ipc},
-one method commonly used for the sake of efficiency is \emph{shared memory}.
-Shared memory, in the context of this work,
-refers to threads or processes sharing either a full memory space
-or portions of one (via memory mapping)
-that can be written to and read from freely by any thread or process with access to it.
-Usage of shared memory can result in \emph{unintended} interactions between threads.
-Memory preservation could be adapted to show the absence of such interactions
-by proving that multiple threads only write
-to specifically-allowed regions of shared memory.
-Doing so would, of course, require a proper model of concurrency,
-which is out of scope of this dissertation.
 
 \subsection{Control-Flow-Driven Verification}
 This methodology for verification of memory preservation relies on treating function bodies
@@ -367,8 +275,18 @@ Optimized variants were also verified for 12 of the functions involved.
 There was even one function that featured recursion,
 which turned out to be the most challenging function to handle.
 Other than the recursive function, the most challenging ones to handle
-were indeed the ones with loops. Formulating annotations that must hold for all loop iterations
-is not exactly easy when a significant amount of memory operations are performed.
+were the ones with loops. Formulating annotations that must hold for all loop iterations
+is not easy when a significant amount of memory operations are performed.
+
+The closest related work to this, that of \textcite{matthews2006verification},
+resulted in the verification of only \num{20} functions,
+with \num{631} assembly-level instructions in total.
+That is only \SI{28}{\percent} of the functions, or \SI{26.5}{\percent} of the instructions,
+that we verified here.
+On top of that, the \acp{isa} they worked with are not as low-level as the \arch\ \ac{isa}.
+While they verified functional correctness instead of a weaker property like memory preservation,
+they also specifically reduced the complexity of the most complicated set of functions they verified
+by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
 
 \subsection{Syntax-Driven Verification}
 Taking our experiences from the control-flow-driven verification work into account,
@@ -410,7 +328,7 @@ or an average of \num{16} manual lines of proof for every loop handled,
 of which there were \num{65}.
 
 To the best of my knowledge, this is the first work to achieve
-that degree of automation for optimized \arch\ binaries produced by production code.
+that degree of coverage for optimized \arch\ binaries produced by production code.
 While \textcite{tan2015auspice} produced a fully-automated methodology
 for binary analysis, it was much slower than our approach here,
 meaning they would take longer to cover the same amount of functions
