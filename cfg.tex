@@ -193,16 +193,18 @@ This eliminates the above-mentioned loop issues.
 That breaking up of loops can be accomplished using a control-flow-based approach
 akin to Floyd verification \autocite{floyd1967assigning}.%
 \index{Floyd!verification}
-A state predicate assigned to an instruction within a loop
-functions as an \emph{invariant} for that loop.
-Such invariants hold for every iteration of the loop,
-allowing a symbolic description of the loop's behavior.
-When combined with a general methodology
-of structured preconditions and postconditions showing that,
-for each annotated state, the succeeding annotated state satisfies its state predicate,
-a Hoare triple can be inferred for the program as a whole (\cref{thm:floyd_hoare}).
+A state predicate that can be shown to hold for every iteration of a loop
+at some instruction within that loop will function as a \emph{loop invariant},%
+\index{loop!invariant}
+symbolically characterizing the loop's behavior.
+This can be combined with a general methodology of structured preconditions and postconditions over annotated locations.
+If that methodology can show that the state at one such location
+satisfying the location's annotation will lead to any succeeding annotated locations
+also having states that satisfy their annotations,
+a Hoare triple as defined in \cref{def:htriple}
+can be inferred for the program as a whole (\cref{thm:floyd_hoare}).
 
-The \emph{Floyd invariant}%
+More formally, the \emph{Floyd invariant}%
 \index{Floyd!invariant}
 for a function is a partial function that takes the form
 $I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
@@ -248,10 +250,10 @@ as a whole:
     \sigma'\neq\bot_E\wedge Q(\sigma').
   \end{equation*}
   Though there could be any number of additional annotations between~$l_0$
-  and~$l_f$, \textcite{floyd1967assigning} showed that a Floyd invariant that holds
-  starting from some initial condition to an intermediate annotation at~$l_1$
-  will also hold starting from that annotation.
-  Thus, as $I$ holds, we can substitute in~$I(l_0)(\sigma)$ for~$P(\sigma)$
+  and~$l_f$, \textcite{floyd1967assigning} showed by induction
+  that a Floyd invariant that holds starting from some initial condition
+  to an intermediate annotation at~$l_1$ will also hold starting from that annotation.
+  Thus, as~$I$ holds, we can substitute in~$I(l_0)(\sigma)$ for~$P(\sigma)$
   and~$I(l_f)(\sigma')$ for~$Q(\sigma')$ without issue,
   resulting in the following statement:
   \begin{equation*}
@@ -273,10 +275,9 @@ as a whole:
   \end{equation*}
   which is trivial.
 \end{proof}
-
-Intuitively, Floyd-style verification allows a program to be modeled as \iac{cfg}.%
+In essence, Floyd-style verification%
 \index{Floyd!verification}
-In that \ac{cfg}, each edge can be seen as an implication.
+models a program as \iac{cfg} where each edge is an implication.
 
 \subsection{Definition of Memory Preservation}\label{sse:mem_pres}
 The formal definition of memory preservation%
