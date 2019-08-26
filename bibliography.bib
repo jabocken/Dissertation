@@ -66,6 +66,16 @@
   venue = {San Diego, CA, USA}
 }
 
+@periodical{pacmpl2019popl,
+  title = {Proceedings of the ACM on Programming Languages},
+  shorttitle = {PACMPL},
+  volume = 3,
+  number = {POPL},
+  date = {2019-01},
+  issn = {2475-1421},
+  xdata = {acm},
+}
+
 @article{rice1953classes,
   title = {Classes of Recursively Enumerable Sets and Their Decision Problems},
   author = {Rice, Henry Gordon},
@@ -936,6 +946,20 @@
   xdata = {ieee}
 }
 
+@inproceedings{shi2012interrupt,
+  title={Binary Code Level Verification for Interrupt Safety Properties of Real-Time Operating System},
+  author={Jianqi Shi and Longfei Zhu and Yanhong Huang and Jian Guo and Huibiao Zhu and Huixing Fang and Xin Ye},
+  booktitle={Theoretical Aspects of Software Engineering},
+  booktitleaddon={Proceedings of the Sixth International Symposium},
+  shorttitle={TASE 2012},
+  date={2012-08-16},
+  pages={223-226},
+  doi={10.1109/TASE.2012.46},
+  venue={Beijing, China},
+  eventdate={2012-07-04/2012-07-06},
+  xdata = {ieee}
+}
+ 
 @inproceedings{rushby1981dvss,
   title = {Design and Verification of Secure Systems},
   author = {Rushby, John M.},
@@ -1116,7 +1140,26 @@
   acmid = 2535841,
   doi = {10.1145/2535838.2535841},
   xdata = {acm},
-  url = {https://cakeml.org/}
+  url = {https://cakeml.org/},
+  urldate = {2019-08-25}
+}
+
+@inproceedings{gueneau2017formulae,
+  title="Verified Characteristic Formulae for {CakeML}",
+  booktitle="Programming Languages and Systems",
+  booktitleaddon="Proceedings of the 26th European Symposium on Programming",
+  author={Gu\'eneau, Arma\"el and Myreen, Magnus O. and Kumar, Ramana and Norrish, Michael},
+  editor="Yang, Hongseok",
+  shorttitle="ESOP 2017",
+  series="Lecture Notes in Computer Science",
+  shortseries="LNCS",
+  number=10201,
+  date="2017-03-19",
+  pages="584-610",
+  isbn="978-3-662-54434-1",
+  xdata="springer",
+  venue="Uppsala, Sweden",
+  eventdate="2017-04-22/2017-04-29"
 }
 
 @inproceedings{kruegel2005automating,
@@ -1408,25 +1451,29 @@
 @article{fromherz2019verified,
   title = {A Verified, Efficient Embedding of a Verifiable Assembly Language},
   author = {Fromherz, Aymeric and Giannarakis, Nick and Hawblitzel, Chris and Parno, Bryan and Rastogi, Aseem and Swamy, Nikhil},
-  journaltitle = {Proceedings of the ACM on Programming Languages},
-  shortjournaltitle = {PACMPL},
-  volume = 3,
-  number = {POPL},
-  month = jan,
-  year = 2019,
-  issn = {2475-1421},
-  pages = {63:1--63:30},
+  pages = {63:1-63:30},
   articleno = 63,
   numpages = 30,
   doi = {10.1145/3290376},
   acmid = 3290376,
-  xdata = {acm}
+  crossref = {pacmpl2019popl}
 } 
 
 @online{fstar,
   title = {F*: A Higher-Order Effectful Language Designed for Program Verification},
   url = {https://www.fstar-lang.org/},
   urldate = {2019-08-23}
+}
+
+@techreport{dworkin2007recommendation,
+  title={Recommendation for Block Cipher Modes of Operation: {Galois}/Counter Mode ({GCM}) and {GMAC}},
+  author={Dworkin, Morris J.},
+  date={2007-11-28},
+  number={800-38D},
+  url={https://www.nist.gov/publications/recommendation-block-cipher-modes-operation-galoiscounter-mode-gcm-and-gmac?pub_id=51288},
+  urldate={2019-08-26},
+  institute={National Institute of Standards and Technology, U.S. Department of Commerce},
+  location={Gaithersburg, MD, USA}
 }
 
 @article{chen2018compositional,
@@ -1664,4 +1711,107 @@
   publisher={Chapman \& Hall},
   institute={Centrum voor Wiskunde en Informatica Amsterdam},
   location={Amsterdam, The Netherlands}
+}
+
+@InProceedings{arthur2015union,
+  title="Machine-Checked Verification of the Correctness and Amortized Complexity of an Efficient Union-Find Implementation",
+  author="Chargu\'eraud, Arthur and Pottier, Fran\c{c}ois",
+  editor="Urban, Christian and Zhang, Xingyuan",
+  booktitle="Interactive Theorem Proving",
+  booktitleaddon="Proceedings of the 6th International Conference",
+  shorttitle="ITP 2015",
+  date="2015-08-19",
+  pages="137-153",
+  isbn="978-3-319-22102-1",
+  publisher="Springer International Publishing",
+  address="Cham",
+  series="Lecture Notes in Computer Science",
+  shortseries="LNCS",
+  number=9236,
+  venue="Nanjing, China",
+  eventdate="2015-08-24/2015-08-27"
+}
+
+@inproceedings{chargueraud2011cfv,
+  title = {Characteristic Formulae for the Verification of Imperative Programs},
+  author = {Chargu\'eraud, Arthur},
+  booktitle = {Functional Programming},
+  booktitleaddon = {Proceedings of the 16th ACM SIGPLAN International Conference},
+  shorttitle = {ICFP '11},
+  date = 2011,
+  isbn = {978-1-4503-0865-6},
+  venue = {Tokyo, Japan},
+  eventdate = {2011-09-19/2011-09-21},
+  pages = {418-430},
+  numpages = 13,
+  doi = {10.1145/2034773.2034828},
+  acmid = {2034828},
+  xdata = {acm}
+}
+
+@inproceedings{armstrong2018models,
+  title = {Detailed Models of Instruction Set Architectures: From Pseudocode to Formal Semantics},
+  booktitle = {Automated Reasoning Workshop 2018},
+  authors = {Alasdair Armstrong and Thomas Bauereiss and Brian Campbell and Shaked Flur and Kathryn E. Gray and Prashanth Mundkur and Robert Norton and Christopher Pulte and Alastair Reid and Peter Sewell and Ian Stark and Mark Wassell},
+  url = {https://alastairreid.github.io/papers/ARW_18/},
+  urldate = {2019-08-25},
+  venue = {Cambridge, UK},
+  date = {2018-04}
+}
+
+@article{armstrong2019isa,
+  title = {{ISA} Semantics for {ARMv8-A}, {RISC-V}, and {CHERI-MIPS}},
+  author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
+  pages = {71:1-71:31},
+  articleno = 71,
+  numpages = 31,
+  acmid = 3290384,
+  doi = {10.1145/3290384},
+  crossref = {pacmpl2019popl}
+} 
+
+@InProceedings{bernstein2005poly1305,
+  title="The {Poly1305-AES} Message-Authentication Code",
+  author="Bernstein, Daniel J.",
+  editor="Gilbert, Henri and Handschuh, Helena",
+  booktitle="Fast Software Encryption",
+  booktitleaddon="12th International Workshop Revised Selected Papers",
+  shorttitle="FSE 2005",
+  series="Lecture Notes in Computer Science",
+  shortseries="LNCS",
+  number=3557,
+  date="2005",  
+  pages="32-49",
+  isbn="978-3-540-31669-5",
+  venue="Paris, France",
+  eventdate="2005-02-21/2005-02-23",
+  xdata="springer"
+}
+
+@inproceedings{bond2017vale,
+  title = {Vale: Verifying High-Performance Cryptographic Assembly Code},
+  author = {Bond, Barry and Hawblitzel, Chris and Kapritsos, Manos and Leino, K. Rustan M. and Lorch, Jacob R. and Parno, Bryan and Rane, Ashay and Setty, Srinath and Thompson, Laure},
+  booktitle = {26th {USENIX} Security Symposium},
+  shorttitle = {{USENIX} Security 17},
+  date = {2017-08},
+  isbn = {978-1-931971-40-9},
+  venue = {Vancouver, BC, Canada},
+  pages = {917-934},
+  url = {https://www.usenix.org/conference/usenixsecurity17/technical-sessions/presentation/bond},
+  publisher = {{USENIX} Association}
+}
+
+@Inbook{bertot2004reflection,
+  title="* Proof by Reflection",
+  author="Bertot, Yves and Cast\'eran, Pierre",
+  editor="Wilfried Brauer and Grzegorz Rozenberg and Arto Salomaa",
+  bookTitle="Interactive Theorem Proving and Program Development",
+  booksubtitle="Coq'Art: The Calculus of Inductive Constructions",
+  series="Texts in Theoretical Computer Science",
+  shortseries="TTCS",
+  date=2004,
+  pages="433--448",
+  isbn="978-3-662-07964-5",
+  doi="10.1007/978-3-662-07964-5_16",
+  xdata="springer"
 }

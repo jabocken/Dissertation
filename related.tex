@@ -1,9 +1,7 @@
 \chapter{Related Work}\label{ch:related}
-Verification of assembly has been an active research field for decades.
-\todo{more intro}
+Verification of assembly has been an active field of research for decades.
+This chapter covers some of that history.
 
-\Cref{related-table} provides an overview of related work,
-discussed in the following sections.
 Up first in \cref{se:previous_assembly}
 are some previous formal verification efforts that target assembly.
 Following that is work on a lower level,
@@ -12,6 +10,9 @@ After that is work in which assembly verification played a role
 in a larger verification context, \cref{se:integrated_assembly},
 and then verified compilation and static analysis tools are discussed
 in \cref{se:verified,se:static_analysis}.
+\Cref{related-table} provides an overview of the assembly,
+hardware, and integrated projects.
+It also includes the works presented in this dissertation.
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
 \textcite{clutterbuck1988verification} performed formal verification
@@ -68,20 +69,22 @@ targeted a simple machine model called TINY
 as well as the M5 operational model of \ac{jvm} bitcode.
 Their approach for functional correctness, implemented in ACL2,
 utilized symbolic execution of operational semantics
-over code annotated with manually written invariants.
-This is very much like the control-flow-driven approach presented in this dissertation.
-It also used verification condition generation to increase automation,
-which reduced the number of manually written invariants.
-That was not done for the control-flow-driven verification.
-Both of those assembly-style languages feature a stack
+over code annotated with manually written invariants
+in order to generate \acp{vc} and then discharge them.
+They even supported compositionality by verifying subcalls individually.
+Both of the assembly-style languages they tested with feature a stack
 for handling scratch variables rather than a register file
 as x86, ARM, and most other mainstream \acp{isa} do.
 The case studies they verified were an implementation of the Fibonacci sequence,
 a factorial function, and functions for CBC-mode encryption and decryption.
 In total, they covered \num{631} assembly instructions,
 less than that handled by either of the methodologies presented in this dissertation.
-Once again, of course, they were targeting a stronger property,
+Of course, they were targeting a stronger property than either of those works,
 but they also did not perform any significant work to automate their approach.
+All in all, however, this work is the closest to the control-flow-driven approach
+presented in \cref{ch:cfg} of any of the works presented in this chapter,
+as they even implemented a version in Isabelle. Their Isabelle version did not support
+compositionality, however.
 
 Additionally, Goel et al.\ presented an approach for modeling and verifying
 non-deterministic programs on the binary level \autocite{goel2014syscalls,goelphd}.
@@ -180,6 +183,33 @@ While this stack safety approach is similar in focus to the memory preservation 
 I present here, the scope is much smaller.
 Their focus was specifically on stack memory rather than memory in general.
 
+Earlier this year, \textcite{fromherz2019verified} embedded a subset
+of the \arch\ \ac{isa} in the functional, verification-oriented language
+F$^*$ \autocite{fstar}.
+This was done in order to prove commonly-used crytographic routines
+that mix C with assembly for performance reasons are secure from information leakage.
+The cryptographic routines they applied their work to were
+Poly1305-\ac{aes} \autocite{bernstein2005poly1305} and
+\ac{aes}-\ac{gcm} \autocite{dworkin2007recommendation}.
+Their aim was to use F$^*$'s dependent type system to run a verified \ac{vcg}
+during type checking, with the generated \acp{vc}
+then being supplied to \iac{smt} solver.
+The conditions on state to generate the \acp{vc} were expressed using Vale,
+a language for assembly verification \autocite{bond2017vale}.
+This was done in the style of \emph{proof by reflection} \autocite{bertot2004reflection}.
+The \ac{vcg} itself, QuickCode, was formally proven sound in F$^*$ as well.
+They measured performance of their verified algorithms, as one of them could be
+transpiled to C. They also measured the performance of various versions
+of their \ac{vcg}, and found that optimizing the \ac{smt} queries did improve performance
+significantly.
+Unlike our works in \cref{ch:cfg,ch:syntax}, the authors of this paper
+had to do extra reasoning to ensure the C and assembly code models were interoperable.
+As we operated directly on full assembly, we did not have to worry about
+that kind of interfacing. Both this work and the work presented in \cref{ch:syntax} used explicit \iac{vcg}, but ours was proven correct by its Isabelle/HOL definitions;
+we did not have to perform any additional work to ensure correctness of the methodology.
+Of course, as we implemented ours in an interactive theorem prover,
+we could guide the \ac{vc} generation and discharging as needed.
+
 \section{Hardware Verification}\label{se:hardware}
 On a level lower than the assembly code level, or even the machine code level,
 is the work done by hardware designers and testers
@@ -207,8 +237,14 @@ as their goal was not necessarily to detect all bugs in those specific units.
 Instead, they wanted to check the correctness of the logic connecting them
 to other processor elements, which they were successful at.
 
-More recently, the Sail \ac{isa} specification language has been used to
-\todo{more!}
+More recently, the Sail \ac{isa} specification language,
+which supports automatic generation of emulation code
+and of proof definitions for Isabelle, HOL4, and in some cases Coq,
+has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
+\autocite{armstrong2018models,armstrong2019isa}.
+The \acp{isa} in question are ARMv8.3-A, CHERI-MIPS, and RISC-V.
+It was also used to produce a proof of correctness for a model of
+ARMv8-A address translation in Isabelle.
 
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
@@ -224,7 +260,6 @@ For example, the seL4 source code does not allow taking the addresses of stack v
 (such as in \cref{fig:example2-c}):
 their approach requires a static separation of stack and heap instead.
 
-
 \textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
 called ORIENTAIS.
 Part of their approach involved source-level verification
@@ -234,6 +269,14 @@ Binary verification was done by lifting the \ac{rtos} binary to xBIL,
 a related hardware verification language \autocite{shi2012xbil}.
 They translated requirements from the OSEK automotive industry standard
 to source code annotations.
+Ultimately, they proved properties such as deadlock-freedom, memory access safety,
+and bounded response time in the presence of interrupts \autocite{shi2012interrupt}.
+A similarity with our work was the usage of Hoare logic,
+while the difference is that we performed verification solely on the assembly level
+and with a more complex \ac{isa}.
+We ultimately handled over \num{14631} \arch\ instructions compared to their \num{60}.
+While they did handle \num{8000} lines of C as well,
+that is still a higher-level language than \arch\ assembly.
 
 Targeting a similar case study as \cref{ch:syntax},
 \textcite{dam2013hypervisor,dam2013formal}
@@ -285,8 +328,9 @@ one can verify source code and then use \emph{verified compilation}.%
 \index{verified compilation}
 Verified compilation establishes that
 the semantics of the output of the verified compiler
-is equivalent to the semantics of the input.
-This can be done via refinement relations, but is not always.
+is equivalent to the semantics of the input,
+so a program that has previously been verified correct
+is verified to still be correct after compilation.
 
 The CompCert project is one such verified compiler,
 used by the seL4 project to reduce its \ac{tcb} \autocite{Klein_AEMSKH_14}.
@@ -308,13 +352,14 @@ On top of that, it has eleven different intermediate languages for those steps,
 all of which had to be proven semantically equivalent.
 
 Another example of verified compilation is CakeML \autocite{kumar2014cakeml}.
-It utilizes a subset of Standard ML modeled with big-step operational semantics.
-The main purpose of verified compilation, however,
-is not to verify properties over the code.
-For example, if the source code is vulnerable to \iac{rop} exploit,
-then the assembly code is vulnerable as well.
-Verified compilation is thus often accompanied by source code verification.
-\todo{elaborate}
+It utilizes a (substantial)
+subset of Standard ML modeled with big-step operational semantics in \ac{hol}.
+Its main compiler frontend is designed to take ML-like \ac{hol} functions
+and translate them to a CakeML \ac{ast}, which is then translated into machine code
+using a verified backend. The compiler itself is bootstrapped,
+meaning it can compile itself in \ac{hol}. It also provides support for using Hoare logic
+to perform post-hoc verification using a version of the CFML verification framework
+\autocite{gueneau2017formulae,arthur2015union,chargueraud2011cfv}.
 
 More recently, \textcite{chen2018compositional} produced a compositional framework
 for the development of certified, \emph{interruptible}%
@@ -346,7 +391,7 @@ more difficulty if they had started with a kernel
 not explicitly designed to be verified. While we did isolate functions
 for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
 
-\section{Static Analysis}\label{se:static_analysis}
+\section{Non-Formal Static Analysis}\label{se:static_analysis}
 Non-formal static analysis of binary code for the detection of bugs
 has also been an active research field for decades
 \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
@@ -398,20 +443,20 @@ A somewhat older tool, Splint \autocite{evans2002static} detects buffer overflow
 and similar potential security flaws in C code.
 Splint relies on annotated preconditions to derive postconditions
 based on the syntactic structure of the code.
-While that resembles the formal technique of Hoare logic,
+While their methodology is very similar to the formal technique of Hoare logic,
 described later on in this dissertation (\cref{se:hoare}),
-their method was based on heuristics and was not designed to detect all bugs,
-as they desired to balance performance with accuracy.
+they used heuristics for loop analysis rather than proper invariants
+and thus could potentially miss bugs.
 The annotations Splint uses are memory-focused, such as allowing users to specify
 that certain variables should never be null or providing an emulation of
-\lstinline|unique_ptr| functionality.
+\lstinline|unique_ptr| functionality. It also does constraint analysis
+and issues warnings when it encounters an expression it cannot determine
+will not result in a bug, as well as checking for format string vulnerabilities.
 
 The main difference between these static analysis tools and formal verification
 is that these tools are generally highly suited to finding bugs
-but are not able to prove their absence. Of course, proving the absence of bugs
-is harder than finding them even with formal techniques.
-Even then, 
-They generally apply techniques that are formally unsound, such as depth-bounded searches.
+but are not able to prove their absence. This is due to a reliance on 
+efficient but incomplete techniques, such as depth-bounded searches.
 
 \begin{table*}
   \centering
@@ -432,8 +477,9 @@ They generally apply techniques that are formally unsound, such as depth-bounded
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+MC & Example progs &
       \makecell[l]{\num{2630} \acs*{sloc}\\
         \num{935} \acs*{sloc}} \\
-    \textbf{\cref{ch:cfg}} & \arch & \ac*{itp} & HermitCore & \num{2379}+ insts \\
-    \textbf{\cref{ch:syntax}} & \arch & \ac*{itp}+CG & Xen & \num{12252} insts \\
+    Fromherz et al. & C/\arch & ATP+\acs*{vcg} & \acs{aes} funcs & \\
+    \textbf{\cref{ch:cfg}} & \arch & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
+    \textbf{\cref{ch:syntax}} & \arch & CG+\acs*{itp}+\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
     Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs*{sloc} \\
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
@@ -449,7 +495,7 @@ They generally apply techniques that are formally unsound, such as depth-bounded
       \newcommand\colsep{\hspace\colseplen}
       \begin{tabular}{l@{\colsep}c@{\colsep}l l@{\colsep}c@{\colsep}l}
         \acs*{vcg} &=& Verification Condition Generation & \acs*{dil} &=& Decompilation into Logic \\
-        \acs*{sloc} &=& Source Lines of Code        & \acs*{atp} &=& Automated Theorem Proving \\
+        \acs{sloc} &=& Source Lines of Code        & \acs*{atp} &=& Automated Theorem Proving \\
         UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
         TV   &=& Translation Validation							& MC 	&=& Model Checking \\
         SA   &=& Static Analysis                    & \acs*{asl} &=& \acl*{asl}
@@ -460,12 +506,13 @@ They generally apply techniques that are formally unsound, such as depth-bounded
 
 \section{Summary}
 This section covered some of the work related to that presented in this dissertation.
-Previous assembly- or lower-level formal verification efforts,
+Previous assembly- and hardware-level formal verification efforts,
 verification efforts containing assembly or binary analysis components,
-verified compilation, and static analysis tools were all discussed.
+verified compilation, and non-formal static analysis tools were all discussed.
 
 Notably, while multiple assembly-level verification efforts
 presented in this chapter achieved more coverage
 than the over \num{2379} instructions achieved by the work in \cref{ch:cfg},
 none appear to have achieved the \num{12252}
-verified instructions covered in \cref{ch:syntax}.
+verified instructions covered in \cref{ch:syntax} except the work produced by
+ARM employees.

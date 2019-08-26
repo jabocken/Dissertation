@@ -457,7 +457,7 @@ As a note, many of the formal rewrite rules regarding memory usage
 have an internal requirement that the supplied memory regions not overflow.
 That is, for any memory region~$r$,
 its address plus its size must be less than $2^{64}$.
-This is represented as $\nbo r$ and may be required as an explicit assumption
+This is represented as $\nbo(r)$ and may be required as an explicit assumption
 in some cases. With the appropriate manual or generated region relations,
 however, it should not normally be necessary.
 

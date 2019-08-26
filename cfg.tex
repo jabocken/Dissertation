@@ -14,7 +14,7 @@ including directly-recursive calls.
 It can be used to prove the absence of common memory-related issues,
 such as buffer and stack overflows. In cases where overflow may occur,
 the methodology helps extract the assumptions required to prevent that.
-For efficiency, it determines the annotation locations,
+For efficiency, it selects the annotation locations,
 called \emph{cutpoints},%
 \index{cutpoint}
 such that every path through the program
@@ -934,7 +934,7 @@ The three main aspects of per-function user interaction for this methodology are
 \begin{enumerate*}
   \item defining a Floyd invariant,
   \item strengthening the precondition,%
-    \footnote{Includes adding additional memory regions and region relationships}, and
+    \footnote{Includes adding additional memory regions and region relationships} and
   \item finishing the proof of memory preservation.
 \end{enumerate*}
 The functions analyzed in the above case study provided some significant insight
@@ -1018,12 +1018,13 @@ The approach here aimed to automate verification
 while still allowing user interaction wherever necessary.
 As a semi-automated approach,
 it requires setting up an invariant, which traditionally is a hard problem in itself.
-Requirements for memory preservation invariants are provided for several examples.
+Requirements for memory preservation invariants were provided for several examples.
 For recursive functions, more involved invariants are required,
 along with \ac{itp} to show preservation of the stack and frame pointers.
 Invariants may include preconditions necessary for excluding exceptional behavior,
 which can include stack or buffer overflows.
-Such preconditions are exposed by applying the methodology to a disassembled binary
+Such preconditions can be exposed directy
+by applying the methodology to a disassembled binary
 instead of deriving them from documents or source code annotations.
 
 The approach was applied to functions of HermitCore, a unikernel~\ac{os}.
