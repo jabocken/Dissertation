@@ -12,8 +12,7 @@ and assembly language (\cref{se:assembly_language}).
 To quote \textcite{butler:fm},
 \todo{should go in intro maybe}
 \begin{quote}
-  ``Formal Methods''%
-  \index{formal!methods}
+  ``Formal Methods''\index{formal!methods}
   refers to mathematically rigorous techniques and tools
   for the specification, design and verification of software and hardware systems.
 \end{quote}
@@ -27,13 +26,21 @@ for a language.
 \Textcite{schmidt2003pls}
 
 \subsubsection{Operational}
+This form of semantics is modeled as a set of state changes.
+\todo{not really right}
+
 \paragraph{Big-Step}
 \paragraph{Small-Step}
 
 \subsubsection{Denotational}
+In this form of semantics, the language under consideration
+is modeled by some kind of mathematical object.
+\todo{not quite right either?}
 
 \subsubsection{Axiomatic}
-Axiomatic semantics provide meaning to 
+This form of semantics uses \emph{axioms} to describe behavior.
+\todo{more}
+
 The canonical example is \emph{Hoare logic}.%
 \index{Hoare!logic}
 
@@ -47,7 +54,7 @@ is thus the bottom element $\infloop$.%
 \nomenclature{$\infloop$}{Indicates non-terminating state}
 
 \subsection{Symbolic Execution}
-At its most basic, ``symbolic execution'' refers to
+At its most basic, \emph{symbolic execution} refers to
 executing a program with a set of symbolic inputs
 rather than concrete values \autocite{king1976symbolic}.
 Based on the semantics of the program, the execution may end up taking multiple paths;
@@ -64,7 +71,7 @@ Applying those rules in sequence to each step or instruction of a program
 allows aggregation of the individual state changes involved in the execution.
 
 \subsection{Floyd Flowcharts}\label{se:floyd}
-
+\todo\dots
 
 \subsection{Hoare Logic}\label{se:hoare}
 A form of \emph{axiomatic semantics},
@@ -123,6 +130,8 @@ and a formal specification of some property
 The ``state explosion'' problem has been a well-known issue
 in the model-checking community \autocite{clarke2012modelchecking} 
 
+\todo\dots
+
 \subsection{Theorem Proving}
 %
 \index{theorem prover}
@@ -146,8 +155,8 @@ We made heavy use of Isabelle/HOL's Word library \autocite{isabelle-word-session
 for the work presented in this dissertation.
 That library provides a limited-precision integer type, \lstinline|'a word|,
 where \lstinline|'a| is the number of bits in the integer.
-Various operations are provided for manipulation of and arithmetic involving formal words,
-including bit indexing, bit shifting, setting specific bits,
+Various operations are provided for manipulation of and arithmetic
+involving formal words, including bit indexing, bit shifting, setting specific bits,
 and signed and unsigned arithmetic.
 Operators for inequality are also included,
 as well as operations for converting between word sizes.
@@ -191,8 +200,9 @@ The general features specified include the supported data types,
 what state there is (such as the main memory and registers)
 and their semantics (such as the memory consistency and addressing modes), the instruction set (the set of machine instructions that comprises a computer's machine language), and the input/output model. \todo{rewrite, need citation from Wikipedia}
 
-In the case of ARM's machine-parsable release, they separated out the register model
-from the instruction as separate files.
+
+
+
 
 
 Historically, there have been two main types of \acp{isa}:
@@ -234,6 +244,7 @@ The rest of this section describes features and properties of \arch\ that are re
 to this dissertation.
 
 \subsubsection{State}
+\todo\dots
 \paragraph{Memory}
 \todo\dots
 
@@ -250,12 +261,16 @@ current implementation restrictions limit physical processors to
 52~bits for their address bus and~48 for virtual memory.
 
 \paragraph{Registers}\label{par:reg}
-Registers in \arch\ \todo\dots
+The standard registers in \arch\ are 64 bits in size,
+but their lower bits can be referenced alone if need be.
+If you write to one of the available 32-bit registers,
+it will zero out the upper~32 bits, but if you write to a 16- or 8-bit register,
+the rest of the contents will be preserved.
 \begin{table*}
   \centering
   \renewcommand\theadfont{\normalcolor\normalsize\normalfont}
   \begin{threeparttable}
-    \caption{The most commonly used \arch\ registers}\label{tbl:regs}
+    \caption{The \arch\ registers (excluding \ac{simd})}\label{tbl:regs}
     \begin{tabular}{lAAAAA}
       \toprule
       \thead{Purpose} & \thead{\SI{64}\bit} & \thead{\SI{32}\bit} &
@@ -264,34 +279,60 @@ Registers in \arch\ \todo\dots
       General Purpose\tnote{a} & rax & eax & ax & ah & al \\
       General Purpose\tnote{b} & rbx & ebx & bx & bh & bl \\
       General Purpose\tnote{c} & rcx & ecx & cx & ch & cl \\
-      General Purpose\tnote{d} & rdx & edx & dx & & dl \\
-      General Purpose\tnote{e} & rsi & esi & si & & sil \\
-      General Purpose\tnote{f} & rdi & edi & di & & dil \\
-      Base Pointer & rbp & ebp & bp & & spl \\
-      Stack Pointer & rsp & esp & sp & & bpl \\
-      Program Counter/Inst.\ Pointer & rip & eip & ip \\
-      Processor Status & rflags & eflags & flags \\
+      General Purpose\tnote{d} & rdx & edx & dx & dh & dl \\
+      General Purpose\tnote{e} & rdi & edi & di && dil \\
+      General Purpose\tnote{f} & rsi & esi & si && sil \\
+      Base Pointer & rbp & ebp & bp && spl \\
+      Stack Pointer & rsp & esp & sp && bpl \\
+      Program Counter/Inst.\ Pointer & rip & eip & ip && \\
+      Code Segment ($=0$) &&& cs && \\
+      Data Segment ($=0$) &&& ds && \\
+      Extra Segment (str ops, $=0$) &&& es && \\
+      Variable-Purpose Segment &&& fs && \\
+      Variable-Purpose Segment &&& gs && \\
+      Stack Segment ($=0$) &&& ss && \\
+      Processor Status & rflags & eflags & flags && \\
       \bottomrule
     \end{tabular}
     \begin{tablenotes}
-      \item[a] Formerly the primary accumulator (temporary variable)%
-        \index{accumulator!primary}
-      \item[b] Formerly base%
-        \index{accumulator!base}
-      \item[c] Formerly counter%
-        \index{accumulator!counter}
-      \item[d] Formerly data%
-        \index{accumulator!data}
-      \item[e] Formerly source index for string operations
-      \item[f] Formerly destination index for string operations
+      \item[a] Formerly the accumulator (temporary variable for math);%
+        \index{register!accumulator}
+        was also used for I/O port access and interrupt calls
+      \item[b] Formerly base pointer for memory access;%
+        \index{register!base}
+        also got some interrupt return values
+      \item[c] Formerly loop counter;%
+        \index{register!counter}
+        was also used for shifts and got some interrupt return values
+      \item[d] Formerly data;%
+        \index{register!data}
+        was used for I/O port access, arithmetic, some interrupt calls
+      \item[e] Formerly destination index for string and memory array operations,
+        was also used for far pointer addressing with \inlineasm{es}
+      \item[f] Formerly source index for string and memory array operations
     \end{tablenotes}
   \end{threeparttable}
+\end{table*}
+
+\subsubsection{Flags}
+Stored in the \inlineasm{rflags} register on \arch,
+\begin{table*}
+  \centering
+  \caption{The flags}\label{tbl:flags}
+  \begin{tabular}{l}
+    \toprule
+    \todo\dots \\
+    \midrule
+    \todo\dots \\
+    \bottomrule
+  \end{tabular}
 \end{table*}
 
 \subsubsection{Instructions}
 \todo\dots
 
 \paragraph{Function Builders}
+\todo{push, pop, call, ret, enter, leave}
 
 \paragraph{Control Flow}
 
@@ -302,14 +343,23 @@ These instructions, which operate on multiple 64-bit chunks,
 \subsection{The System~V \acs*{abi}}
 While \iac{isa} specifies the features of a processor and what they do,
 it says nothing about how to use it.
+\todo{more}
 
-
-
-The \ac{abi} this 
 Originating from UNIX System~V, the System~V \ac{abi}
-is an actively-maintained and widely used on many Unix-based systems,
-including Linux distributions \autocite{systemv-ABI-git}.
+is actively-maintained and widely used on many Unix-based systems,
+including all Linux distributions \autocite{systemv-ABI-git}.
 The version used in this dissertation was for \arch.
+The relevant aspects were the layout of \ac{elf} sections and the calling convention.
+\todo{describe more}
+
+\subsection{\Ac{gcc}}
+The compiler used to build the case studies in \cref{ch:cfg,ch:syntax} is important,
+as it uses the segment registers \inlineasm{fs} and \inlineasm{gs} for its own purposes.
+\inlineasm{fs} keeps track of the original value of the \emph{stack canary}
+used to detect stack smashing \autocite{cowan1998stackguard}
+while \inlineasm{gs} is used to access thread-local storage.
+For this dissertation, only \inlineasm{fs} is relevant, as none of the case studies
+or examples in \cref{ch:cfg,ch:syntax} used thread-local storage.
 
 \subsection{Basic Blocks}
 Much of the memory work in this document relates to the concept of \emph{basic blocks}.%
