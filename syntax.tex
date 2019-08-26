@@ -1160,11 +1160,11 @@ The generated \acp{mrr} assume that all these regions are separate.
 The precondition assigned to $\ABB~\Block{123e}{1244}$
 is effectively a loop invariant (see \cref{fig:example2-inv}).%
 \index{loop!invariant}
-The frame pointer \lstinline|rbp|%
+The frame pointer \inlineasm{rbp}%
 \index{frame!pointer}
 is equal to the original stack pointer minus eight.%
 \index{stack!pointer}
-Register \lstinline|rdi| has not been touched.
+Register \inlineasm{rdi} has not been touched.
 Some of the more complex assignments are also shown,
 such as the current value of the stack pointer.
 In total, the loop invariant provides information

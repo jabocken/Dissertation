@@ -12,9 +12,6 @@ than source code verification.
 \todo\dots
 
 \section{Proposed Post-Preliminary Exam Work}
-\todo\dots
-
-\subsection{Reducing Overapproximation}\label{mem_use_over}
 As a formal property, memory preservation
 has been proven to never miss any memory regions written to,
 assuming the correctness of the semantics and model it is applied
@@ -24,43 +21,22 @@ If it cannot make a determination about the usage status of some part of memory,
 either due to an underdeveloped state or too large of one to easily reason about,
 it must assume that that region is used. It must \emph{overapproximate}.%
 \index{overapproximation}
-This sort of false positive can be an issue in the field of formal verification,
-as it can make the property under consideration weaker despite being correct.
+In order to reduce that overapproximation, the conditions on blocks
 
-\subsection
-One way to shrink such overapproximations is to increase the
-\emph{context sensitivity}\index{context sensitivity}
-of the approach, such as performing the analysis over the full program at once
-rather than individual components, but that can involve
-a significant increase in time and verification effort.
+\subsection{Strengthen Invariants}
+In order to improve automation, we currently generate very weak invariants.
+While this worked for \cref{ch:syntax},
 
-\todo{Want to talk about the usage of \ac{smt} solvers/etc.,
-  increase in automation in general
-  as one way of mitigating increased verification effort somewhere}
-
-
-Additionally, proper modeling of \ac{vm} and hypervisor calls in logic
-would have allowed verification of a wider range of functions
-from the HermitCore library.
-
-\subsection{Modeling Kernel Properties}
+\subsection{Model a More Realistic Memory Model}
 Most applications do not run in isolation. Their behavior is limited by
 the kernel of whatever \ac{os} is in use,
 and that includes limits on the amount of memory they are allowed to use.
 
 In particular, process and thread stacks are limited
-by how they are laid out in (virtual) memory,
-even when virtual memory is in use as the 
+by how they are laid out in (virtual) memory, and on top of that
 most modern \ac{os} kernels put limits on stack size as sanity checks.
 The kernel limits are generally configurable,
 both at compile time as well as at runtime, but can require privileged access.
 Properly modeling those restrictions
-would require either formulating a more abstract memory model
-for symbolic execution 
-restrictions on the 
-machine model to support non-trivial features
-like 
-
-a properly formulation that feature would require 
-even when working with a function that
-that can be handled control-flow-driven verification
+would potentially require formulating a more in-depth memory model.
+This would be useful to 

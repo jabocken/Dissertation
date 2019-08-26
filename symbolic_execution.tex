@@ -1,12 +1,20 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
 This chapter covers the methodology used in \cref{ch:cfg,ch:syntax}
 to formally determine the state changes caused by individual basic blocks.
+This methodology relies on a formal big-step semantics of the \arch\ \ac{isa}
+provided by \textcite{roessle2019}, described in \cref{se:machine_model}.
+We then extended those semantics with additional rewrite rules
+to increase efficiency and properly reason about memory.
+Those rules are documented in \cref{se:rewrite}.
+The rules involving reading and writing from memory
+form the basis for the memory preservation methodologies
+in \cref{ch:cfg,ch:syntax}.
+They essentially generate memory region \acp{vc} that must be discharged
+in order to prove memory preservation.
 
-formal model of an \arch\ machine
-our verification work relies on and how that model's state can be manipulated.
-Most importantly, it 
-
-\todo{give some attribution too}
+My main contribution to this chapter was working on additional proven-correct
+simplification rules for word arithmetic as well as more presimplification rules for
+various instructions and their variants (\cref{se:rewrite}).
 
 \begin{example}[Aggregation]\label{ex:aggregation}
   Consider the following two instructions:
@@ -42,9 +50,10 @@ you must first have some sort of \emph{machine model}.%
 \index{symbolic execution!machine model}
 The machine model used in this dissertation for the work in Isabelle/HOL
 is an extension of the work of \textcite{roessle2019}.
-They embedded in Isabelle/HOL a bitvector-based semantics
-machine-learned from a modern version of the \arch\ \ac{isa},
-which includes instruction set extensions such as the \ac{sse} family.
+They embedded in Isabelle/HOL a bitvector-based, big-step semantics
+machine-learned from a modern version of the \arch\ \ac{isa}.
+That semantics included instruction set extensions such as the \ac{sse} family
+to increase the possible programs the semantics could execute.
 To improve reliability of their work,
 it was tested against an actual, live x86-64 machine to prove semantic equivalence.
 The semantics they used was an extension of that provided by \textcite{heule2016stratified},
@@ -176,6 +185,8 @@ They provide immediate abstractions of the low-level instruction representations
 that rely on the aforementioned simplification rules.
 Using these lemmas improves performance when performing symbolic execution
 as they greatly reduce the number of simplification rules that must be applied.
+
+%todo: an additional section about some of the mathematical simplification rules would have been nice, like the stuff regarding shifts and casts.
 
 \subsection{Memory Aliasing}\label{memory_aliasing}
 This section provides an insight into the issue of \emph{memory aliasing}.%

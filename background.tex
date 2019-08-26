@@ -86,8 +86,8 @@ Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare}%
 \index{Hoare!logic}
 describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!triple}
 \begin{definition}[Basic Hoare triple]
-  Given assertions on state~$P$ and~$Q$ and a program~$C$,
-  $\htriple{P}C{Q}$ means that executing~$C$ on a state where~$P$ holds
+  Given predicates on state~$P$ and~$Q$ and a program~$C$,
+  $\htriple{P}C{Q}$ asserts that executing~$C$ on a state where~$P$ holds
   will result in a state where~$Q$ holds (as long as~$C$ terminates, that is).
 
   In a more formal form and using $C(\sigma)$ to represent the result
@@ -97,14 +97,12 @@ describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!trip
     Q(C(\sigma)).
   \end{equation*}
 \end{definition}
-
-To prove that triple, deductive reasoning with \emph{Hoare rules},%
+To prove that triple, deductive reasoning with \emph{Hoare rules}%
 \index{Hoare!rule}
-or axioms, is used to syntactically decompose the program into its constituent behaviors.
-
-
-The Hoare logic methodologies 
-\todo{more}
+formally derived from the structure of whatever programming language is in use
+would be used to syntactically decompose the program into its constituent behaviors.
+If any loops were to be present, the loop rule would require an additional condition
+that would hold on every iteration, a \emph{loop invariant},\index{loop!invariant} for each loop.
 
 As Hoare logic was heavily inspired by Floyd's flowcharts, it is sometimes referred to
 as \emph{Floyd-Hoare logic}.
@@ -122,10 +120,6 @@ The weakest-precondition approach appears most common,
 being the canonical methodology.\todo{need citation}
 
 %TODO
-
-\subsection{\acs*{smt} Solvers}
-\Ac{smt} solvers are designed to solve the \acl{smt} decision problem.
-That is, 
 
 \subsection{Model Checking}
 Model checkers work by taking a formal description of \iac{fsm}
@@ -152,7 +146,6 @@ was Isabelle 2018 \autocite{nipkow2002isabelle}.%
 It is a generic proof assistant with a flexible, extensible syntactic framework.
 Isabelle also utilizes a powerful proof language
 known as \ac{isar}  \autocite{wenzel2007isabelle}
-and a proof method language called Eisbach \autocite{matichuk2016eisbach}.
 Its most-commonly-used logic is \ac{hol}; when used with that logic,
 it is referred to as Isabelle/HOL.
 
@@ -168,29 +161,71 @@ Operators for inequality are also included,
 as well as operations for converting between word sizes.
 
 \paragraph{Eisbach}
-\todo{explain basic steps, how +, ?, commas, etc. work and all}
+This simple but powerful language for declaring custom proof methods
+\autocite{matichuk2018eisbach} is used in the verification methodologies
+for both works presented in this dissertation, though \cref{ch:syntax}
+used more of its features.
+Internally, it relies heavily on the standard method expression syntax
+\autocite{wenzel2018isar}, described in \cref{tbl:methods}.
+The precedence of the syntactic elements involved, from low to high,
+is \lstinline!| ; , [] + ?!. Parentheses can be used to modify the precedence,
+as with regular mathematical expressions.
+\begin{table*}
+  \centering
+  \caption{Method expressions}\label{tbl:methods}
+  \begin{tabular}{lll}
+    \toprule
+    \thead{Syntax} & \thead{Name}  & \thead{Behavior} \\
+    \midrule
+    \lstinline|a, b| & Sequential composition & Apply \lstinline|a|,
+      then \lstinline|b| \\
+    \lstinline|a; b| & Structural composition & \makecell[l]{Apply \lstinline|a|
+      to the first subgoal,\\
+      then apply \lstinline|b| to just the goals produced by \lstinline|a|} \\
+    \lstinline!a | b! & Fallthrough & Try applying \lstinline|a|
+      and then apply \lstinline|b| if \lstinline|a| fails \\
+    \lstinline!a?! & Attempt & Try to apply \lstinline|a|,
+      leaving the goal alone if it fails \\
+    \lstinline|a+| & Repeat at least once & Will repeat
+      until \lstinline|a| fails or no subgoals remain \\
+    \lstinline|a[n]| & Subgoal restriction & Apply \lstinline|a| to the first~$n$
+      subgoals, defaulting to~1 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
 
-%\todo{this is redundant with the info presented in symb exec}
-%In order to perform symbolic execution of assembly instructions in Isabelle,
-%the instructions must somehow be embedded in the theorem prover.
-%This is done using the symbolic execution toolchain
-%of \textcite{roessle2019},
-%the \emph{machine model} of which is based on the work of \textcite{heule2016stratified}.%
-%\index{symbolic execution!machine model}
-
-%
-\index{embedding!shallow}%
-\index{embedding!deep}
+Creating a standalone method is as simple as:
+\begin{lstlisting}[gobble=2]
+  method a =
+    b, c
+\end{lstlisting}
+Then \lstinline|a| can be used in a proof the same as any other method.
+To make a method that can have theorems supplied to it,
+you use the \lstinline|uses| keyword:
+\begin{lstlisting}[gobble=2]
+  method a uses t =
+    (simp add: t), c
+\end{lstlisting}
+The method could now be called like \lstinline|apply (a t: thm1 thm2)|
+and it would supply the two theorems to \lstinline|simp|.
+You can also create methods that take terms as input:
+\begin{lstlisting}[gobble=2]
+  method a for L :: 'a list =
+    b[where l=L]
+\end{lstlisting}
+And then call it like \lstinline|apply (a \<open>[1, 2]\<close>)|.
 
 \section{Assembly Language}\label{se:assembly_language}
 No modern high-level programming language is ever executed directly on hardware.
 Instead, they are \emph{compiled},%
 \index{compilation}
-either before execution (\ac{aot} compilation \autocite{})%
-or at runtime (\ac{jit} compilation \autocite{}),
-to low-level \emph{machine code}, specified by the \ac{isa} of the \ac{cpu} in use.
-One step above machine code is assembly language,
-which \todo\dots.
+either before execution (\ac{aot} compilation) or at runtime (\ac{jit} compilation),
+to low-level \emph{machine code}. That machine code is specified
+by the \ac{isa} of the \ac{cpu} in use.
+One step above machine code is assembly language, which is a textual representation
+of the binary code to execute, with each instruction and its operands
+being represented by human-readable mnemonics.
+There are usually some additional abstractions,
 
 \subsection{The \arch\ Instruction Set Architecture}
 \Iac{isa} is the specification of the visible behavior of a processor.
