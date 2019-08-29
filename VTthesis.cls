@@ -138,7 +138,7 @@
 \RequirePackage{eucal} % For Euler script math calligraphy
 \RequirePackage{mathrsfs} % For very scripty script
 \RequirePackage{tikz}
-\usetikzlibrary{shapes,arrows}
+\usetikzlibrary{shapes,arrows.meta}
 
 % Useful package for subfigures
 \RequirePackage[hypcap]{subcaption}
