@@ -486,22 +486,22 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
   firstnumber=0
 ]
   pow2:
-      push rbp # Size:1
-      mov  rbp, rsp # Size:3
-      mov  dword ptr [rbp - 0x14], edi # Size:3
-      mov  qword ptr [rbp - 8], 1 # Size:8
-      mov  dword ptr [rbp - 0xc], 0 # Size:7
-      jmp  .label_10 # Size:2
+      push rbp ; Size:1
+      mov  rbp, rsp ; Size:3
+      mov  dword ptr [rbp - 0x14], edi ; Size:3
+      mov  qword ptr [rbp - 8], 1 ; Size:8
+      mov  dword ptr [rbp - 0xc], 0 ; Size:7
+      jmp  .label_10 ; Size:2
   .label_11:
-      shl  qword ptr [rbp - 8], 1 # Size:4
-      add  dword ptr [rbp - 0xc], 1 # Size:4
+      shl  qword ptr [rbp - 8], 1 ; Size:4
+      add  dword ptr [rbp - 0xc], 1 ; Size:4
   .label_10:
-      mov  eax, dword ptr [rbp - 0xc] # Size:3
-      cmp  eax, dword ptr [rbp - 0x14] # Size:3
-      jb   .label_11 # Size:2
-      mov  rax, qword ptr [rbp - 8] # Size:4
-      pop  rbp # Size:1
-      ret  # Size:1
+      mov  eax, dword ptr [rbp - 0xc] ; Size:3
+      cmp  eax, dword ptr [rbp - 0x14] ; Size:3
+      jb   .label_11 ; Size:2
+      mov  rax, qword ptr [rbp - 8] ; Size:4
+      pop  rbp ; Size:1
+      ret  ; Size:1
 \end{lstlisting}
 The function uses memory in five places, all on the stack.
 These are expressed relative to the original value of the stack pointer $\rspo$:
