@@ -119,19 +119,19 @@ and that basis is the machine model from \cref{se:machine_model}.
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
 this chapter requires a more specific look.
 The step function for this methodology takes the form
-$\step:S\rightarrow(S\mid\bot_E)$.%
+$\step:S\rightarrow(S\mid\err)$.%
 \nomenclature{$S$}{Type representing program state; an Isabelle record}%
-\nomenclature{$\bot_E$}{Indicates exceptional state}
+\nomenclature{$\err$}{Indicates exceptional state}
 It takes the current state~$\sigma$ to execute from
 and returns the state~$\sigma'$ after execution of the current instruction,
 which is extracted from the current state based on the value of the instruction pointer
 \inlineasm{rip}.
 If some sort of exception, such as a divide by zero, occurs,
-the function returns~$\bot_E$ instead.
+the function returns~$\err$ instead.
 
 From the machine model, we manually derived a run function%
 \index{symbolic execution!run function}
-$\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\bot_E\mid\infloop)$.
+$\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\err\mid\infloop)$.
 This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
 producing a state~$\sigma'$ on successful completion.
@@ -140,10 +140,10 @@ Predicate~$H$ denotes a \emph{halting condition},%
 which typically instructs the run function to stop
 at a certain instruction address, such as that following a \inlineasm{ret}.
 The run function executes $\step$ until~$H$, applied to the current state,
-is true. Whenever an exception occurs, it stops and returns~$\bot_E$.
+is true. Whenever an exception occurs, it stops and returns~$\err$.
 If the execution were to continue forever
 without an exception or reaching the halting condition
-(as would happen with an infinite loop), the function returns $\bot_\var{NT}$.
+(as would happen with an infinite loop), the function returns $\infloop$.
 Formally, this is achieved by a standard \ac{lfp} construction.
 
 \subsection{Hoare Triples for Memory Preservation}
@@ -167,7 +167,7 @@ Thus, we have the following definition:
   \begin{equation}
   \htriple{P}H{Q}\equiv\forall\sigma\cdot
   P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
-  \sigma'\neq\bot_E\wedge Q(\sigma'),
+  \sigma'\neq\err\wedge Q(\sigma'),
   \end{equation}
   where $\sigma'=\run(H,\sigma)$.
 \end{definition}
@@ -218,13 +218,13 @@ that represent the arguments passed to the function.
   A Floyd invariant~$I$ \emph{holds} if and only if, for any state~$\sigma$,
   \begin{equation}
     I(\loc\sigma)(\sigma)\longrightarrow
-    \sigma'\neq\bot_E\wedge(\sigma'=\infloop\vee I(\loc\sigma')(\sigma')),
+    \sigma'\neq\err\wedge(\sigma'=\infloop\vee I(\loc\sigma')(\sigma')),
   \end{equation}
   where
-  $\sigma'=\run((\lambda\sigma\cdot I(\loc\sigma)(\sigma)\neq\bot),\sigma)$%
+  $\sigma'=\run((\lambda\sigma_r\cdot I(\loc\sigma_r)\neq\bot),\sigma)$%
   \nomenclature{$\bot$}{Used here to represent an empty value,
     such as the result of calling a partial function with a value it does not have an actual result for or in general the \texttt{None} value of an optional type}
-  and $\loc\sigma$ is the current program location,
+  and $\loc\sigma_r$ is the current program location,
   stored in \inlineasm{rip} on \arch\ systems.
 \end{definition}
 In words, if the Floyd invariant holds on the current state,
@@ -247,7 +247,7 @@ as a whole:
   \begin{equation*}
     \htriple{P}H{Q}\equiv\forall\sigma\cdot
     P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
-    \sigma'\neq\bot_E\wedge Q(\sigma').
+    \sigma'\neq\err\wedge Q(\sigma').
   \end{equation*}
   Though there could be any number of additional annotations between~$l_0$
   and~$l_f$, \textcite{floyd1967assigning} showed by induction
@@ -258,20 +258,20 @@ as a whole:
   resulting in the following statement:
   \begin{equation*}
       I(l_0)(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
-      \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
+      \sigma'\neq\err\wedge I(l_f)(\sigma').
   \end{equation*}
   As we have already assumed that~$I$ holds,
   we can substitute in the right side of the implication from \cref{def:floyd_inv}
   to obtain
   \begin{equation*}
-    \sigma'\neq\bot_E\wedge(\sigma'=\infloop\vee I(l_f)(\sigma'))\wedge
+    \sigma'\neq\err\wedge(\sigma'=\infloop\vee I(l_f)(\sigma'))\wedge
     \sigma'\neq\infloop\longrightarrow
-    \sigma'\neq\bot_E\wedge I(l_f)(\sigma').
+    \sigma'\neq\err\wedge I(l_f)(\sigma').
   \end{equation*}
   This then simplifies to
   \begin{equation*}
-    \sigma'\neq\bot_E\wedge I(l_f)(\sigma')\longrightarrow
-    \sigma'\neq\bot_E\wedge I(l_f)(\sigma'),
+    \sigma'\neq\err\wedge I(l_f)(\sigma')\longrightarrow
+    \sigma'\neq\err\wedge I(l_f)(\sigma'),
   \end{equation*}
   which is trivial.
 \end{proof}
