@@ -631,14 +631,14 @@ using the $\exec$ function from the previous section.
 To do this, however, a formal notion of \emph{memory preservation}
 with respect to state changes is required.
 \begin{definition}[Memory preservation with respect to state changes]\label{def:mem_preserve}
-  The set of memory regions~$M$ characterizes memory preservation with respect to
+  The set of memory regions~$M'$ characterizes memory preservation with respect to
   the change from some state~$\sigma$ to some other state~$\sigma'$
-  if and only if every byte outside of the regions in~$M$ is the same in both states.
+  if and only if every byte outside of the regions in~$M'$ is the same in both states.
   The addresses of those bytes are represented by the variable~$a$.
 
   This is formally expressed as:
   \begin{equation}
-    \usage(M,\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M\cdot\region{a}1\separate r)
+    \usage(M',\sigma,\sigma')\equiv\forall a\cdot(\forall r\in M'\cdot\region{a}1\separate r)
     \longrightarrow\readmemS{\sigma}a{1}=\readmemS{\sigma'}a{1}.
   \end{equation}
 \end{definition}
@@ -648,6 +648,7 @@ Using \cref{def:mem_preserve}, each block gets a lemma of the form
   P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge
   Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma').\label{eq:block_lemma}
 \end{equation}
+Note that~$M$ is a state-dependent function.
 Every generated version of \cref{eq:block_lemma} is discharged
 with an Isabelle/HOL proof method written in Eisbach \autocite{matichuk2016eisbach},
 Isabelle's proof automation language.
@@ -776,7 +777,8 @@ the set of memory regions~$M$ generated for the block should be correct.
 
 The second assumption is required because of an important subtlety:
 the regions generated in the~\ac{fmuc} are state dependent.
-$M$~is actually a function based on the initial state of the block:
+As previously stated,
+the~$M$ for a block is actually a function based on the block's initial state:
 its regions depend on the values stored in memory.
 However, it makes no sense to express the regions used by individual blocks
 within a larger function in terms of their own individual initial state alone.
