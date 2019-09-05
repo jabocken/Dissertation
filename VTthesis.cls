@@ -64,7 +64,8 @@
 %% Modern citations
 \RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX; also avoids biber warnings when using accents and stuff
 \RequirePackage[
-  citestyle=num-comp-fix, % Using custom numeric-comp with auto nb-spacing for \cite and \parencite
+%  citestyle=num-comp-fix, % Using custom numeric-comp with auto nb-spacing for \cite and \parencite
+  citestyle=numeric-comp,
   maxbibnames=99 % Avoids `et al.` in bibliography
 ]{biblatex} % if issues occur with utf8 inputenc, try the safeinputenc option
 

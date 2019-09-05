@@ -538,18 +538,21 @@ the function is also shown to preserve the value of the stack pointer.
   \begin{tikzpicture}[>=stealth]
     \graph[math nodes, grow down=2.2cm]{
       "1:\begin{array}{l}
-        \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\
+        \boxed{\readmem{a}{1}=v_0}\wedge\mathrbp=\rbpo\wedge\mathrsp=\rspo\wedge{} \\
         \readmem{\rspo}{8}=\retaddr
       \end{array}" ->[
         align=left,
         "$\mathrsp\coloneqq\mathrsp-8$\\
-        $\mathrbp\coloneqq\mathrsp$"
+        $\mathrbp\coloneqq\mathrsp\dotso$"
       ] b/"12:\begin{array}{l}
-        \readmem{a}{1}=v_0\wedge{} \\
-        \mathrbp=\mathrsp=\rspo-8
+        \boxed{\readmem{a}{1}=v_0}\wedge\mathrbp=\mathrsp=\rspo-8\wedge{} \\
+        \readmem{\rspo-8}{8}=\rbpo\wedge{} \\
+        \readmem{\rspo}{8}=\retaddr
       \end{array}" ->[
-        "$\mathrsp\coloneqq\mathrsp+16$"
-      ] "\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
+        align=left,
+        "$\mathrsp\coloneqq\mathrsp+16$\\
+        $\mathrbp\coloneqq\rbpo$"
+      ] "\retaddr:\boxed{\readmem{a}{1}=v_0}\wedge\mathrbp=\rbpo\wedge\mathrsp=\rspo+8";
       b ->[out=-16, in=16, looseness=3] b;
     };
   \end{tikzpicture}
