@@ -480,7 +480,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
     Schlich et al. & ATmega16 & MC & Auto funcs & Around 8k insts \\
-    Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+MC & Example progs &
+    Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
       \makecell[l]{\num{2630} \acs*{sloc}\\
         \num{935} \acs*{sloc}} \\
     Fromherz et al. & C/\arch & ATP+\acs*{vcg} & \acs{aes} funcs & \\
@@ -492,7 +492,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs*{sloc}, 60 insts \\
     Dam et al. & ARMv7 & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
     Baumann et al. & ARMv8-A & \acs*{atp}+UC & HAPSOC & \num{8000} \acs*{sloc} \\
-    Bevier et al. & PDP-11-like & \acs*{itp}+TV & Full system & 3k+ \acs*{sloc}/insts \\
+    Bevier et al. & PDP-11-like & \acs*{itp}+\acs*{tv} & Full system & 3k+ \acs*{sloc}/insts \\
     \bottomrule
     \multicolumn{5}{c}{
       \small
@@ -503,7 +503,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
         \acs*{vcg} &=& Verification Condition Generation & \acs*{dil} &=& Decompilation into Logic \\
         \acs{sloc} &=& Source Lines of Code        & \acs*{atp} &=& Automated Theorem Proving \\
         UC   &=& User Contracts											& CG 	&=& Certificate Generation \\
-        TV   &=& Translation Validation							& MC 	&=& Model Checking \\
+        \acs*{tv}   &=& Translation Validation							& MC 	&=& Model Checking \\
         SA   &=& Static Analysis                    & \acs*{asl} &=& \acl*{asl}
       \end{tabular}
     }
