@@ -17,7 +17,7 @@
 \usepackage{textcomp}              % Fixes issue with microtype+siunitx's \micro
 
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
-\usepackage[binary-units]{siunitx}
+\usepackage{siunitx}
 \usepackage{mathtools}             % for \coloneqq
 \usepackage{bussproofs}            % for prooftree environment
 \usepackage[epsilon]{backnaur}     % For BNF diagrams; a (more complex?) alternative is the syntax package
@@ -26,7 +26,7 @@
 \usepackage{makecell}              % For table heading cells and cells with line breaks
 \usepackage{threeparttable}        % For tables with notes
 
-\usepackage[index,single,hyperref,display-foreign=false]{acro}                  % For acronyms; hyperref option doesn't work right with XeLaTeX and display-foreign=false used to avoid bug with plural initial forms
+\usepackage{acro}                  % For acronyms
 
 \usepackage{pgfplots}               % For plots
 
@@ -37,7 +37,8 @@
 
 \renewcommand*\theadfont{} % not making table text small so no need for small heading
 
-\acsetup{first-long-format=\emph, format-include-endings} % Can't seem to get the first-long-format to apply to a plural form
+% foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I don't know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I don't know if it has issues with XeLaTeX like the old version
+\acsetup{include-endings, format/first-long=\emph, index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not
 
 % Hack to fix ylabel positioning with current version of pgf
 \makeatletter
@@ -270,7 +271,7 @@
   [x64]{Assembler}     % add an "x64" dialect of Assembler
   [x86masm]{Assembler} % based on the "x86masm" dialect
   % with these extra keywords:
-  {morecomments=[l]{\#},
+  {morecomment=[l]{\#},
     morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD,% will add more insts as needed
     POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS,%
     MOVAPD,MOVDQA,%
@@ -280,7 +281,7 @@
     r10,r10d,r10w,r10b,r11,r11d,r11w,r11b,%
     r12,r12d,r12w,r12b,r13,r13d,r13w,r13b,%
     r14,r14d,r14w,r14b,r15,r15d,r15w,r15b,%
-    xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7,xmm8,xmm9,xmm10,xmm11,xmm12,xmm13,xmm14,xmm15%    
+    xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7,xmm8,xmm9,xmm10,xmm11,xmm12,xmm13,xmm14,xmm15%
   }} % etc.
 \lstdefinestyle{x64}{
   language=[x64]{Assembler},
@@ -515,7 +516,7 @@
   \printacronyms[heading=chapter]
   \printnomenclature
 
-%  \input{attribution} % prefaces go in front matter | Binoy doesn't want it, but it'll be needed for the official version eventually
+  \input{attribution} % prefaces go in front matter
 
   \mainmatter
   \input{introduction}
