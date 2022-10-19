@@ -1,14 +1,19 @@
 %        File: VTthesis_template.tex
 %     Created: Thu Mar 24 11:00 AM 2016 EDT
-%     Last Change: Mon, April 30, 2018
+%     Updated from Thursday, December 19, 2019 version
 %      Author: Alan M. Lattimer, VT
 %	   With modifications by Carrie Cross, Robert Browder, and LianTze Lim.
 %
 % This template is designed to operate with XeLaTeX.
 %
 % All elements in the Title, Abstract, and Keywords MUST be formatted as text and NOT as math.
+%
+% Further instructions for using this template are embedded in the document. Additionally, there are comments at the end of the file that give suggestions on writing your thesis.
+%
+% In addition to the standard formatting options, the following options are defined for the VTthesis class: proposal, prelim, doublespace, draft.
 
-\documentclass{VTthesis}
+% no pageskip is technically the "correct" style for book printing/two-page reading but adds unnecessary pages when viewing one at a time.
+\documentclass[pageskip]{VTthesis}
 
 \usepackage{comment}               % for commenting out large amounts of stuff
 \usepackage{suffix}                % For defining command versions with *s
@@ -18,11 +23,9 @@
 
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
 \usepackage{siunitx}
-\usepackage{mathtools}             % for \coloneqq
 \usepackage{bussproofs}            % for prooftree environment
 \usepackage[epsilon]{backnaur}     % For BNF diagrams; a (more complex?) alternative is the syntax package
 
-\usepackage{booktabs}              % For nicer-looking tables
 \usepackage{makecell}              % For table heading cells and cells with line breaks
 \usepackage{threeparttable}        % For tables with notes
 
@@ -40,6 +43,7 @@
 % foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I don't know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I don't know if it has issues with XeLaTeX like the old version
 \acsetup{include-endings, format/first-long=\emph, index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not
 
+% TODO: Still an issue?
 % Hack to fix ylabel positioning with current version of pgf
 \makeatletter
 \def\pgfsys@hboxsynced#1{%
@@ -422,35 +426,37 @@
 \newcommand{\todo}[1]{{\bfseries\color{purple}#1}} % Allowing paragraphs in todos
 \newcommand*{\fturl}[1]{\footnote{\url{#1}}}
 
-\title{%
-  Formal Verification of Memory Preservation for \arch\ Assembly via Proof Generation%
-}
+\title{Static Binary Analysis for Memory Properties and Exceptional Control Flow}
 \keywords{%
   Formal Verification,
   \arch\ Assembly,
   Interactive Theorem Proving,
-  Proof Generation,
-  Memory Preservation%
+  Static Analysis,
+%  Proof Generation,
+%  Memory Preservation%
+  Exception Handling%
 }
 \author{Joshua Alexander Bockenek}
 \program{Computer Engineering}
 \degree{Doctor of Philosophy}
 
-\submitdate{\DTMdate{2019-09-02}}
+\submitdate{\DTMdate{2022-11-30}}
 
 \principaladvisor{Binoy Ravindran}
 \firstreader{Freek Verbeek}
-\secondreader{Patrick R. Schaumont}
-\thirdreader{Michael S. Hsiao}
-\fourthreader{Changhee Jung}
+\secondreader{Patrick R.\ Schaumont}
+\thirdreader{Michael S.\ Hsiao}
+\fourthreader{\todo{Changhee Jung}}
 
-%\dedication{This is where you put your dedications.}
+\dedication{This work is dedicated to \todo{Maybe mention Abby, family, friends/coworkers?}}
 \acknowledge{%
   This work was supported in part by \ac{onr} under grant N00014-17-1-2297
   and \ac{navsea}/\ac{neec} under grant N00174-16-C-0018.
   Any opinions, findings, and conclusions or recommendations expressed
   in this dissertation are those of the author
   and do not necessarily reflect the views of \ac{onr} or \ac{navsea}/\ac{neec}.%
+
+  \todo{Any more?}
 }
 
 % The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
@@ -476,33 +482,39 @@
   at automatically-selected cutpoints.
   The memory regions and any additional preconditions
   must also be determined manually.
-  This methodology was applied to 63 functions from the HermitCore unikernel library,
+  This methodology was applied to \num{63} functions from the HermitCore unikernel library,
   including one recursive one, covering \num{2379} assembly instructions.
 
   % Second contribution
   The second contribution of this dissertation is a syntax-driven verification
   approach with fully-automated invariant and memory region generation.
-  It produces formal memory usage certificates that can be verified in Isabelle/HOL
+  It produces formal memory usage certificates (FMUCs) that can be verified in Isabelle/HOL
   with minimal effort, the main manual work being weakening any loop invariants.
-  This was successfully applied to 251 functions from the Xen hypervisor project,
-  covering a total of \num{12252} assembly instructions.%
+  This was successfully applied to \num{251} functions from the Xen hypervisor project,
+  covering a total of \num{12252} assembly instructions.
+
+  % Third contribution
+  \todo{Increased automation, change in approach}
+
+  % Fourth contribution
+  \todo{Modeling of exception handling}%
 }
 
 % TODO
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{%
-  You are also required as of Spring 2016 to include a general audience abstract.
+  \todo{You are also required as of Spring 2016 to include a general audience abstract.
   This should be geared towards individuals outside of your field
   that may be reading seeking information about your work.
   You should avoid language that is particular to your field
-  and clearly define any terms that may have special meaning in your discipline.%
+  and clearly define any terms that may have special meaning in your discipline.}%
 }
 
 \addbibresource{bibliography.bib}
 
 \makeindex[intoc]
 \begin{document}
-  \frontmatter
+  \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
   \maketitle
 
   \microtypesetup{protrusion=false} % suggested by the docs to avoid the list dots getting misaligned
@@ -518,7 +530,7 @@
 
   \input{attribution} % prefaces go in front matter
 
-  \mainmatter
+  \mainmatter % The body chapters get proper numbering.
   \input{introduction}
   \input{related}
   \input{background}
@@ -527,13 +539,13 @@
   \input{syntax}
   \input{conclusions}
 
-  {% appendices don't work right with backmatter on its own due to the lack of counters
-    \backmatter
+  {% appendices don't work right with \backmatter due to it getting rid of counters
+    \backmatter % All the stuff that comes after the body chapters
     \printbibliography[heading=bibintoc]
     \printindex
   }
+%  \appendix % formats the chapter name to appendix to properly define the headers
 %  \begin{appendices}
-%    \renewcommand*\chaptername\appendixname % find a better spot
 %  	\chapter{First Appendix} \label{app:appendix_one}
 %  		\section{Section one} \label{ase:app_one_sect_1}
 %      \clearpage

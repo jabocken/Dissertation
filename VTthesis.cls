@@ -25,11 +25,21 @@
 %   v1.8 Modified date-setting macro, Carrie Cross, 10/5/17
 %	v1.9 Changed the LaTex rendering engine, Carrie Cross & Robert Browder, 	     4/27/18
 %	v2.0 Updated instructions, Carrie Cross & Robert Browder, 4/30/18
+%   Josh 2019
+%   * Class changed to book with appropriate updates (might have been done for thesis?)
+%   * Switched to biber and biblatex
+%   * Added proper spacing between different chapters in extra lists
+%   v2.1 Created flexible page numbering for front matter, Carrie Cross & Robert Browder, 12/19/19 ... except Josh can't figure out what this refers to so ignoring
+%   v2.2 Updated code for disabling ligatures to comply with Tex Live 2019 standards, Carrie Cross & LianTze Lim, 5/8/2020 -- except Josh likes ligatures so leaving this out.
+%   Josh 2022
+%   * Added bookmargins option
+%   * Integrated mathtools inclusion with AMS stuff
+%   * Disabled hyperref anchors in the title pages due to an annoying warning and moved around some \thispagestyle commands.
 %-------------------------------------------------------------------------
 
 %%% IDENTIFICATION --------------------------------------------------------
 \NeedsTeXFormat{LaTeX2e}[01/01/10]
-\ProvidesClass{VTthesis}[2017/05/02 v1.5 Virginia Tech Proposal and Thesis Class]
+\ProvidesClass{VTthesis}[2020/05/08 v2.2 Virginia Tech Proposal and Thesis Class with modifications]
 \RequirePackage{etoolbox}
 %Declaration of options
 \newbool{@proposal}
@@ -42,12 +52,15 @@
 \boolfalse{@dft}
 \newbool{@pgskip}
 \boolfalse{@pgskip}
+\newbool{@bookmargins}
+\boolfalse{@bookmargins}
 
 \DeclareOption{proposal}{\booltrue{@proposal}}
 \DeclareOption{prelim}{\booltrue{@prelim}}
 \DeclareOption{doublespace}{\booltrue{@dbl}}
 \DeclareOption{draft}{\booltrue{@dft}}
 \DeclareOption{pageskip}{\booltrue{@pgskip}}  % Skips blank pages.
+\DeclareOption{bookmargins}{\booltrue{@bookmargins}}  % Enables book margins for a better bound printed experience. Works best without pageskip.
 %%% EXECUTION OF OPTIONS -------------------------------------------------
 %% default to:
 \ExecuteOptions{}
@@ -58,8 +71,8 @@
 %% based on standard book class
 \LoadClass[12pt,letterpaper,\ifbool{@pgskip}{openany}{}]{book}
 
-% Official margins don't necessarily look as good as default book layout but that can always be changed
-\RequirePackage[margin=1in,headheight=15pt]{geometry}
+% Official margins don't necessarily look as good as default book layout for two-page reading and should probably have narrower columns even for single-page but I'm not sure what to set those to. The headheight setting is necessary because it doesn't automatically adjust to fit bigger headers.
+\RequirePackage[\ifbool{@bookmargins}{}{margin=1in,}headheight=15pt]{geometry}
 
 %% Modern citations
 \RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX; also avoids biber warnings when using accents and stuff
@@ -69,8 +82,8 @@
   maxbibnames=99 % Avoids `et al.` in bibliography
 ]{biblatex} % if issues occur with utf8 inputenc, try the safeinputenc option
 
-%% AMSLaTeX math environments and symbols
-\RequirePackage{amsmath,amsthm,amssymb,amsfonts}
+%% AMSLaTeX math environments and symbols; mathtools has some extra ones and fixes and includes amsmath itself
+\RequirePackage{amsthm,amssymb,amsfonts,mathtools}
 \RequirePackage[normalem]{ulem}
 \RequirePackage[inline]{enumitem}
 \RequirePackage[titletoc,page]{appendix}
@@ -88,7 +101,7 @@
 % Font setup
 \RequirePackage[T1]{fontenc} % nice font encoding
 \RequirePackage{lmodern}     % Nice vector fonts
-\RequirePackage[tracking]{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern.
+\RequirePackage[tracking]{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern. Tracking option adds uniform letter spacing for small caps.
 
 %package required for nomenclature entry
 \RequirePackage[intoc]{nomencl}
@@ -135,14 +148,15 @@
 \RequirePackage[capitalize]{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings)
 
 % Misc Packages
-\RequirePackage{booktabs}
-\RequirePackage{eucal} % For Euler script math calligraphy
+\RequirePackage{booktabs} % For nicer-looking tables
+\RequirePackage[mathscr]{eucal} % For Euler script math calligraphy
 \RequirePackage{mathrsfs} % For very scripty script
 \RequirePackage{tikz}
 \usetikzlibrary{shapes,arrows.meta}
+%\RequirePackage{todonotes}
 
 % Useful package for subfigures
-\RequirePackage[hypcap]{subcaption}
+\RequirePackage[hypcap]{subcaption} % don't think the caption package itself needs to be included
 
 % Place a Draft Watermark, if a draft document
 \ifbool{@dft}{
@@ -291,7 +305,7 @@
 \renewcommand\chaptermark[1]{\markboth{\chaptername\ \thechapter.\ #1}{}}
 \renewcommand\sectionmark[1]{\markright{\thesection.\ #1}}
 
-%%Revised frontmatter, mainmatter, and backmatter with nice formatting and nopgskip support
+%%Revised frontmatter, mainmatter, and backmatter with nice formatting and pgskip support
 \fancypagestyle{front}{
   \fancyhf{}
   \fancydraft\fancyhead
@@ -317,17 +331,19 @@
   \pagenumbering{arabic}%
   \pagestyle{main}%
 }
-% probably good to use this in restricted environments, which I'm doing anyway because of the appendix
+% Fix for forced uppercase in back matter headers to be consistent with front/main matter headers; probably good to use this in restricted environments, which I'm doing anyway because the appendix does not play nice with back matter
 \appto\backmatter{\let\MakeUppercase=\relax}
 
+% To reduce the number of arguments necessary to produce the PDF bookmark, we just base the anchor name off of the displayed name.
 \newcommand*\fpbookmark[1]{\pdfbookmark[1]{#1}{\zap@space#1 \@empty}}
 
 \newenvironment{frontpage}[1]{%
-  \clearpage\thispagestyle{empty}%
+  \clearpage%
   \fpbookmark{#1}%
   \center % using env macros rather than begin/end means no new group is created
 }{\endcenter}
 \newcommand\abstractpage[2]{\begin{frontpage}{#1}%
+    \thispagestyle{empty} % Title pages should have no style
     {\Large \@title}
     \vfill
     \@author
@@ -386,7 +402,6 @@
 }
 
 \def\dedpage{\begin{frontpage}{Dedication}%
-  \thispagestyle{front}
   \vspace*\fill
   \emph\@dedication
   \vspace*\fill
@@ -394,9 +409,11 @@
 
 %This is where the main magic happens
 \renewcommand\maketitle{%
+  \hypersetup{pageanchor=false}
   \titlepage
   \ifbool{@abs}{\abstractpage{Abstract}\@abstract}{}
-%  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud}{} hidden for now
+  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud}{}
+  \hypersetup{pageanchor=true}
   \ifbool{@ded}\dedpage{}
   \ifbool{@ack}{\chapter*{Acknowledgments}\@acknowledge}{}
 }
