@@ -17,6 +17,7 @@
 
 \usepackage{comment}               % for commenting out large amounts of stuff
 \usepackage{suffix}                % For defining command versions with *s
+\usepackage{relsize}               % Necessary for the \Cpp\ command
 
 \usepackage{stmaryrd}              % St Mary Road symbols for theoretical computer science (necessary for record/etc.\ symbols)
 \usepackage{textcomp}              % Fixes issue with microtype+siunitx's \micro
@@ -152,7 +153,7 @@
 \DeclareAcronym{icc}{
   short            = ICC,
   short-indefinite = an,
-  long             = the Intel C++ Compiler
+  long             = the Intel \Cpp\ Compiler
 }
 \DeclareAcronym{il}{
   short            = IL,
@@ -302,6 +303,10 @@
 
 %% name shorthands and stuff
 \newcommand*\arch{x86-64}
+%% C++ formatting similar to https://isocpp.org/wiki/faq/misc-environmental-issues#latex-macros but nicer and with the plus signs slightly more defined than \cpluspluslogo from the texlogos package
+\newcommand\Cpp{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-1}{\textbf{++}}}}
+%\usepackage{texlogos}
+%\newcommand\Cpp\cpluspluslogo
 
 \newcommand*\mcsquare{\textsc{[mc]square}}
 
@@ -515,7 +520,7 @@
 \makeindex[intoc]
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
-  \maketitle
+%  \maketitle
 
   \microtypesetup{protrusion=false} % suggested by the docs to avoid the list dots getting misaligned
   \tableofcontents
@@ -531,18 +536,18 @@
   \input{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
-  \input{introduction}
+%  \input{introduction}
   \input{related}
   \input{background}
-  \input{symbolic_execution}
-  \input{cfg}
-  \input{syntax}
+%  \input{symbolic_execution}
+%  \input{cfg}
+%  \input{syntax}
   \input{lattice-lifting}
   \input{lattice-lifting-algorithm}
   \input{eicfg}
   \input{eicfg-formulation}
   \input{eicfg-validation}
-  \input{conclusions}
+%  \input{conclusions}
 
   {% appendices don't work right with \backmatter due to it getting rid of counters
     \backmatter % All the stuff that comes after the body chapters

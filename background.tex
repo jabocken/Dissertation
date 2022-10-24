@@ -1,15 +1,19 @@
 \chapter{Background}\label{ch:background}
 This part of my dissertation provides domain-specific information
 necessary to understand the work presented in it.
-It is grouped into the two main categories of
-formal methods (\cref{se:formal_methods})
-and assembly language (\cref{se:assembly_language}).
+It is grouped into the three main categories of
+formal methods (\cref{se:formal_methods}),
+assembly language (\cref{se:assembly_language}),
+and structured exception handling (\cref{se:structured_exceptions}).
+
+% Hiding while working on new content
+\begin{comment}
 
 %The section on formal methods explains formal semantics,
 %symbolic execution, and the basics of Floyd and Hoare proving.
 %It also talks a bit about \ac{smt} solvers, model checking, and theorem proving.
 %
-%The section on assembly language talks about 
+%The section on assembly language talks about
 %
 \section{Formal Methods}\label{se:formal_methods}
 To quote \textcite{butler:fm},
@@ -69,7 +73,7 @@ it could potentially be an infinite number if there are loops involved.
 In this work, the individual steps of symbolic execution
 are implemented as \emph{rewrite rules} over the state%
 \index{symbolic execution!rewrite rule}
-that derive their representation from 
+that derive their representation from
 Applying those rules in sequence to each step or instruction of a program
 allows aggregation of the individual state changes involved in the execution.
 
@@ -123,12 +127,12 @@ These goals are the \acp{vc}.
 
 %\subsection{Model Checking}
 %Model checkers work by taking a formal description of \iac{fsm}
-%and a formal specification of some property 
+%and a formal specification of some property
 %
 %\todo\dots
 %
 %The ``state explosion'' problem has been a well-known issue
-%in the model-checking community \autocite{clarke2012modelchecking} 
+%in the model-checking community \autocite{clarke2012modelchecking}
 %
 %\todo\dots
 
@@ -231,7 +235,7 @@ There are usually some additional abstractions,
 \Iac{isa} is the specification of the visible behavior of a processor.
 They have long been published as human-readable documents
 \autocite{bowen1985cards,intel2019manual},
-though ARM recently released several of their \acp{isa} in a machine-parsable,
+though Arm recently released several of their \acp{isa} in a machine-parsable,
 executable format \autocite{reid2016arm}.
 
 \Iac{isa} can specify many things about the processor they describe.
@@ -570,7 +574,7 @@ and must not contain any other control flow instructions
 \subsection{Tail Call Optimization}
 Tail call%
 \index{tail call optimization}
-optimization, implemented in most major C and C++ compilers, is a technique
+optimization, implemented in most major C and \Cpp\ compilers, is a technique
 for converting recursive functions into loop-based ones that only use
 a set number of stack frames.
 Unfortunately, that can only be applied to functions that fit the requirements
@@ -579,8 +583,16 @@ as imperative languages like C were not designed with such features in mind.
 The technique also supports optimizing non-recursive tail calls, however,
 and that has a lower bar.
 
+
+\end{comment}
+
+\section{Structured Exception Handling}\label{se:structured_exceptions}
+
 \section{Summary}
 This chapter gave an introduction to formal methods, including formal semantics,
 symbolic execution, Floyd verification, Hoare logic, model checking, and theorem provers.
 It also described some basic aspects of the \arch\ \ac{isa} and System~V AMD64 \ac{abi}
 as well as some general details on assembly.
+Finally, it covered the process of structured exception handling%
+\index{exception handling!structured}.
+Specifically, structured exception handling as utilized by the \Cpp\ \ac{abi}.

@@ -14,6 +14,9 @@ in \cref{se:verified,se:static_analysis}.
 hardware, and integrated projects.
 It also includes the works presented in this dissertation.
 
+% Hiding while working on new stuff
+\begin{comment}
+
 \section{Assembly-Level Verification}\label{se:previous_assembly}
 \textcite{clutterbuck1988verification} performed formal verification
 of assembly programs using SPACE-8080, a verifiable,
@@ -94,7 +97,7 @@ they provided semantics for common system calls.
 System call semantics increase the spread of programs that can be fully verified.
 Their work was applied to multiple small case studies,
 including a word count program and two kernel-mode memory copying examples.
- 
+
 Ultimately, the main difference between the above-mentioned existing approaches
 and the methodologies presented in this dissertation lies in the degree of automation.
 As stated previously, \ac{itp} over semantics of assembly instructions
@@ -461,8 +464,13 @@ will not result in a bug, as well as checking for format string vulnerabilities.
 
 The main difference between these static analysis tools and formal verification
 is that these tools are generally highly suited to finding bugs
-but are not able to prove their absence. This is due to a reliance on 
+but are not able to prove their absence. This is due to a reliance on
 efficient but incomplete techniques, such as depth-bounded searches.
+
+\end{comment}
+
+\section{Exception Handling Analysis}
+\todo\dots
 
 \begin{table*}
   \centering
@@ -521,4 +529,4 @@ presented in this chapter achieved more coverage
 than the over \num{2379} instructions achieved by the work in \cref{ch:cfg},
 none appear to have achieved the \num{12252}
 verified instructions covered in \cref{ch:syntax} except the work produced by
-ARM employees.
+Arm\index{Arm Ltd.} employees.

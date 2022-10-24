@@ -153,8 +153,10 @@ Notably, the above data structure does not explicitly contain
 control flow statements such as \texttt{goto} or \texttt{throw/catch}.
 Unconditional jumps like \texttt{goto}s make code harder to reason about
 in a structured way and can be modeled by the existing syntactic constructs,
-while structured exception handling as used in C++ is generally provided
-by external function calls.
+while structured exception handling as used in \Cpp\ is generally provided
+by external function calls%
+\index{exception handling!functions}
+(\cref{se:structured_exceptions}).
 \begin{example}
   \Cref{fig:ex_cf} provides an example of \ac{scf} extracted from \iac{cfg}.
   The \ac{cfg} in \cref{fig:ex_cf_cfg} can be seen to have two branching conditions
