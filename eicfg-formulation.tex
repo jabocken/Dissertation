@@ -36,19 +36,19 @@ The keys of the table are the ranges of addresses to which the corresponding lan
 
 \section{Abstract State}\label{sec:abstract-state}
 Our exception-containing abstract states, type $\absState$, are records with named fields.
-In defining this record type, the following elemental types are used:
-% \begin{itemize} % Freek didn't like the inlining with labels and it looks bad without them so just turning into plain list
-  %     \item $\bool$ and $\natnum$ denote Booleans and natural numbers respectively;
-  %     \item $\val$ denotes \emph{symbolic expressions}, which may be~$\bot$, indicating any or an unknown or undefined value;
-  %     \item $\pointer$ denotes \emph{immediate 64-bit addresses};
-  %     \item $\word$ denotes \emph{exception IDs}; and
-  %     \item program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
-  % \end{itemize}
-$\bool$ and $\nat$ denote Booleans and natural numbers respectively;
-$\val$ denotes \emph{symbolic expressions}, which may be~$\bot$, indicating any or an unknown or undefined value;
-$\pointer$ denotes \emph{immediate 64-bit addresses};
-$\word$ denotes \emph{exception IDs}; and
-program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
+In defining this record type, the following elemental types are used, some of which are new:
+\begin{itemize} % Freek didn't like the inlining with labels and it looks bad without them so just turning into plain list when space is needed
+  \item $\bool$ and $\nat$ denote Booleans and natural numbers respectively;
+  \item $\val$ denotes \emph{symbolic expressions}, which may be~$\bot$, indicating any or an unknown or undefined value;
+  \item $\pointer$ denotes \emph{immediate 64-bit addresses};
+  \item $\word$ denotes \emph{exception IDs}; and
+  \item $\termination$ denotes \emph{program termination}, consisting of the set $\{\bot,\good,\bad\}$.
+\end{itemize}
+%$\bool$ and $\nat$ denote Booleans and natural numbers respectively;
+%$\val$ denotes \emph{symbolic expressions}, which may be~$\bot$, indicating any or an unknown or undefined value;
+%$\pointer$ denotes \emph{immediate 64-bit addresses};
+%$\word$ denotes \emph{exception IDs}; and
+%program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
 
 \subsection{Exception Objects}
 \begin{definition}
