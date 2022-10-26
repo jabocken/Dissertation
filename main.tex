@@ -44,6 +44,18 @@
 \usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
 \usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
 \usetikzlibrary{positioning}       % For relative (=of) node positioning
+\tikzset{
+  >=stealth
+}
+\tikzstyle{ret}=[
+  isosceles triangle,
+  shape border rotate=90,
+  isosceles triangle apex angle=75
+]
+\tikzstyle{landing}=[rectangle] % wanted to use inverted triangle but it just does not look good when containing text
+\tikzstyle{unwind}=[dotted,blue]
+\tikzstyle{bad}=[blue,fill=blue,text=white]
+\tikzstyle{good}=[green,fill=green,text=black]
 
 \renewcommand*\theadfont{} % not making table text small so no need for small heading
 
@@ -78,10 +90,10 @@
   long-indefinite  = an
 }
 \DeclareAcronym{apt}{
-    short            = APT,
-    short-indefinite = an,
-    long             = Advanced Package Tool,
-    long-indefinite  = an
+  short            = APT,
+  short-indefinite = an,
+  long             = Advanced Package Tool,
+  long-indefinite  = an
 }
 \DeclareAcronym{aot}{
   short            = AOT,
@@ -118,6 +130,11 @@
 \DeclareAcronym{cfg}{short=CFG, long=control flow graph}
 \DeclareAcronym{cfi}{short=CFI, long=control-flow integrity, cite={abadi2009cfi}}
 \DeclareAcronym{ci}{short=CI, long=continuous integration}
+\DeclareAcronym{cie}{
+  short       = CIE,
+  long        = Common Information Entry,
+  long-plural = Common Information Entries
+}
 \DeclareAcronym{csp}{short=CSP, long=communicating sequential processes}
 \DeclareAcronym{cpu}{short=CPU, long=central processing unit}
 \DeclareAcronym{dm}{short=DM, long=device model}
@@ -133,8 +150,19 @@
   long             = Exceptional Interprocedural Control Flow Graph,
   long-indefinite  = an
 }
-\DeclareAcronym{elf}{short=ELF, long=Executable and Linkable Format}
- \DeclareAcronym{fdl}{
+\DeclareAcronym{elf}{
+  short            = ELF,
+  short-indefinite = an,
+  long             = Executable and Linkable Format,
+  long-indefinite  = an
+}
+\DeclareAcronym{fde}{
+  short            = FDE,
+  short-indefinite = an,
+  long             = Frame Description Entry,
+  long-plural      = Frame Description Entries
+}
+\DeclareAcronym{fdl}{
   short            = FDL,
   short-indefinite = an,
   long             = functional description language
@@ -215,10 +243,15 @@
   short-indefinite = an,
   long             = least fixed point
 }
+\DeclareAcronym{lsda}{
+  short            = LSDA,
+  short-indefinite = an,
+  long             = language-specific data area
+}
 \DeclareAcronym{lts}{
-    short            = LTS,
-    short-indefinite = an,
-    long             = long-term support
+  short            = LTS,
+  short-indefinite = an,
+  long             = long-term support
 }
 \DeclareAcronym{mc}{short=MC, long=model checking}
 \DeclareAcronym{mrr}{short=MRR, long=memory region relation}
@@ -361,7 +394,7 @@
 \newcommand{\infloop}{\bot_\mathrm{NT}}
 \newcommand{\err}{\bot_\mathrm{E}}
 \newcommand{\bop}{\mathbin\bigcirc}
-\newcommand{\nat}{\mathbb N}
+\newcommand{\nat}{\mathbb N} % There's some other package that defines this; if you get conflicts later, just switch to \natnum
 
 \newcommand{\true}{\mathcal T}
 \newcommand{\false}{\mathcal F}
@@ -460,6 +493,10 @@
 \newcommand{\psep}{P_\mathrm{sep}}
 
 %% From EICFG paper
+% Freek did not like the line number stuff so using manual inst refs (but still keeping the hyperlinks!)
+% This is a bit of a pain as it means I have to figure out the instruction addresses instead of getting them directly, oh well...
+\newcommand*\instref[2]{\hyperref[#1]{\texttt{0x#2}}}
+
 \DeclareMathOperator{\stateToNode}{\alpha'}
 \newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
 \newcommand*\reg[1]{\mathasm{#1}}
@@ -479,6 +516,28 @@
 \newcommand\unwindTransitionno{\xRightarrow{\mathsf U^-}}
 \WithSuffix\newcommand\unwindTransition*{\xRightarrow[P]{\mathsf U}}
 
+% abstract transition predicate abbreviations
+%\DeclareMathOperator\csr{CSR}
+\newcommand\dec{\mathbin{--}}
+\newcommand\inc{\mathbin{++}}
+\WithSuffix\newcommand\dec*{\ominus}
+\WithSuffix\newcommand\inc*{\oplus}
+\DeclareMathOperator\handler{handler}
+\DeclareMathOperator\reth{rethrown}
+
+% stack ops
+\DeclareMathOperator{\push}{push}
+\DeclareMathOperator{\pop}{pop}
+\DeclareMathOperator{\peek}{peek}
+
+\DeclareMathOperator\pushStack{pushStack}
+\DeclareMathOperator\popStack{popStack}
+%\DeclareMathOperator\peekStack{peekStack}
+
+\DeclareMathOperator\pushCaught{pushCaught}
+\DeclareMathOperator\popCaught{popCaught}
+%\DeclareMathOperator\peekCaught{peekCaught}
+
 % state/etc. fields
 \DeclareMathOperator\landingpadtable{\mathsf{LPT}}
 \newcommand{\stack}{\mathsf{stack}}
@@ -494,6 +553,15 @@
 \newcommand\typeInfo{\mathsf{typeInfo}}
 \newcommand\id{\mathit{id}}
 
+\DeclareMathOperator{\terminate}{terminate} % two args, state and termination state
+\newcommand{\terminated}{\mathsf{terminated}}
+\DeclareMathOperator{\transform}{transform}
+\DeclareMathOperator{\unwinding}{unwinding} % might not use
+
+% Terminating conditions
+\newcommand\good{\mathtt{Good}}
+\newcommand\bad{\mathtt{Bad}}
+
 % Types
 \newcommand{\bool}{\mathbb B}
 \newcommand{\graph}{\mathbb G}
@@ -505,6 +573,10 @@
 \newcommand{\word}{\mathbb W}
 \newcommand{\node}{\mathbb N}
 \newcommand{\termination}{\mathbb T}
+\newcommand{\inst}{\mathtt{Inst}}
+\newcommand{\absState}{\mathbbm\Sigma}
+\newcommand{\concState}{S}
+\newcommand{\edge}{\node\times\node\times(\inst|\bot)}
 
 % numbers
 %\newcommand\coveredpercent{\SI{84}\percent}

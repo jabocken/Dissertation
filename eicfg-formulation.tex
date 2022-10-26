@@ -8,7 +8,8 @@ The derivation of \acp{eicfg} from a binary requires four additional things:
     \item a symbolic execution engine to apply the rules making up our abstract transition relation.
 \end{enumerate}
 We describe those here.
-\subsection{Landing Pad Table}\label{sec:landing-pad-table}
+
+\section{Landing Pad Table}\label{sec:landing-pad-table}
 This information describes how unwinding should proceed given the unwinding reaching specific locations in a binary.
 It is extracted from the \acp{cie}, \acp{fde}, and \acp{lsda} of the binary under test and assumed to be correct.
 In our current formulation, an entry in the catch table is merely a pointer to the corresponding landing pad for this entry.
@@ -33,7 +34,7 @@ The keys of the table are the ranges of addresses to which the corresponding lan
   that routine will jump to \instref{lst:landing-pad}{138b}.
 \end{example}
 
-\subsection{Abstract State}\label{sec:abstract-state}
+\section{Abstract State}\label{sec:abstract-state}
 Our exception-containing abstract states, type $\absState$, are records with named fields.
 In defining this record type, the following elemental types are used:
 % \begin{itemize} % Freek didn't like the inlining with labels and it looks bad without them so just turning into plain list
@@ -43,20 +44,20 @@ In defining this record type, the following elemental types are used:
   %     \item $\word$ denotes \emph{exception IDs}; and
   %     \item program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
   % \end{itemize}
-$\bool$ and $\natnum$ denote Booleans and natural numbers respectively;
+$\bool$ and $\nat$ denote Booleans and natural numbers respectively;
 $\val$ denotes \emph{symbolic expressions}, which may be~$\bot$, indicating any or an unknown or undefined value;
 $\pointer$ denotes \emph{immediate 64-bit addresses};
 $\word$ denotes \emph{exception IDs}; and
 program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
 
-\subsubsection{Exception Objects}
+\subsection{Exception Objects}
 \begin{definition}
   Exceptions are also records, having type
 %  $\exception\coloneqq\{\rethrown\colon\bool,\handlerCount\colon\natnum\}$.
   \begin{equation*}
     \exception\coloneqq\begin{cases}
       \rethrown &\colon \bool \\
-      \handlerCount &\colon \natnum
+      \handlerCount &\colon \nat
     \end{cases}
   \end{equation*}
   This record has two fields.
@@ -66,16 +67,16 @@ program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
 \end{definition}
 $\absState$, meanwhile, has the following fields:
 
-\subsubsection{Registers}
-%\subsubsection{$\rmap$: the register map}
+\subsection{Registers}
+%\subsection{$\rmap$: the register map}
 The field~$\rmap$ has type $\register\to\val$.
 Reading and writing registers smaller than 64 bits (e.g.\ \inlineasm{ebp} versus \inlineasm{rbp}) requires bit masking and shifting the underlying 64-bit register's value.
 This behavior is integrated into our symbolic execution engine.
 Larger registers (e.g.\ \inlineasm{xmm}%and other vector registers
 ) exist as operands in our instruction representation but are not used for state updates or reads.
 
-\subsubsection{Call Stack}
-%\subsubsection{$\stack$: the return address stack.}
+\subsection{Call Stack}
+%\subsection{$\stack$: the return address stack.}
 %Maintaining the current list of return addresses is necessary in order to perform stack unwinding and handle thrown exceptions.
 %It is also helpful in detecting recursion.
 %With $[X]$ representing a list of type~$X$
@@ -105,61 +106,61 @@ For our purposes, usage of $\peek$ assumes a non-empty list. % would prefer this
   Thus, for some state after the result of transitioning from \instref{lst:example-libc}{1168}, the stack is $[\mathtt{0x116e}]$.
 \end{example}
 
-\subsubsection{$\emap$: the exception mapping.}
+\subsection{$\emap$: the exception mapping.}
 This field has type $\word\to\exception$.
 When an exception is created, it receives an ID based on its creation location and is stored in $\emap$ with that ID as the key.
 
 % Freek wanted this before the auxiliary exception variables so reflecting that in the final record type as well.
-\subsubsection{$\terminated$: the termination state.}
+\subsection{$\terminated$: the termination state.}
 This field has type $\termination$.
 It defaults to the bottom value~$\bot$, indicating the program or function has not terminated yet.
 When a path of execution completes, it is set to either $\good$ or $\bad$, indicating either normal or abnormal termination, respectively.
 We treat cases where an exception propagates to the top of the stack without being caught to be such ``bad'' cases.
 
-\subsubsection{Auxiliary exception variables.}
-$\absState$ also contains a count of the number of currently-uncaught exceptions ($\uncaught\colon\natnum$) and a stack of the currently-caught exception IDs ($\caught\colon[\word]$).
+\subsection{Auxiliary Exception Variables}
+$\absState$ also contains a count of the number of currently-uncaught exceptions ($\uncaught\colon\nat$) and a stack of the currently-caught exception IDs ($\caught\colon[\word]$).
 These fields are manipulated and used during entry to and exit from catch blocks as well as when rethrowing exceptions.
 This handling comes into play when dealing with nested catch blocks, exceptions (re)thrown within such blocks, etc.
 
-%\subsubsection{The abstract state record restated:} % Freek didn't like this so leaving out
+%\subsection{The abstract state record restated:} % Freek didn't like this so leaving out
 \begin{definition}
   The type of abstract states, notation~$\absState$, is a record
-  \(
-  %        \absState\coloneqq
-  \{
-  \rmap\colon\register\to\val,
-  \stack\colon[\pointer],
-  \emap\colon\word\to\exception,
-  \terminated\colon T, 
-  \uncaught\colon\natnum,
-  \caught\colon[\word]
-  \}
-  \).
-  % \begin{equation*}
-    %     \absState\colon\begin{cases}
-      %         \rmap &\colon \register\to\val \\
-      %         \stack &\colon [\pointer] \\
-      %         \emap &\colon \word\to\exception \\
-      %         \terminated &\colon T \\
-      %         \uncaught &\colon \natnum \\
-      %         \caught &\colon [\word]
-      %     \end{cases}
-    % \end{equation*}
+%  \(
+%  %        \absState\coloneqq
+%  \{
+%  \rmap\colon\register\to\val,
+%  \stack\colon[\pointer],
+%  \emap\colon\word\to\exception,
+%  \terminated\colon T,
+%  \uncaught\colon\nat,
+%  \caught\colon[\word]
+%  \}
+%  \).
+  \begin{equation*}
+    \absState\coloneqq\begin{cases}
+      \rmap &\colon \register\to\val \\
+      \stack &\colon [\pointer] \\
+      \emap &\colon \word\to\exception \\
+      \terminated &\colon T \\
+      \uncaught &\colon \nat \\
+      \caught &\colon [\word]
+    \end{cases}
+  \end{equation*}
   To ease register references, for some state $\sigma$ and named register \texttt{r}, the notation $\sigma.\mathtt{r}$ is shorthand for $\sigma.\rmap(\mathtt{r})$, e.g.\ $\sigma.\rdi\equiv\sigma.\rmap(\rdi)$. % would prefer this outside the definition but trying to save space
 \end{definition}
 
-\subsection{Abstract Transition Rules}\label{sec:step-function}
+\section{Abstract Transition Rules}\label{sec:step-function}
 To go along with our definition of \acp{eicfg} in \cref{def:eicfg},
 we have defined our abstract transition relation in terms of logical rules.
 There are two sets of those rules.
 
-The first set of rules defines behavior for the instructions from the x86-64 \ac{ISA}.
+The first set of rules defines behavior for the instructions from the x86-64 \ac{isa}.
 This includes non-deterministic conditional jump handling as well as handling for unknown external functions and a subset of indirect jumps and calls.
 Those rules and the additional state parts required to model them are elided here.
 The exception is how we deal with recursion, as that can be explained informally using elements already in $\absState$.
 Assume a call to another function inside the binary for some state~$\sigma$. Then, if the return address to be pushed on the stack is already in $\sigma.\stack$, we instead treat that call as an unmodeled external call and continue execution past it.
 
-The second set of rules provides modeling for exception-related \ac{ABI} calls.
+The second set of rules provides modeling for exception-related \ac{abi} calls.
 This set of rules is documented in \cref{fig:unwind,fig:step-rules1,fig:step-rules2} and elaborated on below.
 The following abbreviations are utilized in those rules.
 We also have notation for incrementing and decrementing: % moved up to save space
@@ -168,27 +169,25 @@ For certain rules, we also have $\handler(\id,\sigma')\inc*$, indicating $\handl
 and $\handler(\id,\sigma')\dec*$, indicating $\handler(\id,\sigma')=-\operatorname{sign}(\handler(\id,\sigma))*(\abs{\handler(\id,\sigma)}-1)$.
 As a special case, $0\dec*=0$.
 %$\dec$ follows the same concept.
-% Going back to two-column alignment for LNCS as I'll probably need the space
-\begin{align*}
-  \handler(\id,\sigma) &\equiv \sigma.\emap(\id).\handlerCount &
+%\begin{align*}
+%  \handler(\id,\sigma) &\equiv \sigma.\emap(\id).\handlerCount &
+%  \reth(\id,\sigma) &\equiv \sigma.\emap(\id).\rethrown \\
+%  \pushStack(\mathit{fr},\sigma,\sigma') &\equiv \sigma'.\stack=\push(\mathit{fr},\sigma.\stack) &
+%  \popStack(\sigma,\sigma') &\equiv \sigma'.\stack=\pop(\sigma.\stack) \\
+%  \pushCaught(c,\sigma,\sigma') &\equiv \sigma'.\caught=\push(c,\sigma.\caught) &
+%  \popCaught(\sigma,\sigma') &\equiv \sigma'.\caught=\pop(\sigma.\caught)
+%\end{align*}
+ \begin{align*}
+ %    \mathsf{scratch} &\equiv \{\rax,\rdi,\rsi,\reg{rdx},\reg{rcx},\reg{r8},\reg{r9},\reg{r10},\reg{r11}\}\\
+ %    \csr(\sigma,\sigma') &\equiv \forall r\not\in\mathsf{scratch}\quad\sigma.r=\sigma'.r\\
+  \handler(\id,\sigma) &\equiv \sigma.\emap(\id).\handlerCount \\
   \reth(\id,\sigma) &\equiv \sigma.\emap(\id).\rethrown \\
-  \pushStack(\mathit{fr},\sigma,\sigma') &\equiv \sigma'.\stack=\push(\mathit{fr},\sigma.\stack) &
+  \pushStack(\mathit{fr},\sigma,\sigma') &\equiv \sigma'.\stack=\push(\mathit{fr},\sigma.\stack) \\
   \popStack(\sigma,\sigma') &\equiv \sigma'.\stack=\pop(\sigma.\stack) \\
-  \pushCaught(c,\sigma,\sigma') &\equiv \sigma'.\caught=\push(c,\sigma.\caught) &
+  \pushCaught(c,\sigma,\sigma') &\equiv \sigma'.\caught=\push(c,\sigma.\caught) \\
   \popCaught(\sigma,\sigma') &\equiv \sigma'.\caught=\pop(\sigma.\caught)
 \end{align*}
-% \begin{align*}
-  % %    \mathsf{scratch} &\equiv \{\rax,\rdi,\rsi,\reg{rdx},\reg{rcx},\reg{r8},\reg{r9},\reg{r10},\reg{r11}\}\\
-  % %    \csr(\sigma,\sigma') &\equiv \forall r\not\in\mathsf{scratch}\quad\sigma.r=\sigma'.r\\
-  %     \handler(\id,\sigma) &\equiv \sigma.\emap(\id).\handlerCount \\
-  %     \reth(\id,\sigma) &\equiv \sigma.\emap(\id).\rethrown \\
-  %     \pushStack(\mathit{fr},\sigma,\sigma') &\equiv \sigma'.\stack=\push(\mathit{fr},\sigma.\stack) \\
-  %     \popStack(\sigma,\sigma') &\equiv \sigma'.\stack=\pop(\sigma.\stack) \\
-  %     \pushCaught(c,\sigma,\sigma') &\equiv \sigma'.\caught=\push(c,\sigma.\caught) \\
-  %     \popCaught(\sigma,\sigma') &\equiv \sigma'.\caught=\pop(\sigma.\caught)
-  % \end{align*}
 
-% Had to move the figure here to get it on the desired page!
 \begin{figure*}
   \centering
   \subfloat[Recursive unwinding]{%
@@ -218,13 +217,11 @@ As a special case, $0\dec*=0$.
   \label{fig:unwind}
 \end{figure*}
 
-% Trying to save space!
-%The transition rules are placed into two groups.
-%Group one, in \cref{fig:step-rules1}, does not involve unwinding.
-%The second, in \cref{fig:step-rules2}, does.
+The transition rules are placed into two groups.
+Group one, in \cref{fig:step-rules1}, does not involve unwinding.
+The second, in \cref{fig:step-rules2}, does.
 
-% Trying to save space!
-%\subsubsection{Non-Unwinding Rules}
+\subsection{Non-Unwinding Rules}
 \Cref{fig:start-main} shows the rule for the special starting function \inlineasm{__libc_start_main}.
 For this rule, we require the post-state's current instruction pointer be restricted to whatever was previously stored in \inlineasm{rdi}, \inlineasm{rcx}, or \inlineasm{r8}.
 We also require the stored return address to be on the top of a newly-pushed stack frame.
@@ -280,7 +277,7 @@ Additionally, the case for an empty $\sigma.\caught$ again operates as an unmode
   %    Assume the statements for catch beginning hold for the pre-state.
   Then, the post-state~$\sigma'$ for that instruction will satisfy $\sigma'.\emap(\id)=\bot$ and $\sigma'.\caught=[]$.
 \end{example}
-%\subsubsection{Unwinding Rules}
+\subsection{Unwinding Rules}
 \Cref{fig:unwind} shows semantics for stack unwinding.
 The stack is recursively popped (\cref{fig:unwind1}) until one of two conditions occurs: a landing path is found (\cref{fig:unwind_lpt_found}) or not (\cref{fig:unwind_no_lpt_found}).
 For shorthand notation, we respectively use $\unwindTransitionyes$ and $\unwindTransitionno$ to indicate the compound stack unwinding transition from a state until one of those conditions is met.
@@ -303,7 +300,7 @@ For shorthand notation, we respectively use $\unwindTransitionyes$ and $\unwindT
 
 \Cref{fig:unwind-resume1,fig:unwind-resume2} show the simplest unwinding function rules, those for \inlineasm{_Unwind_Resume}.
 The main addition to the general unwinding transition is that, when landing pads are found, the original function argument ($\sigma.\rdi$) is preserved in the result state's return register ($\sigma'.\rax$).
-This models the concrete handling for carrying through exceptions during unwinding. 
+This models the concrete handling for carrying through exceptions during unwinding.
 
 \begin{example}
   Consider instruction \instref{lst:unwind-resume}{1398} of \cref{lst:example-throw-landing-pad}.
@@ -338,7 +335,7 @@ However, that second rule can be relaxed for additional overapproximation by usi
 \end{example}
 
 %\newcommand\clearScratchClause{\AxiomC{$\csr(\sigma,\sigma')$}}
-\begin{figure*}[htb]
+\begin{figure*}
   \centering
   \subfloat[\inlineasm{__libc_start_main}]{%
     % \AxiomC{$\sigma'.\rip=\sigma.\rdi$}
@@ -455,7 +452,7 @@ However, that second rule can be relaxed for additional overapproximation by usi
   \label{fig:step-rules1}
 \end{figure*}
 
-\begin{figure*}[htb]
+\begin{figure*}
   \centering
   \subfloat[\inlineasm{_Unwind_Resume} (LP(s))]{%
     %        \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
@@ -551,9 +548,9 @@ Additional rules exist for the process of \emph{forced unwinding}, or manual sta
 The helper function \inlineasm{_Unwind_GetIP} stores the current frame's instruction pointer in $\sigma'.\rax$.
 Finally, the other helper function \inlineasm{_Unwind_GetRegionStart} stores the current procedure fragment's starting address in $\sigma'.\rax$.
 
-\subsection{Symbolic Execution}
+\section{Symbolic Execution}
 We perform symbolic execution by application of the rules making up our abstract transition relation.
-For some initial abstract state $\sigma_0$, $\sigma_0.\rip$ is either manually provided or obtained from the binary's \ac{ELF} info.
+For some initial abstract state $\sigma_0$, $\sigma_0.\rip$ is either manually provided or obtained from the binary's \ac{elf} info.
 Then we iteratively fetch the instruction at that address, increment~$\rip$ appropriately, and apply the applicable abstract transition rule to obtain successor states.
 If the transition rule results in multiple possible continuing states, we apply the symbolic execution step to each successor state.
 If no non-terminating states result, this path of execution ends.
@@ -565,10 +562,12 @@ As an implementation detail, it also includes the temporary indices used by our 
 All other state parts are combined, with priority given to the first equivalent state produced.
 For a more aggressive join, $\emap$, $\uncaught$, and $\caught$ can be excluded from the preserved state parts. The abstract transition rules are also simplified to support this exclusion.
 
-\subsection{Argument for Overapproximation}
+\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{ch:lattice-lifting,ch:lattice-algorithm}.}
+
+\section{Argument for Overapproximation}
 %Formally, correctness of the produced \ac{eicfg} can be proven by showing that the abstract transition relation overapproximates the concrete one (see \cref{def:simulation}).
 We consider a formal definition of the concrete transition rules our abstract ones overapproximate outside the scope of this paper.
-This is because our abstraction focuses on the domain of exceptional control flow in terms of its \ac{ABI}-level definition. By contrast, concrete rules require a concrete implementation.
+This is because our abstraction focuses on the domain of exceptional control flow in terms of its \ac{abi}-level definition. By contrast, concrete rules require a concrete implementation.
 Instead, we provide an informal argument for why our abstract transition rules are overapproximative.
 
 First, for normal (non-exception-related) assembly instructions, our abstract transition rules default to assigning~$\bot$ to destination operands, overapproximating their effect.
@@ -587,7 +586,7 @@ Unresolved indirect calls are treated as unmodeled external calls, but the same 
 We thus informally argue that the produced \ac{eicfg} is overapproximative \emph{modulo} unresolved indirections.
 If the \ac{eicfg} is not annotated with any unresolved indirections, it is an overapproximation. % in the sense of \cref{def:simulation}.
 
-\subsection{Graphs}
+\section{Graphs}
 We have a specific node state for the \acp{eicfg} produced by our toolchain,
 previously described in \cref{sec:eicfg}.
 The graph node type $\node$ contains the following information:
@@ -597,7 +596,7 @@ the exception objects currently allocated,
 the number of uncaught exceptions,
 and the IDs of those exception objects currently caught.
 The current jump table index and termination state will also included in this if they exist. In notation, this is
-$\node\colon\pointer\times[\pointer]\times[\exception]\times\natnum\times[\pointer]\times(\word|\bot)\times\termination$.
+$\node\colon\pointer\times[\pointer]\times[\exception]\times\nat\times[\pointer]\times(\word|\bot)\times\termination$.
 We further have a function $\stateToNode\colon\Sigma\rightarrow\node$
 that maps from the more specific and detailed concolic states for execution
 to the exceptional state for control flow representation.
@@ -650,9 +649,6 @@ The edge annotations are instructions for edges that follow standard control flo
   \caption{Simple Graph}
   \label{fig:simple-graph}
 \end{figure}
-
-\section{Symbolic Execution Engine}
-\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{ch:lattice-lifting,ch:lattice-algorithm}.}
 
 \section{Summary}
 \todo{maybe}
