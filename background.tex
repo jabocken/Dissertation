@@ -603,14 +603,14 @@ Several contributions of this work were inspired by
 % The key property we aim to prove is correctness of the produced \ac{EICFG}.
 % Intuitively, correctness means that the \ac{EICFG} is an \emph{abstraction} of the actual binary.
 % Specifically, one that preserves its properties pertaining to control flow.
-% We therefore restate the definition of an \emph{$\alpha$-simulation}\cite{clarke94,loiseaux1995property}.
-% This definition coincides exactly with the standard notion of a behavioural simulation\cite{milner1971algebraic}, but is formulated in terms of the concepts used in abstract interpretation.
+% We therefore restate the definition of an \emph{$\alpha$-simulation} \autocite{clarke94,loiseaux1995property}.
+% This definition coincides exactly with the standard notion of a behavioural simulation \autocite{milner1971algebraic}, but is formulated in terms of the concepts used in abstract interpretation.
 
 % We use $s,s',\dotsc$ to denote \emph{concrete states} and $S,S',\dotsc$ to denote sets of concrete states.
 % The concrete transition relation over concrete states is denoted $\concTransition$. Similarly, \emph{abstract states} are denoted by $\sigma,\sigma',\dotsc$ and sets of abstract states by $\absState,\absState',\dotsc$, while the abstract transition relation is $\absTransition$.
 
-% Abstract interpretation requires the definition of a Galois connection $\alphagamma$ that respectively does abstraction and concretization~\cite{cousot1977abstract,cousot1996abstract}.
-% A Galois connection can be used to construct an overapproximative abstraction of a transition system, by using~$\alpha$ as a simulation-relation and $\gamma$ to map properties on abstract states back to properties over the concrete system~\cite{yavuz16}.
+% Abstract interpretation requires the definition of a Galois connection $\alphagamma$ that respectively does abstraction and concretization \autocite{cousot1977abstract,cousot1996abstract}.
+% A Galois connection can be used to construct an overapproximative abstraction of a transition system, by using~$\alpha$ as a simulation-relation and $\gamma$ to map properties on abstract states back to properties over the concrete system \autocite{yavuz16}.
 
 % \begin{definition}\label{def:simulation} %[$\alpha$-similarity]
   %     Transition system $T_\mathsf{C} = (S,s_0,\concTransition)$ is \emph{$\alpha$-simulated by} transition system $T_\mathsf{A} = (\Sigma,\sigma_0,\absTransition)$, notation $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$, if and only if $\sigma_0 = \alpha(s_0)$ and, for all concrete states $s$ and $s'$,
@@ -624,23 +624,23 @@ Several contributions of this work were inspired by
   % \end{definition}
 
 % The next sections define abstract states and the abstract step rules.
-% Based on these, functions $\alpha$ and $\gamma$ are straightforward (more formal details can be found in~\cite{yavuz16}).
+% Based on these, functions $\alpha$ and $\gamma$ are straightforward (more formal details can be found in \autocite{yavuz16}).
 % It is crucial that not too many details are abstracted away: information pertaining to exceptional control flow should be part of the abstract states.
-% Under that assumption, $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve properties of the universal fragment of computation tree logic ($\forall$CTL)\cite{baier2008principles} pertaining to exceptional control flow.
+% Under that assumption, $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve properties of the universal fragment of computation tree logic ($\forall$CTL) \autocite{baier2008principles} pertaining to exceptional control flow.
 % This includes safety and liveness.
 
 
 
 
 %Traditionally, a key challenge in abstract interpretation is finding the proper abstract domain and formulating the Galois connection.
-%A technique addressing this challenge is \emph{predicate abstraction}~\cite{clarke94,graf97}.
+%A technique addressing this challenge is \emph{predicate abstraction} \autocite{clarke94,graf97}.
 %Consider a list $\Pi$ of predicates over concrete states.
 %Abstraction occurs by valuating each of these predicates, resulting in abstract states that are lists of Booleans.
-%Concretization occurs by replacing Boolean values with the set of concrete states satisfying the corresponding %predicate. 
-%Yavuz et al. provide formal definitions for $\alphagamma$ for abstract interpretation based on predicate abstraction~\cite{yavuz16}.
+%Concretization occurs by replacing Boolean values with the set of concrete states satisfying the corresponding %predicate.
+%Yavuz et al. provide formal definitions for $\alphagamma$ for abstract interpretation based on predicate abstraction \autocite{yavuz16}.
 
-%Correctness, then, is provided by Lemma~3 of~\cite{yavuz16}.
-%Having the list of concrete state predicates~$\Pi$, let $\alphagamma$ be the Galois connection as defined in~\cite{yavuz16}.
+%Correctness, then, is provided by Lemma~3 of \autocite{yavuz16}.
+%Having the list of concrete state predicates~$\Pi$, let $\alphagamma$ be the Galois connection as defined in \autocite{yavuz16}.
 %Then $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve \ac{ACTL} properties pertaining to $\Pi$.
 %In other words, $T_\mathsf{A}$ is a proper abstraction of $T_\mathsf{C}$ for all \ac{ACTL} properties formulated over $\Pi$-predicates.
 
