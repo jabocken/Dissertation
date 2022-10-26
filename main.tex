@@ -22,6 +22,11 @@
 \usepackage{stmaryrd}              % St Mary Road symbols for theoretical computer science (necessary for record/etc.\ symbols)
 \usepackage{textcomp}              % Fixes issue with microtype+siunitx's \micro
 \usepackage{wasysym}               % for \checked
+\usepackage[bbgreekl]{mathbbol} % because amsfonts don't provide \mathbb for \Sigma
+
+% Still want to use AMS fonts for all the stuff they do cover though! mathbbol style is kind of ugly.
+\DeclareSymbolFontAlphabet{\mathbbm}{bbold}
+\DeclareSymbolFontAlphabet{\mathbb}{AMSb}%
 
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
 \usepackage{siunitx}
@@ -455,6 +460,7 @@
 \newcommand{\psep}{P_\mathrm{sep}}
 
 %% From EICFG paper
+\DeclareMathOperator{\stateToNode}{\alpha'}
 \newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
 \newcommand*\reg[1]{\mathasm{#1}}
 \newcommand{\rsi}{\reg{rsi}} % Freek's preferring dot notation for fields so don't need \DeclareMathOperator
@@ -487,6 +493,18 @@
 \newcommand\rethrown{\mathsf{rethrown}}
 \newcommand\typeInfo{\mathsf{typeInfo}}
 \newcommand\id{\mathit{id}}
+
+% Types
+\newcommand{\bool}{\mathbb B}
+\newcommand{\graph}{\mathbb G}
+\newcommand{\exception}{\mathbb E}
+\newcommand{\flag}{\mathbb F}
+\renewcommand{\pointer}{\mathbb P}
+\newcommand{\register}{\mathbb R}
+\newcommand{\val}{\mathbb V}
+\newcommand{\word}{\mathbb W}
+\newcommand{\node}{\mathbb N}
+\newcommand{\termination}{\mathbb T}
 
 % numbers
 %\newcommand\coveredpercent{\SI{84}\percent}
