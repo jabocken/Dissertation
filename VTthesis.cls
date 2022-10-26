@@ -145,7 +145,7 @@
 % Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
 \renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
 
-\RequirePackage[capitalize]{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings)
+\RequirePackage{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings); trying without [capitalize] to see how I like it
 
 % Misc Packages
 \RequirePackage{booktabs} % For nicer-looking tables

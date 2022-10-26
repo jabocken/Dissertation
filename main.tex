@@ -21,6 +21,7 @@
 
 \usepackage{stmaryrd}              % St Mary Road symbols for theoretical computer science (necessary for record/etc.\ symbols)
 \usepackage{textcomp}              % Fixes issue with microtype+siunitx's \micro
+\usepackage{wasysym}               % for \checked
 
 \usepackage[en-US]{datetime2}      % For \DTMdate, etc.
 \usepackage{siunitx}
@@ -42,7 +43,7 @@
 \renewcommand*\theadfont{} % not making table text small so no need for small heading
 
 % foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I don't know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I don't know if it has issues with XeLaTeX like the old version
-\acsetup{include-endings, format/first-long=\emph, index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not
+\acsetup{index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not. It also looks silly with single so just leaving out.
 
 % TODO: Still an issue?
 % Hack to fix ylabel positioning with current version of pgf
@@ -70,6 +71,12 @@
   short-indefinite = an,
   long             = application programming interface,
   long-indefinite  = an
+}
+\DeclareAcronym{apt}{
+    short            = APT,
+    short-indefinite = an,
+    long             = Advanced Package Tool,
+    long-indefinite  = an
 }
 \DeclareAcronym{aot}{
   short            = AOT,
@@ -115,6 +122,12 @@
   cite = {myreen2008decompilation,myreen2012decompilation}
 }
 \DeclareAcronym{dvr}{short=DVR, long=dead variable reduction}
+\DeclareAcronym{eicfg}{
+  short            = EICFG,
+  short-indefinite = an,
+  long             = Exceptional Interprocedural Control Flow Graph,
+  long-indefinite  = an
+}
 \DeclareAcronym{elf}{short=ELF, long=Executable and Linkable Format}
  \DeclareAcronym{fdl}{
   short            = FDL,
@@ -148,6 +161,7 @@
 }
 \DeclareAcronym{gcc}{short=GCC, long=the GNU Compiler Collection}
 \DeclareAcronym{gcm}{short=GCM, long=Galois/Counter Mode}
+\DeclareAcronym{gdb}{short=GDB, long=the GNU Project debugger}
 \DeclareAcronym{gfp}{short=GFP, long=greatest fixed point}
 \DeclareAcronym{gpu}{short=GPU, long=graphics processing unit}
 \DeclareAcronym{icc}{
@@ -196,6 +210,11 @@
   short-indefinite = an,
   long             = least fixed point
 }
+\DeclareAcronym{lts}{
+    short            = LTS,
+    short-indefinite = an,
+    long             = long-term support
+}
 \DeclareAcronym{mc}{short=MC, long=model checking}
 \DeclareAcronym{mrr}{short=MRR, long=memory region relation}
 \DeclareAcronym{msb}{short=MSB, long=most significant bit}
@@ -225,6 +244,7 @@
   long             = return-oriented programming
 }
 \DeclareAcronym{qemu}{short=QEMU, long=Quick Emulator}
+\DeclareAcronym{ram}{short=RAM, long=random-access memory}
 \DeclareAcronym{rtos}{
   short            = RTOS,
   short-indefinite = an,
@@ -300,11 +320,19 @@
   commentstyle=\color{gray},
   stringstyle=\color{brown},
 }
+\lstdefinestyle{Haskell}{
+    language=Haskell,
+    keepspaces=true
+}
+
+\newcommand*\inlineasm[1]{\lstinline[style=x64]|#1|}
+\newcommand*\inlinehaskell[1]{\lstinline[style=Haskell]|#1|}
 
 %% name shorthands and stuff
 \newcommand*\arch{x86-64}
 %% C++ formatting similar to https://isocpp.org/wiki/faq/misc-environmental-issues#latex-macros but nicer and with the plus signs slightly more defined than \cpluspluslogo from the texlogos package
-\newcommand\Cpp{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-1}{\textbf{++}}}}
+\newcommand\Cppx{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-1}{\textbf{++}}}}
+\newcommand\Cpp{\Cppx\index\Cppx} % wanted to use \WithSuffix for the first one (so \Cpp*) but I couldn't get it to work.
 %\usepackage{texlogos}
 %\newcommand\Cpp\cpluspluslogo
 
@@ -315,7 +343,6 @@
 
 \newcommand*\keywordstyle{\ttfamily\bfseries\color{blue}}
 \newcommand\keyword[1]{{\keywordstyle#1}}
-\newcommand*\inlineasm[1]{\lstinline[style=x64]|#1|}
 \newcolumntype{A}{>{\begingroup\ttfamily\bfseries\color{blue}}l<{\endgroup}}
 
 %% Math commands
@@ -427,6 +454,57 @@
 
 \newcommand{\psep}{P_\mathrm{sep}}
 
+%% From EICFG paper
+\newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
+\newcommand*\reg[1]{\mathasm{#1}}
+\newcommand{\rsi}{\reg{rsi}} % Freek's preferring dot notation for fields so don't need \DeclareMathOperator
+\newcommand{\rdi}{\reg{rdi}}
+\newcommand{\rax}{\reg{rax}}
+\newcommand{\rcx}{\reg{rcx}}
+\newcommand{\rip}{\reg{rip}}
+\newcommand{\rsp}{\reg{rsp}}
+
+% For abstract interpretation
+\newcommand\absTransition{\xrightarrow{\mathsf A}}
+\newcommand\concTransition{\xrightarrow{\mathsf C}}
+\newcommand\alphagamma{\langle\alpha,\gamma\rangle}
+\newcommand\unwindTransition{\xrightarrow{\mathsf U}}
+\newcommand\unwindTransitionyes{\xRightarrow{\mathsf U^+}}
+\newcommand\unwindTransitionno{\xRightarrow{\mathsf U^-}}
+\WithSuffix\newcommand\unwindTransition*{\xRightarrow[P]{\mathsf U}}
+
+% state/etc. fields
+\DeclareMathOperator\landingpadtable{\mathsf{LPT}}
+\newcommand{\stack}{\mathsf{stack}}
+\newcommand\caught{\mathsf{caught}}
+\newcommand\uncaught{\mathsf{uncaught}}
+
+% exception object stuff
+\DeclareMathOperator\emap{\mathsf{emap}}
+\DeclareMathOperator\rmap{\mathsf{rmap}}
+\newcommand\objectID{\mathsf{objectID}}
+\newcommand\handlerCount{\mathsf{handlerCount}}
+\newcommand\rethrown{\mathsf{rethrown}}
+\newcommand\typeInfo{\mathsf{typeInfo}}
+\newcommand\id{\mathit{id}}
+
+% numbers
+%\newcommand\coveredpercent{\SI{84}\percent}
+%\newcommand\cutoffpercent{$>\SI{70}\percent$}
+\newcommand\totalbins{\num{341}}
+%\newcommand\satisfactorybins{\num{161}}
+%\newcommand\badbins{\num{144}}
+\newcommand\resourcebins{\num{26}} % one extra thanks to openmw-launcher failing for the control
+\newcommand\exceptbins{\num{49}}
+%\newcommand\strippedbins{\todo{recount}}
+
+\newcommand\uniquethrows{\num{3350}} % Actually 3654 but we left out one of the successful binaries due to its control failing
+\newcommand\caughtthrows{\num{2356}} % Actually 2589 but we left out one of the successful binaries due to its control failing
+\newcommand\uncaughtthrows{\num{994}} % Actually 1065 but we left out one of the successful binaries due to its control failing
+\newcommand\avgdiffinst{\num{13} instructions}
+\newcommand\avgunwinds{\num{379}}
+\newcommand\fuzzcount{\num{10000}}
+
 % Misc. commands
 \newcommand{\todo}[1]{{\bfseries\color{purple}#1}} % Allowing paragraphs in todos
 \newcommand*{\fturl}[1]{\footnote{\url{#1}}}
@@ -453,7 +531,11 @@
 \thirdreader{Michael S.\ Hsiao}
 \fourthreader{\todo{Changhee Jung}}
 
-\dedication{This work is dedicated to \todo{Maybe mention Abby, family, friends/coworkers?}}
+\dedication{%
+  This work is dedicated to \todo{family, friends/coworkers?}
+  my dearly departed cat, Abby, who lasted through my Master's but was not able to make it to the end of my PhD.
+  \todo\dots%
+}
 \acknowledge{%
   This work was supported in part by \ac{onr} under grant N00014-17-1-2297
   and \ac{navsea}/\ac{neec} under grant N00174-16-C-0018.

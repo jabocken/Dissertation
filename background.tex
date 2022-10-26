@@ -146,10 +146,10 @@ These goals are the \acp{vc}.
 \subsubsection{Isabelle and \acs*{hol}}
 The theorem prover utilized in this work
 was Isabelle 2018 \autocite{nipkow2002isabelle}.%
-\index{Isabelle/HOL}
+\index{Isabelle/HOL!2018}
 It is a generic proof assistant with a flexible, extensible syntactic framework.
 Isabelle also utilizes a powerful proof language
-known as \ac{isar}  \autocite{wenzel2007isabelle}
+known as \ac{isar} \autocite{wenzel2007isabelle}
 Its most-commonly-used logic is \ac{hol}; when used with that logic,
 it is referred to as Isabelle/HOL.
 
@@ -333,7 +333,7 @@ in \cref{ch:symbolic_execution} does not implement out-of-order execution
 or any similar optimizations.
 
 \paragraph{Registers}\label{par:reg}
-The standard registers in \arch\ (\cref{tbl:regs}) are 64 bits in size,
+The standard registers\index{register} in \arch\ (\cref{tbl:regs}) are 64 bits in size,
 but their lower bits can be referenced alone if need be.
 If you write to one of the available 32-bit registers,
 it will zero out the upper~32 bits, but if you write to a 16- or 8-bit register,
@@ -586,12 +586,39 @@ and that has a lower bar.
 
 \end{comment}
 
+\section{Lattices and Their Usage in Programming}
+\todo{talk about how lattices are an ordering, their properties, and how we use a join-semilattice}
+
+\subsection{Meet and Join}
+\todo{talk about the differences and how in this work we focus on join-semilattices}
+
+\subsection{Least Fixed Point}
+\todo{Should this be Greatest Fixed Point instead?}
+
 \section{Structured Exception Handling}\label{se:structured_exceptions}
+
+\subsection{Motivation: Structured Programming}
+\todo{functions, stacks, etc.; maybe just explain as intro?}
+
+\subsection{Stack Unwinding}
+
+% While the \acs* looks nice in place it actually produces the acronym link in the table of contents as part of the main section link, which is not ideal. That wouldn't even be an issue if the links were colored differently though, can I adjust those to be purple somehow?
+\subsection{The \texorpdfstring\Cpp{C++} \acs*{abi}}
+
+\subsubsection{Concrete Structures}
+
+\paragraph{Per-exception info}
+\todo\dots
+\paragraph{Global info}
+\todo\dots
+
+\subsubsection{Library Functions}
 
 \section{Summary}
 This chapter gave an introduction to formal methods, including formal semantics,
 symbolic execution, Floyd verification, Hoare logic, model checking, and theorem provers.
-It also described some basic aspects of the \arch\ \ac{isa} and System~V AMD64 \ac{abi}
+It also described some basic aspects of the \arch\ \ac{isa} and System~V\index{ABI!System V}
+AMD64\index{ABI!AMD64} \ac{abi}
 as well as some general details on assembly.
 Finally, it covered the process of structured exception handling%
 \index{exception handling!structured}.
