@@ -238,10 +238,12 @@ The ID is also set as the return value of the function in $\sigma'.\rax$.
 
 \begin{example}
   After instruction \instref{lst:example-allocate}{125b} of \cref{lst:example-throw},
-  we have
-  $\sigma'.\rax=\mathtt{0x1260}$,
-  $\sigma'.\emap(\mathtt{0x1260}).\handlerCount=0$, and
-  $\neg\sigma'.\emap(\mathtt{0x1260}).\rethrown$.
+  we have:
+  \begin{gather*}
+    \sigma'.\rax=\mathtt{0x1260} \\
+    \sigma'.\emap(\mathtt{0x1260}).\handlerCount=0 \\
+    \neg\sigma'.\emap(\mathtt{0x1260}).\rethrown.
+  \end{gather*}
 \end{example}
 The rule in \cref{fig:free-exception} is for function \inlineasm{__cxa_free_exception}.
 This rule ensures the absence of an exception in the exception map based on the given ID.

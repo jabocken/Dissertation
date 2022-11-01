@@ -9,7 +9,89 @@
 \section{Example}
 
 \section{Technical Formulation}
+\todo{copy the stuff over here. Wonder if I'll end up making this long enough to be it's own chapter?}
 
 \subsection{Predicates}
+\emph{Predicates}\index{state!predicate} are assertions on state.
+A predicate~$P$\nomenclature{$P$}{A state predicate}
+consists of a set of \emph{clauses}\index{state!predicate!clause}.
+$P$ holds in state~$s$%
+\nomenclature{$s$}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs}},
+notation if and only if all clauses hold.
+\todo{maybe put more here? Connect to logical predicates}
+
+\todo{Revising the following still}
+
+A clause consists of two symbolic expressions\index{symbolic!expression}
+and their relation.
+An expression of type $\mathbb{E}$ consists of registers ($\mathbb{R}$), flags ($\mathbb{F}$), words, variables ($\mathbb{V}$), memory regions (modeled by an expression for the address and a natural number for the size) and the application of an operator to a list of expressions.
+\begin{equation*}
+  \mathbb{E}\coloneqq
+  \mathbb{R}\mid
+  \mathbb{F}\mid
+  \mathbb{W}\mid
+  \mathbb{V}\mid
+  \mathbb{E}\times\mathbb{N}\mid
+  \mathsf{Op}\times[\mathbb{E}]
+\end{equation*}
+We identify a subset of these expressions called \emph{constant expressions} ($\mathbb{C}$).
+These expressions cannot contain registers, flags, or memory regions.
+They represent constants or computations constructed using initial values.
+For example, $\reg{rdi}_0$ is a variable denoting the initial value of register $\reg{rdi}$.
+
+Clauses are terms of the form $\mathbb{E} \mathbin{\square} \mathbb{C}$,
+where $\square$ is an element of the following set of relations:
+$\{=,\neq,<,<_s,\ge,\ge_s\}$.
+The $\square_s$ relations treat their operands as signed,
+while their non-subscripted versions treat their operands as unsigned.
+There are two special predicates, $\top$ and $\bot$,
+that respectively indicate being always true and always false.
+$\bot$ is also used to indicate an unknown $\mathbb{C}$.
+\begin{definition}\label{def:join}
+  The join of two predicates~$P$ and~$Q$, notation $P\sqcup Q$, is defined as:
+  \begin{align*}
+    P\sqcup Q &\defeq \bigcup\{\merge(p,q) \mid \langle p,q\rangle\in P\times Q\} \\
+    \merge(l=r_1,l=r_2) &\defeq \{l\ge\min(r_1,r_2),l\le\max(r_1,r_2)\} \\
+    \merge(l<r_1,l<r_2) &\defeq \{l<\max(r_1,r_2)\} \\
+    &\vdots\\
+    \merge(a,b) &\defeq
+    \begin{cases}
+      \{a\} & \text{if }a=b \\
+      \varnothing & \text{otherwise}
+    \end{cases}
+  \end{align*}
+\end{definition}
+The operator presented in Definition~\ref{def:join}
+performs a \emph{merge} for each clause pair $\langle p,q\rangle$
+in the Cartesian product of its argument predicates.
+This merge produces a potentially empty set of clauses
+generated from the two clauses supplied to it.
+% The union of all sets produced is then taken, resulting in the joined predicate.
+While only merge rules for $=$ and $<$ are shown, there are also rules
+for the other possible clause operations.
+The $\max$ and $\min$ functions used are partial;
+they do not have a result
+if the maximum/minimum of the expressions supplied to them cannot be determined.
+This can happen if those symbolic expressions contain variables.
+In such cases, no clause is produced.
+%The supremum, repeated join over a set of predicates, is denoted by $\bigsqcup\square$. % do we even have a supremum here anymore?
+
+\begin{example}
+  Let $P=\{a=3,a<\reg{rdi}_0\}$ and $Q=\{a=4,a<\reg{rsi}_0\}$.
+  As both predicates have equality clauses for~$a$, those clauses are merged to produce a pair of clauses denoting that the value of $a$ lies in the range $[3,4]$.
+  Since no maximum can be established between $\reg{rdi}_0$ and $\reg{rsi}_0$, these clauses are dropped.
+  Thus, $P\sqcup Q=\{a\ge 3,a\le4\}$.
+\end{example}
+
+As required for a lattice, the join is associative, commutative and idempotent.
+Associativity is derived from the fact that set union and minimum/maximum are associative operations.
+The join is commutative and idempotent due to the commutativity and idempotency of the merge function.
+\begin{lemma}\label{lem:pred_soundness}
+  For any state~$s$: $s\vdash  P\vee Q\implies s\vdash P\sqcup Q$
+\end{lemma}
 
 \subsection{Memory Models}
+
+\subsubsection{???}
+
+\subsubsection{Insertion}
