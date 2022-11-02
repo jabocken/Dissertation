@@ -27,13 +27,13 @@ A symbolic expression of type $\expression$%
 \nomenclature{$\expression$}{Type of symbolic expressions for \ac{hg} work}
 consists of the some combination of the following:
 \begin{itemize}
-  \item registers ($\register$),%
+  \item register references ($\register$),%
   \nomenclature{$\register$}{Type of symbolic registers}%
   \index{symbolic!register}
-  \item flags ($\flag$),\nomenclature{$\flag$}{Type of symbolic flags}%
+  \item flag references ($\flag$),\nomenclature{$\flag$}{Type of symbolic flags}%
   \index{symbolic!flag}
   \item 64-bit words ($\word$),\index{number!word}
-  \item values ($\val$),%
+  \item symbolic values ($\val$),%
   \nomenclature{$\val$}{Type of symbolic values for \ac{hg} work}%
   \index{symbolic!value}
   \item memory regions (modeled by an expression for the address and a natural number\index{number!natural} for the size)%
@@ -55,10 +55,11 @@ In data type notation, this is:
 We identify a subset of these symbolic expressions called \emph{constant expressions} ($\constant$).%
 \nomenclature{$\constant$}{Type of constant expressions}%
 \index{constant!expession}
-These expressions cannot contain registers, flags, or memory regions.
+These expressions cannot contain state parts such as registers, flags, or memory regions.
 They represent constants or computations constructed using initial values.
 For example, $\reg{rdi}_0$ denotes the initial symbolic value of register $\reg{rdi}$.
 % TODO: This should probably be nomenclature somehow but I'm not sure how
+This value does not change during symbolic execution.
 
 \todo{made it to here on my revisions for today\dots slow work, but at least I'm making progress, I guess?}
 
