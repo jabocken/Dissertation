@@ -93,10 +93,10 @@ jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
 \subsection{Memory Model}
 Reads and writes of the machine model's memory space take a specific form.
 They operate on \emph{memory regions}.%
-\index{memory!region}
-A memory region $\region{a}{s}$ is defined to have type $\mathbb{W}\times\nat$;%
-\nomenclature{$\mathbb{W}$}{Type of 64-bit words}%
-\nomenclature{$\nat$}{Type of natural numbers}
+\index{symbolic!memory!region}
+A memory region $\region{a}{s}$ is defined to have type $\word\times\nat$;%
+\nomenclature{$\word$}{Type of 64-bit (unsigned) words}\index{number!word}%
+\nomenclature{$\nat$}{Type of natural numbers}\index{number!natural}
 that is, its starting address~$a$ is a 64-bit word
 and its size in bytes~$s$ is a natural number.
 
@@ -106,7 +106,8 @@ In Isabelle, this operation internally reads the list of~$s$ bytes
 starting from the given address~$a$ in the appropriate order
 and converts it to a word.
 If it is clear from context which state is meant, the state will be omitted.
-Meanwhile, writing to memory uses the notation $x\coloneqq e$,
+Meanwhile, writing to memory uses the notation $x\coloneqq e$,%
+\nomenclature{$\coloneqq$} {Indicates a memory write for the \acs*{cfg}/syntax-guided works}
 which has type~$\asp=(\var{SP},\esp)$;
 these \emph{assignments} denote writing an expression~$e$ to some location~$x$
 that is a \emph{state part},~$\var{SP}$;%
@@ -119,7 +120,7 @@ The behavior for regions in Isabelle
 is to internally decompose the expression to write
 into its component bytes and then write those into memory in the appropriate order.
 The expressions themselves are of type~$\esp$,%
-\nomenclature{$\esp$}{Type of expressions}
+\nomenclature{$\esp$}{Type of expressions for \ac*{cfg}/syntax-guided work}
 representing expressions over state parts.
 These expressions consist of common bit-vector operations including
 taking subsets of bits, bitstring concatenation, logical operators, casting,

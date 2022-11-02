@@ -131,7 +131,7 @@ the function returns~$\err$ instead.
 
 From the machine model, we manually derived a run function%
 \index{symbolic execution!run function}
-$\run:(S\rightarrow\mathbb{B})\times S\rightarrow(S\mid\err\mid\infloop)$.
+$\run:(S\rightarrow\bool)\times S\rightarrow(S\mid\err\mid\infloop)$.
 This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
 producing a state~$\sigma'$ on successful completion.
@@ -207,9 +207,10 @@ can be inferred for the program as a whole (\cref{thm:floyd_hoare}).
 More formally, the \emph{Floyd invariant}%
 \index{Floyd!invariant}
 for a function is a partial function that takes the form
-$I:L\rightharpoonup(S\rightarrow\mathbb{B})$.%
+$I:L\rightharpoonup(S\rightarrow\bool)$.%
 \nomenclature{$L$}{Type of instruction addresses in a program; a 64-bit word}%
-\nomenclature{$\mathbb{B}$}{Type of boolean values, True and False}
+%TODO: maybe change this to \mathbb{P}? probably should at least be \mathbb{L}
+\nomenclature{$\bool$}{Type of boolean values, True and False}
 This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
 As a technical detail, some function proofs require additional arguments to $I$

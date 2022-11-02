@@ -16,37 +16,60 @@
 A predicate~$P$\nomenclature{$P$}{A state predicate}
 consists of a set of \emph{clauses}\index{state!predicate!clause}.
 $P$ holds in state~$s$%
-\nomenclature{$s$}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs}},
-notation if and only if all clauses hold.
+\nomenclature{$s$}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs}} if and only if all clauses hold.
+This is indicated with notation \todo{Did we use explicit notation for this?}.
+
 \todo{maybe put more here? Connect to logical predicates}
 
-\todo{Revising the following still}
-
-A clause consists of two symbolic expressions\index{symbolic!expression}
+Breaking it down further, a clause consists of two symbolic expressions\index{symbolic!expression}
 and their relation.
-An expression of type $\mathbb{E}$ consists of registers ($\mathbb{R}$), flags ($\mathbb{F}$), words, variables ($\mathbb{V}$), memory regions (modeled by an expression for the address and a natural number for the size) and the application of an operator to a list of expressions.
-\begin{equation*}
-  \mathbb{E}\coloneqq
-  \mathbb{R}\mid
-  \mathbb{F}\mid
-  \mathbb{W}\mid
-  \mathbb{V}\mid
-  \mathbb{E}\times\mathbb{N}\mid
-  \mathsf{Op}\times[\mathbb{E}]
-\end{equation*}
-We identify a subset of these expressions called \emph{constant expressions} ($\mathbb{C}$).
+A symbolic expression of type $\expression$%
+\nomenclature{$\expression$}{Type of symbolic expressions for \ac{hg} work}
+consists of the some combination of the following:
+\begin{itemize}
+  \item registers ($\register$),%
+  \nomenclature{$\register$}{Type of symbolic registers}%
+  \index{symbolic!register}
+  \item flags ($\flag$),\nomenclature{$\flag$}{Type of symbolic flags}%
+  \index{symbolic!flag}
+  \item 64-bit words ($\word$),\index{number!word}
+  \item values ($\val$),%
+  \nomenclature{$\val$}{Type of symbolic values for \ac{hg} work}%
+  \index{symbolic!value}
+  \item memory regions (modeled by an expression for the address and a natural number\index{number!natural} for the size)%
+  \index{symbolic!memory!region}, and
+  \item the application of an operator\index{symbolic!operator}
+  to a list of expressions.
+\end{itemize}
+In data type notation, this is:
+\begin{equation}
+  \expression\coloneqq
+  \register\mid
+  \flag\mid
+  \word\mid
+  \val\mid
+  \expression\times\nat\mid
+  \mathsf{Op}\times[\expression]
+\end{equation}%
+\nomenclature{$\coloneqq$}{Indicates the right-hand side defines the left-hand side for \ac{hg} and \ac{eicfg} work}
+We identify a subset of these symbolic expressions called \emph{constant expressions} ($\constant$).%
+\nomenclature{$\constant$}{Type of constant expressions}%
+\index{constant!expession}
 These expressions cannot contain registers, flags, or memory regions.
 They represent constants or computations constructed using initial values.
-For example, $\reg{rdi}_0$ is a variable denoting the initial value of register $\reg{rdi}$.
+For example, $\reg{rdi}_0$ denotes the initial symbolic value of register $\reg{rdi}$.
+% TODO: This should probably be nomenclature somehow but I'm not sure how
 
-Clauses are terms of the form $\mathbb{E} \mathbin{\square} \mathbb{C}$,
+\todo{made it to here on my revisions for today\dots slow work, but at least I'm making progress, I guess?}
+
+Clauses are terms of the form $\expression \mathbin{\square} \constant$,
 where $\square$ is an element of the following set of relations:
 $\{=,\neq,<,<_s,\ge,\ge_s\}$.
 The $\square_s$ relations treat their operands as signed,
 while their non-subscripted versions treat their operands as unsigned.
 There are two special predicates, $\top$ and $\bot$,
 that respectively indicate being always true and always false.
-$\bot$ is also used to indicate an unknown $\mathbb{C}$.
+$\bot$ is also used to indicate an unknown $\constant$.
 \begin{definition}\label{def:join}
   The join of two predicates~$P$ and~$Q$, notation $P\sqcup Q$, is defined as:
   \begin{align*}
@@ -61,7 +84,7 @@ $\bot$ is also used to indicate an unknown $\mathbb{C}$.
     \end{cases}
   \end{align*}
 \end{definition}
-The operator presented in Definition~\ref{def:join}
+The operator presented in \cref{def:join}
 performs a \emph{merge} for each clause pair $\langle p,q\rangle$
 in the Cartesian product of its argument predicates.
 This merge produces a potentially empty set of clauses
