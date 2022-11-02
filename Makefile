@@ -2,7 +2,7 @@
 
 # -shell-escape not needed for basic usage of imakeidx
 all:
-	latexmk -pdf main
+	latexmk -pdf -synctex=1 main
 
 clean: cleanext
 	latexmk -c

@@ -1,0 +1,27 @@
+\usetikzlibrary{external}          % To reduce build times for complex figures (does one-time builds and stores as images)
+\usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
+\usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
+\usetikzlibrary{positioning}       % For relative (=of) node positioning
+\tikzset{
+  >=stealth
+}
+\tikzstyle{ret}=[
+isosceles triangle,
+shape border rotate=90,
+isosceles triangle apex angle=75
+]
+\tikzstyle{landing}=[rectangle] % wanted to use inverted triangle but it just does not look good when containing text
+\tikzstyle{unwind}=[dotted,blue]
+\tikzstyle{bad}=[blue,fill=blue,text=white]
+\tikzstyle{good}=[green,fill=green,text=black]
+
+% TODO: Still an issue?
+% Hack to fix ylabel positioning with current version of pgf
+\makeatletter
+\def\pgfsys@hboxsynced#1{%
+  \pgfsys@beginscope\pgflowlevelsynccm\pgfsys@hbox#1\pgfsys@endscope%
+}%
+\makeatother
+
+\pgfplotsset{compat=1.18}          % For up-to-date features
+%\tikzexternalize[prefix=extern/]                  % Enables externalization (sometimes has issues with figures containing references, it seems, so turn off externalization when you need those)

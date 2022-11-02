@@ -1,0 +1,27 @@
+%TODO: Combine these!
+\newcommand{\mathrax}{\text{\inlineasm{rax}}}
+\newcommand{\mathrip}{\text{\inlineasm{rip}}}
+\newcommand{\mathrbp}{\text{\inlineasm{rbp}}}
+\newcommand{\mathrbx}{\text{\inlineasm{rbx}}}
+\newcommand{\mathrdi}{\text{\inlineasm{rdi}}}
+\newcommand{\mathrsi}{\text{\inlineasm{rsi}}}
+\newcommand{\mathrsp}{\text{\inlineasm{rsp}}}
+\newcommand{\mathdil}{\text{\inlineasm{dil}}}
+\newcommand{\mathdl}{\text{\inlineasm{dl}}}
+\newcommand{\mathfs}{\text{\inlineasm{fs}}}
+\newcommand{\mathgs}{\text{\inlineasm{gs}}}
+\newcommand{\mathGPR}{\mathtt{GPR}}
+
+\newcommand{\fso}{\var{fs}_0}
+\newcommand{\rdio}{\var{rdi}_0}
+\newcommand{\rsio}{\var{rsi}_0}
+\newcommand{\rspo}{\var{rsp}_0}
+\newcommand{\rbpo}{\var{rbp}_0}
+
+\newcommand*\reg[1]{\mathasm{#1}}
+\newcommand{\rsi}{\reg{rsi}} % Freek's preferring dot notation for fields so don't need \DeclareMathOperator
+\newcommand{\rdi}{\reg{rdi}}
+\newcommand{\rax}{\reg{rax}}
+\newcommand{\rcx}{\reg{rcx}}
+\newcommand{\rip}{\reg{rip}}
+\newcommand{\rsp}{\reg{rsp}}

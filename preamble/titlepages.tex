@@ -1,0 +1,88 @@
+\title{Static Binary Analysis for Memory Properties and Exceptional Control Flow}
+\keywords{%
+  Formal Verification,
+  \arch\ Assembly,
+  Interactive Theorem Proving,
+  Static Analysis,
+  %  Proof Generation,
+  %  Memory Preservation%
+  Exception Handling%
+}
+\author{Joshua Alexander Bockenek}
+\program{Computer Engineering}
+\degree{Doctor of Philosophy}
+
+\submitdate{\DTMdate{2022-11-30}}
+
+\principaladvisor{Binoy Ravindran}
+\firstreader{Freek Verbeek}
+\secondreader{Patrick R.\ Schaumont}
+\thirdreader{Michael S.\ Hsiao}
+\fourthreader{\todo{Changhee Jung}}
+
+\dedication{%
+  This work is dedicated to \todo{family, friends/coworkers?}
+  my dearly departed cat, Abby, who lasted through my Master's but was not able to make it to the end of my PhD.
+  \todo\dots%
+}
+
+\acknowledge{%
+  This work was supported in part by \ac{onr} under grant N00014-17-1-2297
+  and \ac{navsea}/\ac{neec} under grant N00174-16-C-0018.
+  Any opinions, findings, and conclusions or recommendations expressed
+  in this dissertation are those of the author
+  and do not necessarily reflect the views of \ac{onr} or \ac{navsea}/\ac{neec}.%
+
+  \todo{Any more?}
+}
+
+% The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
+\abstract{%
+  % Motivation
+  Formal characterization of the memory used by a program is an important basis
+  for security analyses and compositional verification. Proving that that program only modifies
+  memory within specified regions, the property of \emph{memory preservation},
+  is an important aspect of that. However, accurately proving memory preservation
+  requires operating on the assembly level due to the semantic gap between
+  high-level languages and the code that processors actually execute.
+  This is unfortunate, as verifying programs on the assembly level is difficult.
+  Automated methods, such as model checking, would not be able to handle many interesting functions
+  due to the undecidability of memory preservation. Fully-interactive methods do not scale well either.
+  The solution is to combine proof generation with interactive theorem proving
+  in a \emph{semi-automated manner}: let some untrusted tool
+  extract as much information as it can from the functions under test
+  and then generate all the necessary proofs to be completed in a theorem prover.
+
+  % First contribution
+  The first contribution of this dissertation is a control-flow-driven verification
+  approach with mostly manual invariant specification
+  at automatically-selected cutpoints.
+  The memory regions and any additional preconditions
+  must also be determined manually.
+  This methodology was applied to \num{63} functions from the HermitCore unikernel library,
+  including one recursive one, covering \num{2379} assembly instructions.
+
+  % Second contribution
+  The second contribution of this dissertation is a syntax-driven verification
+  approach with fully-automated invariant and memory region generation.
+  It produces formal memory usage certificates (FMUCs) that can be verified in Isabelle/HOL
+  with minimal effort, the main manual work being weakening any loop invariants.
+  This was successfully applied to \num{251} functions from the Xen hypervisor project,
+  covering a total of \num{12252} assembly instructions.
+
+  % Third contribution
+  \todo{Increased automation, change in approach}
+
+  % Fourth contribution
+  \todo{Modeling of exception handling}%
+}
+
+% TODO
+% The general audience abstract is required. There are currently no word limits.
+\abstractgenaud{%
+  \todo{You are also required as of Spring 2016 to include a general audience abstract.
+    This should be geared towards individuals outside of your field
+    that may be reading seeking information about your work.
+    You should avoid language that is particular to your field
+    and clearly define any terms that may have special meaning in your discipline.}%
+}

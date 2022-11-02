@@ -40,336 +40,10 @@
 
 \usepackage{pgfplots}               % For plots
 
-\usetikzlibrary{external}          % To reduce build times for complex figures (does one-time builds and stores as images)
-\usetikzlibrary{graphs}            % dot-style graph shorthands (not quite as compactible as dot language, though)
-\usetikzlibrary{quotes}            % needed for quoted edge labels (only in graphs?)
-\usetikzlibrary{positioning}       % For relative (=of) node positioning
-\tikzset{
-  >=stealth
-}
-\tikzstyle{ret}=[
-  isosceles triangle,
-  shape border rotate=90,
-  isosceles triangle apex angle=75
-]
-\tikzstyle{landing}=[rectangle] % wanted to use inverted triangle but it just does not look good when containing text
-\tikzstyle{unwind}=[dotted,blue]
-\tikzstyle{bad}=[blue,fill=blue,text=white]
-\tikzstyle{good}=[green,fill=green,text=black]
-
 \renewcommand*\theadfont{} % not making table text small so no need for small heading
 
 % foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I don't know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I don't know if it has issues with XeLaTeX like the old version
 \acsetup{index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not. It also looks silly with single so just leaving out.
-
-% TODO: Still an issue?
-% Hack to fix ylabel positioning with current version of pgf
-\makeatletter
-\def\pgfsys@hboxsynced#1{%
-  \pgfsys@beginscope\pgflowlevelsynccm\pgfsys@hbox#1\pgfsys@endscope%
-}%
-\makeatother
-
-\pgfplotsset{compat=1.18}          % For up-to-date features
-%\tikzexternalize[prefix=extern/]                  % Enables externalization (sometimes has issues with figures containing references, it seems, so turn off externalization when you need those)
-
-\DeclareAcronym{abi}{
-  short            = ABI,
-  short-indefinite = an,
-  long             = application binary interface,
-  long-indefinite  = an
-}
-\DeclareAcronym{aec2}{short=Amazon EC2, long=Amazon Elastic Compute Cloud}
-\DeclareAcronym{aes}{short=AES, long=Advanced Encryption Standard}
-\DeclareAcronym{afp}{short=AFP, long=Archive of Formal Proofs, cite={afp}}
-\DeclareAcronym{alu}{short=ALU, long=arithmetic logic unit}
-\DeclareAcronym{api}{
-  short            = API,
-  short-indefinite = an,
-  long             = application programming interface,
-  long-indefinite  = an
-}
-\DeclareAcronym{apt}{
-  short            = APT,
-  short-indefinite = an,
-  long             = Advanced Package Tool,
-  long-indefinite  = an
-}
-\DeclareAcronym{aot}{
-  short            = AOT,
-  short-indefinite = an,
-  long             = ahead-of-time,
-  long-indefinite  = an
-}
-\DeclareAcronym{asl}{
-  short            = ASL,
-  short-indefinite = an,
-  long             = ARM Specification Language,
-  long-indefinite  = an,
-  cite = {reid2016arm}
-}
-\DeclareAcronym{ast}{
-  short            = AST,
-  short-indefinite = an,
-  long             = abstract syntax tree,
-  long-indefinite  = an
-}
-\DeclareAcronym{atp}{
-  short            = ATP,
-  short-indefinite = an,
-  long             = automated theorem prover,
-  long-indefinite  = an
-}
-\DeclareAcronym{bap}{
-  short = BAP,
-  long = the Binary Analysis Platform,
-  cite = {brumley2011bap}
-}
-\DeclareAcronym{bcd}{short=BCD, long=binary-coded decimal}
-\DeclareAcronym{can}{short=CAN, long=Controller Area Network}
-\DeclareAcronym{cfg}{short=CFG, long=control flow graph}
-\DeclareAcronym{cfi}{short=CFI, long=control-flow integrity, cite={abadi2009cfi}}
-\DeclareAcronym{ci}{short=CI, long=continuous integration}
-\DeclareAcronym{cie}{
-  short       = CIE,
-  long        = Common Information Entry,
-  long-plural = Common Information Entries
-}
-\DeclareAcronym{csp}{short=CSP, long=communicating sequential processes}
-\DeclareAcronym{cpu}{short=CPU, long=central processing unit}
-\DeclareAcronym{dm}{short=DM, long=device model}
-\DeclareAcronym{dil}{
-  short = DiL,
-  long = decompilation into logic,
-  cite = {myreen2008decompilation,myreen2012decompilation}
-}
-\DeclareAcronym{dvr}{short=DVR, long=dead variable reduction}
-\DeclareAcronym{eicfg}{
-  short            = EICFG,
-  short-indefinite = an,
-  long             = Exceptional Interprocedural Control Flow Graph,
-  long-indefinite  = an
-}
-\DeclareAcronym{elf}{
-  short            = ELF,
-  short-indefinite = an,
-  long             = Executable and Linkable Format,
-  long-indefinite  = an
-}
-\DeclareAcronym{fde}{
-  short            = FDE,
-  short-indefinite = an,
-  long             = Frame Description Entry,
-  long-plural      = Frame Description Entries
-}
-\DeclareAcronym{fdl}{
-  short            = FDL,
-  short-indefinite = an,
-  long             = functional description language
-}
-\DeclareAcronym{fmuc}{
-  short            = FMUC,
-  short-indefinite = an,
-  long             = formal memory usage certificate
-}
-\DeclareAcronym{fpu}{
-  short            = FPU,
-  short-indefinite = an,
-  long             = floating-point unit
-}
-\DeclareAcronym{fsm}{
-  short            = FSM,
-  short-indefinite = an,
-  long             = finite-state machine
-}
-\DeclareAcronym{hol}{
-  short            = HOL,
-  short-indefinite = an,
-  long             = higher-order logic
-}
-\DeclareAcronym{hvm}{
-  short            = HVM,
-  short-indefinite = an,
-  long             = hardware virtual machine
-}
-\DeclareAcronym{gcc}{short=GCC, long=the GNU Compiler Collection}
-\DeclareAcronym{gcm}{short=GCM, long=Galois/Counter Mode}
-\DeclareAcronym{gdb}{short=GDB, long=the GNU Project debugger}
-\DeclareAcronym{gfp}{short=GFP, long=greatest fixed point}
-\DeclareAcronym{gpu}{short=GPU, long=graphics processing unit}
-\DeclareAcronym{hg}{
-  short            = HG,
-  short-indefinite = an,
-  long             = Hoare Graph
-}
-\DeclareAcronym{icc}{
-  short            = ICC,
-  short-indefinite = an,
-  long             = the Intel \Cpp\ Compiler
-}
-\DeclareAcronym{il}{
-  short            = IL,
-  short-indefinite = an,
-  long             = intermediate language
-}
-\DeclareAcronym{iot}{
-  short            = IoT,
-  short-indefinite = an,
-  long             = Internet of Things,
-  long-indefinite  = an
-}
-\DeclareAcronym{ipc}{
-  short            = IPC,
-  short-indefinite = an,
-  long             = inter-process communication,
-  long-indefinite  = an
-}
-\DeclareAcronym{isa}{
-  short            = ISA,
-  short-indefinite = an,
-  long             = instruction set architecture,
-  long-indefinite  = an
-}
-\DeclareAcronym{isar}{
-  short            = Isar,
-  short-indefinite = an,
-  long             = intelligible semi-automated reasoning
-}
-\DeclareAcronym{itp}{
-  short            = ITP,
-  short-indefinite = an,
-  long             = interactive theorem proving,
-  long-indefinite  = an
-}
-\DeclareAcronym{jit}{short=JIT, long=just-in-time}
-\DeclareAcronym{jvm}{short=JVM, long=Java virtual machine}
-\DeclareAcronym{lfp}{
-  short            = LFP,
-  short-indefinite = an,
-  long             = least fixed point
-}
-\DeclareAcronym{lsda}{
-  short            = LSDA,
-  short-indefinite = an,
-  long             = language-specific data area
-}
-\DeclareAcronym{lts}{
-  short            = LTS,
-  short-indefinite = an,
-  long             = long-term support
-}
-\DeclareAcronym{mc}{short=MC, long=model checking}
-\DeclareAcronym{mrr}{short=MRR, long=memory region relation}
-\DeclareAcronym{msb}{short=MSB, long=most significant bit}
-\DeclareAcronym{navsea}{short=NAVSEA, long=the Naval Sea Systems Command}
-\DeclareAcronym{neec}{short=NEEC, long=the Naval Engineering Education Consortium}
-\DeclareAcronym{nqthm}{
-  short = Nqthm,
-  long = the Boyer-Moore theorem prover,
-  cite = {boyer1979computational}
-}
-\DeclareAcronym{os}{
-  short            = OS,
-  short-indefinite = an,
-  long             = operating system,
-  long-indefinite  = an,
-  short-plural     = es
-}
-\DeclareAcronym{onr}{
-  short            = ONR,
-  short-indefinite = an,
-  long             = the Office of Naval Research
-}
-\DeclareAcronym{psl}{short=PSL, long=Property Specification Language}
-\DeclareAcronym{rop}{
-  short            = ROP,
-  short-indefinite = an,
-  long             = return-oriented programming
-}
-\DeclareAcronym{qemu}{short=QEMU, long=Quick Emulator}
-\DeclareAcronym{ram}{short=RAM, long=random-access memory}
-\DeclareAcronym{rtos}{
-  short            = RTOS,
-  short-indefinite = an,
-  long             = real-time operating system
-}
-\DeclareAcronym{scc}{
-  short            = SCC,
-  short-indefinite = an,
-  long             = strongly connected component
-}
-\DeclareAcronym{scf}{
-  short            = SCF,
-  short-indefinite = an,
-  long             = syntactic control flow
-}
-\DeclareAcronym{simd}{short=SIMD, long={single instruction, multiple data}}
-\DeclareAcronym{sloc}{short=SLOC, long=source lines of code}
-\DeclareAcronym{smt}{
-  short            = SMT,
-  short-indefinite = an,
-  long             = satisfiability modulo theories
-}
-\DeclareAcronym{spade}{
-  short = SPADE,
-  long = the Southampton Program Analysis Development Environment,
-  cite = {carre1986spade}
-}
-\DeclareAcronym{sse}{
-  short            = SSE,
-  short-indefinite = an,
-  long             = Streaming SIMD Extensions,
-  long-indefinite  = an,
-}
-\DeclareAcronym{stp}{
-  short            = STP,
-  short-indefinite = an,
-  long             = Simple Theorem Prover
-}
-\DeclareAcronym{tcb}{short=TCB, long=trusted computing base}
-\DeclareAcronym{tv}{short=TV, long=translation validation}
-\DeclareAcronym{vc}{short=VC, long=verification condition}
-\DeclareAcronym{vcg}{short=VCG, long=verification condition generator}
-\DeclareAcronym{vm}{short=VM, long=virtual machine}
-\DeclareAcronym{vmm}{short=VMM, long=virtual machine monitor}
-\DeclareAcronym{cisc}{short=CISC, long=complex instruction set computer}
-\DeclareAcronym{risc}{short=RISC, long=reduced instruction set computer}
-
-\lstdefinelanguage
-  [x64]{Assembler}     % add an "x64" dialect of Assembler
-  [x86masm]{Assembler} % based on the "x86masm" dialect
-  % with these extra keywords:
-  {morecomment=[l]{\#},
-    morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD,% will add more insts as needed
-    POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS,%
-    MOVAPD,MOVDQA,%
-    dil,eflags,rflags,cpuid,%
-    rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp,rip,%
-    r8,r8d,r8w,r8b,r9,r9d,r9w,r9b,%
-    r10,r10d,r10w,r10b,r11,r11d,r11w,r11b,%
-    r12,r12d,r12w,r12b,r13,r13d,r13w,r13b,%
-    r14,r14d,r14w,r14b,r15,r15d,r15w,r15b,%
-    xmm0,xmm1,xmm2,xmm3,xmm4,xmm5,xmm6,xmm7,xmm8,xmm9,xmm10,xmm11,xmm12,xmm13,xmm14,xmm15%
-  }} % etc.
-\lstdefinestyle{x64}{
-  language=[x64]{Assembler},
-  keywordstyle=\bfseries\color{blue}, % bold blue keywords
-  commentstyle=\color{gray},
-  stringstyle=\color{brown},
-}
-\lstdefinestyle{C}{
-  language=C,
-  keywordstyle=\bfseries\color{blue}, % bold blue keywords
-  commentstyle=\color{gray},
-  stringstyle=\color{brown},
-}
-\lstdefinestyle{Haskell}{
-    language=Haskell,
-    keepspaces=true
-}
-
-\newcommand*\inlineasm[1]{\lstinline[style=x64]|#1|}
-\newcommand*\inlinehaskell[1]{\lstinline[style=Haskell]|#1|}
 
 %% name shorthands and stuff
 \newcommand*\arch{x86-64}
@@ -379,10 +53,17 @@
 %\usepackage{texlogos}
 %\newcommand\Cpp\cpluspluslogo
 
-\newcommand*\mcsquare{\textsc{[mc]square}}
+\input{preamble/acronyms}
+\input{preamble/listingsetup}
+\input{preamble/numbers}
+\input{preamble/registers}
+\input{preamble/tikz}
+\input{preamble/types}
 
-\newcommand{\xenpercentage}{\SI{71}{\percent}}
-\newcommand{\xenpercentagenot}{\SI{29}{\percent}}
+% Defined after it's used in commands above but looks like that's okay in LaTeX.
+\newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
+
+\newcommand*\mcsquare{\textsc{[mc]square}}
 
 \newcommand*\keywordstyle{\ttfamily\bfseries\color{blue}}
 \newcommand\keyword[1]{{\keywordstyle#1}}
@@ -474,25 +155,6 @@
 \newcommand{\outptr}{\var{out}_\mathrm{ptr}}
 \newcommand{\valueptr}{\var{value}_\mathrm{ptr}}
 
-\newcommand{\mathrax}{\text{\inlineasm{rax}}}
-\newcommand{\mathrip}{\text{\inlineasm{rip}}}
-\newcommand{\mathrbp}{\text{\inlineasm{rbp}}}
-\newcommand{\mathrbx}{\text{\inlineasm{rbx}}}
-\newcommand{\mathrdi}{\text{\inlineasm{rdi}}}
-\newcommand{\mathrsi}{\text{\inlineasm{rsi}}}
-\newcommand{\mathrsp}{\text{\inlineasm{rsp}}}
-\newcommand{\mathdil}{\text{\inlineasm{dil}}}
-\newcommand{\mathdl}{\text{\inlineasm{dl}}}
-\newcommand{\mathfs}{\text{\inlineasm{fs}}}
-\newcommand{\mathgs}{\text{\inlineasm{gs}}}
-\newcommand{\mathGPR}{\mathtt{GPR}}
-
-\newcommand{\fso}{\var{fs}_0}
-\newcommand{\rdio}{\var{rdi}_0}
-\newcommand{\rsio}{\var{rsi}_0}
-\newcommand{\rspo}{\var{rsp}_0}
-\newcommand{\rbpo}{\var{rbp}_0}
-
 \newcommand{\retaddr}{\text{\lstinline|ret_addr|}}
 
 \newcommand{\psep}{P_\mathrm{sep}}
@@ -500,20 +162,12 @@
 %% FROM PLDI 2022 (Lattice Lifting) paper
 \newcommand*{\defeq}{\stackrel{\text{def}}{=}}
 
-%% From EICFG paper
+%% From EICFG (TACAS 2023) paper
 % Freek did not like the line number stuff so using manual inst refs (but still keeping the hyperlinks!)
 % This is a bit of a pain as it means I have to figure out the instruction addresses instead of getting them directly, oh well...
 \newcommand*\instref[2]{\hyperref[#1]{\texttt{0x#2}}}
 
 \DeclareMathOperator{\stateToNode}{\alpha'}
-\newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
-\newcommand*\reg[1]{\mathasm{#1}}
-\newcommand{\rsi}{\reg{rsi}} % Freek's preferring dot notation for fields so don't need \DeclareMathOperator
-\newcommand{\rdi}{\reg{rdi}}
-\newcommand{\rax}{\reg{rax}}
-\newcommand{\rcx}{\reg{rcx}}
-\newcommand{\rip}{\reg{rip}}
-\newcommand{\rsp}{\reg{rsp}}
 
 % For abstract interpretation
 \newcommand\absTransition{\xrightarrow{\mathsf A}}
@@ -570,130 +224,11 @@
 \newcommand\good{\mathtt{Good}}
 \newcommand\bad{\mathtt{Bad}}
 
-% Types
-\newcommand{\bool}{\mathbb B}
-\newcommand{\graph}{\mathbb G}
-\newcommand{\exception}{\mathbb E}
-\newcommand{\flag}{\mathbb F}
-\renewcommand{\pointer}{\mathbb P}
-\newcommand{\register}{\mathbb R}
-\newcommand{\val}{\mathbb V}
-\newcommand{\word}{\mathbb W}
-\newcommand{\node}{\mathbb N}
-\newcommand{\termination}{\mathbb T}
-\newcommand{\inst}{\mathtt{Inst}}
-\newcommand{\absState}{\mathbbm\Sigma}
-\newcommand{\concState}{S}
-\newcommand{\edge}{\node\times\node\times(\inst|\bot)}
-
-% numbers
-%\newcommand\coveredpercent{\SI{84}\percent}
-%\newcommand\cutoffpercent{$>\SI{70}\percent$}
-\newcommand\totalbins{\num{341}}
-%\newcommand\satisfactorybins{\num{161}}
-%\newcommand\badbins{\num{144}}
-\newcommand\resourcebins{\num{26}} % one extra thanks to openmw-launcher failing for the control
-\newcommand\exceptbins{\num{49}}
-%\newcommand\strippedbins{\todo{recount}}
-
-\newcommand\uniquethrows{\num{3350}} % Actually 3654 but we left out one of the successful binaries due to its control failing
-\newcommand\caughtthrows{\num{2356}} % Actually 2589 but we left out one of the successful binaries due to its control failing
-\newcommand\uncaughtthrows{\num{994}} % Actually 1065 but we left out one of the successful binaries due to its control failing
-\newcommand\avgdiffinst{\num{13} instructions}
-\newcommand\avgunwinds{\num{379}}
-\newcommand\fuzzcount{\num{10000}}
-
 % Misc. commands
 \newcommand{\todo}[1]{{\bfseries\color{purple}#1}} % Allowing paragraphs in todos
 \newcommand*{\fturl}[1]{\footnote{\url{#1}}}
 
-\title{Static Binary Analysis for Memory Properties and Exceptional Control Flow}
-\keywords{%
-  Formal Verification,
-  \arch\ Assembly,
-  Interactive Theorem Proving,
-  Static Analysis,
-%  Proof Generation,
-%  Memory Preservation%
-  Exception Handling%
-}
-\author{Joshua Alexander Bockenek}
-\program{Computer Engineering}
-\degree{Doctor of Philosophy}
-
-\submitdate{\DTMdate{2022-11-30}}
-
-\principaladvisor{Binoy Ravindran}
-\firstreader{Freek Verbeek}
-\secondreader{Patrick R.\ Schaumont}
-\thirdreader{Michael S.\ Hsiao}
-\fourthreader{\todo{Changhee Jung}}
-
-\dedication{%
-  This work is dedicated to \todo{family, friends/coworkers?}
-  my dearly departed cat, Abby, who lasted through my Master's but was not able to make it to the end of my PhD.
-  \todo\dots%
-}
-\acknowledge{%
-  This work was supported in part by \ac{onr} under grant N00014-17-1-2297
-  and \ac{navsea}/\ac{neec} under grant N00174-16-C-0018.
-  Any opinions, findings, and conclusions or recommendations expressed
-  in this dissertation are those of the author
-  and do not necessarily reflect the views of \ac{onr} or \ac{navsea}/\ac{neec}.%
-
-  \todo{Any more?}
-}
-
-% The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
-\abstract{%
-  % Motivation
-  Formal characterization of the memory used by a program is an important basis
-  for security analyses and compositional verification. Proving that that program only modifies
-  memory within specified regions, the property of \emph{memory preservation},
-  is an important aspect of that. However, accurately proving memory preservation
-  requires operating on the assembly level due to the semantic gap between
-  high-level languages and the code that processors actually execute.
-  This is unfortunate, as verifying programs on the assembly level is difficult.
-  Automated methods, such as model checking, would not be able to handle many interesting functions
-  due to the undecidability of memory preservation. Fully-interactive methods do not scale well either.
-  The solution is to combine proof generation with interactive theorem proving
-  in a \emph{semi-automated manner}: let some untrusted tool
-  extract as much information as it can from the functions under test
-  and then generate all the necessary proofs to be completed in a theorem prover.
-
-  % First contribution
-  The first contribution of this dissertation is a control-flow-driven verification
-  approach with mostly manual invariant specification
-  at automatically-selected cutpoints.
-  The memory regions and any additional preconditions
-  must also be determined manually.
-  This methodology was applied to \num{63} functions from the HermitCore unikernel library,
-  including one recursive one, covering \num{2379} assembly instructions.
-
-  % Second contribution
-  The second contribution of this dissertation is a syntax-driven verification
-  approach with fully-automated invariant and memory region generation.
-  It produces formal memory usage certificates (FMUCs) that can be verified in Isabelle/HOL
-  with minimal effort, the main manual work being weakening any loop invariants.
-  This was successfully applied to \num{251} functions from the Xen hypervisor project,
-  covering a total of \num{12252} assembly instructions.
-
-  % Third contribution
-  \todo{Increased automation, change in approach}
-
-  % Fourth contribution
-  \todo{Modeling of exception handling}%
-}
-
-% TODO
-% The general audience abstract is required. There are currently no word limits.
-\abstractgenaud{%
-  \todo{You are also required as of Spring 2016 to include a general audience abstract.
-  This should be geared towards individuals outside of your field
-  that may be reading seeking information about your work.
-  You should avoid language that is particular to your field
-  and clearly define any terms that may have special meaning in your discipline.}%
-}
+\input{preamble/titlepages}
 
 \addbibresource{bibliography.bib}
 
