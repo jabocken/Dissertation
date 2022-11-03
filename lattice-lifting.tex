@@ -11,37 +11,40 @@
 \section{Technical Formulation}
 \todo{copy the stuff over here. Wonder if I'll end up making this long enough to be it's own chapter?}
 
+\nomenclature[operator]{$\holds$}{Indicates that the state predicate or memory model on the \ac{rhs} holds for the state on the \ac{lhs}}
+
 \subsection{Predicates}
 \emph{Predicates}\index{state!predicate} are assertions on state.
 A predicate~$P$\nomenclature{$P$}{A state predicate}
 consists of a set of \emph{clauses}\index{state!predicate!clause}.
 $P$ holds in state~$s$%
-\nomenclature{$s$}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs}} if and only if all clauses hold.
-This is indicated with notation \todo{Did we use explicit notation for this?}.
+\nomenclature{$s$}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs; gets introduced earlier though so maybe not?}}
+($s\holds P$) if and only if all clauses hold.
 
 \todo{maybe put more here? Connect to logical predicates}
 
 Breaking it down further, a clause consists of two symbolic expressions\index{symbolic!expression}
 and their relation.
 A symbolic expression of type $\expression$%
-\nomenclature{$\expression$}{Type of symbolic expressions for \ac{hg} work}
+\nomenclature[type]{$\expression$}{Type of symbolic expressions for \ac{hg} work}
 consists of the some combination of the following:
 \begin{itemize}
   \item register references ($\register$),%
-  \nomenclature{$\register$}{Type of symbolic registers}%
+  \nomenclature[type]{$\register$}{Type of symbolic registers}%
   \index{symbolic!register}
-  \item flag references ($\flag$),\nomenclature{$\flag$}{Type of symbolic flags}%
+  \item flag references ($\flag$),%
+  \nomenclature[type]{$\flag$}{Type of symbolic flags}%
   \index{symbolic!flag}
   \item 64-bit words ($\word$),\index{number!word}
   \item symbolic values ($\val$),%
-  \nomenclature{$\val$}{Type of symbolic values for \ac{hg} work}%
+  \nomenclature[type]{$\val$}{Type of symbolic values for \ac{hg} work}%
   \index{symbolic!value}
   \item memory regions (modeled by an expression for the address and a natural number\index{number!natural} for the size)%
   \index{symbolic!memory!region}, and
   \item the application of an operator\index{symbolic!operator}
   to a list of expressions.
 \end{itemize}
-In data type notation, this is:
+In formal notation, this is:
 \begin{equation}
   \expression\coloneqq
   \register\mid
@@ -50,10 +53,10 @@ In data type notation, this is:
   \val\mid
   \expression\times\nat\mid
   \mathsf{Op}\times[\expression]
-\end{equation}%
-\nomenclature{$\coloneqq$}{Indicates the right-hand side defines the left-hand side for \ac{hg} and \ac{eicfg} work}
+\end{equation}
+\nomenclature[operator]{$\coloneqq$}{Indicates that the \ac{rhs} defines the \ac{lhs} for \ac{hg} and \ac{eicfg} work}%
 We identify a subset of these symbolic expressions called \emph{constant expressions} ($\constant$).%
-\nomenclature{$\constant$}{Type of constant expressions}%
+\nomenclature[type]{$\constant$}{Type of constant expressions}%
 \index{constant!expession}
 These expressions cannot contain state parts such as registers, flags, or memory regions.
 They represent constants or computations constructed using initial values.
@@ -61,18 +64,24 @@ For example, $\reg{rdi}_0$ denotes the initial symbolic value of register $\reg{
 % TODO: This should probably be nomenclature somehow but I'm not sure how
 This value does not change during symbolic execution.
 
-\todo{made it to here on my revisions for today\dots slow work, but at least I'm making progress, I guess?}
+In notation, clauses\index{state!predicate!clause}
+take the form $\expression \mathbin{\square} \constant$,%
+\nomenclature[operator]{$\square$}{A placeholder for some binary relation}%
+\nomenclature[operator]{$\in$}{Indicates that the \ac{lhs} is an element of the set on the \ac{rhs}}
+where $\square\in\{=,\neq,<,<_s,\ge,\ge_s\}$.
+The~$\square_s$ relations treat their operands as signed,
+while the corresponding non-subscripted versions treat their operands as unsigned.
 
-Clauses are terms of the form $\expression \mathbin{\square} \constant$,
-where $\square$ is an element of the following set of relations:
-$\{=,\neq,<,<_s,\ge,\ge_s\}$.
-The $\square_s$ relations treat their operands as signed,
-while their non-subscripted versions treat their operands as unsigned.
-There are two special predicates, $\top$ and $\bot$,
-that respectively indicate being always true and always false.
-$\bot$ is also used to indicate an unknown $\constant$.
+There are also two special clauseless predicates,~$\top$%
+\nomenclature{$\top$}{Top; an always-true symbolic state predicate}
+and~$\bot$.
+Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
+$\bot$ is also used to indicate an unknown~$\constant$.%
+\nomenclature{$\bot$}{Bottom; an always-false symbolic state predicate or an unknown/undefined~$\constant$
+\todo{make sure this does not conflict with any other definitions}}
 \begin{definition}\label{def:join}
-  The join of two predicates~$P$ and~$Q$, notation $P\sqcup Q$, is defined as:
+  \todo{I am here now; this requires revision to match the paper version!}
+  The aforementioned join of two predicates~$P$ and~$Q$, notation $P\sqcup Q$, is defined as:
   \begin{align*}
     P\sqcup Q &\defeq \bigcup\{\merge(p,q) \mid \langle p,q\rangle\in P\times Q\} \\
     \merge(l=r_1,l=r_2) &\defeq \{l\ge\min(r_1,r_2),l\le\max(r_1,r_2)\} \\

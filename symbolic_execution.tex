@@ -29,10 +29,10 @@ various instructions and their variants (\cref{se:rewrite}).
   Symbolic execution produces the following assignment:
   $\mathrax\coloneqq\takebits{63,16}\mathrax\concat 1_{16}$.
   Here $\takebits{63,16}$ denotes taking the higher 48 bits%
-  \nomenclature{$\takebits{h,l}w$}{Indicates taking bits in word~$w$
+  \nomenclature[operator]{$\takebits{h,l}w$}{Indicates taking bits in word~$w$
     from bit~$l$ to bit~$h$ using 0-indexing}
   and~$\concat$ denotes concatenation,%
-  \nomenclature{$\concat$}{Indicates bitstring concatenation}
+  \nomenclature[operator]{$\concat$}{Indicates bitstring concatenation}
   with $1_{16}$ being the number one zero-extended to~16 bits.
   The \inlineasm{xor} instruction sets the lower~16 bits of the register to zero
   while \inlineasm{add} increments the lower byte by one.
@@ -95,8 +95,8 @@ Reads and writes of the machine model's memory space take a specific form.
 They operate on \emph{memory regions}.%
 \index{symbolic!memory!region}
 A memory region $\region{a}{s}$ is defined to have type $\word\times\nat$;%
-\nomenclature{$\word$}{Type of 64-bit (unsigned) words}\index{number!word}%
-\nomenclature{$\nat$}{Type of natural numbers}\index{number!natural}
+\nomenclature[type]{$\word$}{Type of 64-bit (unsigned) words}\index{number!word}%
+\nomenclature[type]{$\nat$}{Type of natural numbers}\index{number!natural}
 that is, its starting address~$a$ is a 64-bit word
 and its size in bytes~$s$ is a natural number.
 
@@ -107,11 +107,11 @@ starting from the given address~$a$ in the appropriate order
 and converts it to a word.
 If it is clear from context which state is meant, the state will be omitted.
 Meanwhile, writing to memory uses the notation $x\coloneqq e$,%
-\nomenclature{$\coloneqq$} {Indicates a memory write for the \acs*{cfg}/syntax-guided works}
+\nomenclature[operator]{$\coloneqq$}{Indicates a memory write for the \acs*{cfg}/syntax-guided works}
 which has type~$\asp=(\var{SP},\esp)$;
 these \emph{assignments} denote writing an expression~$e$ to some location~$x$
 that is a \emph{state part},~$\var{SP}$;%
-\nomenclature{$\var{SP}$}{Type of state parts (regions, flags, and registers)}%
+\nomenclature[type]{$\var{SP}$}{Type of state parts (regions, flags, and registers)}%
 \index{state part}
 it can be a region, register, or flag.
 Flags can only take boolean expressions while
@@ -120,7 +120,7 @@ The behavior for regions in Isabelle
 is to internally decompose the expression to write
 into its component bytes and then write those into memory in the appropriate order.
 The expressions themselves are of type~$\esp$,%
-\nomenclature{$\esp$}{Type of expressions for \ac*{cfg}/syntax-guided work}
+\nomenclature[type]{$\esp$}{Type of expressions for \ac*{cfg}/syntax-guided work}
 representing expressions over state parts.
 These expressions consist of common bit-vector operations including
 taking subsets of bits, bitstring concatenation, logical operators, casting,
@@ -293,7 +293,7 @@ They are the subterms not in \emph{normal form},%
 the ones that may be rewritten again after application of the rewrite rule.
 \begin{equation}
   \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}%
-  \nomenclature{$\equiv$}{Indicates term equivalence;
+  \nomenclature[type]{$\equiv$}{Indicates term equivalence;
     the term on the left may be replaced by the term on the right}
     \underline{\sigma(r_1\coloneqq v_1)}(r_0\coloneqq v_0) &
       \text{if } r_0\separate r_1 \\

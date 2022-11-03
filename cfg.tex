@@ -120,7 +120,7 @@ While \cref{ch:symbolic_execution} provided a general overview of symbolic execu
 this chapter requires a more specific look.
 The step function for this methodology takes the form
 $\step:S\rightarrow(S\mid\err)$.%
-\nomenclature{$S$}{Type representing program state; an Isabelle record}%
+\nomenclature[type]{$S$}{Type representing program state; an Isabelle record}%
 \nomenclature{$\err$}{Indicates exceptional state}
 It takes the current state~$\sigma$ to execute from
 and returns the state~$\sigma'$ after execution of the current instruction,
@@ -208,9 +208,8 @@ More formally, the \emph{Floyd invariant}%
 \index{Floyd!invariant}
 for a function is a partial function that takes the form
 $I:L\rightharpoonup(S\rightarrow\bool)$.%
-\nomenclature{$L$}{Type of instruction addresses in a program; a 64-bit word}%
-%TODO: maybe change this to \mathbb{P}? probably should at least be \mathbb{L}
-\nomenclature{$\bool$}{Type of boolean values, True and False}
+\nomenclature[type]{$L$}{Type of instruction addresses in a program; a 64-bit word}%TODO: maybe change this to \mathbb{P}? probably should at least be \mathbb{L}
+\nomenclature[type]{$\bool$}{Type of boolean values, True and False}
 This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
 As a technical detail, some function proofs require additional arguments to $I$
@@ -568,7 +567,7 @@ The factorial operation provides a simple example of recursion.%
 \index{factorial}%
 \index{recursion}
 The basic definition of factorial is $n!=\prod_{i=1}^n i$.%
-\nomenclature{$\prod$}{Product of a sequence of terms;
+\nomenclature[operator]{$\prod$}{Product of a sequence of terms;
   multiplication equivalent of $\sum$}
 This results in a number that is the product of the numbers from~$1$ to~$n$.
 Expressed in recursive form, that definition is:

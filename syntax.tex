@@ -110,9 +110,9 @@ branches, loops, and function calls.
 The following grammar provides a description of \ac{scf}
 produced by the extraction code.
 Each basic block is represented by the polymorphic type~$\beta$,%
-\nomenclature{$\beta$}{Type of basic blocks}
+\nomenclature[type]{$\beta$}{Type of basic blocks}
 while branching conditions are represented using the polymorphic type~$\Phi$.%
-\nomenclature{$\Phi$}{Type of branching conditions}
+\nomenclature[type]{$\Phi$}{Type of branching conditions}
 \begin{bnf}
   \bnfprod*{scf}{
     \bnfpn{scf}\bnfsp\bnfts{;}\bnfsp\bnfpn{scf}
@@ -310,7 +310,7 @@ The Haskell symbolic execution engine
 takes as input a data structure of type $\scf(B,E_F)$,
 which is formulated over basic blocks,
 and produces $\scf(\powerset(\asp),\esp)$,%
-\nomenclature{$\asp$}{Type of assignments}
+\nomenclature[type]{$\asp$}{Type of assignments}
 which is formulated over sets of assignments.
 It keeps track of all used memory regions,
 both the actual regions used by instructions as well as merged regions,
@@ -398,7 +398,7 @@ all with respect to invariant~$\phi$.
     \text{ternary ops} &= \dotso \notag
   \end{align}
 \end{subequations}%
-\nomenclature{$\bop$}{Denotes an arbitrary binary operator}
+\nomenclature[operator]{$\bop$}{Denotes an arbitrary binary operator}
 
 \Cref{algo:prop} performs invariant propagation.
 Each block is modified by applying all applicable substitutions
@@ -456,7 +456,7 @@ that were completely unmodified by any assignment in~$\alpha$:
     \Function{prop}{$\phi,\AWhile~\alpha~\AOd$}
       \State $(\phi',\alpha')\gets\Call{prop}{\phi,\alpha}$
       \If{$\phi\subseteq\phi'$}%
-        \nomenclature{$\subseteq$}{Indicates subset relation}
+        \nomenclature[operator]{$\subseteq$}{Indicates subset relation}
         \State\Return $(\phi,\AWhile~\alpha'~\AOd)$
       \Else
         \State\Return $\Call{prop}{\phi\cap\phi',\AWhile~\alpha~\AOd}$
@@ -597,7 +597,7 @@ is modeled by relating the state in which it occurs to any successor state
 supplied with it.
 
 The internal step function has type $\step:A\times\nat\times S\rightarrow S$,%
-\nomenclature{$A$}{Type of instructions}
+\nomenclature[type]{$A$}{Type of instructions}
 with its first argument being an instruction, its second being the size of the instruction,
 and its third being the current state.
 The function returns the state after instruction execution,
@@ -1126,8 +1126,8 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
         \readmem{\rspo-56}8 &= \rsio+32
       \end{aligned}
     \end{equation*}%
-    \nomenclature{$\gg$}{Performs unsigned right shift when used with word values}%
-    \nomenclature{$\ll$}{Performs left shift when used with word values}
+    \nomenclature[operator]{$\gg$}{Performs unsigned right shift when used with word values}%
+    \nomenclature[operator]{$\ll$}{Performs left shift when used with word values}
     \caption{Invariant for address \texttt{0x123e}
       (only 7 out of 23 equalities shown)}\label{fig:example2-inv}
   \end{subfigure}
