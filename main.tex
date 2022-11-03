@@ -232,6 +232,8 @@
 
 \addbibresource{bibliography.bib}
 
+\includeonly{lattice-lifting}
+
 \makeindex[intoc]
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
@@ -251,18 +253,18 @@
   \input{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
-%  \input{introduction}
-  \input{related}
-  \input{background}
-%  \input{symbolic_execution}
-%  \input{cfg}
-%  \input{syntax}
-  \input{lattice-lifting}
-  \input{lattice-lifting-algorithm}
-  \input{eicfg}
-  \input{eicfg-formulation}
-  \input{eicfg-validation}
-%  \input{conclusions}
+  \include{introduction}
+  \include{related}
+  \include{background}
+  \include{symbolic_execution}
+  \include{cfg}
+  \include{syntax}
+  \include{lattice-lifting}
+  \include{lattice-lifting-algorithm}
+  \include{eicfg}
+  \include{eicfg-formulation}
+  \include{eicfg-validation}
+  \include{conclusions}
 
   {% appendices don't work right with \backmatter due to it getting rid of counters
     \backmatter % All the stuff that comes after the body chapters
