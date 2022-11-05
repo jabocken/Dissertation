@@ -58,11 +58,18 @@ In formal notation, this is:
 We identify a subset of these symbolic expressions called \emph{constant expressions} ($\constant$).%
 \nomenclature[type]{$\constant$}{Type of constant expressions}%
 \index{constant!expession}
-These expressions cannot contain state parts such as registers, flags, or memory regions.
-They represent constants or computations constructed using initial values.
-For example, $\reg{rdi}_0$ denotes the initial symbolic value of register $\reg{rdi}$.
+These expressions cannot contain state parts\index{state!part}
+such as registers, flags, or memory regions.%
+\index{symbolic!register}%
+\index{symbolic!flag}%
+\index{symbolic!memory!region}
+They represent constants or computations constructed using initial values.%
+\index{initial!value}
+For example, $\reg{rdi}_0$ denotes the initial symbolic value%
+\index{symbolic!value}%
+of register $\reg{rdi}$.
 % TODO: This should probably be nomenclature somehow but I'm not sure how
-This value does not change during symbolic execution.
+This value does not change during symbolic execution\index{symbolic!execution}.
 
 In notation, clauses\index{state!predicate!clause}
 take the form $\expression \mathbin{\square} \constant$,%
@@ -80,14 +87,18 @@ $\bot$ is also used to indicate an unknown~$\constant$.%
 \nomenclature{$\bot$}{Bottom; an always-false symbolic state predicate or an unknown/undefined~$\constant$
 \todo{make sure this does not conflict with any other definitions}}
 \begin{definition}\label{def:join}
-  \todo{I am here now; this requires revision to match the paper version!}
-  The aforementioned join of two predicates~$P$ and~$Q$, notation $P\sqcup Q$, is defined as:
-  \begin{align*}
-    P\sqcup Q &\defeq \bigcup\{\merge(p,q) \mid \langle p,q\rangle\in P\times Q\} \\
-    \merge(l=r_1,l=r_2) &\defeq \{l\ge\min(r_1,r_2),l\le\max(r_1,r_2)\} \\
-    \merge(l<r_1,l<r_2) &\defeq \{l<\max(r_1,r_2)\} \\
+  The aforementioned join\index{lattice!join}
+  of two predicates~$P$ and~$Q$,%
+  \index{state!predicate}
+  notation $P\join Q$,\nomenclature{$\join$}{The join of two state predicates\index{state!predicate}}
+  is performed by doing a form of range abstraction for symbolic bit-vector values \autocite{rugina2000symbolic}.\index{symbolic!bit vector}
+  This is defined as:
+  \begin{align*} % \defeq doesn't seem right here since we already have \equiv (nomenclatured elsewhere); also don't we have \coloneqq already anyway?
+    P\join Q &\equiv \bigcup\{\merge(p,q) \mid \langle p,q\rangle\in P\times Q\} \\
+    \merge(l=r_1,l=r_2) &\equiv \{l\ge\min(r_1,r_2),l\le\max(r_1,r_2)\} \\
+    \merge(l<r_1,l<r_2) &\equiv \{l<\max(r_1,r_2)\} \\
     &\vdots\\
-    \merge(a,b) &\defeq
+    \merge(a,b) &\equiv
     \begin{cases}
       \{a\} & \text{if }a=b \\
       \varnothing & \text{otherwise}
@@ -95,32 +106,50 @@ $\bot$ is also used to indicate an unknown~$\constant$.%
   \end{align*}
 \end{definition}
 The operator presented in \cref{def:join}
-performs a \emph{merge} for each clause pair $\langle p,q\rangle$
-in the Cartesian product of its argument predicates.
+performs a \emph{merge} for each clause pair\index{state!predicate!clause}
+$\langle p,q\rangle$
+in the Cartesian product\index{Cartesian product} % change to Cartesian!product if you use more references to Cartesian stuff
+of its argument predicates.
 This merge produces a potentially empty set of clauses
 generated from the two clauses supplied to it.
 % The union of all sets produced is then taken, resulting in the joined predicate.
 While only merge rules for $=$ and $<$ are shown, there are also rules
 for the other possible clause operations.
-The $\max$ and $\min$ functions used are partial;
-they do not have a result
-if the maximum/minimum of the expressions supplied to them cannot be determined.
-This can happen if those symbolic expressions contain variables.
+The $\max$ and $\min$ functions used are partial;%
+\index{function!maximum}%
+\index{function!minimum}%
+\index{function!partial}
+they do not have a result if the maximum/minimum of the expressions supplied to them cannot be determined.%
+\index{maximum}
+\index{minimum}
+This can happen if those symbolic expressions\index{symbolic!expression}
+contain unrestricted values\index{symbolic!value}.
 In such cases, no clause is produced.
 %The supremum, repeated join over a set of predicates, is denoted by $\bigsqcup\square$. % do we even have a supremum here anymore?
 
 \begin{example}
   Let $P=\{a=3,a<\reg{rdi}_0\}$ and $Q=\{a=4,a<\reg{rsi}_0\}$.
-  As both predicates have equality clauses for~$a$, those clauses are merged to produce a pair of clauses denoting that the value of $a$ lies in the range $[3,4]$.
+  As both predicates\index{state!predicate}
+  have equality clauses\index{state!predicate!clause}
+  for~$a$, those clauses are merged to produce a pair of clauses denoting that the value of~$a$ lies in the range $[3,4]$.
   Since no maximum can be established between $\reg{rdi}_0$ and $\reg{rsi}_0$, these clauses are dropped.
-  Thus, $P\sqcup Q=\{a\ge 3,a\le4\}$.
+  Thus, $P\join Q=\{a\ge 3,a\le4\}$.
 \end{example}
 
-As required for a lattice, the join is associative, commutative and idempotent.
-Associativity is derived from the fact that set union and minimum/maximum are associative operations.
-The join is commutative and idempotent due to the commutativity and idempotency of the merge function.
+As required for a lattice,\index{lattice}
+the join\index{lattice!join}
+is associative,\index{associative}
+commutative,\index{commutative}
+and idempotent.\index{idempotent}
+Associativity is derived from the fact that set union\index{set!union}
+and minimum/maximum%
+\index{minimum}%
+\index{maximum}
+are associative operations.
+The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following:
 \begin{lemma}\label{lem:pred_soundness}
-  For any state~$s$: $s\vdash  P\vee Q\implies s\vdash P\sqcup Q$
+  For any state~$s$:\index{state}
+  $s\vdash  P\vee Q\implies s\vdash P\join Q$
 \end{lemma}
 
 \subsection{Memory Models}

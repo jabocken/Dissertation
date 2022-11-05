@@ -111,9 +111,16 @@ Meanwhile, writing to memory uses the notation $x\coloneqq e$,%
 which has type~$\asp=(\var{SP},\esp)$;
 these \emph{assignments} denote writing an expression~$e$ to some location~$x$
 that is a \emph{state part},~$\var{SP}$;%
-\nomenclature[type]{$\var{SP}$}{Type of state parts (regions, flags, and registers)}%
-\index{state part}
-it can be a region, register, or flag.
+\nomenclature[type]{$\var{SP}$}{Type of state parts (regions, flags, and registers)%
+\index{state!part}%
+\index{symbolic!register}%
+\index{symbolic!flag}%
+\index{symbolic!memory!region}}%
+\index{state!part}
+it can be a region, register, or flag.%
+\index{symbolic!register}%
+\index{symbolic!flag}%
+\index{symbolic!memory!region}
 Flags can only take boolean expressions while
 the result for a register must be a 64-bit word.
 The behavior for regions in Isabelle
@@ -122,7 +129,8 @@ into its component bytes and then write those into memory in the appropriate ord
 The expressions themselves are of type~$\esp$,%
 \nomenclature[type]{$\esp$}{Type of expressions for \ac*{cfg}/syntax-guided work}
 representing expressions over state parts.
-These expressions consist of common bit-vector operations including
+These expressions consist of common bit-vector\index{symbolic!bit vector}
+operations including
 taking subsets of bits, bitstring concatenation, logical operators, casting,
 and floating-point, signed, and unsigned arithmetic.
 

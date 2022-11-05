@@ -480,7 +480,8 @@ and if statements producing an invariant that is the common result
 of propagating the initial invariant down both branches.
 
 In contrast, a loop with body~$\alpha$ requires continual propagation
-until the invariant~$\phi$ stabilizes, possibly by becoming~$\varnothing$.
+until the invariant~$\phi$ stabilizes, possibly by becoming~$\varnothing$.%
+\nomenclature{$\varnothing$}{The empty set}
 This stabilization is identified
 by checking if~$\phi$ is a subset of its propagated self.
 If it is, then \textsc{prop} returns the propagated~$\phi$
@@ -747,7 +748,8 @@ the related instructions will not complete.
   \subcaptionbox{Resume rule}{
     \AxiomC{$\forall {0\leq j\leq n}\cdot\htriple*{P}{a_j}{Q_j}{M_j}$}
     \AxiomC{$(\bigvee_{0\leq j\leq n} Q_j)\longrightarrow Q$}
-    \AxiomC{$M = \bigcup_{0\leq j\leq n}M_j$}
+    \AxiomC{$M = \bigcup_{0\leq j\leq n}M_j$}%
+    \nomenclature[operator]{$\bigcup$}{Repeated union over a sequence or set of sets, akin to sum/product notation}
     \TrinaryInfC{$\htriple*{P}{\AWhileResume\{(i_0,a_0),\dotsc,(i_n, a_n)\}}{Q}{M}$}
     \DisplayProof
   }
