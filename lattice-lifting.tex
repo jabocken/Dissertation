@@ -278,7 +278,7 @@ e.g., $t_0 \bowtie t_1$ denotes that all regions in $t_0$ are necessarily separa
 Notation $t_0 \equiv t_1$ ($t_0 \preceq t_1$) denotes that some region in the top node of $t_0$  and some region in the top node of $t_1$ necessarily alias (enclosure).
 %Similarly,  denotes that some region in the top node of $t_0$ is necessarily enclosed in some region of the top node of $t_1$.
 
-%\subsubsection{Insertion}
+\subsubsection{Insertion}
 Construction of a memory model is performed
 using the recursive $\mathit{ins}$ function shown below.
 It takes as input a memory tree~$t$ and the current memory model~$M$.
@@ -289,7 +289,7 @@ that is passed along through the function call chain.
 For output, function $\mathit{ins}$ produces, non-deterministically,
 a set of new memory models based on all possible pointer relationships
 for the newly-inserted region.
-If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see Section~\ref{sec:intro}).
+If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{sec:intro} \todo{needs changing}).
 If a necessarily-relation can be established between tree~$t$ and some tree already in~$M$, then only the relevant memory models need to be produced.
 %To ensure that the invariants for memory model~$M$ being inserted into
 %are not violated, the external interface to the function takes a single region,%
@@ -423,7 +423,7 @@ For example, we have $(\region{\reg{rdi}_0}{8} \equiv \region{\reg{rsi}_0}{8}) \
   \end{enumerate}
 \end{proof}
 
-% \subsubsection{Joining}
+\subsubsection{Joining}
 \begin{definition}\label{def:mem-join}
   The join of two memory models $M_0$ and $M_1$,
   notation $M_0\sqcup M_1$, is recursively defined as:
@@ -448,7 +448,7 @@ and the supremum of their child memory models.
   Consider two memory models $M_0$ and $M_1$ both with as top node $\region{\reg{rdi}_0}{8}$, where $M_0$ has an enclosed child $\region{\reg{rdi}_0}{4}$ and $M_1$ has an enclosed child $\region{\reg{rdi}_0 + 4}{4}$. The join of $M_0$ and $M_1$ is one memory model with as top node $\region{\reg{rdi}_0}{8}$ and the two subsregions as separate sibling-children.
 \end{example}
 
-\nocompile{
+\begin{comment}
   \begin{figure}
     \hspace*\fill
     \subfloat[Alternate memory model\label{fig:otherMem}]{
@@ -491,7 +491,7 @@ and the supremum of their child memory models.
     This is because all top-level memory trees involved in the merge share
     a region, $\region{\reg{rdi}_0}{8}$, but have no comparable children.
   \end{example}
-}
+\end{comment}
 
 We prove that the join over memory models is sound.
 \begin{lemma}\label{lem:mem_soundness}
@@ -518,7 +518,7 @@ We prove that the join over memory models is sound.
 \end{definition}
 
 We would like to remark that this join loses information.
-It can thus only be applied in a sound fashion for postcondition weakening~\cite{hoare1969axiomatic}.
+It can thus only be applied in a sound fashion for postcondition weakening \autocite{hoare1969axiomatic}.
 In other words, dropping clauses and performing state cleanup
 serve only to reduce state constraints; they never add additional ones.
 In practice, this loss of information means that we may produce a state

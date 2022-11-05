@@ -23,6 +23,7 @@
 \usepackage{textcomp}              % Fixes issue with microtype+siunitx's \micro
 \usepackage{wasysym}               % for \checked
 \usepackage[bbgreekl]{mathbbol} % because amsfonts don't provide \mathbb for \Sigma
+\usepackage{faktor}                % Can use the package because this isn't ACM
 
 % Still want to use AMS fonts for all the stuff they do cover though! mathbbol style is kind of ugly.
 \DeclareSymbolFontAlphabet{\mathbbm}{bbold}
@@ -147,6 +148,8 @@
 \newcommand\writeR{\stackrel{R}{=}}
 \newcommand\writeF{\stackrel{F}{=}}
 \newcommand\writeone[3][\sigma]{#1\llparenthesis #2\writeM #3\rrparenthesis}
+
+% Mmory relations
 \newcommand\enclosed\sqsubseteq
 \newcommand\separate\bowtie
 
@@ -160,9 +163,20 @@
 \newcommand{\psep}{P_\mathrm{sep}}
 
 %% FROM PLDI 2022 (Lattice Lifting) paper
-%\newcommand*{\defeq}{\stackrel{\text{def}}{=}} % want to just use \equiv instead?
+\newcommand*{\defeq}{\stackrel{\text{def}}{=}}
 \newcommand\holds\vdash
 \newcommand\join\sqcup
+
+% Memory relations
+\newcommand\alias\equiv
+\newcommand\compatible\cong
+
+\DeclareMathOperator{\insertM}{ins}
+\newcommand*{\cons}{\mathbin{:}}
+\newcommand*{\sepdot}{\cdot}
+
+\newcommand{\comparable}{\mathrel{\mathbf{C}}}
+\newcommand*{\relmiddle}[1]{\mathrel{}\middle#1\mathrel{}}
 
 %% From EICFG (TACAS 2023) paper
 % Freek did not like the line number stuff so using manual inst refs (but still keeping the hyperlinks!)
