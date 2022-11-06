@@ -60,6 +60,7 @@
 \input{preamble/registers}
 \input{preamble/tikz}
 \input{preamble/types}
+\input{preamble/memory}
 
 % Defined after it's used in commands above but looks like that's okay in LaTeX.
 \newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
@@ -149,10 +150,6 @@
 \newcommand\writeF{\stackrel{F}{=}}
 \newcommand\writeone[3][\sigma]{#1\llparenthesis #2\writeM #3\rrparenthesis}
 
-% Mmory relations
-\newcommand\enclosed\sqsubseteq
-\newcommand\separate\bowtie
-
 \newcommand{\deqptr}{\var{deq}_\mathrm{ptr}}
 \newcommand{\bufferptr}{\var{buf}_\mathrm{ptr}}
 \newcommand{\outptr}{\var{out}_\mathrm{ptr}}
@@ -166,10 +163,6 @@
 \newcommand*{\defeq}{\stackrel{\text{def}}{=}}
 \newcommand\holds\vdash
 \newcommand\join\sqcup
-
-% Memory relations
-\newcommand\alias\equiv
-\newcommand\compatible\cong
 
 \DeclareMathOperator{\insertM}{ins}
 \newcommand*{\cons}{\mathbin{:}}
@@ -285,6 +278,7 @@
   \include{hg-lifting}
   \include{hg-formulation}
   \include{hg-results}
+  \include{hg-discussion}
 
   \part{Adaptations From and Extensions to \emph{Exceptional Interprocedural Control Flow Graphs}}
   \include{eicfg}

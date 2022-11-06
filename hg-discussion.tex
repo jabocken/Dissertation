@@ -1,0 +1,69 @@
+\chapter{Discussion and Conclusions}
+
+\todo{revisions, filling in more}
+
+\section{Discussion}
+The approach taken in this paper necessarily makes assumptions (see \cref{sec:intro}).
+We provide here a high-level discussion on how the assumptions affect the usability of overapproximative binary lifting in various application domains.
+\begin{description}[style=unboxed,leftmargin=0cm,noitemsep,topsep=0pt]
+  \item[Security Analysis] The central claim in this paper is that \emph{if} all assumptions and  proof obligations are met, \emph{then} the lifted representation is a sound overapproximation of the binary. \Cref{sec:fail} shows an example where an assumption can be violated: \texttt{memset} may not preserve the indicated region.
+  The negation of assumptions required for ``normal'' behavior may lead to ``weird'' behavior.
+  In other words, the negation of the generated assumptions may be useful in the generation of exploits.
+  A key challenge here is to filter out the relevant (exploitable) assumptions from the irrelevant ones.
+  \item[Binary Verification] We argue that the majority of existing work on binary verification \emph{assumes} the existence of a trustworthy disassembler.
+  This work exposes and makes explicit assumptions that otherwise may remain implicit.
+  We argue that basing a verification effort on an a verified HG instead of on the output of any of-the-shelf disassembler reduces the trusted code base of the verification effort.
+  \item[Decompilation] Similarly, we argue that the majority of existing decompilation tools \emph{assume} the existence of a reliable disassembler.
+  A verified HG is a reliable base for decompilation.
+  For example, the provably correct assembly and control flow inferred by our approach could be the input to McSema~\cite{dinaburg2014mcsema}, in order to produce provably correct LLVM code.
+  The assumptions then may be translated to higher-level \texttt{assert}-statements: the decompiled code is correct as long as no assert is triggered.
+  \item[Patching] Binary patching typically either involves some stages of decompilation, or replacing snippets of assembly instructions with different ones \autocite{duck2020binary}.
+  We argue that lifting both an original binary and its patched version to HGs would increase the trustworthiness of the patch effort.
+  Both the \acp{hg} --~but also the assumptions required for lifting the binaries~-- could be mutually compared, and this comparison may expose unexpected effects of the patch.
+\end{description}
+
+
+\section{Conclusions}
+
+
+This paper presents the first \emph{provably overapproximative} lifting mechanism for x86-64 binaries.
+Any overapproximative representation of a binary must include both all its ``normal'' as well as all its ``weird'' behaviors.
+%As examples, if the binary has a stack overflow overwriting a return address, or if control flow depends on whether two pointers alias, this must be represented in the lifted model.
+A method is proposed that takes a stripped binary as input (no debugging information or address labeling is required).
+It produces a Hoare Graph as output that contains:
+1.) the assembly instructions found in the binary;
+2.) the control flow;
+and 3.) evidence, in the form of inductive invariants that are sufficiently strong to prove soundness.
+Our approach can deal with overlapping instructions and aims at providing overapproximative bounds to indirect branches (e.g., when a \texttt{jmp} is based on a computation instead of on a constant).
+In some cases, unsoundness annotations are used to indicate possible issues.
+Also, assumptions are enumerated explicitly in the form of proof obligations asserting requirements over external functions.
+If our technique succeeds and the proof obligations are proven true, then under these assumptions, the lifted representation is a provable overapproximation of the binary.
+We have applied our approach to binaries and shared objects of the Xen Hypervisor, covering \numberinstructions{} instructions in total.
+This case study shows that our methodology is scalable and applicable to commercial off-the-shelf software written without verification in mind.
+The \ac{hg} can be exported to the Isabelle/HOL theorem prover, where it can be formally verified.
+This second step essentially validates any inference made by the algorithms during Step~1.
+
+
+
+In future work, we aim to provide support for concurrency.
+Moreover, we find that the context-free nature of our approach limits the number of function callbacks that are properly dealt with.
+We will study passing around statefull information between functions to find a midpoint between scalability and better support for function callbacks.
+
+%Handling for programmer-provided function arrays, such as those used to select behavior
+%based on program arguments, would also be useful.
+
+%\todo{Additionally, it is, in theory, possible to craft a program
+  %  that would result in state explosion via sufficiently complex
+  %  indirect control flow. That would result in state explosion
+  %  due to the incompatibility factor we introduced to deal with jump tables.
+  %  Detecting such situations may be useful, but do not seem necessary to deal
+  %  with typical real-world programs.
+  %  We are also looking into integrating better pointer inference support
+  %  (which registers/memory locations hold pointers and
+  %  what types of memory they point to, similar to Jakstab's handling
+  %  but ideally more in-depth).}
+
+Finally, we aim to combine the lifted \acp{hg} with existing approaches to binary analysis.
+Provably sound binary lifting can be the base
+for \emph{any} trustworthy binary-level technique,
+including decompilation, binary verification and binary patching.

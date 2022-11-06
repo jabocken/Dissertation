@@ -93,7 +93,7 @@ jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
 \subsection{Memory Model}
 Reads and writes of the machine model's memory space take a specific form.
 They operate on \emph{memory regions}.%
-\index{symbolic!memory!region}
+\index{memory!region}
 A memory region $\region{a}{s}$ is defined to have type $\word\times\nat$;%
 \nomenclature[type]{$\word$}{Type of 64-bit (unsigned) words}\index{number!word}%
 \nomenclature[type]{$\nat$}{Type of natural numbers}\index{number!natural}
@@ -115,12 +115,12 @@ that is a \emph{state part},~$\var{SP}$;%
 \index{state!part}%
 \index{symbolic!register}%
 \index{symbolic!flag}%
-\index{symbolic!memory!region}}%
+\index{memory!region}}%
 \index{state!part}
 it can be a region, register, or flag.%
 \index{symbolic!register}%
 \index{symbolic!flag}%
-\index{symbolic!memory!region}
+\index{memory!region}
 Flags can only take boolean expressions while
 the result for a register must be a 64-bit word.
 The behavior for regions in Isabelle

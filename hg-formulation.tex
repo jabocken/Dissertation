@@ -30,7 +30,7 @@ consists of the some combination of the following:
   \nomenclature[type]{$\val$}{Type of symbolic values for \ac{hg} work}%
   \index{symbolic!value}
   \item memory regions (modeled by an expression for the address and a natural number\index{number!natural} for the size)%
-  \index{symbolic!memory!region}, and
+  \index{memory!region}, and
   \item the application of an operator\index{symbolic!operator}
   to a list of expressions.
 \end{itemize}
@@ -52,7 +52,7 @@ These expressions cannot contain state parts\index{state!part}
 such as registers, flags, or memory regions.%
 \index{symbolic!register}%
 \index{symbolic!flag}%
-\index{symbolic!memory!region}
+\index{memory!region}
 They represent constants or computations constructed using initial values.%
 \index{initial!value}
 For example, $\reg{rdi}_0$ denotes the initial symbolic value%
@@ -162,53 +162,59 @@ The join is commutative and idempotent due to the commutativity and idempotency 
 \end{proof}
 
 \section{Memory Models}\label{sec:memory-models}
-\todo{Here right now}
-
-%While one source of non-determinism is control flow
-%and other conditional instructions, there is another.
-%Specifically, the issue of \emph{pointer aliasing}.
-%When different variables (registers, memory locations, etc.)
-%point to the same memory location, they \emph{alias}.
-%When two variables are aliased, writing to the location specified by one of them
-%will change the value that is read from the location specified by the other.
-%This is an important issue that must be dealt with
-%for proper predicate transformation.
-%Unfortunately, it is not always possible to determine whether or not
-%two variables alias.
-
-Program analysis in programs with pointers
+Program analysis\index{program!analysis}
+in programs with pointers\index{pointer}
 requires efficient alias identification and classification.
-Alias information directs assignments to memory.
-We thus keep track of the read and written memory regions
-in a structured memory model.
-These memory models store \emph{aliasing},
-\emph{separation} and \emph{enclosure} relations for memory regions.
-A memory model is defined by the following data structure:
+When different variables\index{variable}
+(or in our case, state parts)\index{state!part}
+point to the same memory region, those variables are \emph{aliased}.\index{memory!aliasing}
+This is an important issue that must be dealt with for proper predicate transformation.
+That is because alias information directs assignments to memory\index{memory!write}.
+Specifically, when two state parts are aliased,%
+\footnote{Or rather, the symbolic expressions\index{symbolic!expression}
+  recorded as being stored in them alias.}
+writing to the symbolic location (memory region) specified by one of them will change the value that is read from the symbolic location (memory region) specified by the other.
+
+We thus keep track of memory regions read and written during a sequence of execution in a structured \emph{memory model}.%
+\index{memory!read}%
+\index{memory!model}
+These memory models store \emph{aliasing}, \emph{separation},%
+\index{memory!separation}
+and \emph{enclosure}\index{memory!enclosure}
+relations for memory regions.\index{memory!region}
+Our memory models are defined by the following data structure:
 \begin{align*}
-  \mathsf{MemTree} \coloneqq
+  \mathsf{MemTree} &\coloneqq
   \{\mathbb{C}\times\mathbb{N}\}\times\mathsf{Mem}
-  &\mbox{\hspace{5ex}}&
-  \mathsf{Mem} \coloneqq \{\mathsf{MemTree}\}
+  &
+  \mathsf{Mem} &\coloneqq \{\mathsf{MemTree}\}
 \end{align*}
 That is,
-a memory model consists of a possibly empty \emph{forest} of memory trees.
-Each memory tree has as a top-level node, a set of memory regions
-and a possibly empty sub-forest that holds its children.
-Two regions in the same node are aliasing.
-Children are enclosed in their parents. Siblings are separate.
+a memory model consists of a possibly empty \emph{forest} of memory trees.%
+\index{memory!tree}%
+\index{memory!forest}
+Each memory tree has as a top-level node,\index{memory!node}
+a set of memory regions,\index{memory!region}
+and a possibly empty sub-forest that holds its child regions.
+Two regions in the same node set alias.
+The child regions are enclosed in their parents.
+Finally, regions in sibling nodes are separate.
 
 \begin{example}
-  Consider the two memory models presented in Figure~\ref{fig:mem}.
+  Consider the two memory models presented in \cref{fig:mem}.
   These memory models involve three regions: $\region{\reg{rdi}_0}{8}$,
   $\region{\reg{rsi}_0}{8}$ and $\region{\reg{rsi}_0+4}{4}$.
   The memory models depict the case where $\reg{rdi}_0$ and $\reg{rsi}_0$ alias and not alias.
-  %Figure~\ref{fig:memA}, provides a case in which
-  %the first two memory regions alias.
-  %Figure~\ref{fig:memB} provides a case where they do not.
+  As stated above, sibling nodes on the same level are separate, while children are enclosed by their parents.
+  Regions within the same node alias.
+  Thus, \cref{fig:memA} shows a situation with
+  two top-level regions aliasing and the child region they share.
+  \Cref{fig:memB}, meanwhile, shows a situation where the two top-level regions do not alias,
+  and thus only one of those regions contains an enclosed child.
 \end{example}
 \begin{figure}
   \hspace*\fill
-  \subfloat[Aliasing\label{fig:memA}]{
+  \subcaptionbox{Aliasing\label{fig:memA}}{
     \begin{tikzpicture}[>=stealth, every node/.style={draw}]
       \node (a) {$\{\region{\reg{rdi}_0}{8},\region{\reg{rsi}_0}{8}\}$};
       \node[below=of a] (b) {$\region{\reg{rsi}_0+4}{4}$};
@@ -217,7 +223,7 @@ Children are enclosed in their parents. Siblings are separate.
     \end{tikzpicture}%
   }
   \hfill
-  \subfloat[No aliasing\label{fig:memB}]{%
+  \subcaptionbox{No aliasing\label{fig:memB}}{%
     \begin{tikzpicture}[>=stealth, every node/.style={draw}]
       \node (a) {$\region{\reg{rdi}_0}{8}$};
       \node[right=of a] (b) {$\region{\reg{rsi}_0}{8}$};
@@ -228,24 +234,21 @@ Children are enclosed in their parents. Siblings are separate.
     \end{tikzpicture}%
   }
   \hspace*\fill
-  \caption{Memory model examples.
-    Siblings on the same level are separate, children are enclosed within their parents.
-    Regions within the same node are aliasing.
-    The one on the left shows a situation with
-    two top-level regions aliasing and the child region they share.
-    The one on the right shows a situation where the two top-level regions do not alias,
-    and thus only one of those regions contains an enclosed child.}
+  \caption{Memory model examples}
   \label{fig:mem}
 \end{figure}
 
+\todo{working from here}
 \begin{definition}
   Let $s$ be a concrete state and let $r_0 = \langle e_0, n_0\rangle$ and $r_1 = \langle e_1, n_1\rangle$ be two regions in memory.
-  Respectively, \emph{aliasing}, \emph{separation} and \emph{enclosure}, notations ($\equiv$, $\bowtie$, $\preceq$), are defined as:
+  Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations $\equiv$, $\bowtie$, and $\preceq$, respectively, are defined as:
   \begin{align*}
-    r_0 \equiv r_1 &\defeq s \vdash e_0 = e_1 \wedge n_0 = n_1 \\
-    r_0 \bowtie r_1 &\defeq s \vdash (e_0 + n_0 \le e_1) \vee (e_1 + n_1 \le e_0)\\
-    r_0 \preceq r_1 &\defeq s \vdash e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
+    r_0 \alias r_1 &\defeq s \vdash e_0 = e_1 \wedge n_0 = n_1 \\
+    r_0 \separate r_1 &\defeq s \vdash (e_0 + n_0 \le e_1) \vee (e_1 + n_1 \le e_0)\\
+    r_0 \enclosed r_1 &\defeq s \vdash e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
   \end{align*}
+  \nomenclature{$\alias$}{For \acp{hg}, indicates the two memory region%
+    \index{memory!region} arguments alias}
 \end{definition}
 A relation holds \emph{necessarily} if and only if it holds in all concrete states $s$.
 For example, $\region{\reg{rsi}_0}{4} \bowtie \region{\reg{rsi}_0+4}{4}$ denotes that the two regions are necessarily separate.
@@ -440,50 +443,49 @@ and the supremum of their child memory models.
   Consider two memory models $M_0$ and $M_1$ both with as top node $\region{\reg{rdi}_0}{8}$, where $M_0$ has an enclosed child $\region{\reg{rdi}_0}{4}$ and $M_1$ has an enclosed child $\region{\reg{rdi}_0 + 4}{4}$. The join of $M_0$ and $M_1$ is one memory model with as top node $\region{\reg{rdi}_0}{8}$ and the two subsregions as separate sibling-children.
 \end{example}
 
-\begin{comment}
-  \begin{figure}
-    \hspace*\fill
-    \subfloat[Alternate memory model\label{fig:otherMem}]{
-      \hspace{3ex}
-      \begin{tikzpicture}[>=stealth, every node/.style={draw}]
-        \node (a) {$\{\region{\reg{rdi}_0}{8},\region{\reg{rdx}_0}{8}\}$};
-      \end{tikzpicture}%
-      \hspace{3ex}
-    }
-    \hfill
-    \subfloat[Join result\label{fig:otherMemJoin}]{
-      \hspace{2ex}
-      \begin{tikzpicture}[>=stealth, every node/.style={draw}]
-        \node (a) {$\region{\reg{rdi}_0}{8}$};
-      \end{tikzpicture}%
-      \hspace{2ex}
-    }
-    \hspace*\fill
-    \caption{Join with alternate memory model}\label{fig:otherJoin}
-    %\Description{This shows an alternate memory model (on the left,
-      %containing two eight-byte regions with separate symbolic variable bases)
-      %that is joined with the memory model from Figure~\ref{fig:memA}
-      %(where one of the top-level regions is shared),
-      %resulting in the memory model shown on the right in the figure.
-      %(only that shared top-level region is present)}
-  \end{figure}
+\begin{figure}
+  \hspace*\fill
+  \subcaptionbox{Alternate memory model\label{fig:otherMem}}{
+    \hspace{3ex}
+    \begin{tikzpicture}[>=stealth, every node/.style={draw}]
+      \node (a) {$\{\region{\reg{rdi}_0}{8},\region{\reg{rdx}_0}{8}\}$};
+    \end{tikzpicture}%
+    \hspace{3ex}
+  }
+  \hfill
+  \subcaptionbox{Join result\label{fig:otherMemJoin}}{
+    \hspace{2ex}
+    \begin{tikzpicture}[>=stealth, every node/.style={draw}]
+      \node (a) {$\region{\reg{rdi}_0}{8}$};
+    \end{tikzpicture}%
+    \hspace{2ex}
+  }
+  \hspace*\fill
+  \caption{Join with alternate memory model}\label{fig:otherJoin}
+  %\Description{This shows an alternate memory model (on the left,
+    %containing two eight-byte regions with separate symbolic variable bases)
+    %that is joined with the memory model from Figure~\ref{fig:memA}
+    %(where one of the top-level regions is shared),
+    %resulting in the memory model shown on the right in the figure.
+    %(only that shared top-level region is present)}
+\end{figure}
 
-  \begin{example}
-    First, consider the memory models shown in Figure~\ref{fig:mem}.
-    Since the top nodes share a region, the two trees belong to the same equivalence class.
-    The intersection of all of the region alias sets is:
-    \begin{equation*}
-      \{\region{\reg{rdi}_0}{8},\region{\reg{rsi}_0}{8}\}\cap
-      \{\region{\reg{rdi}_0}{8}\}\cap\{\region{\reg{rsi}_0}{8}\}
-    \end{equation*}
-    As this intersection produces $\varnothing$,
-    the result of the join is $\varnothing$, an empty memory model.
-    Second, the join of the memory model shown in Figure~\ref{fig:memA}
-    with the one shown in Figure~\ref{fig:otherMem} results in the memory model shown in Figure~\ref{fig:otherMemJoin}.
-    This is because all top-level memory trees involved in the merge share
-    a region, $\region{\reg{rdi}_0}{8}$, but have no comparable children.
-  \end{example}
-\end{comment}
+\begin{example}
+  \todo{figure out if this and the related figure should be included}
+  First, consider the memory models shown in \cref{fig:mem}.
+  Since the top nodes share a region, the two trees belong to the same equivalence class.
+  The intersection of all of the region alias sets is:
+  \begin{equation*}
+    \{\region{\reg{rdi}_0}{8},\region{\reg{rsi}_0}{8}\}\cap
+    \{\region{\reg{rdi}_0}{8}\}\cap\{\region{\reg{rsi}_0}{8}\}
+  \end{equation*}
+  As this intersection produces $\varnothing$,
+  the result of the join is $\varnothing$, an empty memory model.
+  Second, the join of the memory model shown in \cref{fig:memA}
+  with the one shown in \cref{fig:otherMem} results in the memory model shown in \cref{fig:otherMemJoin}.
+  This is because all top-level memory trees involved in the merge share
+  a region, $\region{\reg{rdi}_0}{8}$, but have no comparable children.
+\end{example}
 
 We prove that the join over memory models is sound.
 \begin{lemma}\label{lem:mem_soundness}
