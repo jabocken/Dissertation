@@ -47,7 +47,7 @@ various instructions and their variants (\cref{se:rewrite}).
 \section{Machine Model}\label{se:machine_model}
 In order to perform symbolic execution,
 you must first have some sort of \emph{machine model}.%
-\index{symbolic execution!machine model}
+\index{symbolic!execution!machine model}
 The machine model used in this dissertation for the work in Isabelle/HOL
 is an extension of the work of \textcite{roessle2019}.
 They embedded in Isabelle/HOL a bitvector-based, big-step semantics
@@ -71,7 +71,7 @@ that stores registers, flags, and 64-bit byte-addressable memory.
 The memory holds both instructions and data, as in the standard von Neumann model.%
 \index{von Neumann model}
 Each instruction is executed by a \emph{step} function,%
-\index{symbolic execution!step function}
+\index{function!step}
 defined to suit the nature of the symbolic execution engine in use.
 The works presented in this dissertation in \cref{ch:cfg,ch:syntax}
 each use their own, slightly different symbolic execution engine,

@@ -19,7 +19,7 @@ called \emph{cutpoints},%
 \index{cutpoint}
 such that every path through the program
 is symbolically executed only once.%
-\index{symbolic execution}
+\index{symbolic!exeution}
 
 An overview of the methodology's steps can be seen in \cref{se:cfg_overview},
 with formal definitions of the needed constructs presented in \cref{se:cfg_defs}.
@@ -130,13 +130,13 @@ If some sort of exception, such as a divide by zero, occurs,
 the function returns~$\err$ instead.
 
 From the machine model, we manually derived a run function%
-\index{symbolic execution!run function}
+\index{function!run}
 $\run:(S\rightarrow\bool)\times S\rightarrow(S\mid\err\mid\infloop)$.
 This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
 producing a state~$\sigma'$ on successful completion.
 Predicate~$H$ denotes a \emph{halting condition},%
-\index{symbolic execution!halting condition}
+\index{symbolic!execution!halting condition}
 which typically instructs the run function to stop
 at a certain instruction address, such as that following a \inlineasm{ret}.
 The run function executes $\step$ until~$H$, applied to the current state,
@@ -349,7 +349,7 @@ Reasoning about composition with the Hoare triples specific to this chapter
 requires a bit of work,
 as standard composition does not apply to Hoare triples
 that use halting conditions.%
-\index{symbolic execution!halting condition}
+\index{symbolic!execution!halting condition}
 Doing so is still possible, however.
 \begin{theorem}[Composition rule]\label{thm:comp}
   Halting Hoare triples are compositional

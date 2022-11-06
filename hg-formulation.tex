@@ -1,19 +1,9 @@
-\chapter{Lattice-Based Formal Lifting and \aclp*{hg}}\label{ch:lattice-lifting}
-
-\Ac{hg}
-
-\section{Properties of Interest}
-
-\section{Assumptions and Scope}
-
-\section{Example}
-
-\section{Technical Formulation}
-\todo{copy the stuff over here. Wonder if I'll end up making this long enough to be it's own chapter?}
+\chapter{Technical Formulation}
+\todo{copy the stuff over here}
 
 \nomenclature[operator]{$\holds$}{Indicates that the state predicate or memory model on the \ac{rhs} holds for the state on the \ac{lhs}}
 
-\subsection{Predicates}
+\section{Predicates}
 \emph{Predicates}\index{state!predicate} are assertions on state.
 A predicate~$P$\nomenclature{$P$}{A state predicate}
 consists of a set of \emph{clauses}\index{state!predicate!clause}.
@@ -85,7 +75,7 @@ and~$\bot$.
 Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
 $\bot$ is also used to indicate an unknown~$\constant$.%
 \nomenclature{$\bot$}{Bottom; an always-false symbolic state predicate or an unknown/undefined~$\constant$
-\todo{make sure this does not conflict with any other definitions}}
+  \todo{make sure this does not conflict with any other definitions}}
 \begin{definition}\label{def:join}
   The aforementioned join\index{lattice!join}
   of two predicates~$P$ and~$Q$,%
@@ -164,14 +154,16 @@ The join is commutative and idempotent due to the commutativity and idempotency 
   must hold.
   Let~$c$ be one of the clauses resulting from the join.
   It is the result of one of the merge rules.
-	Consider the first case, for equality.
-	Since $l=r_1$ is a clause in~$P$, we have $l\ge\min(r_1,r_2)$ and $l\le\max(r_1,r_2)$.
-	The other cases are similar.
+  Consider the first case, for equality.
+  Since $l=r_1$ is a clause in~$P$, we have $l\ge\min(r_1,r_2)$ and $l\le\max(r_1,r_2)$.
+  The other cases are similar.
 
   \todo{double-check this}
 \end{proof}
 
-\subsection{Memory Models}\label{sec:memory-models}
+\section{Memory Models}\label{sec:memory-models}
+\todo{Here right now}
+
 %While one source of non-determinism is control flow
 %and other conditional instructions, there is another.
 %Specifically, the issue of \emph{pointer aliasing}.
@@ -278,7 +270,7 @@ e.g., $t_0 \bowtie t_1$ denotes that all regions in $t_0$ are necessarily separa
 Notation $t_0 \equiv t_1$ ($t_0 \preceq t_1$) denotes that some region in the top node of $t_0$  and some region in the top node of $t_1$ necessarily alias (enclosure).
 %Similarly,  denotes that some region in the top node of $t_0$ is necessarily enclosed in some region of the top node of $t_1$.
 
-\subsubsection{Insertion}
+\subsection{Insertion}
 Construction of a memory model is performed
 using the recursive $\mathit{ins}$ function shown below.
 It takes as input a memory tree~$t$ and the current memory model~$M$.
@@ -423,7 +415,7 @@ For example, we have $(\region{\reg{rdi}_0}{8} \equiv \region{\reg{rsi}_0}{8}) \
   \end{enumerate}
 \end{proof}
 
-\subsubsection{Joining}
+\subsection{Joining}
 \begin{definition}\label{def:mem-join}
   The join of two memory models $M_0$ and $M_1$,
   notation $M_0\sqcup M_1$, is recursively defined as:
@@ -527,3 +519,13 @@ or we may be unable to resolve some indirections/prove some return addresses
 (which would result in annotations/tool failure).
 Even in such cases, given successful completion and no annotations produced,
 we will always produce all states that would be encountered during concrete execution.
+
+\section{Base Algorithm}
+\todo{maybe move this to Technical Formulation?}
+\Ac{hg}
+
+\section{Extension: Function Calls}
+
+\subsection{External Functions}
+
+\subsection{Internal Functions}
