@@ -41,6 +41,7 @@
 }
 
 @index{state}
+@index{memory}
 
 %% From CFG-driven work
 %TODO: maybe change this to \mathbb{P}?
@@ -93,6 +94,22 @@
   seealso = {expression}
 }
 %\newcommand{\variable}{\mathbb V} % variables are just symbolic values so just using \val in place of this for now
+
+@symbol{predicate,
+  name = {\ensuremath{\mathsf{Pred}}},
+  description = {Type of state predicates},
+  parent = {state}
+}
+@symbol{memtree,
+  name = {\ensuremath{\mathsf{MemTree}}},
+  description = {Type of memory trees},
+  parent = {memory}
+}
+@symbol{mem,
+  name = {\ensuremath{\mathsf{Mem}}},
+  description = {Type of memory forests},
+  parent = {memory}
+}
 
 %% From EICFG (TACAS 2023) paper
 @symbol{inst2,

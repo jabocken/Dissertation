@@ -47,7 +47,7 @@ They represent constants or computations constructed using initial values.%
 \index{initial!value}
 For example, $\reg{rdi}_0$ denotes the initial symbolic value%
 \index{symbolic!value}%
-of register $\reg{rdi}$.
+of register~$\reg{rdi}$.
 % TODO: This should probably be nomenclature somehow but I'm not sure how
 This value does not change during symbolic execution\index{symbolic!execution}.
 
@@ -95,7 +95,7 @@ generated from the two clauses supplied to it.
 % The union of all sets produced is then taken, resulting in the joined predicate.
 While only merge rules for $=$ and $<$ are shown, there are also rules
 for the other possible clause operations.
-The $\max$ and $\min$ functions used are partial;%
+The~$\max$ and~$\min$ functions used are partial;%
 \index{function!maximum}%
 \index{function!minimum}%
 \index{function!partial}
@@ -180,10 +180,10 @@ fashion allows for dealing with multiple potential combinations of relations
 between read and written regions in memory.
 They are defined by the following data structure:
 \begin{align*}
-  \mathsf{MemTree} &\coloneqq
-  \{\gls{constant}\times\gls{nat}\}\times\mathsf{Mem}
+  \gls{memtree} &\coloneqq
+  \{\gls{constant}\times\gls{nat}\}\times\gls{mem}
   &
-  \mathsf{Mem} &\coloneqq \{\mathsf{MemTree}\}
+  \gls{mem} &\coloneqq \{\gls{memtree}\}
 \end{align*}
 That is,
 a memory model consists of a possibly empty \emph{forest} of memory trees.%
@@ -254,7 +254,7 @@ Finally, regions in sibling nodes are separate.
 \end{definition}
 A relation holds \emph{necessarily} if and only if it holds in all concrete states $s$.
 For example, $\region{\reg{rsi}_0}{4} \bowtie \region{\reg{rsi}_0+4}{4}$ denotes that the two regions are necessarily separate.
-The SMT solver/theorem prover Z3~\cite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses given the current state predicate.
+The SMT solver/theorem prover Z3 \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses given the current state predicate.
 This is done via expression translation directly to Z3's bit-vector
 representations, meaning no information is lost in the conversion
 and when querying the constructed logical formulas.
@@ -296,7 +296,7 @@ If a necessarily-relation can be established between tree~$t$ and some tree alre
 
 \begin{definition}\label{def:insert}
   Let $t_0 = \langle R_0,M_0\rangle$ and $t_1 = \langle R_1,M_1\rangle$ be two trees. Function
-  $\insertM$ of type $\mathsf{MemTree}\times\mathsf{Mem}\times\mathsf{Pred}\rightarrow\{\mathsf{Mem}\}$
+  $\insertM$ of type $\gls{memtree}\times\gls{mem}\times\gls{predicate}\rightarrow\{\gls{mem}\}$
   is defined as follows:
   \begin{align*}
     \insertM(t_0,\varnothing) &\defeq \{t_0\}\notag \\
