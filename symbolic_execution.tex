@@ -94,9 +94,7 @@ jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
 Reads and writes of the machine model's memory space take a specific form.
 They operate on \emph{memory regions}.%
 \index{memory!region}
-A memory region $\region{a}{s}$ is defined to have type $\word\times\nat$;%
-\nomenclature[type]{$\word$}{Type of 64-bit (unsigned) words}\index{number!word}%
-\nomenclature[type]{$\nat$}{Type of natural numbers}\index{number!natural}
+A memory region $\region{a}{s}$ is defined to have type $\word\times\nat$;
 that is, its starting address~$a$ is a 64-bit word
 and its size in bytes~$s$ is a natural number.
 
@@ -111,7 +109,6 @@ Meanwhile, writing to memory uses the notation $x\coloneqq e$,%
 which has type~$\asp=(\var{SP},\esp)$;
 these \emph{assignments} denote writing an expression~$e$ to some location~$x$
 that is a \emph{state part},~$\var{SP}$;%
-\nomenclature[type]{$\var{SP}$}{Type of state parts (regions, flags, and registers)%
 \index{state!part}%
 \index{symbolic!register}%
 \index{symbolic!flag}%
@@ -126,8 +123,7 @@ the result for a register must be a 64-bit word.
 The behavior for regions in Isabelle
 is to internally decompose the expression to write
 into its component bytes and then write those into memory in the appropriate order.
-The expressions themselves are of type~$\esp$,%
-\nomenclature[type]{$\esp$}{Type of expressions for \ac*{cfg}/syntax-guided work}
+The expressions themselves are of type~$\esp$,
 representing expressions over state parts.
 These expressions consist of common bit-vector\index{symbolic!bit vector}
 operations including
@@ -300,9 +296,7 @@ They are the subterms not in \emph{normal form},%
 \index{normal form}
 the ones that may be rewritten again after application of the rewrite rule.
 \begin{equation}
-  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}%
-  \nomenclature[type]{$\equiv$}{Indicates term equivalence;
-    the term on the left may be replaced by the term on the right}
+  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}
     \underline{\sigma(r_1\coloneqq v_1)}(r_0\coloneqq v_0) &
       \text{if } r_0\separate r_1 \\
     \underline{\sigma((r_0\coloneqq v_0)\mmerge(r_1\coloneqq v_1))} &

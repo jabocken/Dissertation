@@ -120,7 +120,6 @@ While \cref{ch:symbolic_execution} provided a general overview of symbolic execu
 this chapter requires a more specific look.
 The step function for this methodology takes the form
 $\step:S\rightarrow(S\mid\err)$.%
-\nomenclature[type]{$S$}{Type representing program state; an Isabelle record}%
 \nomenclature{$\err$}{Indicates exceptional state}
 It takes the current state~$\sigma$ to execute from
 and returns the state~$\sigma'$ after execution of the current instruction,
@@ -207,9 +206,7 @@ can be inferred for the program as a whole (\cref{thm:floyd_hoare}).
 More formally, the \emph{Floyd invariant}%
 \index{Floyd!invariant}
 for a function is a partial function that takes the form
-$I:L\rightharpoonup(S\rightarrow\bool)$.%
-\nomenclature[type]{$L$}{Type of instruction addresses in a program; a 64-bit word}%TODO: maybe change this to \mathbb{P}? probably should at least be \mathbb{L}
-\nomenclature[type]{$\bool$}{Type of boolean values, True and False}
+$I:\glssymbol{insts}\rightharpoonup(S\rightarrow\bool)$.
 This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
 As a technical detail, some function proofs require additional arguments to $I$

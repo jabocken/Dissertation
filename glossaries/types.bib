@@ -1,0 +1,142 @@
+% Maybe give some of the symbol ones proper names?
+%% Shared types
+@index{number}
+@symbol{bool,
+  name = {\ensuremath{\mathbb B}},
+  description = {Type of boolean values, True and False \todo{use the notation eventually}},
+  parent = {number}
+}
+@symbol{nat,
+  name = {\ensuremath{\mathbb N}},
+  description = {Type of natural numbers},
+  parent = {number}
+}
+@symbol{word,
+  name = {\ensuremath{\mathbb W}},
+  description = {Type of 64-bit (unsigned) words},
+  parent = {number}
+}
+
+@index{symbolic}
+@symbol{register,
+  name = {\ensuremath{\mathbb R}},
+  description = {Type of symbolic registers; not denoting real numbers in this case}
+}
+@symbol{flag,
+  name = {\ensuremath{\mathbb F}},
+  description = {Type of symbolic flags},
+  parent = {symbolic}
+}
+@symbol{val,
+  name = {\ensuremath{\mathbb V}},
+  description = {Type of symbolic values for \ac{hg} work and symbolic expressions for \ac{eicfg} work \todo{this needs changing}},
+  parent = {symbolic},
+  seealso = {esp}
+}
+@symbol{esp,
+  name = {\ensuremath{E_\mathrm{SP}}},
+  description = {Type of expressions for \ac{cfg}/syntax-guided work},
+  parent = {symbolic},
+  seealso = {val}
+}
+
+@index{state}
+
+%% From CFG-driven work
+%TODO: maybe change this to \mathbb{P}?
+@symbol{instaddr,
+  name = {\ensuremath{\mathbb L}},
+  description = {Type of instruction addresses in a program; a 64-bit word},
+  parent = {number},
+  seealso = {word}
+}
+
+%% From Syntax-driven work
+% moving away from just $A$
+@symbol{inst1,
+  name = {\ensuremath{\mathbb A}},
+  description = {Type of instructions for syntax-driven work \todo{would like to change}},
+  seealso = {inst2}
+}
+@symbol{isabelle-state,
+  name = {\ensuremath{\mathbb S}},
+  description = {Type representing program state; an Isabelle record},
+  parent = {state}
+}
+@symbol{basic-block,
+  name = {\ensuremath\beta},
+  description = {Type of basic blocks}
+}
+@symbol{branch,
+  name = {\ensuremath\Phi},
+  description = {Type of branching conditions}
+}
+@symbol{assign,
+  name = {\ensuremath{A_\mathrm{SP}}},
+  description = {Type of assignments}
+}
+@symbol{state-part,
+  name = {\ensuremath{\var{SP}}},
+  description = {Type of state parts},
+  seealso = {memory-region,flag,register}
+}
+
+%% FROM Hoare Graph/lattice lifting (PLDI 2022) paper
+@symbol{expression,
+  name = {\ensuremath{\mathbb E}},
+  description = {Type of symbolic expressions for \ac{hg} work},
+  parent = {symbolic}
+}
+@symbol{constant,
+  name = {\ensuremath{\mathbb C}},
+  description = {Type of constant expressions},
+  seealso = {expression}
+}
+%\newcommand{\variable}{\mathbb V} % variables are just symbolic values so just using \val in place of this for now
+
+%% From EICFG (TACAS 2023) paper
+@symbol{inst2,
+  name = {\ensuremath{\mathtt{Inst}}},
+  description = {Type of instructions for \ac{eicfg} work \todo{would like to change}},
+  seealso = {inst1}
+}
+
+@symbol{graph,
+  name = {\ensuremath{\mathbb G}},
+  description = {Type of \acp{cfg}}
+}
+@symbol{node,
+  name = {\ensuremath{\mathbb N}},
+  description = {Type of graph nodes},
+  parent = {graph}
+}
+@symbol{edge,
+  name = {\ensuremath{\node\times\node\times(\inst|\bot)}},
+  description = {Type of graph edges},
+  parent = {graph},
+  seealso = {node}
+}
+@symbol{exception,
+  name = {\ensuremath{\mathbb E}},
+  description = {Type of exceptions}
+}
+@symbol{pointer,
+  name = {\ensuremath{\mathbb E}},
+  description = {Type of pointers; a 64-bit word},
+  parent = {number},
+  seealso = {word}
+}
+@symbol{termination,
+  name = {\ensuremath{\mathbb T}},
+  description = {Type of termination conditions; could be empty}
+}
+@symbol{abs-state,
+  name = {\ensuremath{\mathbbm\Sigma}},
+  description = {Type of abstract states for \ac{eicfg} work},
+  parent = {state}
+}
+@symbol{conc-state,
+  name = {\ensuremath{\mathbb S}},
+  description = {Type of concrete states for \ac{eicfg} work},
+  parent = {state}
+}

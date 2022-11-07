@@ -59,8 +59,8 @@
 \input{preamble/numbers}
 \input{preamble/registers}
 \input{preamble/tikz}
-\input{preamble/types}
 \input{preamble/memory}
+\input{preamble/glossaries}
 
 % Defined after it's used in commands above but looks like that's okay in LaTeX.
 \newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
@@ -77,12 +77,9 @@
 \newcommand*{\eqsetfix}{\mathrel{\phantom{=}}\phantom{\{}}
 \newcommand*{\equivsetfix}{\mathrel{\phantom{\equiv}}\phantom{\{}}
 
-\newcommand{\asp}{A_\mathrm{SP}}
-\newcommand{\esp}{E_\mathrm{SP}}
 \newcommand{\infloop}{\bot_\mathrm{NT}}
 \newcommand{\err}{\bot_\mathrm{E}}
 \newcommand{\bop}{\mathbin\bigcirc}
-\newcommand{\nat}{\mathbb N} % There's some other package that defines this; if you get conflicts later, just switch to \natnum
 
 \newcommand{\true}{\mathcal T}
 \newcommand{\false}{\mathcal F}
@@ -240,6 +237,9 @@
 
 \includeonly{hg-formulation}
 
+% This isn't working but whatever
+\newcommand\nomenclature[2]{}
+
 \makeindex[intoc]
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
@@ -254,7 +254,8 @@
   \microtypesetup{protrusion=true}
 
   \printacronyms[heading=chapter]
-  \printnomenclature
+  \printunsrtglossary[type=symbols,style=indexgroup] % no default style for symbols; don't know why they aren't being formatted here
+  \acresetall % Any acronyms used inside the glossaries should start over here.
 
   \input{attribution} % prefaces go in front matter
 
@@ -287,7 +288,8 @@
   {% appendices don't work right with \backmatter due to it getting rid of counters
     \backmatter % All the stuff that comes after the body chapters
     \printbibliography[heading=bibintoc]
-    \printindex
+    \printindex % may be getting rid of this soon...
+    \printunsrtglossary[style=bookindex] % default style not good for index
   }
 %  \appendix % formats the chapter name to appendix to properly define the headers
 %  \begin{appendices}

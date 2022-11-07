@@ -15,39 +15,29 @@ $P$ holds in state~$s$%
 
 Breaking it down further, a clause consists of two symbolic expressions\index{symbolic!expression}
 and their relation.
-A symbolic expression of type $\expression$%
-\nomenclature[type]{$\expression$}{Type of symbolic expressions for \ac{hg} work}
-consists of the some combination of the following:
+A symbolic expression of type \gls{expression} consists of the some combination of the following:
 \begin{itemize}
-  \item register references ($\register$),%
-  \nomenclature[type]{$\register$}{Type of symbolic registers}%
-  \index{symbolic!register}
-  \item flag references ($\flag$),%
-  \nomenclature[type]{$\flag$}{Type of symbolic flags}%
-  \index{symbolic!flag}
-  \item 64-bit words ($\word$),\index{number!word}
-  \item symbolic values ($\val$),%
-  \nomenclature[type]{$\val$}{Type of symbolic values for \ac{hg} work}%
-  \index{symbolic!value}
-  \item memory regions (modeled by an expression for the address and a natural number\index{number!natural} for the size)%
+  \item register references (\gls{register}),
+  \item flag references (\gls{flag}),
+  \item 64-bit words (\gls{word}),
+  \item symbolic values (\gls{val}),
+  \item memory regions (modeled by an expression for the address and a natural number\index{number!natural} for the size)%TODO: \gls!
   \index{memory!region}, and
   \item the application of an operator\index{symbolic!operator}
   to a list of expressions.
 \end{itemize}
 In formal notation, this is:
 \begin{equation}
-  \expression\coloneqq
-  \register\mid
-  \flag\mid
-  \word\mid
-  \val\mid
-  \expression\times\nat\mid
-  \mathsf{Op}\times[\expression]
+  \gls{expression}\coloneqq
+  \gls{register}\mid
+  \gls{flag}\mid
+  \gls{word}\mid
+  \gls{val}\mid
+  \gls{expression}\times\gls{nat}\mid
+  \mathsf{Op}\times[\gls{expression}]
 \end{equation}
 \nomenclature[operator]{$\coloneqq$}{Indicates that the \ac{rhs} defines the \ac{lhs} for \ac{hg} and \ac{eicfg} work}%
-We identify a subset of these symbolic expressions called \emph{constant expressions} ($\constant$).%
-\nomenclature[type]{$\constant$}{Type of constant expressions}%
-\index{constant!expession}
+We identify a subset of these symbolic expressions called \emph{constant expressions} (\gls{constant}).
 These expressions cannot contain state parts\index{state!part}
 such as registers, flags, or memory regions.%
 \index{symbolic!register}%
@@ -62,7 +52,7 @@ of register $\reg{rdi}$.
 This value does not change during symbolic execution\index{symbolic!execution}.
 
 In notation, clauses\index{state!predicate!clause}
-take the form $\expression \mathbin{\square} \constant$,%
+take the form $\gls{expression} \mathbin{\square} \gls{constant}$,%
 \nomenclature[operator]{$\square$}{A placeholder for some binary relation}%
 \nomenclature[operator]{$\in$}{Indicates that the \ac{lhs} is an element of the set on the \ac{rhs}}
 where $\square\in\{=,\neq,<,<_s,\ge,\ge_s\}$.
@@ -73,8 +63,8 @@ There are also two special clauseless predicates,~$\top$%
 \nomenclature{$\top$}{Top; an always-true symbolic state predicate}
 and~$\bot$.
 Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
-$\bot$ is also used to indicate an unknown~$\constant$.%
-\nomenclature{$\bot$}{Bottom; an always-false symbolic state predicate or an unknown/undefined~$\constant$
+$\bot$ is also used to indicate an unknown~\gls{constant}.%
+\nomenclature{$\bot$}{Bottom; an always-false symbolic state predicate or an unknown/undefined~\gls{constant}
   \todo{make sure this does not conflict with any other definitions}}
 \begin{definition}\label{def:join}
   The aforementioned join\index{lattice!join}
@@ -191,7 +181,7 @@ between read and written regions in memory.
 They are defined by the following data structure:
 \begin{align*}
   \mathsf{MemTree} &\coloneqq
-  \{\constant\times\nat\}\times\mathsf{Mem}
+  \{\gls{constant}\times\gls{nat}\}\times\mathsf{Mem}
   &
   \mathsf{Mem} &\coloneqq \{\mathsf{MemTree}\}
 \end{align*}

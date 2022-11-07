@@ -103,21 +103,30 @@
 \RequirePackage{lmodern}     % Nice vector fonts
 \RequirePackage[tracking]{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern. Tracking option adds uniform letter spacing for small caps.
 
-%package required for nomenclature entries; refeq/refpage are nice but doesn't have hyperref integration, unfortunately
-\RequirePackage[intoc,refpage]{nomencl}
-\makenomenclature
-
 \RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
 
 % double space option
 \RequirePackage{setspace}
 \ifbool{@dbl}\doublespace{}
 
-% Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally for basic index, though it must come before hyperref for usage with it
+% Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally for basic index, though it must come before hyperref for usage with it. May not be needed now that glossaries are in use but keeping while I still have indices floating around
 \RequirePackage{imakeidx}
 
 % links for references
 \RequirePackage[final,colorlinks]{hyperref}
+
+% Package for flexible glossaries; I had issues with nomencl and this will allow more centralized configuration anyway. Also supports acronyms, though I am not yet transitioning those yet.
+% configuring glossaries-extra to use bib2gls and also provide accessibility support just in case you want to use it for symbols or whatever that wouldn't screen-read right; treating undefined glossary entries as warnings to match standard missing-reference stuff is automatically integrated into record because of how bib2gls works.
+% important: this must come AFTER hyperref, babel, polyglossia, inputenc and fontenc!
+\RequirePackage[record,accsupp,
+  postpunc=dot,% full stop after description
+  nostyles,% don't load default style packages
+  % load glossaries-extra-stylemods.sty and glossary-tree.sty, bookindex
+  stylemods={tree,bookindex},
+  symbols % want symbol styles
+]{glossaries-extra}
+%\RequirePackage{glossaries-bookindex} % for a(n) configuration
+\RequirePackage{glossaries-prefix} % for a(n) configuration
 
 % For including pdf images (not always needed):
 %\RequirePackage[final]{graphicx}

@@ -109,10 +109,8 @@ in part for that purpose.
 branches, loops, and function calls.
 The following grammar provides a description of \ac{scf}
 produced by the extraction code.
-Each basic block is represented by the polymorphic type~$\beta$,%
-\nomenclature[type]{$\beta$}{Type of basic blocks}
-while branching conditions are represented using the polymorphic type~$\Phi$.%
-\nomenclature[type]{$\Phi$}{Type of branching conditions}
+Each basic block is represented by the polymorphic type~$\beta$,
+while branching conditions are represented using the polymorphic type~$\Phi$.
 \begin{bnf}
   \bnfprod*{scf}{
     \bnfpn{scf}\bnfsp\bnfts{;}\bnfsp\bnfpn{scf}
@@ -309,8 +307,7 @@ This section now covers the symbolic execution of those individual blocks.
 The Haskell symbolic execution engine
 takes as input a data structure of type $\scf(B,E_F)$,
 which is formulated over basic blocks,
-and produces $\scf(\powerset(\asp),\esp)$,%
-\nomenclature[type]{$\asp$}{Type of assignments}
+and produces $\scf(\powerset(\asp),\esp)$,
 which is formulated over sets of assignments.
 It keeps track of all used memory regions,
 both the actual regions used by instructions as well as merged regions,
@@ -597,8 +594,7 @@ Undefined behavior, such as null-pointer dereferencing,
 is modeled by relating the state in which it occurs to any successor state
 supplied with it.
 
-The internal step function has type $\step:A\times\nat\times S\rightarrow S$,%
-\nomenclature[type]{$A$}{Type of instructions}
+The internal step function has type $\step:A\times\nat\times S\rightarrow S$,
 with its first argument being an instruction, its second being the size of the instruction,
 and its third being the current state.
 The function returns the state after instruction execution,
