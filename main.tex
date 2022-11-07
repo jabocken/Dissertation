@@ -74,8 +74,8 @@
 %% Math commands
 \newcommand{\letin}[2]{\textbf{let} \(#1\) \textbf{such that} \(#2\)}
 \newcommand{\ind}[1]{\hspace{#1}}
-\newcommand*{\eqsetfix}{\mathrel{\phantom{=}}\phantom{\{}}
-\newcommand*{\equivsetfix}{\mathrel{\phantom{\equiv}}\phantom{\{}}
+%\newcommand*{\eqsetfix}{\mathrel{\phantom{=}}\phantom{\{}} % What were these used for?
+%\newcommand*{\equivsetfix}{\mathrel{\phantom{\equiv}}\phantom{\{}}
 
 \newcommand{\infloop}{\bot_\mathrm{NT}}
 \newcommand{\err}{\bot_\mathrm{E}}
@@ -162,7 +162,7 @@
 \newcommand*{\cons}{\mathbin{:}}
 \newcommand*{\sepdot}{\cdot}
 
-\newcommand{\comparable}{\mathrel{\mathbf{C}}}
+% not really sure what to do with this yet
 \newcommand*{\relmiddle}[1]{\mathrel{}\middle#1\mathrel{}}
 
 %% From EICFG (TACAS 2023) paper
@@ -240,7 +240,7 @@
 % This isn't working but whatever
 \newcommand\nomenclature[2]{}
 
-\makeindex[intoc]
+%\makeindex[intoc]
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
 %  \maketitle
@@ -254,7 +254,7 @@
   \microtypesetup{protrusion=true}
 
   \printacronyms[heading=chapter]
-  \printunsrtglossary[type=symbols,style=indexgroup] % no default style for symbols; don't know why they aren't being formatted here
+  \printunsrtglossary[type=symbols,style=indexgroup] % no default style for symbols
   \acresetall % Any acronyms used inside the glossaries should start over here.
 
   \input{attribution} % prefaces go in front matter
@@ -288,7 +288,7 @@
   {% appendices don't work right with \backmatter due to it getting rid of counters
     \backmatter % All the stuff that comes after the body chapters
     \printbibliography[heading=bibintoc]
-    \printindex % may be getting rid of this soon...
+%    \printindex % Interferes with glossaries-extra index
     \printunsrtglossary[style=bookindex] % default style not good for index
   }
 %  \appendix % formats the chapter name to appendix to properly define the headers

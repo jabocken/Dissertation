@@ -1,10 +1,22 @@
 \glsxtrsetgrouptitle{type}{Types}
-% load the type symbols
+\glsxtrsetgrouptitle{relation}{Relations}
+
 \GlsXtrLoadResources[
-src=glossaries/types,
-group=type,
-symbol-sort-fallback=name,
-break-at=none
+  src=glossaries/types,
+  group=type,
+  type=symbols, % I thought this was unnecessary when using @symbol but it looks like category and type are not the same thing
+  symbol-sort-fallback=name,
+  break-at=none
+]
+\GlsXtrLoadResources[
+  src=glossaries/relations,
+  group=relation,
+  type=symbols,
+  symbol-sort-fallback=name,
+  break-at=none
 ]
 
-%\nomenclature[operator]{$\equiv$}{Indicates term equivalence; the term on the left may be replaced by the term on the right}
+%\nomenclature{\region ab}{When not being used for list notation,
+%  represents a memory region\index{memory!region}
+%  starting at address~$a$\index{memory!address}
+%  and being~$b$ bytes\index{number!byte} long}

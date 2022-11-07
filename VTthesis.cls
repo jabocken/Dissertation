@@ -110,7 +110,7 @@
 \ifbool{@dbl}\doublespace{}
 
 % Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally for basic index, though it must come before hyperref for usage with it. May not be needed now that glossaries are in use but keeping while I still have indices floating around
-\RequirePackage{imakeidx}
+%\RequirePackage{imakeidx}
 
 % links for references
 \RequirePackage[final,colorlinks]{hyperref}
@@ -120,12 +120,11 @@
 % important: this must come AFTER hyperref, babel, polyglossia, inputenc and fontenc!
 \RequirePackage[record,accsupp,
   postpunc=dot,% full stop after description
-  nostyles,% don't load default style packages
+  nostyles,% don't load default style packages; this is the recommendation
   % load glossaries-extra-stylemods.sty and glossary-tree.sty, bookindex
   stylemods={tree,bookindex},
-  symbols % want symbol styles
+  symbols,index % want symbol and index glossaries; maybe numbers too?
 ]{glossaries-extra}
-%\RequirePackage{glossaries-bookindex} % for a(n) configuration
 \RequirePackage{glossaries-prefix} % for a(n) configuration
 
 % For including pdf images (not always needed):

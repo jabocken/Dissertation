@@ -1,6 +1,10 @@
 % Maybe give some of the symbol ones proper names?
 %% Shared types
 @index{numeric}
+@index{symbolic}
+@index{state}
+@index{memory}
+
 @symbol{bool,
   name = {\ensuremath{\mathbb B}},
   description = {Type of boolean values, True and False \todo{use the notation eventually}},
@@ -17,10 +21,10 @@
   parent = {numeric}
 }
 
-@index{symbolic}
 @symbol{register,
   name = {\ensuremath{\mathbb R}},
-  description = {Type of symbolic registers; not denoting real numbers in this case}
+  description = {Type of symbolic registers; not denoting real numbers in this case},
+  parent = {symbolic}
 }
 @symbol{flag,
   name = {\ensuremath{\mathbb F}},
@@ -39,9 +43,6 @@
   parent = {symbolic},
   seealso = {val}
 }
-
-@index{state}
-@index{memory}
 
 %% From CFG-driven work
 %TODO: maybe change this to \mathbb{P}?

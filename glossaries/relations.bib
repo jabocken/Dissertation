@@ -1,0 +1,59 @@
+%% Shared types
+@index{state}
+@index{memory}
+@index{lattice}
+
+@symbol{equiv,
+  name = {\ensuremath\equiv},
+  description = {Indicates term equivalence; the term on the left may be replaced by the term on the right}
+}
+
+% Memory relations
+@symbol{separate,
+  name = {\ensuremath\bowtie},
+  description = {Indicates the two memory region arguments are separate},
+  parent = {memory}
+}
+@symbol{enclosed,
+  name = {\ensuremath\preceq},
+  description = {Indicates the first memory region argument is enclosed in the second \todo{maybe some more cross-references?}},
+  parent = {memory}
+}
+@symbol{encloses,
+  name = {\ensuremath\succeq},
+  description = {Reverse of \glssymbol{enclosed}},
+  see = {enclosed},
+  parent = {memory}
+}
+@symbol{compatible,
+  name = {\ensuremath\cong},
+  description = {Indicates the two memory model arguments are compatible \todo{maybe some more cross-references?}},
+  parent = {memory}
+}
+@symbol{comparable,
+  name = {\ensuremath{\mathrel{\mathbf{C}}}},
+  description = {Indicates the two memory model arguments are comparable \todo{maybe some more cross-references?}; probably shouldn't be in the relation file},
+  parent = {memory}
+}
+
+%% FROM PLDI 2022 (Lattice Lifting) paper
+@symbol{holds,
+  name = {\ensuremath\vdash},
+  description = {Indicates the predicate on the \ac{rhs} holds in the state on the \ac{lhs}},
+  parent = {state}
+}
+@symbol{join,
+  name = {\ensuremath\sqcup},
+  description = {The join of two states, predicates, or memory models},
+  parent = {lattice}
+}
+@symbol{defeq,
+  name = {\ensuremath{\stackrel{\text{def}}{=}}},
+  description = {For \acp{hg}, used in place of \glssymbol{equiv} as that symbol is used to indicate aliasing instead \todo{should probably change that}},
+  seealso = {alias}
+}
+@symbol{alias,
+  name = {\ensuremath\equiv},
+  description = {For \acp{hg}, indicates the two memory region arguments alias},
+  parent = {memory}
+}

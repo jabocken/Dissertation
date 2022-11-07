@@ -12,16 +12,20 @@
 \newcommand{\mathgs}{\text{\inlineasm{gs}}}
 \newcommand{\mathGPR}{\mathtt{GPR}}
 
-\newcommand{\fso}{\var{fs}_0}
-\newcommand{\rdio}{\var{rdi}_0}
-\newcommand{\rsio}{\var{rsi}_0}
-\newcommand{\rspo}{\var{rsp}_0}
-\newcommand{\rbpo}{\var{rbp}_0}
-
+% Freek was preferring dot notation for fields so don't need \DeclareMathOperator
 \newcommand*\reg[1]{\mathasm{#1}}
-\newcommand{\rsi}{\reg{rsi}} % Freek's preferring dot notation for fields so don't need \DeclareMathOperator
 \newcommand{\rdi}{\reg{rdi}}
+\newcommand{\rsi}{\reg{rsi}}
 \newcommand{\rax}{\reg{rax}}
 \newcommand{\rcx}{\reg{rcx}}
 \newcommand{\rip}{\reg{rip}}
 \newcommand{\rsp}{\reg{rsp}}
+\newcommand{\rbp}{\reg{rbp}}
+\newcommand{\rdx}{\reg{rdx}}
+
+\newcommand{\fso}{\reg{fs}_0}
+\newcommand{\rdio}{\rdi_0}
+\newcommand{\rsio}{\rsi_0}
+\newcommand{\rspo}{\rsp_0}
+\newcommand{\rbpo}{\rbp_0}
+\newcommand{\rdxo}{\rdx_0}

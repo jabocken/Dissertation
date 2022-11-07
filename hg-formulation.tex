@@ -45,7 +45,7 @@ such as registers, flags, or memory regions.%
 \index{memory!region}
 They represent constants or computations constructed using initial values.%
 \index{initial!value}
-For example, $\reg{rdi}_0$ denotes the initial symbolic value%
+For example, $\rdio$ denotes the initial symbolic value%
 \index{symbolic!value}%
 of register~$\reg{rdi}$.
 % TODO: This should probably be nomenclature somehow but I'm not sure how
@@ -108,11 +108,11 @@ In such cases, no clause is produced.
 %The supremum, repeated join over a set of predicates, is denoted by $\bigsqcup\square$. % do we even have a supremum here anymore?
 
 \begin{example}
-  Let $P=\{a=3,a<\reg{rdi}_0\}$ and $Q=\{a=4,a<\reg{rsi}_0\}$.
+  Let $P=\{a=3,a<\rdio\}$ and $Q=\{a=4,a<\rsio\}$.
   As both predicates\index{state!predicate}
   have equality clauses\index{state!predicate!clause}
   for~$a$, those clauses are merged to produce a pair of clauses denoting that the value of~$a$ lies in the range $[3,4]$.
-  Since no maximum can be established between $\reg{rdi}_0$ and $\reg{rsi}_0$, these clauses are dropped.
+  Since no maximum can be established between $\rdio$ and $\rsio$, these clauses are dropped.
   Thus, $P\join Q=\{a\ge 3,a\le4\}$.
 \end{example}
 
@@ -128,18 +128,18 @@ and minimum/maximum%
 are associative operations.
 The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following for any state~$s$\index{state}:
 \begin{lemma}\label{lem:pred_soundness}
-  $s\vdash P\vee Q\implies s\vdash P\join Q$
+  $s\gls{holds}P\vee Q\implies s\gls{holds}P\gls{join}Q$
 \end{lemma}
 \begin{proof}
   The proof of this lemma consists of two cases:
   \begin{align*}
-    s\vdash P &\implies s\vdash P\sqcup Q \\
-    s\vdash Q &\implies s\vdash P\sqcup Q
+    s\gls{holds}P &\implies s\gls{holds}P\gls{join}Q \\
+    s\gls{holds}Q &\implies s\gls{holds}P\gls{join}Q
   \end{align*}
   Only one of those cases needs to be proven;
   the other follows from the symmetry of the join\index{lattice!join} operation.
-  Assuming~$s\vdash P$, we now show $s\vdash P\sqcup Q$.
-  For $s\vdash P\sqcup Q$ to be true, all of its clauses%
+  Assuming~$s\gls{holds}P$, we now show $s\gls{holds}P\gls{join}Q$.
+  For $s\gls{holds}P\gls{join}Q$ to be true, all of its clauses%
   \index{state!predicate!clause}
   must hold.
   Let~$c$ be one of the clauses resulting from the join.
@@ -178,7 +178,7 @@ This allows for efficient checks of those relations.
 Furthermore, constructing them in a nondeterministic\index{nondeterminism}
 fashion allows for dealing with multiple potential combinations of relations
 between read and written regions in memory.
-They are defined by the following data structure:
+They are defined by the following data structures:
 \begin{align*}
   \gls{memtree} &\coloneqq
   \{\gls{constant}\times\gls{nat}\}\times\gls{mem}
@@ -198,9 +198,9 @@ Finally, regions in sibling nodes are separate.
 
 \begin{example}
   Consider the two memory models presented in \cref{fig:mem}.
-  These memory models involve three regions: $\region{\reg{rdi}_0}{8}$,
-  $\region{\reg{rsi}_0}{8}$ and $\region{\reg{rsi}_0+4}{4}$.
-  The memory models depict the case where $\reg{rdi}_0$ and $\reg{rsi}_0$ alias and not alias.
+  These memory models involve three regions: $\region{\rdio}{8}$,
+  $\region{\rsio}{8}$ and $\region{\rsio+4}{4}$.
+  The memory models depict the case where $\rdio$ and $\rsio$ alias and not alias.
   As stated above, sibling nodes on the same level are separate, while children are enclosed by their parents.
   Regions within the same node alias.
   Thus, \cref{fig:memA} shows a situation with
@@ -212,21 +212,21 @@ Finally, regions in sibling nodes are separate.
   \hspace*\fill
   \subcaptionbox{Aliasing\label{fig:memA}}{
     \begin{tikzpicture}[every node/.style=draw]
-      \node (a) {$\{\region{\reg{rdi}_0}{8},\region{\reg{rsi}_0}{8}\}$};
-      \node[below=of a] (b) {$\region{\reg{rsi}_0+4}{4}$};
+      \node (a) {$\{\region{\rdio}{8},\region{\rsio}{8}\}$};
+      \node[below=of a] (b) {$\region{\rsio+4}{4}$};
 
-      \draw[->] (a) -- node [draw=none,midway, left, fill=white] {\rotatebox{90}{$\preceq$}}(b); % keeping spacing aligned
+      \draw[->] (a) -- node [draw=none,midway, left, fill=white] {\rotatebox{90}{\gls{enclosed}}}(b); % keeping spacing aligned
     \end{tikzpicture}%
   }
   \hfill
   \subcaptionbox{No aliasing\label{fig:memB}}{%
     \begin{tikzpicture}[every node/.style=draw]
-      \node (a) {$\region{\reg{rdi}_0}{8}$};
-      \node[right=of a] (b) {$\region{\reg{rsi}_0}{8}$};
-      \node[below=of b] (c) {$\region{\reg{rsi}_0+4}{4}$};
+      \node (a) {$\region{\rdio}{8}$};
+      \node[right=of a] (b) {$\region{\rsio}{8}$};
+      \node[below=of b] (c) {$\region{\rsio+4}{4}$};
 
-      \draw (a) -- node [draw=none,midway, above, fill=white] {$\bowtie$} (b) ;
-      \draw[->] (b) -- node [draw=none,midway, left, fill=white] {\rotatebox{90}{$\preceq$}} (c);
+      \draw (a) -- node [draw=none,midway, above, fill=white] {\gls{separate}} (b) ;
+      \draw[->] (b) -- node [draw=none,midway, left, fill=white] {\rotatebox{90}{\gls{enclosed}}} (c);
     \end{tikzpicture}%
   }
   \hspace*\fill
@@ -234,162 +234,157 @@ Finally, regions in sibling nodes are separate.
   \label{fig:mem}
 \end{figure}
 
-\begin{definition}
-  Let $s$ be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.%
-  \nomenclature{\region ab}{When not being used for list notation,
-    represents a memory region\index{memory!region}
-    starting at address~$a$\index{memory!address}
-    and being~$b$ bytes\index{number!byte} long
-    \todo{why is the full version not showing up in the nomenclature list? I don't mind if some get pushed to the next page\dots}}
-  Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations $\alias$, $\separate$, and $\enclosed$, respectively, are defined as:
+\begin{definition}\label{def:memory-relations}
+  Let~$s$ be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.
+  Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations \gls{alias}, \gls{separate}, and \gls{enclosed}, respectively, are defined as:
   \begin{align*}
-    r_0 \alias r_1 &\defeq s \vdash e_0 = e_1 \wedge n_0 = n_1 \\
-    r_0 \separate r_1 &\defeq s \vdash (e_0 + n_0 \le e_1) \vee (e_1 + n_1 \le e_0)\\
-    r_0 \enclosed r_1 &\defeq s \vdash e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
-  \end{align*}%
-  \nomenclature[operator]{$\defeq$}{For \acp{hg}, used in place of $\equiv$ as that symbol is used to indicate aliasing instead}%
-  \nomenclature[operator]{$\alias$}{For \acp{hg}, indicates the two memory region%
-    \index{memory!region} arguments alias}
-
+    r_0\gls{alias}r_1 &\gls{defeq}s \gls{holds} e_0 = e_1 \wedge n_0 = n_1 \\
+    r_0\gls{separate}r_1 &\gls{defeq}s \gls{holds} (e_0 + n_0 \le e_1) \vee (e_1 + n_1 \le e_0)\\
+    r_0\gls{enclosed}r_1 &\gls{defeq}s \gls{holds} e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
+  \end{align*}
 \end{definition}
-A relation holds \emph{necessarily} if and only if it holds in all concrete states $s$.
-For example, $\region{\reg{rsi}_0}{4} \bowtie \region{\reg{rsi}_0+4}{4}$ denotes that the two regions are necessarily separate.
-The SMT solver/theorem prover Z3 \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses given the current state predicate.
-This is done via expression translation directly to Z3's bit-vector
+Such relations hold \emph{necessarily} if and only if they hold in all concrete states~$s$.
+For example, $\region{\rsio}{4}\gls{separate}\region{\rsio+4}{4}$ is a necessarily-separate relation as there are no values of~$\rsio$ for which those two regions are not separate.
+The \ac{smt} solver/theorem prover Z3 \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses\index{symbolic!address}
+given the current state predicate\index{state!predicate}.
+This is done via expression translation directly to Z3's bit-vector\index{numeric!bit vector}
 representations, meaning no information is lost in the conversion
 and when querying the constructed logical formulas.
 
-%In our implementation, each operation to determine aliasing/separation/enclosure
-%also takes a predicate as an additional argument.
-%This is used to provide additional assumptions for necessarily- calculations,
-%as in isolation it is often not possible to determine the relationships between
-%entirely symbolic expressions that do not share symbolic variables.
-%While the predicate may not help in all cases,
-%there may be instances where a relation between two symbolic variables
-%or expressions was expressed previously in the program.
-%\todo{not sure where else to put this but it's important to have as a reviewer asked about reasoning over constant expressions with symbolic references
-  %and we now take predicates as assumptions}
+In our Z3 interface, each operation to determine aliasing/separation/enclosure
+also takes a predicate as an additional argument.
+This is used to provide additional assumptions for necessarily-calculations,
+as in isolation it is often not possible to determine the relationships between
+entirely symbolic expressions\index{symbolic!expression}
+that do not share symbolic values.\index{symbolic!value}
+While the predicate may not help in all cases,
+there may be instances where a relation between two symbolic values
+or expressions was expressed previously in the program.
 
-We further extend the above notation to memory trees,
-e.g., $t_0 \bowtie t_1$ denotes that all regions in $t_0$ are necessarily separate from all regions in $t_1$.
-Notation $t_0 \equiv t_1$ ($t_0 \preceq t_1$) denotes that some region in the top node of $t_0$  and some region in the top node of $t_1$ necessarily alias (enclosure).
-%Similarly,  denotes that some region in the top node of $t_0$ is necessarily enclosed in some region of the top node of $t_1$.
+We further extend the notation in \cref{def:memory-relations} to memory trees.
+That is, $t_0\gls{separate}t_1$ denotes that all regions in~$t_0$ are necessarily separate from all regions in~$t_1$.
+Notation $t_0\gls{alias}t_1$ ($t_0\gls{enclosed}t_1$) denotes that some region in the top node of~$t_0$ and some region in the top node of~$t_1$ necessarily alias (are enclosed).
+%Similarly,  denotes that some region in the top node of~$t_0$ is necessarily enclosed in some region of the top node of~$t_1$.
 
 \subsection{Insertion}
 Construction of a memory model is performed
 using the recursive $\mathit{ins}$ function shown below.
 It takes as input a memory tree~$t$ and the current memory model~$M$.
 The current predicate~$P$ is also supplied
-to assist in the region relationship analysis
-but is elided from the below presentation as it is a read-only value
+to assist in the region relationship analysis.
+However, it is elided from the below presentation as it is a read-only value
 that is passed along through the function call chain.
-For output, function $\mathit{ins}$ produces, non-deterministically,
+For output, function $\mathit{ins}$ produces, nondeterministically,
 a set of new memory models based on all possible pointer relationships
 for the newly-inserted region.
-If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{sec:intro} \todo{needs changing}).
+If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{sec:intro}).
 If a necessarily-relation can be established between tree~$t$ and some tree already in~$M$, then only the relevant memory models need to be produced.
-%To ensure that the invariants for memory model~$M$ being inserted into
-%are not violated, the external interface to the function takes a single region,%
-%~$r$, instead of a memory tree. This region is embedded in a minimal memory tree,
-%$\langle \{r\},\varnothing\rangle$,
-%which is then supplied to the below function.
+
+To ensure that the invariants for the memory model~$M$ being inserted into
+are not violated, the external interface to the function takes a single region,~$r$, instead of a memory tree.
+This region is embedded in a minimal memory tree,
+$\langle \{r\},\varnothing\rangle$,
+which is then supplied to the below function.
 
 \begin{definition}\label{def:insert}
   Let $t_0 = \langle R_0,M_0\rangle$ and $t_1 = \langle R_1,M_1\rangle$ be two trees. Function
   $\insertM$ of type $\gls{memtree}\times\gls{mem}\times\gls{predicate}\rightarrow\{\gls{mem}\}$
   is defined as follows:
   \begin{align*}
-    \insertM(t_0,\varnothing) &\defeq \{t_0\}\notag \\
-    \insertM(t_0,t_1\cons M) &\defeq \begin{cases}
-      \insertM_\text{AL}(t_0,t_1,M) & \text{ if } t_0\equiv t_1 \\
-      \insertM_\text{SEP}(t_0,t_1,M) & \text{ if } t_0\separate t_1 \\
-      \insertM_\text{ENC}(t_0,t_1,M) & \text{ if } t_0\preceq t_1 \\
-      \insertM_\text{CON}(t_0,t_1,M) & \text{ if } t_1\preceq t_0 \\
+    \insertM(t_0,\varnothing) &\gls{defeq} \{t_0\}\notag \\
+    \insertM(t_0,t_1\cons M) &\gls{defeq} \begin{cases}
+      \insertM_\text{AL}(t_0,t_1,M) & \text{ if } t_0\gls{alias}t_1 \\
+      \insertM_\text{SEP}(t_0,t_1,M) & \text{ if } t_0\gls{separate}t_1 \\
+      \insertM_\text{ENC}(t_0,t_1,M) & \text{ if } t_0\gls{enclosed}t_1 \\
+      \insertM_\text{CON}(t_0,t_1,M) & \text{ if } t_1\gls{enclosed}t_0 \\
       \mbox{destroy}(t_0, M)  & \text{otherwise}
     \end{cases}
-  \end{align*}$
-  \begin{array}{lcl}
-    \insertM_\text{AL}(t_0,t_1,M) &\defeq& \\
-    \multicolumn{3}{r}{\{(R_0\cup R_1, M') \cons M \mid M' \in \mathsf{fold}(\insertM, M_0 \cup M_1) \}} \\
-    \insertM_\text{SEP}(t_0,t_1,M) &\defeq& \{t_1\cons M'\mid M'\in\insertM(t_0,M)\} \\
-    \insertM_\text{ENC}(t_0,t_1,M) &\defeq& \{\langle R_1,M'\rangle\cons M\mid M'\in\insertM(t_0,M_1)\} \\
-    \insertM_\text{CON}(t_0,t_1,M) &\defeq& \\
-    \multicolumn{3}{r}{ \{\insertM(t',M)\mid t'\in\{\langle R_0,M'\rangle\mid M'\in \insertM(t_1,M_0)\}\}}
-  \end{array}$
+  \end{align*}
+  \todo{fix the formatting! though switching to equation* already got me halfway thebre}
+  Notation $a \cons X$ denotes $\{a\} \cup X$ \todo{put this in glossary}.
+  \begin{equation*}
+    \begin{array}{lcl}
+      \insertM_\text{AL}(t_0,t_1,M) &\gls{defeq}& \\
+      \multicolumn{3}{r}{\{(R_0\cup R_1, M') \cons M \mid M' \in \mathsf{fold}(\insertM, M_0 \cup M_1) \}} \\
+      \insertM_\text{SEP}(t_0,t_1,M) &\gls{defeq}& \{t_1\cons M'\mid M'\in\insertM(t_0,M)\} \\
+      \insertM_\text{ENC}(t_0,t_1,M) &\gls{defeq}& \{\langle R_1,M'\rangle\cons M\mid M'\in\insertM(t_0,M_1)\} \\
+      \insertM_\text{CON}(t_0,t_1,M) &\gls{defeq}& \\
+      \multicolumn{3}{r}{ \{\insertM(t',M)\mid t'\in\{\langle R_0,M'\rangle\mid M'\in \insertM(t_1,M_0)\}\}}
+    \end{array}
+  \end{equation*}
 \end{definition}
-
-Notation $a \cons X$ denotes $\{a\} \cup X$.
-Let $t_0 = \langle R_0,M_0\rangle$ be the tree to be inserted and let $t_1 = \langle R_1,M_1\rangle$ be a tree already in the memory model.
-If $t_0$ and $t_1$ alias, then they are combined by taking the union of their nodes.
-All subtrees are then reinserted using a $\mathsf{fold}$.
-If trees $t_0$ and $t_1$ are separate, then tree $t_0$ is recursively inserted into the remainder of the memory model and $t_1$ is added without modification.
-If $t_0$ is enclosed in $t_1$, it is recursively inserted into the sub-forest of $t_1$.
-For each memory model $M'$ thus obtained, a memory model is produced with a tree $\langle R_1,M'\rangle$.
-The remainder of memory model $M$ is unmodified.
-Finally, if $t_1$ is enclosed in $t_0$, then $t_1$ is recursively inserted into the sub-forest of $t_0$.
-For each memory model $M'$ thus obtained, a tree $t'$ is produced that consists of $\langle R_0,M'\rangle$.
-That tree is then recursively inserted in memory model $M$.
-
-
-
+As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be inserted and $t_1 = \langle R_1,M_1\rangle$ be a tree already in the memory model.
+\begin{enumerate}
+  \item If~$t_0$ and~$t_1$ alias, then they are combined by taking the union of their nodes.
+  Their child regions are not necessarily the same, however.
+  Thus, subtrees are then reinserted using a $\mathsf{fold}$ \todo{change up this notation/styling}.
+  \item If trees~$t_0$ and~$t_1$ are separate, then tree~$t_0$ is recursively inserted into the remainder of the memory model and~$t_1$ is added without modification.
+  \item If~$t_0$ is enclosed in~$t_1$, it is recursively inserted into the sub-forest of~$t_1$.
+  Each memory model~$M'$ thus obtained is wrapped in a tree $\langle R_1,M'\rangle$.
+  The remainder of memory model~$M$ is unmodified.
+  \item Finally, if $t_1$ is enclosed in $t_0$, then $t_1$ is recursively inserted into the sub-forest of $t_0$.
+  Each memory model~$M'$ thus obtained is wrapped in a tree $t'=\langle R_0,M'\rangle$.
+  That tree is then recursively inserted into memory model~$M$.
+\end{enumerate}
 \begin{example}\label{ex:example_snippet}
   Consider the three-instruction assembly snippet below.
-  This snippet first stores the value 1000 in the eight-byte memory region
-  pointed to by \reg{rdi}, then stores the value 1001
-  in the four-byte region pointed to by \reg{rsi+4}.
-  Finally, it stores the value 1002 in the eight-byte region
-  pointed to be \reg{rsi}.
-  If the current state allows aliasing and separation between $\region{\reg{rdi}}{8}$ and $\region{\reg{rsi}}{8}$, then
-  these three instructions will result in the two memory models in Figure~\ref{fig:mem}.
-  Note that region $\region{\reg{rsi}+4}{4}$ is necessarily enclosed in region \region{\reg{rsi}}{8}.
+  This snippet first stores the value \num{1000} in the eight-byte memory region
+  pointed to by \rsi, then stores the value \num{1001}
+  in the four-byte region pointed to by $\rsi+4$.
+  Finally, it stores the value \num{1002} in the eight-byte region
+  pointed to be \rsi.
+  If the current state allows aliasing and separation between $\region\rdi8$ and $\region\rsi8$, then
+  these three instructions will result in the two memory models in \cref{fig:mem}.
+  Note that region $\region{\rsi+4}4$ is necessarily enclosed in region $\region\rsi8$.
+  \begin{lstlisting}[style=x64]
+    mov qword ptr [rdi],   1000
+    mov dword ptr [rsi+4], 1001
+    mov qword ptr [rsi],   1002
+  \end{lstlisting}
 \end{example}
-%\begin{figure}
-%\centering
-\begin{verbatim}
-  mov qword ptr [rdi], 1000
-  mov dword ptr [rsi+4], 1001
-  mov qword ptr [rsi], 1002
-\end{verbatim}
-%\caption{Example of the aliasing problem}
-%\label{lst:aliasing}
-%\end{figure}
-A memory model $M$ \emph{holds} in concrete state $s$ if all siblings are separate and all trees hold.
-A tree holds if its node contains aliasing regions and all trees in its sub-forest are enclosed.
+A memory model~$M$ \emph{holds} in concrete state~$s$ if all siblings are separate and all trees hold.
+A tree holds if its node contains only aliasing regions and all trees in its sub-forest are enclosed. Formally, this is expressed as:
 \begin{definition}
-  A memory model~$M$ \emph{holds} in state~$s$, notation $s\vdash M$,
+  A memory model~$M$ \emph{holds} in state~$s$, notation $s\gls{holds}M$,
   if and only if:
-  \[
-  (\forall t_0, t_1\in M\sepdot t_0\neq t_1\implies s\vdash t_0\bowtie t_1) \wedge (\forall t\in M\sepdot s\vdash t)
-  \]
-  A memory tree~$t = \langle R,M\rangle$ \emph{holds} in state $s$, notation $s\vdash t$, if and only if:
-  \[
-  (\forall r_0,r_1 \in R\sepdot s\vdash r_0\alias r_1) \wedge (\forall t'\in M\sepdot s\vdash  t'\enclosed t) \wedge (s\vdash M)
-  \]
+  \begin{equation*}
+    (\forall t_0, t_1\in M\sepdot t_0\neq t_1\implies s\gls{holds}t_0 \gls{separate}t_1) \wedge (\forall t\in M\sepdot s\gls{holds}t)
+  \end{equation*}
+  A memory tree~$t = \langle R,M\rangle$ \emph{holds} in state~$s$, notation $s\gls{holds}t$, if and only if:
+  \begin{equation*}
+    (\forall r_0,r_1 \in R\sepdot s\gls{holds}r_0\gls{alias}r_1) \wedge (\forall t'\in M\sepdot s\gls{holds}t'\gls{enclosed}t) \wedge (s\gls{holds}M)
+  \end{equation*}
 \end{definition}
-
 \begin{example}
-  Consider again the memory models in Figure~\ref{fig:mem}
-  for the assembly snippet in Example~\ref{ex:example_snippet}.
-  The aliasing memory model in Figure~\ref{fig:memA}
-  is only consistent in states where $\reg{rdi}_0=\reg{rsi}_0$.
-  Meanwhile, the non-aliasing memory model in Figure~\ref{fig:memB}
-  is only consistent in states where $\reg{rdi}_0+8\le\reg{rsi}_0$ or $\reg{rsi}_0+8\le\reg{rdi}_0$.
+  Consider again the memory models in \cref{fig:mem}
+  for the assembly snippet in \cref{ex:example_snippet}.
+  The aliasing memory model in \cref{fig:memA}
+  holds only in states where $\rdio=\rsio$.
+  Meanwhile, the non-aliasing memory model in \cref{fig:memB}
+  holds only in states where $\rdio+8\le\rsio$ or $\rsio+8\le\rdio$.
 \end{example}
-The insertion function must be \emph{complete}: the produced memory models should cover any possible relation between inserted region $r$ and any region $r'$ already present in the memory model.
-To formulate completeness, we use $R(M)$ to denote the set of regions in memory model $M$ and $\mathcal{R}(M)$ to denote the set of relations.
-For example, we have $(\region{\reg{rdi}_0}{8} \equiv \region{\reg{rsi}_0}{8}) \in \mathcal{R}(M)$ for the memory model in Figure~\ref{fig:memA}.
 
+\todo{I changed up the wording but this still seems a bit abrupt, not sure how best to lead into the completeness discussion}
+An important quality our insertion function must possess is \emph{completeness}.%
+\index{completeness}
+That is, the produced memory models should cover any possible relation between inserted region~$r$ and any region~$r'$ already present in the memory model.
+To formulate completeness, we use~$R(M)$ to denote the set of regions in memory model~$M$ and $\mathcal{R}(M)$ to denote the set of relations.
+\todo{I still want to revise this into my own words and notation if possible}
+For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)$ for the memory model in \cref{fig:memA}.
+
+\todo{This lemma and proof are the most important things to put in my own words}
 \begin{lemma}\label{lem:insert}
-  Let $r_0$ and $M$ resp.\ be a region and a memory model.
-  Let $f$ of type $\mathbb{C} \times \mathbb{N} \mapsto \{ \equiv, \bowtie, \sqsubseteq, , \sqsupseteq \}$ be some mapping that provides for any region $r'$ currently in memory model $M$ a relation between $r_0$ and $r'$.
+  Let~$r_0$ and~$M$ be a region and a memory model, respectively.
+  Also let~$f$ of type $\mathbb{C} \times \mathbb{N} \mapsto \{ \gls{alias},  \gls{separate}, \gls{enclosed},\dotsc,\gls{encloses}\}$ be some mapping that provides a relation between~$r_0$ and~$r'$ for any region~$r'$ currently in memory model~$M$.
   Assume that $f$ is possibly true:
-  \[
-  \exists s \sepdot s \vdash M \wedge (\forall r' \in R(M) \sepdot s \models r_0~f(r')~r')
-  \]
+  \todo{glossary entry for $\models$}
+  \begin{equation*}
+    \exists s \sepdot s \gls{holds}M \wedge (\forall r' \in R(M) \sepdot s \models r_0~f(r')~r')
+  \end{equation*}
   Then, insertion of region $r_0$ into $M$ will produce at least a corresponding memory model:
-  \[
-  \exists M' \in \insertM(\langle r_0,\varnothing\rangle,M) \sepdot \{ (r_0~f(r')~r') \mid r' \in R(M) \} \subseteq \mathcal{R}(M')
-  \]
+  \begin{equation*}
+    \exists M' \in \insertM(\langle r_0,\varnothing\rangle,M) \sepdot \{ (r_0~f(r')~r') \mid r' \in R(M) \} \subseteq \mathcal{R}(M')
+  \end{equation*}
   In words, there exists some memory model that contains all relations of mapping~$f$.
 \end{lemma}
 \begin{proof}
@@ -399,17 +394,17 @@ For example, we have $(\region{\reg{rdi}_0}{8} \equiv \region{\reg{rsi}_0}{8}) \
   Four cases are possible:
   \begin{enumerate}[style=unboxed,leftmargin=0cm,labelindent=0pt,wide] % get too much sentence spacing with [wide, labelindent=0pt]
     \item Region $r_0$ necessarily aliases with $t_1$.
-    In this case, since mapping $f$ is possibly true, it must assign $\equiv$ to all top-level regions of $t_1$, $\succeq$ to all other regions in $t_1$ and $\bowtie$ to all regions in $M$.
+    In this case, since mapping $f$ is possibly true, it must assign \gls{alias} to all top-level regions of $t_1$, \gls{encloses} to all other regions in $t_1$ and \gls{separate} to all regions in $M$.
     The created memory model contains these relations.
     \item Region $r_0$ is necessarily separate from $t_1$.
-    In this case, since mapping $f$ is possibly true, it must assign $\bowtie$ to any region in $t_1$.
+    In this case, since mapping $f$ is possibly true, it must assign \gls{separate} to any region in $t_1$.
     Thus, tree $t_1$ is not modified and region $r_0$ is recursively inserted into $M$.
-    The induction hypothesis (IH) then finishes the proof.
+    The \ac{ih} then finishes the proof.
     \item Region $r_0$ is necessarily enclosed by a top-level region of $t_1$.
-    Since mapping $f$ is possibly true, it must assign $\bowtie$ to all regions of $M$.
+    Since mapping $f$ is possibly true, it must assign \gls{separate} to all regions of $M$.
     Therefore, the insertion function does not modify $M$.
     Since $r_0$ and $r_1$ do not alias, the top-level regions $R_1$ of tree $t_1$ can remain unmodified as well.
-    Region $r_0$ is recursively inserted into a child of $t_1$, proof follows form IH.
+    Region $r_0$ is recursively inserted into a child of $t_1$, proof follows form the \ac{ih}.
     \item Tree $r_1$ is necessarily enclosed into region $r_0$.
     In this case, since mapping $f$ is possibly true, it must assign $\succeq$ to all regions of $t_1$.
     Therefore, tree $t_1$ is recursively inserted as subtree of $r_0$, producing a set of trees.
@@ -421,19 +416,20 @@ For example, we have $(\region{\reg{rdi}_0}{8} \equiv \region{\reg{rsi}_0}{8}) \
 \end{proof}
 
 \subsection{Joining}
+As with state predicates, memory models have a join operation.
 \begin{definition}\label{def:mem-join}
-  The join of two memory models $M_0$ and $M_1$,
-  notation $M_0\sqcup M_1$, is recursively defined as:
+  The join of two memory models~$M_0$ and~$M_1$,
+  notation $M_0\gls{join}M_1$, is recursively defined as:
   \begin{align*}
-    M_0 \sqcup M_1 &\defeq \left\{ \join(T) \relmiddle| T\in\faktor{M_0 \cup M_1}{\comparable^+}\right\}\notag \\
-    \langle R_0,.\rangle\comparable\langle R_1,.\rangle &\defeq R_0 \cap R_1\neq\varnothing\notag \\
-    \join(T) &\defeq \left\langle\bigcap\{R\mid\langle R,.\rangle\in T\}, \bigsqcup\{M\mid\langle.,M\rangle\in T\}\right\rangle
+    M_0\gls{join}M_1 &\gls{defeq} \left\{ \join(T) \relmiddle| T\in\faktor{M_0 \cup M_1}{\gls{comparable}[^+]}\right\}\notag \\
+    \langle R_0,.\rangle\gls{comparable}\langle R_1,.\rangle &\gls{defeq} R_0 \cap R_1\neq\varnothing\notag \\
+    \join(T) &\gls{defeq} \left\langle\bigcap\{R\mid\langle R,.\rangle\in T\}, \bigsqcup\{M\mid\langle.,M\rangle\in T\}\right\rangle
   \end{align*}
 \end{definition}
 This operation partitions the memory trees in $M_0$ and $M_1$ based on
-equivalence relation $\comparable^+$.
+equivalence relation $\gls{comparable}[^+]$.
 This equivalence relation is the transitive closure
-of relation $\comparable$, which determines if
+of relation \gls{comparable}, which determines if
 its two memory trees have any top-level regions in common.
 In other words,
 all memory trees that have one or more top-level regions in common are put in an equivalence class and are thus joinable.
@@ -442,7 +438,8 @@ for each equivalence class of memory trees,
 taking the intersection of all their region sets
 and the supremum of their child memory models.
 \begin{example}
-  Consider two memory models $M_0$ and $M_1$ both with as top node $\region{\reg{rdi}_0}{8}$, where $M_0$ has an enclosed child $\region{\reg{rdi}_0}{4}$ and $M_1$ has an enclosed child $\region{\reg{rdi}_0 + 4}{4}$. The join of $M_0$ and $M_1$ is one memory model with as top node $\region{\reg{rdi}_0}{8}$ and the two subsregions as separate sibling-children.
+  Consider two memory models~$M_0$ and~$M_1$ where both have the top node $\region\rdio8$.
+  We add the distinction that~$M_0$ has an enclosed child $\region\rdio4$ and~$M_1$ has an enclosed child $\region{\rdio+4}4$. The result of joining~$M_0$ and~$M_1$ is a single memory model with $\region\rdio8$ as its top node and the two child regions in separate sibling nodes.
 \end{example}
 
 \begin{figure}
@@ -450,7 +447,7 @@ and the supremum of their child memory models.
   \subcaptionbox{Alternate memory model\label{fig:otherMem}}{
     \hspace{3ex}
     \begin{tikzpicture}[>=stealth, every node/.style={draw}]
-      \node (a) {$\{\region{\reg{rdi}_0}{8},\region{\reg{rdx}_0}{8}\}$};
+      \node (a) {$\{\region\rdio8,\region\rdxo8\}$};
     \end{tikzpicture}%
     \hspace{3ex}
   }
@@ -458,7 +455,7 @@ and the supremum of their child memory models.
   \subcaptionbox{Join result\label{fig:otherMemJoin}}{
     \hspace{2ex}
     \begin{tikzpicture}[>=stealth, every node/.style={draw}]
-      \node (a) {$\region{\reg{rdi}_0}{8}$};
+      \node (a) {$\region\rdio8$};
     \end{tikzpicture}%
     \hspace{2ex}
   }
@@ -471,57 +468,56 @@ and the supremum of their child memory models.
     %resulting in the memory model shown on the right in the figure.
     %(only that shared top-level region is present)}
 \end{figure}
-
 \begin{example}
-  \todo{figure out if this and the related figure should be included}
   First, consider the memory models shown in \cref{fig:mem}.
   Since the top nodes share a region, the two trees belong to the same equivalence class.
   The intersection of all of the region alias sets is:
   \begin{equation*}
-    \{\region{\reg{rdi}_0}{8},\region{\reg{rsi}_0}{8}\}\cap
-    \{\region{\reg{rdi}_0}{8}\}\cap\{\region{\reg{rsi}_0}{8}\}
+    \{\region\rdio8,\region\rsio8\}\cap
+    \{\region\rdio8\}\cap\{\region\rsio8\}.
   \end{equation*}
-  As this intersection produces $\varnothing$,
-  the result of the join is $\varnothing$, an empty memory model.
-  Second, the join of the memory model shown in \cref{fig:memA}
-  with the one shown in \cref{fig:otherMem} results in the memory model shown in \cref{fig:otherMemJoin}.
+  As this intersection produces~$\varnothing$,
+  the result of the join is~$\varnothing$, an empty memory model.
+  Second, consider the join of the memory model shown in \cref{fig:memA}
+  with the one shown in \cref{fig:otherMem}.
+  The result of that join is the memory model shown in \cref{fig:otherMemJoin}.
   This is because all top-level memory trees involved in the merge share
-  a region, $\region{\reg{rdi}_0}{8}$, but have no comparable children.
+  a region, $\region\rdio8$, but have no comparable children.
 \end{example}
 
-We prove that the join over memory models is sound.
+To strengthen our arguments, we prove that the join over memory models we have provided is sound.
 \begin{lemma}\label{lem:mem_soundness}
   Let~$s$ be a state and~$M_0$ and~$M_1$ be memory models. Then:
   \begin{equation*}
-    (s\models M_0 \vee M_1) \implies (s\models M_0\sqcup M_1)
+    (s\models M_0 \vee M_1) \implies (s\models M_0\gls{join}M_1)
   \end{equation*}
 \end{lemma}
 \begin{proof}
-  Let $r_0\mathbin{\square}r_1$ be a relation in $\mathcal{R}(M_0 \sqcup M_1)$.
-  If $\square$ is $\equiv$, then both regions $r_0$ and $r_1$ must have been present in all trees in the corresponding equivalence class.
+  \todo{will look through this proof again for more my terms}
+  Let $r_0\mathbin{\square}r_1$ be a relation in $\mathcal{R}(M_0\gls{join}M_1)$.
+  If $\square$ is \gls{alias}, then both regions $r_0$ and $r_1$ must have been present in all trees in the corresponding equivalence class.
   The relation thus held in either $M_0$ or $M_1$.
-  If $\square$ is $\bowtie$, then the two regions are from trees generated from different equivalence classes. Since they are from trees that do not share a top-level region, the original trees in either $M_0$ or $M_1$ are separate as well.
+  If $\square$ is \gls{separate}, then the two regions are from trees generated from different equivalence classes. Since they are from trees that do not share a top-level region, the original trees in either $M_0$ or $M_1$ are separate as well.
   Similar reasoning applies for the other cases.
 \end{proof}
 
-
 \begin{definition}
-  The join of some two symbolic states $\sigma_0=\langle P_0,M_0\rangle$
-  and $\sigma_1=\langle P_1,M_1\rangle$, notation $\sigma_0 \sqcup \sigma_1$, is:
+  \todo{did we introduce the \emph{symbolic} state terminology before this?}
+  The join of two symbolic states $\sigma_0=\langle P_0,M_0\rangle$
+  and $\sigma_1=\langle P_1,M_1\rangle$, notation $\sigma_0\gls{join}\sigma_1$, is:
   \begin{equation*}
-    \sigma_0 \sqcup \sigma_1 \defeq \langle P_0\sqcup P_1,M_0\sqcup M_1\rangle
+    \sigma_0\gls{join}\sigma_1\gls{defeq}\langle P_0\gls{join}P_1,M_0\gls{join}M_1\rangle
   \end{equation*}
 \end{definition}
 
-We would like to remark that this join loses information.
+Do keep in mind that this join in its full form \emph{loses} information.
 It can thus only be applied in a sound fashion for postcondition weakening \autocite{hoare1969axiomatic}.
 In other words, dropping clauses and performing state cleanup
 serve only to reduce state constraints; they never add additional ones.
 In practice, this loss of information means that we may produce a state
-that would not actually be encountered during program execution,
-or we may be unable to resolve some indirections/prove some return addresses
-(which would result in annotations/tool failure).
-Even in such cases, given successful completion and no annotations produced,
+that would not actually be encountered during program execution.
+Alternatively, we may be unable to resolve some indirections or prove some return addresses, which would result in additional annotations generated or even tool failure.
+Despite this, in cases with successful completion and no annotations produced,
 we will always produce all states that would be encountered during concrete execution.
 
 \section{Base Algorithm}
