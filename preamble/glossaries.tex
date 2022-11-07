@@ -1,10 +1,11 @@
-\glsxtrsetgrouptitle{type}{Types}
+\glsxtrsetgrouptitle{function}{Functions}
 \glsxtrsetgrouptitle{relation}{Relations}
+\glsxtrsetgrouptitle{type}{Types}
 
 \GlsXtrLoadResources[
-  src=glossaries/types,
-  group=type,
-  type=symbols, % I thought this was unnecessary when using @symbol but it looks like category and type are not the same thing
+  src=glossaries/functions,
+  group=function,
+  type=symbols, % Not sure if functions should really be treated as symbols
   symbol-sort-fallback=name,
   break-at=none
 ]
@@ -12,6 +13,13 @@
   src=glossaries/relations,
   group=relation,
   type=symbols,
+  symbol-sort-fallback=name,
+  break-at=none
+]
+\GlsXtrLoadResources[
+  src=glossaries/types,
+  group=type,
+  type=symbols, % I thought this was unnecessary when using @symbol but it looks like category and type are not the same thing
   symbol-sort-fallback=name,
   break-at=none
 ]

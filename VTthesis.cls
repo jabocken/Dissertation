@@ -134,7 +134,7 @@
 \RequirePackage{listings}
 
 \RequirePackage{algorithm} % For algorithm float
-\RequirePackage{algpseudocode} % algorithmicx pseudocode (needs to come before cleveref)
+\RequirePackage{algpseudocodex} % algorithmicx pseudocode successor (needs to come before cleveref)
 
 % Fix for tocbibind from algorithms package docs (the \let is an extra, rest is standard)
 \renewcommand\listofalgorithms{\begingroup
@@ -151,7 +151,7 @@
 % So algorithm numbering matches other floats (doesn't work with acmart class, but that doesn't use chapters anyway)
 \renewcommand\thealgorithm{\arabic{chapter}.\arabic{algorithm}}
 % Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
-\renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
+%\renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
 
 \RequirePackage{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings); trying without [capitalize] to see how I like it
 

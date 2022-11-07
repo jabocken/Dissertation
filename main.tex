@@ -154,13 +154,13 @@
 \newcommand{\psep}{P_\mathrm{sep}}
 
 %% FROM PLDI 2022 (Lattice Lifting) paper
-\newcommand*{\defeq}{\stackrel{\text{def}}{=}}
-\newcommand\holds\vdash
-\newcommand\join\sqcup
-
 \DeclareMathOperator{\insertM}{ins}
 \newcommand*{\cons}{\mathbin{:}}
 \newcommand*{\sepdot}{\cdot}
+
+% Variable names for algorithms; maybe make into glossary?
+\newcommand{\bag}{\var{bag}}
+\newcommand{\nextstates}{\var{nextStates}}
 
 % not really sure what to do with this yet
 \newcommand*{\relmiddle}[1]{\mathrel{}\middle#1\mathrel{}}
@@ -271,13 +271,13 @@
   \include{cfg}
   \include{syntax}
 
-  \part{Adaptations From and Extensions to \emph{Formally Verified Lifting of C-compiled x86-64 Binaries}}
+  \part{\emph{Formally Verified Lifting of C-compiled x86-64 Binaries}}
   \include{hg-lifting}
   \include{hg-formulation}
   \include{hg-results}
   \include{hg-discussion}
 
-  \part{Adaptations From and Extensions to \emph{Exceptional Interprocedural Control Flow Graphs}}
+  \part{\emph{Exceptional Interprocedural Control Flow Graphs}}
   \include{eicfg}
   \include{eicfg-formulation}
   \include{eicfg-validation}

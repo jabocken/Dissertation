@@ -36,7 +36,7 @@
   parent = {memory}
 }
 
-%% FROM PLDI 2022 (Lattice Lifting) paper
+%% FROM PLDI 2022 (Hoare Graph) paper
 @symbol{holds,
   name = {\ensuremath\vdash},
   description = {Indicates the predicate on the \ac{rhs} holds in the state on the \ac{lhs}},
@@ -56,4 +56,8 @@
   name = {\ensuremath\equiv},
   description = {For \acp{hg}, indicates the two memory region arguments alias},
   parent = {memory}
+}
+@symbol{pluseq,
+  name = {\ensuremath{\mathrel{+}=}},
+  description = {In-place addition}
 }
