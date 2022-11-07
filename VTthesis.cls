@@ -103,8 +103,8 @@
 \RequirePackage{lmodern}     % Nice vector fonts
 \RequirePackage[tracking]{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern. Tracking option adds uniform letter spacing for small caps.
 
-%package required for nomenclature entry
-\RequirePackage[intoc]{nomencl}
+%package required for nomenclature entries; refeq/refpage are nice but doesn't have hyperref integration, unfortunately
+\RequirePackage[intoc,refpage]{nomencl}
 \makenomenclature
 
 \RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
@@ -113,13 +113,13 @@
 \RequirePackage{setspace}
 \ifbool{@dbl}\doublespace{}
 
-% Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally, though it must come before hyperref for usage with it
+% Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally for basic index, though it must come before hyperref for usage with it
 \RequirePackage{imakeidx}
 
 % links for references
 \RequirePackage[final,colorlinks]{hyperref}
 
-% For including pdf images:
+% For including pdf images (not always needed):
 %\RequirePackage[final]{graphicx}
 
 % Code formatting

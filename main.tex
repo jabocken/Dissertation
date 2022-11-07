@@ -139,9 +139,6 @@
 \newcommand\Block[2]{\mathtt{#1\texttt{->}#2}}
 \WithSuffix\newcommand\Block*[3]{#1~#2~#3}
 
-\newcommand\region[2]{\ensuremath{[#1,#2]}}
-\newcommand\readmem[2]{\ast\region{#1}{#2}}
-\newcommand\readmemS[3]{#1:\readmem{#2}{#3}}
 \newcommand\htriple[3]{\{#1\}#2\{#3\}}
 \WithSuffix\newcommand\htriple*[4]{\{#1\}#2\{#3{;}#4\}}
 \newcommand\parent[3]{\operatorname{parent}(#1,#2,#3)}
@@ -263,9 +260,8 @@
 
   \mainmatter % The body chapters get proper numbering.
 
+  \part{Introductory Elements}
   \include{introduction}
-
-  \part{Common Components}
   \include{related}
   \include{background}
   \include{symbolic_execution}

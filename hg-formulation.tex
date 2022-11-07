@@ -80,7 +80,7 @@ $\bot$ is also used to indicate an unknown~$\constant$.%
   The aforementioned join\index{lattice!join}
   of two predicates~$P$ and~$Q$,%
   \index{state!predicate}
-  notation $P\join Q$,\nomenclature{$\join$}{The join of two state predicates\index{state!predicate}}
+  notation $P\join Q$,\nomenclature[operator]{$\join$}{The join of two state predicates\index{state!predicate}}
   is performed by doing a form of range abstraction for symbolic bit-vector values \autocite{rugina2000symbolic}.\index{symbolic!bit vector}
   This is defined as:
   \begin{align*} % \defeq doesn't seem right here since we already have \equiv (nomenclatured elsewhere); also don't we have \coloneqq already anyway?
@@ -174,18 +174,24 @@ Specifically, when two state parts are aliased,%
 \footnote{Or rather, the symbolic expressions\index{symbolic!expression}
   recorded as being stored in them alias.}
 writing to the symbolic location (memory region) specified by one of them will change the value that is read from the symbolic location (memory region) specified by the other.
+Unfortunately, it is not always possible to determine whether or not
+two state parts alias.
 
-We thus keep track of memory regions read and written during a sequence of execution in a structured \emph{memory model}.%
+We thus keep track of memory regions read and written during a sequence of execution in structured \emph{memory models}.%
 \index{memory!read}%
 \index{memory!model}
 These memory models store \emph{aliasing}, \emph{separation},%
 \index{memory!separation}
 and \emph{enclosure}\index{memory!enclosure}
 relations for memory regions.\index{memory!region}
-Our memory models are defined by the following data structure:
+This allows for efficient checks of those relations.
+Furthermore, constructing them in a nondeterministic\index{nondeterminism}
+fashion allows for dealing with multiple potential combinations of relations
+between read and written regions in memory.
+They are defined by the following data structure:
 \begin{align*}
   \mathsf{MemTree} &\coloneqq
-  \{\mathbb{C}\times\mathbb{N}\}\times\mathsf{Mem}
+  \{\constant\times\nat\}\times\mathsf{Mem}
   &
   \mathsf{Mem} &\coloneqq \{\mathsf{MemTree}\}
 \end{align*}
@@ -215,22 +221,22 @@ Finally, regions in sibling nodes are separate.
 \begin{figure}
   \hspace*\fill
   \subcaptionbox{Aliasing\label{fig:memA}}{
-    \begin{tikzpicture}[>=stealth, every node/.style={draw}]
+    \begin{tikzpicture}[every node/.style=draw]
       \node (a) {$\{\region{\reg{rdi}_0}{8},\region{\reg{rsi}_0}{8}\}$};
       \node[below=of a] (b) {$\region{\reg{rsi}_0+4}{4}$};
 
-      \draw[->] (a) -- node [draw=none,midway, right, fill=white] {\rotatebox{90}{$\preceq$}}(b); % keeping spacing aligned
+      \draw[->] (a) -- node [draw=none,midway, left, fill=white] {\rotatebox{90}{$\preceq$}}(b); % keeping spacing aligned
     \end{tikzpicture}%
   }
   \hfill
   \subcaptionbox{No aliasing\label{fig:memB}}{%
-    \begin{tikzpicture}[>=stealth, every node/.style={draw}]
+    \begin{tikzpicture}[every node/.style=draw]
       \node (a) {$\region{\reg{rdi}_0}{8}$};
       \node[right=of a] (b) {$\region{\reg{rsi}_0}{8}$};
       \node[below=of b] (c) {$\region{\reg{rsi}_0+4}{4}$};
 
       \draw (a) -- node [draw=none,midway, above, fill=white] {$\bowtie$} (b) ;
-      \draw[->] (b) -- node [draw=none,midway, right, fill=white] {\rotatebox{90}{$\preceq$}} (c);
+      \draw[->] (b) -- node [draw=none,midway, left, fill=white] {\rotatebox{90}{$\preceq$}} (c);
     \end{tikzpicture}%
   }
   \hspace*\fill
@@ -238,17 +244,23 @@ Finally, regions in sibling nodes are separate.
   \label{fig:mem}
 \end{figure}
 
-\todo{working from here}
 \begin{definition}
-  Let $s$ be a concrete state and let $r_0 = \langle e_0, n_0\rangle$ and $r_1 = \langle e_1, n_1\rangle$ be two regions in memory.
-  Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations $\equiv$, $\bowtie$, and $\preceq$, respectively, are defined as:
+  Let $s$ be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.%
+  \nomenclature{\region ab}{When not being used for list notation,
+    represents a memory region\index{memory!region}
+    starting at address~$a$\index{memory!address}
+    and being~$b$ bytes\index{number!byte} long
+    \todo{why is the full version not showing up in the nomenclature list? I don't mind if some get pushed to the next page\dots}}
+  Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations $\alias$, $\separate$, and $\enclosed$, respectively, are defined as:
   \begin{align*}
     r_0 \alias r_1 &\defeq s \vdash e_0 = e_1 \wedge n_0 = n_1 \\
     r_0 \separate r_1 &\defeq s \vdash (e_0 + n_0 \le e_1) \vee (e_1 + n_1 \le e_0)\\
     r_0 \enclosed r_1 &\defeq s \vdash e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
-  \end{align*}
-  \nomenclature{$\alias$}{For \acp{hg}, indicates the two memory region%
+  \end{align*}%
+  \nomenclature[operator]{$\defeq$}{For \acp{hg}, used in place of $\equiv$ as that symbol is used to indicate aliasing instead}%
+  \nomenclature[operator]{$\alias$}{For \acp{hg}, indicates the two memory region%
     \index{memory!region} arguments alias}
+
 \end{definition}
 A relation holds \emph{necessarily} if and only if it holds in all concrete states $s$.
 For example, $\region{\reg{rsi}_0}{4} \bowtie \region{\reg{rsi}_0+4}{4}$ denotes that the two regions are necessarily separate.
