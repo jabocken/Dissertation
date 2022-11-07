@@ -1,20 +1,20 @@
 % Maybe give some of the symbol ones proper names?
 %% Shared types
-@index{number}
+@index{numeric}
 @symbol{bool,
   name = {\ensuremath{\mathbb B}},
   description = {Type of boolean values, True and False \todo{use the notation eventually}},
-  parent = {number}
+  parent = {numeric}
 }
 @symbol{nat,
   name = {\ensuremath{\mathbb N}},
   description = {Type of natural numbers},
-  parent = {number}
+  parent = {numeric}
 }
 @symbol{word,
   name = {\ensuremath{\mathbb W}},
   description = {Type of 64-bit (unsigned) words},
-  parent = {number}
+  parent = {numeric}
 }
 
 @index{symbolic}
@@ -47,7 +47,7 @@
 @symbol{instaddr,
   name = {\ensuremath{\mathbb L}},
   description = {Type of instruction addresses in a program; a 64-bit word},
-  parent = {number},
+  parent = {numeric},
   seealso = {word}
 }
 
@@ -123,7 +123,7 @@
 @symbol{pointer,
   name = {\ensuremath{\mathbb E}},
   description = {Type of pointers; a 64-bit word},
-  parent = {number},
+  parent = {numeric},
   seealso = {word}
 }
 @symbol{termination,
