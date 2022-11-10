@@ -197,7 +197,7 @@ must provide its own abstractions and assumptions on layout.
 
 \subsection{Current Approaches to Assembly Verification}
 In 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
-for most user-mode \arch\ instructions as well as for commonly-used system calls.
+for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
 That work allows mechanized reasoning over compiled programs
 in the ACL2 theorem prover \autocite{ACL2}.
 
@@ -214,7 +214,7 @@ That work was based on an earlier one for an ARMv7 separation kernel,
 PROSPER \autocite{dam2013hypervisor,dam2013formal}.
 
 Additionally, earlier this year, \textcite{fromherz2019verified} embedded a subset
-of the \arch\ \ac{isa} in the functional, verification-oriented language
+of the \gls{arch} \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to perform a proof of correctness
 over the commonly-used cryptographic routine AES-GCM.
@@ -226,7 +226,7 @@ it with proven-true Hoare rules.
 This dissertation presents two formal approaches to per-function verification
 of the assembly-level property we call memory preservation:
 \emph{control-flow-driven} verification and \emph{syntax-driven} verification.
-Both approaches use some form of control-flow analysis over functions in \arch\ assembly
+Both approaches use some form of control-flow analysis over functions in \gls{arch} assembly
 to generate incomplete proofs.
 Those proofs are then loaded into the interactive theorem prover Isabelle/HOL
 and completed there. The proof strategies for both approaches involve
@@ -307,7 +307,7 @@ resulted in the verification of only \num{20} functions,
 with \num{631} assembly-level instructions in total.
 That is only \SI{26.67}{\percent} of the functions,
 or under \SI{26.5}{\percent} of the instructions, that we verified here.
-On top of that, the \acp{isa} they worked with are not as low-level as the \arch\ \ac{isa}.
+On top of that, the \acp{isa} they worked with are not as low-level as the \gls{arch} \ac{isa}.
 While they verified functional correctness
 instead of a weaker property like memory preservation,
 they also specifically reduced the complexity
@@ -354,7 +354,7 @@ or an average of \num{16} manual lines of proof for every loop handled,
 of which there were \num{65}.
 
 To the best of my knowledge, this is the first work to achieve
-that degree of coverage for optimized \arch\ binaries produced by production code.
+that degree of coverage for optimized \gls{arch} binaries produced by production code.
 While \textcite{tan2015auspice} produced a fully-automated methodology
 for binary analysis, it was much slower than our approach here,
 meaning they would take longer to cover the same amount of functions

@@ -57,13 +57,10 @@ where $\square\in\{=,\neq,<,<_s,\ge,\ge_s\}$.
 The~$\square_s$ relations treat their operands as signed,
 while the corresponding non-subscripted versions treat their operands as unsigned.
 
-There are also two special clauseless predicates,~$\top$%
-\nomenclature{$\top$}{Top; an always-true symbolic state predicate}
-and~$\bot$.
+There are also two special clauseless predicates,~\gls{top}%
+and~\gls{bot}.
 Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
-$\bot$ is also used to indicate an unknown~\gls{constant}.%
-\nomenclature{$\bot$}{Bottom; an always-false symbolic state predicate or an unknown/undefined~\gls{constant}
-  \todo{make sure this does not conflict with any other definitions}}
+\Gls{bot} is also used to indicate an unknown~\gls{constant}.%
 \begin{definition}\label{def:join}
   The aforementioned join\index{lattice!join}
   of two predicates~$P$ and~$Q$,%
@@ -519,46 +516,45 @@ Despite this, in cases with successful completion and no annotations produced,
 we will always produce all states that would be encountered during concrete execution.
 
 \section{Algorithm}
-\todo{I am here now; should this be its own chapter?}
-
-\Cref{alg:invgen} provides the base functionality of \ac{hg} extraction.
-This base functionality is extended in two ways:
+\Cref{alg:invgen} provides the base functionality for \ac{hg} extraction.
+That base functionality is then extended in two ways:
 \begin{enumerate}
-  \item a context-free approach to function calls (see \cref{subsec:function_calls}) and
-  \item preventing states from being joined when they are incompatible (see below).
+  \item the addition of a context-free approach to function calls (see \cref{subsec:function_calls}) and
+  \item the prevention of states from being joined when they are incompatible (i.e.\ not matching \cref{def:compatibility}). \todo{index entry that just points to compatible's?}
 \end{enumerate}
-The algorithm maintains two objects.
-First, a \emph{bag} of symbolic states that is to be explored.
-Function \textproc{explore} is repeatedly called until the bag is empty.
-Second, the current Hoare Graph $\var{HG}$.
+In order to do this, the algorithm maintains two objects.
+First, a \gls{bag} of the produced symbolic states that have yet to be explored.
+Function \textproc{explore} is repeatedly called until that \gls{bag} is empty.
+Second, the current \ac{hg} \gls{hg}.
+When the \gls{bag} is empty, \gls{hg} is the final \ac{hg}.
 
-The algorithm requires a function~$\tau$ modeling instruction semantics.
-Our implementation supports a wide range of x86-64 instructions,
+Furthermore, the algorithm requires a function~\gls{step-hg} that models instruction semantics.
+Our implementation supports a wide range of \gls{arch} instructions,
 including (conditional) moves and jumps as well as
-arithmetic, logical and bit-vector operations (sufficient to deal with all Xen binaries).
+arithmetic, logical and bit-vector operations (sufficient to deal with all Xen binaries).\todo{glossary for Xen}
 Given a supported instruction and a suitable memory model,
-function~$\tau$ transforms its supplied predicate
-into a set of predicates
+function~\gls{step-hg} transforms its supplied predicate
+into a set of predicates \todo{glossary entry for lots of these terms would be nice}
 by symbolically executing the single instruction.
-The memory model allows~$\tau$ to take into account information on pointer relations
+The memory model allows~\gls{step-hg} to take into account information on pointer relations
 when performing symbolic execution using destination operands
 that reference memory locations.
 
 
-The algorithm requires an expression evaluation function
-$\gls{eval}:\gls{expression}\times\gls{pointer}\mapsto\gls{constant}$,
-which maps an expression (over registers, flags, and dereferenced memory regions)
+The algorithm also requires an expression evaluation function
+$\gls{eval}:\gls{expression}\times\gls{pred}\mapsto\gls{constant}$,
+which maps an expression (containing registers, flags, and dereferenced memory regions)
 to a constant expression.
-To this end, it uses the predicate of the current symbolic state.
+To this end, it requires the predicate of the current symbolic state.
 No memory model information is required
 for this evaluation; that information is only required
 when writing to a location in memory.
 \begin{definition}\label{def:eval}
-  Given predicate $P$, the evaluation of an expression $e$ is defined as follows:
+  Given predicate $P$, \todo{glossary entry for the variable?} the evaluation of an expression $e$ is defined as follows:
   \begin{equation*}
     \gls{eval}(e,P)=\begin{cases}
       v & \text{if $e = v$ is a clause in }P \\
-      \bot & \text{otherwise}
+      \gls{bot} & \text{otherwise}
     \end{cases}
   \end{equation*}
 \end{definition}
@@ -568,28 +564,29 @@ The algorithm then executes steps according to the following step function:
   The \emph{symbolic state step function} for symbolic state $\sigma = \langle P,M\rangle$, notation $\step_\Sigma(\sigma)$, is defined as:
   \begin{equation*}
     \begin{array}{l}
-      ~~\step_\Sigma(\sigma)\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \tau(P,M') \wedge M' \in \insertM(R, M) \} \\
+      ~~\step_\Sigma(\sigma)\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \glsxtrfmt{step-hg}{P,M'} \wedge M' \in \insertM(R, M) \} \\
       \mbox{\normalfont{\textbf{where}}}\\
       ~~\begin{aligned}
-        R &\gls{defeq} \{ [\gls{eval}(a, P),s] \mid [a,s]\text { used by instruction } i \} - \{\bot\}\\
+        R &\gls{defeq} \{ [\gls{eval}(a, P),s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\}\\
         i &\gls{defeq} \gls{fetch}(\gls{eval}(\rip, P))
       \end{aligned}
     \end{array}
   \end{equation*}
 \end{definition}
+\todo{Stopping point here}
 Given the current symbolic state $\sigma$, the set of next symbolic states is obtained by applying predicate transformation to the current predicate and by inserting regions into the current memory model.
 The set of regions is obtained by considering the operands of the current instruction.
 For example, the instruction \inlineasm{mov qword ptr [rax + 4*rdi], rax} results in one region $\region{\rax + 4*\rdi}8$.
 That region is -- given the current predicate -- evaluated to a constant.
 For example, if the current predicate contains $\rax = 0x100$ and $\rdi = \rsio$, then evaluation produces the constant $0x100 + 4*\rsio$.
 The evaluated region is inserted.
-If the current predicate does not contain sufficient information to evaluate the region, evaluation produces~$\bot$ and the region is not inserted.
+If the current predicate does not contain sufficient information to evaluate the region, evaluation produces~\gls{bot} and the region is not inserted.
 The latter overapproximates any relation (e.g., aliasing, separation) the new region may have with the current memory model.
 Finally, if no bounded set of next states can be determined
 (such as for unresolved indirect jumps or calls),
 we produce an annotation and stop further exploration from that state.
 
-\begin{definition}
+\begin{definition}\label{def:compatibility}
   Two symbolic states $\sigma$ and $\sigma'$ are \emph{compatible}, notation $\sigma_0\gls{compatible}\sigma_1$, if and only if their instruction pointers ($\rip$) are equal.
 \end{definition}
 States will only be joined when they are compatible.
@@ -608,20 +605,20 @@ Concretely, if two states assign a certain state part with immediate pointers to
   \algnewcommand{\IIf}[2]{\State\algorithmicif\ #1\ \algorithmicthen~#2}
   \begin{algorithmic}[1]
     \Function{explore}{}
-      \State pop $\sigma$ from $\bag$\label{line:pop}
-      \If{$\exists \sigma_c \in \var{HG} \sepdot \sigma_c\gls{compatible}\sigma$}\label{line:compat}
+      \State pop $\sigma$ from \gls{bag}\label{line:pop}
+      \If{$\exists \sigma_c \in\gls{hg}\sepdot \sigma_c\gls{compatible}\sigma$}\label{line:compat}
         \IIf{$\sigma \sqsubseteq \sigma_c$}{\Return}\label{line:terminate}
         \State $\sigma_j \coloneqq \sigma\gls{join}\sigma_c$\label{line:join}
-        \State $\var{HG}[\sigma_c \coloneqq \sigma_j]$
+        \State $\gls{hg}[\sigma_c \coloneqq \sigma_j]$
       \Else
         \State $\sigma_j \coloneqq \sigma$\label{line:nocompat}
       \EndIf
       \ForAll{$\sigma' \in \step_\Sigma(\sigma_j)$}\label{line:forall}
-        \State $\var{HG} ~\gls{pluseq}~ (\sigma_j, \sigma')$
+        \State $\gls{hg} ~\gls{pluseq}~ (\sigma_j, \sigma')$
         \If {$\gls{eval}(\rip, \gls{pred}(\sigma'))$ is not immediate}
           \State \textbf{annotate, stop further exploration}\label{line:undsound}
         \Else
-          \State $\bag\gls{pluseq}\sigma'$\label{line:addbag}
+          \State $\gls{bag}\gls{pluseq}\sigma'$\label{line:addbag}
         \EndIf
       \EndFor\label{line:endforall}
     \EndFunction
@@ -629,16 +626,16 @@ Concretely, if two states assign a certain state part with immediate pointers to
 \end{algorithm}
 
 Let $\sigma$ be some symbolic state from the bag (\cref{line:pop}).
-Function \textproc{explore} first searches for a current symbolic state $\sigma_c$ already in the current $\var{HG}$ that is compatible (\cref{line:compat}).
+Function \textproc{explore} first searches for a current symbolic state $\sigma_c$ already in the current \gls{hg} that is compatible (\cref{line:compat}).
 If such a state exists and it is more abstract (based on ordering $\sqsubseteq$) than state $\sigma$, no further exploration is necessary (\cref{line:terminate}).
 Otherwise, $\sigma$ and~$\sigma_c$ are joined (Line~\ref{line:join}).
-The $\var{HG}$ is modified by replacing the current state with the joined one.
+The \gls{hg} is modified by replacing the current state with the joined one.
 This replacement maintains all current edges: only the state is modified.
 Symbolic state $\sigma_j$ is the state to be explored further.
-If no compatible state exists in the current $\var{HG}$, then $\sigma$ is the state to be explored further (\cref{line:nocompat}).
+If no compatible state exists in the current \gls{hg}, then $\sigma$ is the state to be explored further (\cref{line:nocompat}).
 Exploration occurs at Lines~\ref{line:forall} to~\ref{line:endforall}.\todo{cref should have a way to do this}
 For every successor $\sigma'$ (possibly none),
-an edge is added to the $\var{HG}$.
+an edge is added to the \gls{hg}.
 If, for some successor evaluation of the instruction pointer, $\rip$ does not produce an immediate concrete value, then this is due to either 1.) a return statement (after which \reg{rip} is set to the symbol pushed to the top of the stack in the initial state), or 2.) the current symbolic state does not provide sufficient information to resolve the computation of \reg{rip} (because of an indirect branch, for example). In the second case, the state is annotated with an unsoundness warning (\cref{line:undsound})
 and the algorithm terminates early.
 Otherwise, the successor is added to the bag.
@@ -657,9 +654,9 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \end{definition}
 
 \begin{lemma}\label{lem:simulation}
-  Assume that predicate transformation $\tau$ is correct:
+  Assume that predicate transformation~\gls{step-hg} is correct:
   \[
-  \forall s~s' \sepdot s \rightarrow_B s' \wedge (s\gls{holds}P) \implies \exists Q \in \tau(P,M) \sepdot s'\gls{holds}Q
+  \forall s~s' \sepdot s \rightarrow_B s' \wedge (s\gls{holds}P) \implies \exists Q\in\glsxtrfmt{step-hg}{P,M} \sepdot s'\gls{holds}Q
   \]
   Then relation $\mathbf{R}$ is a simulation between the concrete transition system and the transition system obtained by abstract step function $\step_\Sigma$:
   \[
@@ -669,9 +666,9 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \begin{proof}
   Let $s$ and $\sigma$ be two related states.
   Hence $(s\gls{holds}P) \wedge (s\gls{holds}M)$.
-  By correctness of $\tau$, we obtain a predicate $Q \in \tau(P,M)$ such that $s'\gls{holds}Q$.
+  By correctness of~\gls{step-hg}, we obtain a predicate $Q\in\glsxtrfmt{step-hg}{P,M}$ such that $s'\gls{holds}Q$.
   By \cref{lem:insert} (completeness of the insertion function), the memory model that holds in state $s'$ is generated.
-  Since the step function overapproximates by taking any combination of predicates in $\tau(P,M)$ and generated memory models, there exists at least one symbolic state that is related to~$s'$.
+  Since the step function overapproximates by taking any combination of predicates in $\glsxtrfmt{step-hg}{P,M}$ and generated memory models, there exists at least one symbolic state that is related to~$s'$.
 \end{proof}
 
 
@@ -705,7 +702,7 @@ In words, for every reachable transition from $s$ to $s'$ in the binary, there m
   \[
   \begin{array}{l}
     \indent\mathsf{sup}(\sigma') \text{ is explored } \Longleftrightarrow \\
-    \indent\exists \sigma \in \bag \sepdot \exists \pi = [\sigma, \dotsc, \sigma'] \sepdot \mathsf{white}(\pi)
+    \indent\exists \sigma \in\gls{bag}\sepdot \exists \pi = [\sigma, \dotsc, \sigma'] \sepdot \mathsf{white}(\pi)
     \\
     \textbf{where}
     \\
@@ -730,7 +727,7 @@ In words, for every reachable transition from $s$ to $s'$ in the binary, there m
 
 \subsection{Extension: Function Calls}\label{subsec:function_calls}
 The base algorithm as presented in Algorithm~\ref{alg:invgen} does not treat function calls as special instructions.
-This is unsatisfactory for two reasons: first, for \emph{external} function calls, a function $\tau$ that transforms the predicate may not be available.
+This is unsatisfactory for two reasons: first, for \emph{external} function calls, a function~\gls{step-hg} that transforms the predicate may not be available.
 External function calls are dynamically linked and thus the assembly instructions are not available during static analysis.
 Second, even though \emph{internal} function calls theoretically pose no problem, simply unfolding every function call prevents scalability.
 We present an extension to the algorithm that treats internal function calls compositionally. That is, it ensures that each function is explored only once.
@@ -747,7 +744,7 @@ The function name is matched against a list of hard-coded function names that ar
 In case of a terminating function, function $\step_\Sigma$ will produce the empty set, stopping further exploration from the current state.
 Otherwise, the function is some unknown external function. % whose behavior cannot be known.
 We make the assumption that this unknown function adheres to the 64-bit System V calling convention.
-Function $\step_\Sigma$ therefore modifies the current state by assigning $\bot$ to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
+Function $\step_\Sigma$ therefore modifies the current state by assigning~\gls{bot} to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
 In other words, only the clauses concerning the stack frame and callee-saved non-volatile registers are kept.
 Similarly, all relations in the memory model concerning the heap are removed.
 We call this \emph{cleaning} the current symbolic state.
@@ -808,7 +805,7 @@ States in the bag whose reachability field is false are not selected.
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{2}
-        \State \algorithmicif\ {$\exists \sigma_c \in \var{HG} \sepdot \sigma_c\gls{compatible}\sigma \wedge \mathsf{reachable}(\sigma_c)$}\ \algorithmicthen
+        \State \algorithmicif\ {$\exists \sigma_c \in\gls{hg}\sepdot \sigma_c\gls{compatible}\sigma \wedge \mathsf{reachable}(\sigma_c)$}\ \algorithmicthen
       \end{algorithmic}
     \end{minipage}
     \\\hline
@@ -826,7 +823,7 @@ Moreover, after Line~\ref{line:addbag}, any symbolic state with the same \texttt
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{13}
-        \State mark all $\sigma \in \bag$ with $\texttt{rip}(\sigma) = \texttt{rip}(\sigma')$ as reachable
+        \State mark all $\sigma \in\gls{bag}$ with $\rip(\sigma) = \rip(\sigma')$ as reachable
       \end{algorithmic}
     \end{minipage}
     \\\hline

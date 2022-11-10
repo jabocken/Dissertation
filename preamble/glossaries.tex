@@ -1,7 +1,23 @@
+\glsxtrsetgrouptitle{element}{Elements}
 \glsxtrsetgrouptitle{function}{Functions}
 \glsxtrsetgrouptitle{relation}{Relations}
 \glsxtrsetgrouptitle{type}{Types}
+\glsxtrsetgrouptitle{variable}{Variables}
 
+% Helpers for functions that take arguments so require usage of \glsxtrfmt
+% Not sure \operatorname is really useful for the single-letter Greek functions that stay italicized anyway, but whatever.
+\newcommand\stephgfn[1]{\operatorname\tau(#1)}
+
+\GlsXtrLoadResources[
+  src=glossaries/terms
+]
+\GlsXtrLoadResources[
+  src=glossaries/elements,
+  group=element,
+  type=symbols,
+  symbol-sort-fallback=name,
+  break-at=none
+]
 \GlsXtrLoadResources[
   src=glossaries/functions,
   group=function,
@@ -20,6 +36,13 @@
   src=glossaries/types,
   group=type,
   type=symbols, % I thought this was unnecessary when using @symbol but it looks like category and type are not the same thing
+  symbol-sort-fallback=name,
+  break-at=none
+]
+\GlsXtrLoadResources[
+  src=glossaries/variables,
+  group=variable,
+  type=symbols, % Not sure if variables should really be treated as symbols
   symbol-sort-fallback=name,
   break-at=none
 ]

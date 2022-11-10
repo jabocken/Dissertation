@@ -231,7 +231,7 @@ of the binary code to execute, with each instruction and its operands
 being represented by human-readable mnemonics.
 There are usually some additional abstractions,
 
-\subsection{The \arch\ Instruction Set Architecture}
+\subsection{The \glsentryname{arch} Instruction Set Architecture}
 \Iac{isa} is the specification of the visible behavior of a processor.
 They have long been published as human-readable documents
 \autocite{bowen1985cards,intel2019manual},
@@ -246,7 +246,7 @@ are available; maybe even details of the cache(s) if it's an architecture
 where caching (on certain levels) is a manual process, such as is traditional
 for \acp{gpu}.
 The semantics of the architecture are another, such as the memory consistency model
-(complicated enough for \arch\ that formalizing it was a challenge
+(complicated enough for \gls{arch} that formalizing it was a challenge
 \autocite{sewell2010tso,owens2009tso,owens2009tsoextended})
 and the addressing modes.
 The actual set of instructions supported by the \ac{isa}
@@ -276,7 +276,7 @@ For current designs, the differences in performance and power
 have more to do with implementation than \ac{isa} \autocite{blem2013struggles}.
 
 In the end,
-this dissertation used the \arch\ \ac{isa} as it is a widely-used architecture
+this dissertation used the \gls{arch} \ac{isa} as it is a widely-used architecture
 that has had formal semantics derived for most of its instructions
 in previous works \autocite{heule2016stratified,roessle2019}.
 It is the 64-bit, mostly-backwards-compatible successor to the x86 \ac{isa},
@@ -287,16 +287,16 @@ Many of the instructions are the same,
 though extended over the years to work with larger operands.
 There are also many new instructions that have been added over the years.
 
-The rest of this section describes features and properties of \arch\ that are relevant
+The rest of this section describes features and properties of \gls{arch} that are relevant
 to this dissertation.
 
 \subsubsection{State}
 For the purposes of this dissertation,
-the important components of \arch\ state are the memory model
+the important components of \gls{arch} state are the memory model
 and the registers available for use.
 
 \paragraph{Memory}
-Addressing in \arch\ takes the form of \cref{eq:addressing}.
+Addressing in \gls{arch} takes the form of \cref{eq:addressing}.
 \begin{equation}\label{eq:addressing}
 a = \left\{\frac{\begin{matrix}
   \mathfs: \\ \mathgs:
@@ -333,7 +333,7 @@ in \cref{ch:symbolic_execution} does not implement out-of-order execution
 or any similar optimizations.
 
 \paragraph{Registers}\label{par:reg}
-The standard registers\index{register} in \arch\ (\cref{tbl:regs}) are 64 bits in size,
+The standard registers\index{register} in \gls{arch} (\cref{tbl:regs}) are 64 bits in size,
 but their lower bits can be referenced alone if need be.
 If you write to one of the available 32-bit registers,
 it will zero out the upper~32 bits, but if you write to a 16- or 8-bit register,
@@ -341,7 +341,7 @@ the rest of the contents will be preserved.
 \begin{table*}
   \centering
   \appto\theadfont{\normalcolor\normalfont}
-  \caption{The \arch\ registers (excluding \acs*{simd})}\label{tbl:regs}
+  \caption{The \glsentryname{arch} registers (excluding \acs*{simd})}\label{tbl:regs}
   \begin{threeparttable}
     \begin{tabular}{lAAAAA}
       \toprule
@@ -395,14 +395,14 @@ the rest of the contents will be preserved.
 \end{table*}
 
 \subsubsection{Flags}
-Stored in the \inlineasm{rflags} register on \arch, these bits (\cref{tbl:flags})
+Stored in the \inlineasm{rflags} register on \gls{arch}, these bits (\cref{tbl:flags})
 indicate, and in some cases control, processor state.
 \keyword{CF}, \keyword{OF}, \keyword{PF}, \keyword{SF}, and \keyword{ZF} are all used
 for specific conditional branches.
 \begin{table*}
   \centering
   \appto\theadfont{\normalcolor\normalfont}
-  \caption{Flags for \arch}\label{tbl:flags}
+  \caption{Flags for \glsentryname{arch}}\label{tbl:flags}
   \begin{threeparttable}
     \begin{tabular}{rAl}
       \toprule
@@ -449,7 +449,7 @@ for specific conditional branches.
 \end{table*}
 
 \subsubsection{Instructions}
-This section covers some of the important \arch\ instructions.
+This section covers some of the important \gls{arch} instructions.
 
 \paragraph{Function and Stack}
 \begin{description}[align=right, font=\keywordstyle]
@@ -506,7 +506,7 @@ This section covers some of the important \arch\ instructions.
 \paragraph{\Acf{simd}}
 These instructions, which operate on multiple 32- or 64-bit chunks,
 allow for a degree of vectorization (up to eight 64-bit values
-or 16~32-bit values at once on modern versions of \arch\ with AVX-512).
+or 16~32-bit values at once on modern versions of \gls{arch} with AVX-512).
 When AVX-512 is supported, there are~32 512-bit \keyword{zmmN} registers available,
 each of which can also be accessed as a 256-bit \keyword{ymmN}
 or a 128-bit \keyword{xmmN} register.
@@ -669,7 +669,7 @@ Several contributions of this work were inspired by
 \section{Summary}
 This chapter gave an introduction to formal methods, including formal semantics,
 symbolic execution, Floyd verification, Hoare logic, model checking, and theorem provers.
-It also described some basic aspects of the \arch\ \ac{isa} and System~V\index{ABI!System V}
+It also described some basic aspects of the \gls{arch} \ac{isa} and System~V\index{ABI!System V}
 AMD64\index{ABI!AMD64} \ac{abi}
 as well as some general details on assembly.
 Finally, it covered the process of structured exception handling%

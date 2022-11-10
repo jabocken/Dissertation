@@ -46,8 +46,6 @@
 % foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I don't know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I don't know if it has issues with XeLaTeX like the old version
 \acsetup{index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not. It also looks silly with single so just leaving out.
 
-%% name shorthands and stuff
-\newcommand*\arch{x86-64}
 %% C++ formatting similar to https://isocpp.org/wiki/faq/misc-environmental-issues#latex-macros but nicer and with the plus signs slightly more defined than \cpluspluslogo from the texlogos package
 \newcommand\Cppx{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-1}{\textbf{++}}}}
 \newcommand\Cpp{\Cppx\index\Cppx} % wanted to use \WithSuffix for the first one (so \Cpp*) but I couldn't get it to work.
@@ -159,7 +157,6 @@
 \newcommand*{\sepdot}{\cdot}
 
 % Variable names for algorithms; maybe make into glossary?
-\newcommand{\bag}{\var{bag}}
 \newcommand{\nextstates}{\var{nextStates}}
 
 % not really sure what to do with this yet
@@ -271,7 +268,7 @@
   \include{cfg}
   \include{syntax}
 
-  \part{\emph{Formally Verified Lifting of C-compiled x86-64 Binaries}}
+  \part{\emph{Formally Verified Lifting of C-compiled \glsentryname{arch} Binaries}}
   \include{hg-lifting}
   \include{hg-formulation}
   \include{hg-results}
@@ -289,7 +286,8 @@
     \backmatter % All the stuff that comes after the body chapters
     \printbibliography[heading=bibintoc]
 %    \printindex % Interferes with glossaries-extra index
-    \printunsrtglossary[style=bookindex] % default style not good for index
+    \printunsrtglossary[style=index] % Default glossary (this stuff normally goes in back matter); for whatever reason the default style doesn't format @index/child @entries right (extra desc, not including name)
+    \printunsrtglossary[type=index,style=bookindex] % default style not good for index
   }
 %  \appendix % formats the chapter name to appendix to properly define the headers
 %  \begin{appendices}

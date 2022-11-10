@@ -1,7 +1,7 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
 This chapter covers the methodology used in \cref{ch:cfg,ch:syntax}
 to formally determine the state changes caused by individual basic blocks.
-This methodology relies on a formal big-step semantics of the \arch\ \ac{isa}
+This methodology relies on a formal big-step semantics of the \gls{arch} \ac{isa}
 provided by \textcite{roessle2019}, described in \cref{se:machine_model}.
 We then extended those semantics with additional rewrite rules
 to increase efficiency and properly reason about memory.
@@ -41,7 +41,7 @@ various instructions and their variants (\cref{se:rewrite}).
   with the 16-bit representation of the number one.
 
   Note that if this had used \inlineasm{eax} instead, the upper 32~bits of \inlineasm{rax} would have been zeroed out as well
-  due to the semantics of operations on 32-bit registers in \arch.
+  due to the semantics of operations on 32-bit registers in \gls{arch}.
 \end{example}
 
 \section{Machine Model}\label{se:machine_model}
@@ -51,11 +51,11 @@ you must first have some sort of \emph{machine model}.%
 The machine model used in this dissertation for the work in Isabelle/HOL
 is an extension of the work of \textcite{roessle2019}.
 They embedded in Isabelle/HOL a bitvector-based, big-step semantics
-machine-learned from a modern version of the \arch\ \ac{isa}.
+machine-learned from a modern version of the \gls{arch} \ac{isa}.
 That semantics included instruction set extensions such as the \ac{sse} family
 to increase the possible programs the semantics could execute.
 To improve reliability of their work,
-it was tested against an actual, live x86-64 machine to prove semantic equivalence.
+it was tested against an actual, live \gls{arch} machine to prove semantic equivalence.
 The semantics they used was an extension of that provided by \textcite{heule2016stratified},
 who did the initial application of machine learning
 to derive semantics from a physical machine.
@@ -143,7 +143,7 @@ Notation $\sigma(x\coloneqq e)$ or $\sigma\alpha$ indicates applying that assign
 or set of assignments to the supplied state.
 
 \subsection{Restrictions of the Model}
-As the x86-64 \ac{isa} is a little-endian architecture,%
+As the \gls{arch} \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation
 are designed with that in mind.
@@ -360,7 +360,7 @@ The correctness of the \textsc{readMem} algorithm
 is derived from the correctness of its component operations.
 
 \begin{example}[Reading, writing, and merging]\label{ex:simple}
-  Consider the following x86-64 assembly block:
+  Consider the following \gls{arch} assembly block:
   \begin{lstlisting}[style=x64, gobble=4]
     a0: mov  word ptr [rsp-0x8], 0xEEFF
     a1: mov dword ptr [rsp-0x4], 0xAABBCCDD

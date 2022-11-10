@@ -49,7 +49,7 @@ My three main contributions to the memory preservation work presented here were:
 
 \section{Overview of Methodology}\label{se:cfg_overview}
 The first step in the process of analysis for a function
-is disassembly of an \arch\ binary containing it.
+is disassembly of an \gls{arch} binary containing it.
 This is done using a modified version of the \lstinline|reassembly| analysis
 \autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state,wang2017angr}.%
 \index{\texttt{angr}}
@@ -97,7 +97,7 @@ The work is still not trivial, however.
     rounded corners,
     minimum height=2cm
   }]
-    \node[myblock] (binary) {\arch\ binary};
+    \node[myblock] (binary) {\gls{arch} binary};
     \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python package};
     \node[myblock, right of=cfg] (isa) {Isabelle};
     \node[myblock, right of=isa] (mem) {Formal Proof of Memory Preservation};
@@ -218,11 +218,9 @@ that represent the arguments passed to the function.
     \sigma'\neq\err\wedge(\sigma'=\infloop\vee I(\loc\sigma')(\sigma')),
   \end{equation}
   where
-  $\sigma'=\run((\lambda\sigma_r\cdot I(\loc\sigma_r)\neq\bot),\sigma)$%
-  \nomenclature{$\bot$}{Used here to represent an empty value,
-    such as the result of calling a partial function with a value it does not have an actual result for or in general the \texttt{None} value of an optional type}
+  $\sigma'=\run((\lambda\sigma_r\cdot I(\loc\sigma_r)\neq\gls{bot}),\sigma)$%
   and $\loc\sigma_r$ is the current program location,
-  stored in \inlineasm{rip} on \arch\ systems.
+  stored in \inlineasm{rip} on \gls{arch} systems.
 \end{definition}
 In words, if the Floyd invariant holds on the current state,
 then running to the next annotated location will not produce an exception.
@@ -478,7 +476,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
   style=x64,
   gobble=2,
   float=*,
-  caption=\texttt{pow2} in \arch\ assembly,
+  caption=\texttt{pow2} in \glsentryname{arch} assembly,
   label=lst:pow2a,
   firstnumber=0
 ]
@@ -596,7 +594,7 @@ In this case, the function performs a recursive factorial calculation on the val
 stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|rdi|).
 \begin{lstlisting}[
   style=x64,
-  caption=\arch\ assembly of factorial example,
+  caption=\glsentryname{arch} assembly of factorial example,
   label=lst:factasm,
   float,
   escapechar=|,
@@ -779,7 +777,7 @@ The unikernel library HermitCore \autocite{lankes2016hermitcore} was chosen%
 \index{HermitCore}
 to demonstrate the applicability of this methodology
 due to its established functionality and decent size.
-Designed for the \arch\ \ac{isa}, HermitCore is mostly written in C.
+Designed for the \gls{arch} \ac{isa}, HermitCore is mostly written in C.
 While it does use some inline assembly, not uncommon in kernel code,
 that is no issue for the assembly-level methodology presented here.
 The subset of HermitCore functions that were verified feature features
@@ -1012,7 +1010,7 @@ requiring significant \ac{itp} over word arithmetic.
 
 \section{Summary}
 This chapter covered one method for formal verification
-of memory preservation in x86-64 binaries,
+of memory preservation in \gls{arch} binaries,
 showing that functions in a binary restrict themselves to certain regions of memory.
 The approach here aimed to automate verification
 while still allowing user interaction wherever necessary.

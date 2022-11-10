@@ -189,8 +189,8 @@ While this stack safety approach is similar in focus to the memory preservation 
 I present here, the scope is much smaller.
 Their focus was specifically on stack memory rather than memory in general.
 
-Earlier this year, \textcite{fromherz2019verified} embedded a subset
-of the \arch\ \ac{isa} in the functional, verification-oriented language
+Several years ago, \textcite{fromherz2019verified} embedded a subset
+of the \gls{arch} \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to prove commonly-used crytographic routines
 that mix C with assembly for performance reasons are secure from information leakage.
@@ -283,9 +283,9 @@ and bounded response time in the presence of interrupts \autocite{shi2012interru
 A similarity with our work was the usage of Hoare logic,
 while the difference is that we performed verification solely on the assembly level
 and with a more complex \ac{isa}.
-We ultimately handled over \num{14631} \arch\ instructions compared to their \num{60}.
+We ultimately handled over \num{14631} \gls{arch} instructions compared to their \num{60}.
 While they did handle \num{8000} lines of C as well,
-that is still a higher-level language than \arch\ assembly.
+that is still a higher-level language than \gls{arch} assembly.
 
 Targeting a similar case study as \cref{ch:syntax},
 \textcite{dam2013hypervisor,dam2013formal}
@@ -489,7 +489,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
     O'Neill et al. & Z8002 & \acs*{itp}+\acs*{vcg} & Jet engine code & \\
     Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
-    Goel et al. & \arch & \acs*{itp} & word-count  & \num{186} insts \\
+    Goel et al. & \gls{arch} & \acs*{itp} & word-count  & \num{186} insts \\
     Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
     Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
@@ -497,9 +497,9 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
       \makecell[l]{\num{2630} \acs*{sloc}\\
         \num{935} \acs*{sloc}} \\
-    Fromherz et al. & C/\arch & ATP+\acs*{vcg} & \acs{aes} funcs & \\
-    \textbf{\cref{ch:cfg}} & \arch & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
-    \textbf{\cref{ch:syntax}} & \arch & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
+    Fromherz et al. & C/\gls{arch} & ATP+\acs*{vcg} & \acs{aes} funcs & \\
+    \textbf{\cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
+    \textbf{\cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
     Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs*{sloc} \\
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
