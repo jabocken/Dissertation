@@ -1,3 +1,5 @@
+%% HG work
+@index{memory-model, name = {memory model}}
 @symbol{eval,
   name = {\ensuremath{\operatorname{eval}}},
   description = {Expression evaluation function; maps a possibly-state-dependent expression to a constant expression}
@@ -16,7 +18,22 @@
   description = {The supplied \ac{hg} is sound with respect to the supplied binary}
 }
 @symbol{step-hg,
-  name = {\ensuremath\tau},
+  name = {\ensuremath{\operatorname{\textproc{step}}_\Sigma}},
+  description = {The symbolic state step function for \ac{hg} generation},
+  parent = {state}
+}
+% Not sure the \operatorname is really useful here
+@symbol{step-hg-semantics,
+  name = {\ensuremath{\operatorname\tau}},
   description = {The instruction-semantics-modeling inner step function for \ac{hg} generation},
-  user1 = {stephgfn}
+  parent = {state}
+}
+@symbol{insertM,
+  name = {\ensuremath{\operatorname{ins}}},
+  description = {Inserts the first memory tree argument into the second},
+  parent = {memory-model}
+}
+@symbol{explore,
+  name = {\ensuremath{\operatorname{\textproc{explore}}}},
+  description = {The base function of the \ac{hg} extraction algorithm}
 }

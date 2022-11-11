@@ -281,17 +281,17 @@ This region is embedded in a minimal memory tree,
 $\langle \{r\},\varnothing\rangle$,
 which is then supplied to the below function.
 
-\begin{definition}\label{def:insert}
+\begin{definition}[Memory Tree Insertion]\label{def:insert}
   Let $t_0 = \langle R_0,M_0\rangle$ and $t_1 = \langle R_1,M_1\rangle$ be two trees. Function
-  $\insertM$ of type $\gls{memtree}\times\gls{mem}\times\gls{predicate}\rightarrow\{\gls{mem}\}$
+  \gls{insertM} of type $\gls{memtree}\times\gls{mem}\times\gls{predicate}\rightarrow\{\gls{mem}\}$
   is defined as follows:
   \begin{align*}
-    \insertM(t_0,\varnothing) &\gls{defeq} \{t_0\}\notag \\
-    \insertM(t_0,t_1\cons M) &\gls{defeq} \begin{cases}
-      \insertM_\text{AL}(t_0,t_1,M) & \text{ if } t_0\gls{alias}t_1 \\
-      \insertM_\text{SEP}(t_0,t_1,M) & \text{ if } t_0\gls{separate}t_1 \\
-      \insertM_\text{ENC}(t_0,t_1,M) & \text{ if } t_0\gls{enclosed}t_1 \\
-      \insertM_\text{CON}(t_0,t_1,M) & \text{ if } t_1\gls{enclosed}t_0 \\
+    (t_0,\varnothing) &\gls{defeq} \{t_0\}\notag \\
+    \gls{insertM}[(t_0,t_1\cons M)] &\gls{defeq} \begin{cases}
+      \gls{insertM}[_\text{AL}(t_0,t_1,M)] & \text{ if } t_0\gls{alias}t_1 \\
+      \gls{insertM}[_\text{SEP}(t_0,t_1,M)] & \text{ if } t_0\gls{separate}t_1 \\
+      \gls{insertM}[_\text{ENC}(t_0,t_1,M)] & \text{ if } t_0\gls{enclosed}t_1 \\
+      \gls{insertM}[_\text{CON}(t_0,t_1,M)] & \text{ if } t_1\gls{enclosed}t_0 \\
       \mbox{destroy}(t_0, M)  & \text{otherwise}
     \end{cases}
   \end{align*}
@@ -299,12 +299,12 @@ which is then supplied to the below function.
   Notation $a \cons X$ denotes $\{a\} \cup X$ \todo{put this in glossary}.
   \begin{equation*}
     \begin{array}{lcl}
-      \insertM_\text{AL}(t_0,t_1,M) &\gls{defeq}& \\
-      \multicolumn{3}{r}{\{(R_0\cup R_1, M') \cons M \mid M' \in \mathsf{fold}(\insertM, M_0 \cup M_1) \}} \\
-      \insertM_\text{SEP}(t_0,t_1,M) &\gls{defeq}& \{t_1\cons M'\mid M'\in\insertM(t_0,M)\} \\
-      \insertM_\text{ENC}(t_0,t_1,M) &\gls{defeq}& \{\langle R_1,M'\rangle\cons M\mid M'\in\insertM(t_0,M_1)\} \\
-      \insertM_\text{CON}(t_0,t_1,M) &\gls{defeq}& \\
-      \multicolumn{3}{r}{ \{\insertM(t',M)\mid t'\in\{\langle R_0,M'\rangle\mid M'\in \insertM(t_1,M_0)\}\}}
+      \gls{insertM}_\text{AL}(t_0,t_1,M) &\gls{defeq}& \\
+      \multicolumn{3}{r}{\{(R_0\cup R_1, M') \cons M \mid M' \in \mathsf{fold}(\gls{insertM}, M_0 \cup M_1) \}} \\
+      \gls{insertM}_\text{SEP}(t_0,t_1,M) &\gls{defeq}& \{t_1\cons M'\mid M'\in\gls{insertM}[(t_0,M)]\} \\
+      \gls{insertM}_\text{ENC}(t_0,t_1,M) &\gls{defeq}& \{\langle R_1,M'\rangle\cons M\mid M'\in\gls{insertM}[(t_0,M_1)]\} \\
+      \gls{insertM}_\text{CON}(t_0,t_1,M) &\gls{defeq}& \\
+      \multicolumn{3}{r}{ \{\gls{insertM}[(t',M)]\mid t'\in\{\langle R_0,M'\rangle\mid M'\in \gls{insertM}[(t_1,M_0)]\}\}}
     \end{array}
   \end{equation*}
 \end{definition}
@@ -378,7 +378,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
   \end{equation*}
   Then, insertion of region $r_0$ into $M$ will produce at least a corresponding memory model:
   \begin{equation*}
-    \exists M' \in \insertM(\langle r_0,\varnothing\rangle,M) \sepdot \{ (r_0~f(r')~r') \mid r' \in R(M) \} \subseteq \mathcal{R}(M')
+    \exists M' \in \gls{insertM}[(\langle r_0,\varnothing\rangle,M)] \sepdot \{ (r_0~f(r')~r') \mid r' \in R(M) \} \subseteq \mathcal{R}(M')
   \end{equation*}
   In words, there exists some memory model that contains all relations of mapping~$f$.
 \end{lemma}
@@ -528,15 +528,15 @@ Function \textproc{explore} is repeatedly called until that \gls{bag} is empty.
 Second, the current \ac{hg} \gls{hg}.
 When the \gls{bag} is empty, \gls{hg} is the final \ac{hg}.
 
-Furthermore, the algorithm requires a function~\gls{step-hg} that models instruction semantics.
+Furthermore, the algorithm requires a function~\gls{step-hg-semantics} that models instruction semantics.
 Our implementation supports a wide range of \gls{arch} instructions,
 including (conditional) moves and jumps as well as
 arithmetic, logical and bit-vector operations (sufficient to deal with all Xen binaries).\todo{glossary for Xen}
 Given a supported instruction and a suitable memory model,
-function~\gls{step-hg} transforms its supplied predicate
+function~\gls{step-hg-semantics} transforms its supplied predicate
 into a set of predicates \todo{glossary entry for lots of these terms would be nice}
 by symbolically executing the single instruction.
-The memory model allows~\gls{step-hg} to take into account information on pointer relations
+The memory model allows~\gls{step-hg-semantics} to take into account information on pointer relations
 when performing symbolic execution using destination operands
 that reference memory locations.
 
@@ -545,10 +545,9 @@ The algorithm also requires an expression evaluation function
 $\gls{eval}:\gls{expression}\times\gls{pred}\mapsto\gls{constant}$,
 which maps an expression (containing registers, flags, and dereferenced memory regions)
 to a constant expression.
-To this end, it requires the predicate of the current symbolic state.
-No memory model information is required
-for this evaluation; that information is only required
-when writing to a location in memory.
+To that end, it requires the predicate of the current symbolic state.
+No memory model information is required for this evaluation;
+that information is only required when writing to a location in memory.
 \begin{definition}\label{def:eval}
   Given predicate $P$, \todo{glossary entry for the variable?} the evaluation of an expression $e$ is defined as follows:
   \begin{equation*}
@@ -559,53 +558,75 @@ when writing to a location in memory.
   \end{equation*}
 \end{definition}
 
-The algorithm then executes steps according to the following step function:
+That evaluation function is then used by the algorithm in the process of executing steps according to the following step function:
 \begin{definition}
-  The \emph{symbolic state step function} for symbolic state $\sigma = \langle P,M\rangle$, notation $\step_\Sigma(\sigma)$, is defined as:
-  \todo{glossary entry for $\step_\Sigma$}
+  The \emph{symbolic state step function} for symbolic state $\sigma = \langle P,M\rangle$, notation $\gls{step-hg}[(\sigma)]$, is defined as:
   \begin{equation*}
     \begin{array}{l}
-      ~~\step_\Sigma(\sigma)\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \glsxtrfmt{step-hg}{P,M'} \wedge M' \in \insertM(R, M) \} \\
+      ~~\gls{step-hg}[(\sigma)]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \wedge M' \in \gls{insertM}[(R,M)] \} \\
       \mbox{\normalfont{\textbf{where}}}\\
       ~~\begin{aligned}
-        R &\gls{defeq} \{ [\gls{eval}(a, P),s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\}\\
-        i &\gls{defeq} \gls{fetch}(\gls{eval}(\rip, P))
+        R &\gls{defeq} \{ [\gls{eval}[(a,P)],s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\}\\
+        i &\gls{defeq} \gls{fetch}(\gls{eval}[(\rip, P)])
       \end{aligned}
     \end{array}
   \end{equation*}
 \end{definition}
-\todo{Stopping point here}
-Given the current symbolic state $\sigma$, the set of next symbolic states is obtained by applying predicate transformation to the current predicate and by inserting regions into the current memory model.
-The set of regions is obtained by considering the operands of the current instruction.
-For example, the instruction \inlineasm{mov qword ptr [rax + 4*rdi], rax} results in one region $\region{\rax + 4*\rdi}8$.
-That region is -- given the current predicate -- evaluated to a constant.
-For example, if the current predicate contains $\rax = 0x100$ and $\rdi = \rsio$, then evaluation produces the constant $0x100 + 4*\rsio$.
-The evaluated region is inserted.
-If the current predicate does not contain sufficient information to evaluate the region, evaluation produces~\gls{bot} and the region is not inserted.
-The latter overapproximates any relation (e.g., aliasing, separation) the new region may have with the current memory model.
-Finally, if no bounded set of next states can be determined
-(such as for unresolved indirect jumps or calls),
-we produce an annotation and stop further exploration from that state.
+Given the current symbolic state $\sigma$, the set of next symbolic states is obtained by performing the following two actions:
+\begin{itemize}
+  \item inserting relevant regions into the current memory model and
+  \item applying predicate transformation to the current predicate.
+\end{itemize}
+The set of regions is obtained by investigating the operands of the current instruction.
+\begin{example}[Regions from Instructions]
+  The instruction \inlineasm{mov qword ptr [rax + 4*rdi], rax} results in one region, $\region{\rax + 4*\rdi}8$.
+\end{example}
+That region is---given the current predicate---evaluated to a constant.
+\begin{example}[Evaluation of Region Part]
+  If the current predicate contains $\rax=\mathtt{0x100}$ and $\rdi=\rsio$, then evaluation of $\rax + 4*\rdi$ produces the constant $0x100 + 4*\rsio$.
+\end{example}
+If the current predicate does not contain enough information to evaluate a state-part-containing region to a constant region,
+evaluation for that region produces~\gls{bot} and the region is not inserted.
+Otherwise, the successfully-evaluated region is inserted.
+The latter case overapproximates any relation (e.g., aliasing, separation) the new region may have with the current memory model.
 
-\begin{definition}\label{def:compatibility}
+It is also possible for lack of information to result in inability to continue predicate execution.
+Specifically, if no bounded set of continuation states can be determined,
+we produce an annotation and stop further exploration from that state.
+This primarily occurs for unresolved indirect jumps and calls.
+
+\begin{definition}[Compatibility]\label{def:compatibility}
   Two symbolic states $\sigma$ and $\sigma'$ are \emph{compatible}, notation $\sigma_0\gls{compatible}\sigma_1$, if and only if their instruction pointers ($\rip$) are equal.
+  States will only be joined when they are compatible.
 \end{definition}
-States will only be joined when they are compatible.
-A second extension to the base algorithm modifies this definition so that states are not considered compatible when registers contain different immediate values that directly influence control flow (e.g., when the immediates are loaded from a jump table).
-In general, it is impossible to know whether a stored value will influence future control flow.
-However, it suffices to detect situations in which values will \emph{likely} influence future control flow.
-If a value was erroneously deemed to influence future control flow, then we have unnecessarily explored paths that could have been joined earlier, but this only affects run-times and not soundness.
-If we join states that contain immediate values that turn out to be necessary to assess future control flow, this will lead to unresolved indirections or a verification error, but does not affect soundness.
-Concretely, if two states assign a certain state part with immediate pointers to instructions (i.e., pointers that fall in the range of text sections in the binary), then we do not join them to an abstract value but instead, continue exploration from both states. This is because these immediate values will highly likely influence future control flow. This causes less abstraction, and more preciseness in some very specific cases, but does allow us to resolve more indirections.
+An extension to the base algorithm presented below in \cref{alg:invgen} modifies this definition.
+Specifically, it adds the constraint that states are not considered compatible when shared registers are assigned different immediate values that directly influence control flow
+(for example, when the immediates are loaded from a jump table).
+In general, it is impossible to know whether or not a stored value will influence future control flow.
+However, it is sufficient to detect situations in which values will \emph{likely} influence future control flow.
+
+This modification to compatibility does not cause any soundness issues.
+If a value was erroneously deemed to influence future control flow, then we have unnecessarily explored paths that could have been joined earlier, but this only affects analysis time and not soundness.
+\todo{reference join by textual form somehow?}
+Joining states that contain immediate values that turn out to be necessary to assess future control flow is no issue either.
+It will merely lead to unresolved indirections or errors being reported by the analysis, and soundness will still not be affected.
+
+Concretely, if two states have assignments of different immediate pointers to instructions%
+\footnote{Concrete pointer values that fall within the range of the text section of the binary}
+to the same state part, then we do not join those pointers to an abstract value.
+Instead, we continue exploration from both states.
+This is because those immediate values are highly likely to influence future control flow.
+Such an approach causes less abstraction, but does allow us to resolve more indirections.
+In very specific cases it even results in more preciseness.
 
 \subsection{Base Algorithm}
 
 \begin{algorithm}
-  \caption{Base of Hoare Graph Extraction}
+  \caption{Base Version of Hoare Graph Extraction}
   \label{alg:invgen}
   \algnewcommand{\IIf}[2]{\State\algorithmicif\ #1\ \algorithmicthen~#2}
   \begin{algorithmic}[1]
-    \Function{explore}{}
+    \Function{explore}{} \todo{gls link for {explore} here?}
       \State pop $\sigma$ from \gls{bag}\label{line:pop}
       \If{$\exists \sigma_c \in\gls{hg}\sepdot \sigma_c\gls{compatible}\sigma$}\label{line:compat}
         \IIf{$\sigma \sqsubseteq \sigma_c$}{\Return}\label{line:terminate}
@@ -614,9 +635,9 @@ Concretely, if two states assign a certain state part with immediate pointers to
       \Else
         \State $\sigma_j \coloneqq \sigma$\label{line:nocompat}
       \EndIf
-      \ForAll{$\sigma' \in \step_\Sigma(\sigma_j)$}\label{line:forall}
+      \ForAll{$\sigma' \in \gls{step-hg}[(\sigma_j)]$}\label{line:forall}
         \State $\gls{hg} ~\gls{pluseq}~ (\sigma_j, \sigma')$
-        \If {$\gls{eval}(\rip, \gls{pred}(\sigma'))$ is not immediate}
+        \If {$\gls{eval}(\rip, \gls{pred}[(\sigma')])$ is not immediate}
           \State \textbf{annotate, stop further exploration}\label{line:undsound}
         \Else
           \State $\gls{bag}\gls{pluseq}\sigma'$\label{line:addbag}
@@ -626,60 +647,67 @@ Concretely, if two states assign a certain state part with immediate pointers to
   \end{algorithmic}
 \end{algorithm}
 
-Let $\sigma$ be some symbolic state from the bag (\cref{line:pop}).
-Function \textproc{explore} first searches for a current symbolic state $\sigma_c$ already in the current \gls{hg} that is compatible (\cref{line:compat}).
-If such a state exists and it is more abstract (based on ordering $\sqsubseteq$) than state $\sigma$, no further exploration is necessary (\cref{line:terminate}).
-Otherwise, $\sigma$ and~$\sigma_c$ are joined (Line~\ref{line:join}).
-The \gls{hg} is modified by replacing the current state with the joined one.
+Let $\sigma$ be some symbolic state from the~\gls{bag} (\cref{line:pop}).
+Function \gls{explore} first searches for a current symbolic state~$\sigma_c$ already in the current~\gls{hg} that is compatible (\cref{line:compat}).
+If such a state exists and it is more abstract (based on ordering $\sqsubseteq$)
+\todo{glossary entry for this ordering, and also probably needs to be explained earlier or in the background chapter section on lattices!}
+than state~$\sigma$, no further exploration is necessary (\cref{line:terminate}).
+Otherwise,~$\sigma$ and~$\sigma_c$ are joined (\cref{line:join}).
+The~\gls{hg} is modified by replacing the current state with the joined one.
 This replacement maintains all current edges: only the state is modified.
-Symbolic state $\sigma_j$ is the state to be explored further.
-If no compatible state exists in the current \gls{hg}, then $\sigma$ is the state to be explored further (\cref{line:nocompat}).
-Exploration occurs at Lines~\ref{line:forall} to~\ref{line:endforall}.\todo{cref should have a way to do this}
-For every successor $\sigma'$ (possibly none),
-an edge is added to the \gls{hg}.
-If, for some successor evaluation of the instruction pointer, $\rip$ does not produce an immediate concrete value, then this is due to either 1.) a return statement (after which \reg{rip} is set to the symbol pushed to the top of the stack in the initial state), or 2.) the current symbolic state does not provide sufficient information to resolve the computation of \reg{rip} (because of an indirect branch, for example). In the second case, the state is annotated with an unsoundness warning (\cref{line:undsound})
-and the algorithm terminates early.
+Symbolic state~$\sigma_j$ is the state to be explored further.
+If no compatible state exists in the current~\gls{hg}, then~$\sigma$ is the state to be explored further (\cref{line:nocompat}).
+Exploration occurs at \crefrange{line:forall}{line:endforall}.
+For every successor~$\sigma'$ (possibly none), an edge is added to the~\gls{hg}.
+If, for some successor evaluation of the instruction pointer,~$\rip$ does not produce an immediate concrete value, there are two possibilities.
+Either
+\begin{enumerate}
+  \item a return statement has been encountered (after which \rip\ is set to the symbol pushed to the top of the stack in the initial state), or
+  \item the current symbolic state does not provide sufficient information to resolve the computation of \rip\ (because of an indirect branch, for example).
+\end{enumerate}
+In the second case, the state is annotated with an unsoundness warning (\cref{line:undsound}) and the algorithm terminates early.
 Otherwise, the successor is added to the bag.
 
 \paragraph{Soundness}
 \todo{Another relation to glossarify}
-To formulate soundness and present a proof, we first define a relation $\mathbf{R}$ between the concrete transition system and the Hoare Graph.
-We then prove Lemma~\ref{lem:simulation}, which shows that this relation is a simulation.
-As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function $\step_\Sigma$.
+To formulate soundness and present a proof, we first define a relation $\mathbf{R}$
+\todo{this relation needs a glossary entry!}
+between the concrete transition system and the \ac{hg}.
+We then prove \cref{lem:simulation}, which shows that this relation is a simulation.
+As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function~\gls{step-hg}.
 
 \begin{definition}
   A concrete state~$s$ is \emph{related to} symbolic state $\sigma = \langle P,M \rangle$, notation $s~\mathbf{R}~\sigma$, if and only if:
-  \[
-  s~\mathbf{R}~\sigma \gls{defeq} (s\gls{holds}P) \wedge (s\gls{holds}M)
-  \]
+  \begin{equation*}
+    s~\mathbf{R}~\sigma \gls{defeq} (s\gls{holds}P) \wedge (s\gls{holds}M)
+  \end{equation*}
 \end{definition}
 
 \begin{lemma}\label{lem:simulation}
-  Assume that predicate transformation~\gls{step-hg} is correct:
-  \[
-  \forall s~s' \sepdot s \rightarrow_B s' \wedge (s\gls{holds}P) \implies \exists Q\in\glsxtrfmt{step-hg}{P,M} \sepdot s'\gls{holds}Q
-  \]
-  Then relation $\mathbf{R}$ is a simulation between the concrete transition system and the transition system obtained by abstract step function $\step_\Sigma$:
-  \[
-  \forall s~s' \sepdot s \rightarrow_B s' \wedge s~\mathbf{R}~\sigma \implies \exists \sigma' \in \step_\Sigma(\sigma) \sepdot s'~\mathbf{R}~\sigma'
-  \]
+  Assume that predicate transformation~\gls{step-hg-semantics} is correct:
+  \begin{equation*}
+    \forall s~s' \sepdot s \rightarrow_B s' \wedge (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
+  \end{equation*}
+  Then relation $\mathbf{R}$ is a simulation between the concrete transition system and the transition system obtained by abstract step function \gls{step-hg}:
+  \begin{equation*}
+    \forall s~s' \sepdot s \rightarrow_B s' \wedge s~\mathbf{R}~\sigma \implies \exists \sigma' \in \gls{step-hg}[(\sigma)] \sepdot s'~\mathbf{R}~\sigma'
+  \end{equation*}
 \end{lemma}
 \begin{proof}
   Let $s$ and $\sigma$ be two related states.
   Hence $(s\gls{holds}P) \wedge (s\gls{holds}M)$.
-  By correctness of~\gls{step-hg}, we obtain a predicate $Q\in\glsxtrfmt{step-hg}{P,M}$ such that $s'\gls{holds}Q$.
-  By \cref{lem:insert} (completeness of the insertion function), the memory model that holds in state $s'$ is generated.
-  Since the step function overapproximates by taking any combination of predicates in $\glsxtrfmt{step-hg}{P,M}$ and generated memory models, there exists at least one symbolic state that is related to~$s'$.
+  By correctness of~\gls{step-hg-semantics}, we obtain a predicate $Q\in\gls{step-hg-semantics}[(P,M)]$ such that $s'\gls{holds}Q$.
+  By \cref{lem:insert} (completeness of the insertion function), the memory model that holds in state~$s'$ is generated.
+  Since the step function overapproximates by taking any combination of predicates in $\gls{step-hg-semantics}[(P,M)]$ and generated memory models, there exists at least one symbolic state that is related to~$s'$.
 \end{proof}
-
 
 \begin{definition}
   \Ac{hg} $H = \langle \Sigma, \sigma_I, \rightarrow_\Sigma\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, S, \rightarrow_B \rangle$, notation $\gls{sound}(H,B)$, if and only if:
-  \[
-  \gls{sound}(H,B) \gls{equiv} \forall s_0 \rightarrow_B^\ast s \rightarrow_B s' \sepdot \exists \sigma \rightarrow_\Sigma \sigma' \sepdot s~\mathbf{R}~\sigma \wedge s'~\mathbf{R}~\sigma'
-  \]
+  \begin{equation*}
+    \gls{sound}(H,B) \gls{equiv} \forall s_0 \rightarrow_B^\ast s \rightarrow_B s' \sepdot \exists \sigma \rightarrow_\Sigma \sigma' \sepdot s~\mathbf{R}~\sigma \wedge s'~\mathbf{R}~\sigma'
+  \end{equation*}
 \end{definition}
-In words, for every reachable transition from $s$ to $s'$ in the binary, there must exist a related transition in the Hoare Graph.
+In words, for every reachable transition from~$s$ to~$s'$ in the binary, there must exist a related transition in the \ac{hg}.
 
 %\subsubsection{Termination}
 %\begin{lemma}
@@ -691,44 +719,45 @@ In words, for every reachable transition from $s$ to $s'$ in the binary, there m
 %
 %\subsubsection{Pulling it all together}
 \begin{theorem}[Soundness]\label{thm:algo_soundness}
-  Algorithm~\ref{alg:invgen} constructs a sound Hoare Graph.
+  \Cref{alg:invgen} constructs a sound \ac{hg}.
 \end{theorem}
 \begin{proof}
-  The structure of the algorithm is close to a depth-first search (DFS).
-  For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.
-  For a normal DFS, the white-path lemma states that the DFS will eventually explore some state $s'$ if and only if there exists some state $s$ currently in the bag \emph{and} there exists a ``white'' path from $s$ to $s'$.
-  A key difference between Algorithm~\ref{alg:invgen} and a normal DFS is that states are joined.
-  For the sake of this proof, a state is therefore considered ``white'' if the current HG contains no compatible state that is equal or more abstract (under $\sqsubseteq$).
+  The structure of the algorithm is close to \iac{dfs}.
+  For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.\todo{glossary entry!}
+  For a normal \ac{dfs}, the white-path lemma states that the \ac{dfs} will eventually explore some state~$s'$ if and only if there exists some state~$s$ currently in the bag \emph{and} there exists a ``white'' path from~$s$ to~$s'$.
+  A key difference between \cref{alg:invgen} and a normal \ac{dfs} is that states are joined.
+  For the sake of this proof, a state is therefore considered ``white'' if the current \ac{hg} contains no compatible state that is equal or more abstract (under $\sqsubseteq$).
   We reformulate the white-path lemma as follows:
-  \[
-  \begin{array}{l}
-    \indent\mathsf{sup}(\sigma') \text{ is explored } \Longleftrightarrow \\
-    \indent\exists \sigma \in\gls{bag}\sepdot \exists \pi = [\sigma, \dotsc, \sigma'] \sepdot \mathsf{white}(\pi)
-    \\
-    \textbf{where}
-    \\
-    \mathsf{sup}(\sigma') \gls{equiv} \bigsqcup \{ \sigma'' \mid \sigma''\gls{compatible}\sigma' \wedge \exists \pi = [\sigma, \dotsc, \sigma''] \sepdot \mathsf{white}(\pi) \}
-  \end{array}
-  \]
-  In words, $\mathsf{sup}(\sigma')$, the supremum of all compatible states that are currently reachable through white paths, is explored by the algorithm if and only if there exists a white path from some $\sigma$ currently in the bag to $\sigma'$.
+  \begin{equation*}
+    \begin{array}{l}
+      \indent\mathsf{sup}(\sigma') \text{ is explored } \Longleftrightarrow \\
+      \indent\exists \sigma \in\gls{bag}\sepdot \exists \pi = [\sigma, \dotsc, \sigma'] \sepdot \mathsf{white}(\pi)
+      \\
+      \textbf{where}
+      \\
+      \mathsf{sup}(\sigma') \gls{equiv} \bigsqcup \{ \sigma'' \mid \sigma''\gls{compatible}\sigma' \wedge \exists \pi = [\sigma, \dotsc, \sigma''] \sepdot \mathsf{white}(\pi) \}
+    \end{array}
+  \end{equation*}
+  In words, $\mathsf{sup}(\sigma')$, the supremum of all compatible states that are currently reachable through white paths, is explored by the algorithm if and only if there exists a white path from some~$\sigma$ currently in the bag to~$\sigma'$.
   Given this version of the white-path lemma, it directly follows that if the bag initially contains the initial state only:
-  \[
-  \mathsf{sup}(\sigma') \mbox{~is explored} \Longleftrightarrow \sigma' \mbox{~is reachable from $\sigma_0$}
-  \]
-  Now let $s$ be a reachable concrete state and $s'$ be a successor.
-  Lemma~\ref{lem:simulation} shows that the path from $s_0$ to $s$ can be simulated by a path of related symbolic states.
-  Let $\sigma$ be the symbolic state related to concrete state $s$, i.e., $s~\mathbf{R}~\sigma$.
-  Since $\sigma$ is reachable, $\mathsf{sup}(\sigma)$ is explored.
+  \begin{equation*}
+    \mathsf{sup}(\sigma') \mbox{~is explored} \Longleftrightarrow \sigma' \mbox{~is reachable from $\sigma_0$}
+  \end{equation*}
+  Now let~$s$ be a reachable concrete state and $s'$ be a successor.
+  \Cref{lem:simulation} shows that the path from~$s_0$ to~$s$ can be simulated by a path of related symbolic states.
+  Let~$\sigma$ be the symbolic state related to concrete state~$s$, i.e., $s~\mathbf{R}~\sigma$.
+  Since~$\sigma$ is reachable, $\mathsf{sup}(\sigma)$ is explored.
   We thus have
   $s~\mathbf{R}~\sigma \implies s~\mathbf{R}~\mathsf{sup}(\sigma)$.
-  This is a direct implication of Lemma~\ref{lem:mem_soundness}: since joining makes the states more abstract, it makes the set of related concrete states larger.
-  Line~\ref{line:forall} will then explore some state $\sigma' \in \step_\Sigma(\sigma_j)$.
-  By Lemma~\ref{lem:simulation}, we have $s'~\mathbf{R}~\sigma'$.
+  This is a direct implication of \cref{lem:mem_soundness}: since joining makes the states more abstract, it makes the set of related concrete states larger.
+  \Cref{line:forall} will then explore some state $\sigma' \in \gls{step-hg}[(\sigma_j]$.
+  By \cref{lem:simulation}, we have $s'~\mathbf{R}~\sigma'$.
 \end{proof}
 
 \subsection{Extension: Function Calls}\label{subsec:function_calls}
-The base algorithm as presented in Algorithm~\ref{alg:invgen} does not treat function calls as special instructions.
-This is unsatisfactory for two reasons: first, for \emph{external} function calls, a function~\gls{step-hg} that transforms the predicate may not be available.
+The base algorithm as presented in \cref{alg:invgen} does not treat function calls as special instructions.
+This is unsatisfactory for two reasons.
+First, for \emph{external} function calls, a function~\gls{step-hg-semantics} that transforms the predicate may not be available.
 External function calls are dynamically linked and thus the assembly instructions are not available during static analysis.
 Second, even though \emph{internal} function calls theoretically pose no problem, simply unfolding every function call prevents scalability.
 We present an extension to the algorithm that treats internal function calls compositionally. That is, it ensures that each function is explored only once.
@@ -741,22 +770,22 @@ We present an extension to the algorithm that treats internal function calls com
 %If that table associates a name with the address, then that name is the function name of the external function.
 
 
-The function name is matched against a list of hard-coded function names that are known to be terminating, such as \texttt{exit} and \texttt{stack\_chk\_fail}.
-In case of a terminating function, function $\step_\Sigma$ will produce the empty set, stopping further exploration from the current state.
-Otherwise, the function is some unknown external function. % whose behavior cannot be known.
-We make the assumption that this unknown function adheres to the 64-bit System V calling convention.
-Function $\step_\Sigma$ therefore modifies the current state by assigning~\gls{bot} to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
+The function name is matched against a list of hard-coded function names that are known to be terminating, such as \inlineasm{exit} and \inlineasm{stack_chk_fail}.
+In case of a terminating function, function \gls{step-hg} will produce the empty set, stopping further exploration from the current state.
+Otherwise, the function is some unknown external function.
+We make the assumption that this unknown function adheres to the 64-bit System V \ac{abi}'s calling convention.
+Function \gls{step-hg} therefore modifies the current state by assigning~\gls{bot} to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
 In other words, only the clauses concerning the stack frame and callee-saved non-volatile registers are kept.
 Similarly, all relations in the memory model concerning the heap are removed.
 We call this \emph{cleaning} the current symbolic state.
-%This only removes information.
 As with the join operation, this usage is sound as the end result is always a weakening of the postcondition.
 
 \subsubsection{Internal Functions}
-If the operand of a \texttt{call} can be resolved to an address inside the executable range of the binary, it is recognized as an internal call.
+If the operand of a \inlineasm{call} can be resolved to an address inside the executable range of the binary, it is recognized as an internal call.
 Consider the following assembly code:
 
 \begin{center}
+  \todo{change to listing, etc.! Minipage might not even be needed for that as long as we do the breaks right}
   \begin{tabular}{ccc}
     \textbf{Function Call} & \textbf{Return} & \textbf{Exit} \\\hline
     \begin{minipage}{0.3\linewidth}
@@ -792,9 +821,9 @@ The latter, however, may not safely be assumed, as it is not known whether the c
 A function may always exit, in which case address \texttt{0x105} is never visited.
 Other issues, such as buffer overflows, can prevent a normal return as well.
 
-
 We therefore introduce the notion of \emph{reachability}.
-Each symbolic state has a Boolean field that is set to true only if the state is known to be reachable.
+\todo{glossary entry!}
+Each symbolic state has a Boolean field (\gls{bool}) that is set to true only if the state is known to be reachable.
 States in the bag whose reachability field is false are not selected.
 \Cref{line:compat} of the algorithm becomes:
 \\
@@ -802,6 +831,7 @@ States in the bag whose reachability field is false are not selected.
 \noindent
 {
   \centering
+  \todo{more to revise}
   \begin{tabular}{c}\hline
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
@@ -814,13 +844,14 @@ States in the bag whose reachability field is false are not selected.
 }\\
 
 \noindent
-Moreover, after Line~\ref{line:addbag}, any symbolic state with the same \texttt{rip} as the newly explored $\sigma'$ is marked as reachable:
+Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the newly explored~$\sigma'$ is marked as reachable:
 \\
 
 \noindent
 {
   \centering
   \begin{tabular}{c}\hline
+  \todo{more to revise}
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{13}
@@ -831,15 +862,18 @@ Moreover, after Line~\ref{line:addbag}, any symbolic state with the same \texttt
   \end{tabular}
 }\\
 \\
+\todo{SEcondly to what?}
 Secondly, we treat internal function calls as \emph{context free}.
 In the example above, exploration of address \texttt{0x400} is done in a fresh empty symbolic state.
 In that state, instead of pushing the concrete return address \texttt{0x105}, a symbol $\mathcal{S}_\mathtt{0x400}$ is pushed.
+\todo{glossary entry}
 As a result, wherever the internal function is called, it will always start in the exact same state and therefore exploration happens only once.
 
 A global mapping is maintained that remembers that symbol $\mathcal{S}_\mathtt{0x400}$ is linked to return address $\mathtt{0x105}$.
 It may be the case that the internal function is called from different call sites, in which case the mapping is updated accordingly: one symbol may be mapped to multiple return addresses.
-As soon as the instruction pointer is set to symbol $\mathcal{S}_\mathtt{0x400}$ (e.g., by a \texttt{ret} instruction), all mapped return addresses are set to reachable.
+As soon as the instruction pointer is set to symbol $\mathcal{S}_\mathtt{0x400}$ (for example, by a \inlineasm{ret} instruction), all mapped return addresses are set to reachable.
 
+\todo{put back ummary?}
 \begin{comment}
   To summarize, for the internal function call above, the following actions are undertaken:
   \begin{enumerate}
