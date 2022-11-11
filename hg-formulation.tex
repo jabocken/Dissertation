@@ -562,6 +562,7 @@ when writing to a location in memory.
 The algorithm then executes steps according to the following step function:
 \begin{definition}
   The \emph{symbolic state step function} for symbolic state $\sigma = \langle P,M\rangle$, notation $\step_\Sigma(\sigma)$, is defined as:
+  \todo{glossary entry for $\step_\Sigma$}
   \begin{equation*}
     \begin{array}{l}
       ~~\step_\Sigma(\sigma)\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \glsxtrfmt{step-hg}{P,M'} \wedge M' \in \insertM(R, M) \} \\
@@ -689,12 +690,12 @@ In words, for every reachable transition from $s$ to $s'$ in the binary, there m
 %\end{proof}
 %
 %\subsubsection{Pulling it all together}
-\begin{theorem}\label{thm:algo_soundness}
+\begin{theorem}[Soundness]\label{thm:algo_soundness}
   Algorithm~\ref{alg:invgen} constructs a sound Hoare Graph.
 \end{theorem}
 \begin{proof}
   The structure of the algorithm is close to a depth-first search (DFS).
-  For that reason, the white-path lemma is used to prove soundness~\cite{cormen2009introduction}.
+  For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.
   For a normal DFS, the white-path lemma states that the DFS will eventually explore some state $s'$ if and only if there exists some state $s$ currently in the bag \emph{and} there exists a ``white'' path from $s$ to $s'$.
   A key difference between Algorithm~\ref{alg:invgen} and a normal DFS is that states are joined.
   For the sake of this proof, a state is therefore considered ``white'' if the current HG contains no compatible state that is equal or more abstract (under $\sqsubseteq$).

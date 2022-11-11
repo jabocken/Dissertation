@@ -35,6 +35,8 @@
 %   * Added bookmargins option
 %   * Integrated mathtools inclusion with AMS stuff
 %   * Disabled hyperref anchors in the title pages due to an annoying warning and moved around some \thispagestyle commands.
+%   * Switched to glossaries for nomenclature/etc.
+%   * Added usage of thmtools so we can have list of theorems/etc. (and gave Remark the remark style)
 %-------------------------------------------------------------------------
 
 %%% IDENTIFICATION --------------------------------------------------------
@@ -87,6 +89,7 @@
 \RequirePackage[normalem]{ulem}
 \RequirePackage[inline]{enumitem}
 \RequirePackage[titletoc,page]{appendix}
+\RequirePackage{thmtools} % for \listoftheorems (no need to modify for tocbibind usage, either!); also supports more fancier formatting/environment declarations, but that's not necessary right now
 
 % Proper spacing between different chapters in extra lists (courtesy of https://tex.stackexchange.com/a/88563)
 \patchcmd\@chapter % <cmd>
@@ -142,7 +145,7 @@
 \endgroup}
 \let\l@algorithm\l@figure
 
-% Similar fix for listings
+% Similar fix for listings (from tocbibind docs)
 \renewcommand\lstlistlistingname{List of Listings}
 \renewcommand\lstlistoflistings{\begingroup
   \tocfile\lstlistlistingname{lol}
@@ -179,17 +182,18 @@
   \thm@preskip=\parskip \thm@postskip=0pt
 }
 
-% Define Theorems and such
+% Define Theorems and such (switch to thmtools style at some point?)
 \newtheorem{proposition}{Proposition}[chapter]
 \newtheorem{theorem}[proposition]{Theorem}
 \newtheorem{lemma}[proposition]{Lemma}
 \newtheorem{corollary}[proposition]{Corollary}
 \newtheorem{conjecture}[proposition]{Conjecture}
 
-% Define style for definitions, etc.
+% Define style for definitions, etc. (same counter as theorems)
 \theoremstyle{definition}
 \newtheorem{example}[proposition]{Example}
 \newtheorem{definition}[proposition]{Definition}
+\theoremstyle{remark}
 \newtheorem{remark}[proposition]{Remark}
 
 \lstset{ % command to set programming language parameter(s)
