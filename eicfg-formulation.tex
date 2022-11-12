@@ -24,10 +24,10 @@ To accomplish reaching those addresses during unwinding, we require a \emph{land
 
 \begin{definition}
   A landing pad table~$\landingpadtable$ is a static map from instruction address to set of possible landing pads.
-  Formally, with~$\pointer$ as the type of addresses,~$\landingpadtable$s have type $\pointer\to2^\pointer$.
+  Formally, with~\gls{pointer} as the type of addresses,~$\landingpadtable$s have type $\gls{pointer}\to\powerset(\gls{pointer})$.
 \end{definition}
 Currently, we overapproximate and do not include exception type when determining landing pads.
-The keys of the table are the ranges of addresses to which the corresponding landing pad entry applies, intervals that are open in the lower bound but closed in the upper bound. This interval layout was chosen to support \inlineasm{rip} being incremented at the start of instruction evaluation. It is traditionally represented in the form $(a,b]$, where~$a$ is the lower bound of the interval and~$b$ is the upper bound.
+The keys of the table are the ranges of addresses to which the corresponding landing pad entry applies, intervals that are open in the lower bound but closed in the upper bound. This interval layout was chosen to support \rip being incremented at the start of instruction evaluation. It is traditionally represented in the form $(a,b]$, where~$a$ is the lower bound of the interval and~$b$ is the upper bound.
 \begin{example}\label{ex:landing-pad-table}
   One of our running example landing pad entries is  $\landingpadtable(\mathtt{0x137e})=\{\mathtt{0x138b}\}$.
   Thus, when an unwinding routine reaches instruction \inlineasm{0x137e}, % \instref{lst:unwind-site}{137e} of \cref{lst:example-indirect-call},
@@ -35,30 +35,24 @@ The keys of the table are the ranges of addresses to which the corresponding lan
 \end{example}
 
 \section{Abstract State}\label{sec:abstract-state}
-Our exception-containing abstract states, type $\absState$, are records with named fields.
+Our exception-containing abstract states, type~\gls{abs-state}, are records with named fields.
 In defining this record type, the following elemental types are used, some of which are new:
 \begin{itemize} % Freek didn't like the inlining with labels and it looks bad without them so just turning into plain list when space is needed
-  \item $\bool$ and $\nat$ denote Booleans and natural numbers respectively;
-  \item $\val$,
-  which may be~$\bot$, indicating any or an unknown or undefined value;
-  \item $\pointer$ denotes \emph{immediate 64-bit addresses};
-  \item $\word$ denotes \emph{exception IDs}; and
-  \item $\termination$ denotes \emph{program termination}, consisting of the set $\{\bot,\good,\bad\}$.
+  \item \Gls{bool} and \gls{nat} denote Booleans and natural numbers respectively;
+  \item \Gls{val},
+  which may be~\gls{bot}, indicating any or an unknown or undefined value;
+  \item \Gls{pointer} denotes \emph{immediate 64-bit addresses};
+  \item \Gls{word} denotes \emph{exception IDs}; and
+  \item \Gls{termination} denotes \emph{program termination}, consisting of the set $\{\gls{bot},\good,\bad\}$.
 \end{itemize}
-%$\bool$ and $\nat$ denote Booleans and natural numbers respectively;
-%$\val$ denotes \emph{symbolic expressions}, which may be~$\bot$, indicating any or an unknown or undefined value;
-%$\pointer$ denotes \emph{immediate 64-bit addresses};
-%$\word$ denotes \emph{exception IDs}; and
-%program termination type $\termination\coloneqq\{\bot,\good,\bad\}$.
 
 \subsection{Exception Objects}
 \begin{definition}
   Exceptions are also records, having type
-%  $\exception\coloneqq\{\rethrown\colon\bool,\handlerCount\colon\natnum\}$.
   \begin{equation*}
-    \exception\coloneqq\begin{cases}
-      \rethrown &\colon \bool \\
-      \handlerCount &\colon \nat
+    \gls{exception}\coloneqq\begin{cases}
+      \rethrown &\colon \gls{bool} \\
+      \handlerCount &\colon \gls{nat}
     \end{cases}
   \end{equation*}
   This record has two fields.
@@ -66,11 +60,11 @@ In defining this record type, the following elemental types are used, some of wh
   Natural field $\handlerCount$ stores the current count of catch block handlers for the exception.
   % extra field: stores the $\mathsf{size}$ of its payload as a 64-bit unsigned integer. % not used here as we don't track the payload anyway.
 \end{definition}
-$\absState$, meanwhile, has the following fields:
+\Gls{abs-state}, meanwhile, has the following fields:
 
 \subsection{Registers}
 %\subsection{$\rmap$: the register map}
-The field~$\rmap$ has type $\register\to\val$.
+The field~$\rmap$ has type $\gls{register}\to\gls{val}$.
 Reading and writing registers smaller than 64 bits (e.g.\ \inlineasm{ebp} versus \inlineasm{rbp}) requires bit masking and shifting the underlying 64-bit register's value.
 This behavior is integrated into our symbolic execution engine.
 Larger registers (e.g.\ \inlineasm{xmm}%and other vector registers
@@ -81,7 +75,7 @@ Larger registers (e.g.\ \inlineasm{xmm}%and other vector registers
 %Maintaining the current list of return addresses is necessary in order to perform stack unwinding and handle thrown exceptions.
 %It is also helpful in detecting recursion.
 %With $[X]$ representing a list of type~$X$
-This field has list type $[\pointer]$.
+This field has list type $[\gls{pointer}]$.
 The following functions perform standard push/pop/peek stack operations on such lists:
 \(
 \push\colon X\times[X]\to[X],
@@ -108,43 +102,32 @@ For our purposes, usage of $\peek$ assumes a non-empty list. % would prefer this
 \end{example}
 
 \subsection{$\emap$: the exception mapping.}
-This field has type $\word\to\exception$.
+This field has type $\gls{word}\to\gls{exception}$.
 When an exception is created, it receives an ID based on its creation location and is stored in $\emap$ with that ID as the key.
 
 % Freek wanted this before the auxiliary exception variables so reflecting that in the final record type as well.
 \subsection{$\terminated$: the termination state.}
-This field has type $\termination$.
-It defaults to the bottom value~$\bot$, indicating the program or function has not terminated yet.
+This field has type~\gls{termination}.
+It defaults to the bottom value~\gls{bot}, indicating the program or function has not terminated yet.
 When a path of execution completes, it is set to either $\good$ or $\bad$, indicating either normal or abnormal termination, respectively.
 We treat cases where an exception propagates to the top of the stack without being caught to be such ``bad'' cases.
 
 \subsection{Auxiliary Exception Variables}
-$\absState$ also contains a count of the number of currently-uncaught exceptions ($\uncaught\colon\nat$) and a stack of the currently-caught exception IDs ($\caught\colon[\word]$).
+\Gls{abs-state} also contains a count of the number of currently-uncaught exceptions ($\uncaught\colon\gls{nat}$) and a stack of the currently-caught exception IDs ($\caught\colon[\gls{word}]$).
 These fields are manipulated and used during entry to and exit from catch blocks as well as when rethrowing exceptions.
 This handling comes into play when dealing with nested catch blocks, exceptions (re)thrown within such blocks, etc.
 
 %\subsection{The abstract state record restated:} % Freek didn't like this so leaving out
 \begin{definition}
-  The type of abstract states, notation~$\absState$, is a record
-%  \(
-%  %        \absState\coloneqq
-%  \{
-%  \rmap\colon\register\to\val,
-%  \stack\colon[\pointer],
-%  \emap\colon\word\to\exception,
-%  \terminated\colon T,
-%  \uncaught\colon\nat,
-%  \caught\colon[\word]
-%  \}
-%  \).
+  The type of abstract states, notation~\gls{abs-state}, is a record
   \begin{equation*}
-    \absState\coloneqq\begin{cases}
-      \rmap &\colon \register\to\val \\
-      \stack &\colon [\pointer] \\
-      \emap &\colon \word\to\exception \\
+    \gls{abs-state}\coloneqq\begin{cases}
+      \rmap &\colon \gls{register}\to\gls{val} \\
+      \stack &\colon [\gls{pointer}] \\
+      \emap &\colon \gls{word}\to\gls{exception} \\
       \terminated &\colon T \\
-      \uncaught &\colon \nat \\
-      \caught &\colon [\word]
+      \uncaught &\colon \gls{nat} \\
+      \caught &\colon [\gls{word}]
     \end{cases}
   \end{equation*}
   To ease register references, for some state $\sigma$ and named register \texttt{r}, the notation $\sigma.\mathtt{r}$ is shorthand for $\sigma.\rmap(\mathtt{r})$, e.g.\ $\sigma.\rdi\equiv\sigma.\rmap(\rdi)$. % would prefer this outside the definition but trying to save space
@@ -158,7 +141,7 @@ There are two sets of those rules.
 The first set of rules defines behavior for the instructions from the \gls{arch} \ac{isa}.
 This includes non-deterministic conditional jump handling as well as handling for unknown external functions and a subset of indirect jumps and calls.
 Those rules and the additional state parts required to model them are elided here.
-The exception is how we deal with recursion, as that can be explained informally using elements already in $\absState$.
+The exception is how we deal with recursion, as that can be explained informally using elements already in~\gls{abs-state}.
 Assume a call to another function inside the binary for some state~$\sigma$. Then, if the return address to be pushed on the stack is already in $\sigma.\stack$, we instead treat that call as an unmodeled external call and continue execution past it.
 
 The second set of rules provides modeling for exception-related \ac{abi} calls.
@@ -278,7 +261,7 @@ Additionally, the case for an empty $\sigma.\caught$ again operates as an unmode
   Consider instruction \instref{lst:end-catch}{13b9} of \cref{lst:example-throw-landing-pad}.
   Assume the statements in \cref{ex:begin-catch} hold for the pre-state.
   %    Assume the statements for catch beginning hold for the pre-state.
-  Then, the post-state~$\sigma'$ for that instruction will satisfy $\sigma'.\emap(\id)=\bot$ and $\sigma'.\caught=[]$.
+  Then, the post-state~$\sigma'$ for that instruction will satisfy $\sigma'.\emap(\id)=\gls{bot}$ and $\sigma'.\caught=[]$.
 \end{example}
 \subsection{Unwinding Rules}
 \Cref{fig:unwind} shows semantics for stack unwinding.
@@ -371,8 +354,8 @@ However, that second rule can be relaxed for additional overapproximation by usi
   \subfloat[\inlineasm{__cxa_free_}\\
   \inlineasm{exception}]{%
     % \AxiomC{$\id=\sigma.\rdi$}
-    % \AxiomC{$\sigma'.\emap(\id)=\bot$}
-    \AxiomC{$\sigma'.\emap(\sigma.\rdi)=\bot$}
+    % \AxiomC{$\sigma'.\emap(\id)=\gls{bot}$}
+    \AxiomC{$\sigma'.\emap(\sigma.\rdi)=\gls{bot}$}
     \UnaryInfC{$\sigma \absTransition \sigma'$}
     \DisplayProof\label{fig:free-exception}%
   }\\
@@ -441,11 +424,11 @@ However, that second rule can be relaxed for additional overapproximation by usi
       \end{array}$}
     \AxiomC{$\begin{array}[b]{l}
         \handler(\id,\sigma')=1 \\
-        \sigma'.\emap(\id)=\bot \\
+        \sigma'.\emap(\id)=\gls{bot} \\
         \popCaught(\sigma,\sigma')
       \end{array}$}
     %        \AxiomC{$\handler(\id,\sigma')=1$}
-    %        \AxiomC{$\sigma'.\emap(\id)=\bot$}
+    %        \AxiomC{$\sigma'.\emap(\id)=\gls{bot}$}
     %        \AxiomC{$\popCaught(\sigma,\sigma')$}
     %        \RightLabel{$\id=\peek(\sigma.\caught)$}
     \BinaryInfC{$\sigma\absTransition\sigma'$}
@@ -560,12 +543,12 @@ If no non-terminating states result, this path of execution ends.
 
 To prevent infinite loops and alleviate some of the state space issues that can occur with such non-deterministic evaluation, we provide a join operation.
 This join operation is focused on exceptional state.
-From $\absState$ it preserves $\emap$, $\uncaught$, and $\caught$. To maintain contextual awareness, it also preserves $\rip$, $\stack$, and $\terminated$.
+From \gls{abs-state} it preserves $\emap$, $\uncaught$, and $\caught$. To maintain contextual awareness, it also preserves $\rip$, $\stack$, and $\terminated$.
 As an implementation detail, it also includes the temporary indices used by our jump table heuristic to ensure proper separation.
 All other state parts are combined, with priority given to the first equivalent state produced.
 For a more aggressive join, $\emap$, $\uncaught$, and $\caught$ can be excluded from the preserved state parts. The abstract transition rules are also simplified to support this exclusion.
 
-\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{ch:lattice-lifting,ch:lattice-algorithm}.}
+\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{ch:hg-lifting,ch:hg-formulation,ch:hg-results,ch:hg-discussion}.}
 
 \section{Argument for Overapproximation}
 %Formally, correctness of the produced \ac{eicfg} can be proven by showing that the abstract transition relation overapproximates the concrete one (see \cref{def:simulation}).
@@ -573,7 +556,7 @@ We consider a formal definition of the concrete transition rules our abstract on
 This is because our abstraction focuses on the domain of exceptional control flow in terms of its \ac{abi}-level definition. By contrast, concrete rules require a concrete implementation.
 Instead, we provide an informal argument for why our abstract transition rules are overapproximative.
 
-First, for normal (non-exception-related) assembly instructions, our abstract transition rules default to assigning~$\bot$ to destination operands, overapproximating their effect.
+First, for normal (non-exception-related) assembly instructions, our abstract transition rules default to assigning~\gls{bot} to destination operands, overapproximating their effect.
 Only those instructions whose arguments affect exception- and stack-related behavior as well as global memory operations receive full modeling.
 They include \inlineasm{mov} and its relatives, \inlineasm{push}+\inlineasm{pop} and related instructions, and basic arithmetic/bitwise instructions.
 If we did not model those instructions, we could lose too much information concerning exceptional or even regular control flow.
@@ -592,15 +575,15 @@ If the \ac{eicfg} is not annotated with any unresolved indirections, it is an ov
 \section{Graphs}
 We have a specific node state for the \acp{eicfg} produced by our toolchain,
 previously described in \cref{sec:eicfg}.
-The graph node type $\node$ contains the following information:
+The graph node type~\gls{node} contains the following information:
 The current program counter,
 a list of the return addresses for all current stack frames,
 the exception objects currently allocated,
 the number of uncaught exceptions,
 and the IDs of those exception objects currently caught.
 The current jump table index and termination state will also included in this if they exist. In notation, this is
-$\node\colon\pointer\times[\pointer]\times[\exception]\times\nat\times[\pointer]\times(\word|\bot)\times\termination$.
-We further have a function $\stateToNode\colon\Sigma\rightarrow\node$
+$\gls{node}\colon\gls{pointer}\times[\gls{pointer}]\times[\gls{exception}]\times\gls{nat}\times[\gls{pointer}]\times(\gls{word}|\gls{bot})\times\gls{termination}$.
+We further have a function $\stateToNode\colon\Sigma\rightarrow\gls{node}$
 that maps from the more specific and detailed concolic states for execution
 to the exceptional state for control flow representation.
 
@@ -618,17 +601,17 @@ to the exceptional state for control flow representation.
   Again consider the instruction \inlineasm{133d:	jg     1362 <main+0x3d>}.
   The precondition for this instruction from \cref{ex:state} converts to
   \begin{equation*}
-    (\mathtt{0x133d},[\mathtt{0x114e}],[],0,[],\bot,\bot),
+    (\mathtt{0x133d},[\mathtt{0x114e}],[],0,[],\gls{bot},\gls{bot}),
   \end{equation*}
   which is what is shown in the \ac{eicfg} in full-detail mode.
   In basic block mode, performed via postprocessing of the \ac{eicfg}, we can have a range of addresses instead of a single address for the node state. For this specific case, the basic block node representation is
   \begin{equation*}
-    ([\mathtt{0x1325},\mathtt{0x133d}],[\mathtt{0x114e}],[],0,[],\bot,\bot).
+    ([\mathtt{0x1325},\mathtt{0x133d}],[\mathtt{0x114e}],[],0,[],\gls{bot},\gls{bot}).
   \end{equation*}
 \end{example}
 
 The \acp{eicfg} themselves are represented in a slightly different form from that described in \cref{sec:eicfg}.
-They consist of a set of nodes and a set of annotated edges that connect those nodes: $\graph\colon\{\gls{node}\}\times\{\gls{edge}\}$.
+They consist of a set of nodes and a set of annotated edges that connect those nodes: $\gls{graph}\colon\{\gls{node}\}\times\{\gls{edge}\}$.
 The edge annotations are instructions for edges that follow standard control flow.
 
 \begin{example}
@@ -636,8 +619,8 @@ The edge annotations are instructions for edges that follow standard control flo
   This graph is the graph you would get after analyzing \cref{lst:start-first} of \cref{lst:example-start}.
   Mathematically, this graph has nodes
   \begin{align*}
-    n_0 &= (\mathtt{0x1140},[],[],0,[],\bot,\bot) \\
-    n_1 &= (\mathtt{0x1144},[],[],0,[],\bot,\bot)
+    n_0 &= (\mathtt{0x1140},[],[],0,[],\gls{bot},\gls{bot}) \\
+    n_1 &= (\mathtt{0x1144},[],[],0,[],\gls{bot},\gls{bot})
   \end{align*}
   and edge $(n_0,n_1,\mathasm{endbr64})$.
 \end{example}

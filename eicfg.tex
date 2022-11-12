@@ -97,9 +97,47 @@ Finally, the landing pad table ($\landingpadtable$) maps from potential unwind s
 \end{definition}
 
 \begin{example}
-  Consider the catch statement on \cref{lst:catch} of \cref{lst:example} (not utilized in the paper anymore).
-  Control flow will reach the contents of that catch statement's block if and only if the exceptions propagated to the corresponding \lstinline[language=C++]{try} block are instances of \lstinline[language=C++]{std::exception} or a subclass.
+  Consider the catch statement on \cref{lst:catch} of \cref{lst:example}.
+  Control flow will reach the contents of that catch statement's block if and only if the exceptions propagated to the corresponding \lstinline|try| block are instances of \lstinline|std::exception| or a subclass.
 \end{example}
+\begin{lstlisting}[
+  float,
+  gobble=2,
+  numbers=left,
+  caption=Example program,
+  label=lst:example
+]
+  #include <stdexcept>
+
+  int foo(int x) {
+    if (x < 0) return x;
+    while (x > 0) {
+      x--;
+      if (x == 5)
+      throw std::domain_error("5"); |\label{lst:throw}|
+    }
+    return 0;
+  }
+
+  int bar(int x) {
+    if (x < 0)
+    throw std::out_of_range("negative");
+    else if (x == 0) return 1;
+    return x * bar(x - 1); |\label{lst:recursion}|
+  }
+
+  int (*const FOOBAR[])(int) = {foo, bar};|\label{lst:indirection}|
+
+  int main(int argc, char* argv[]) {
+    try { |\label{lst:try-catch}|
+      if (argc < 2) |\label{lst:example-bounds-check}|
+      return FOOBAR[argc](argc); |\label{lst:example-source-indirect-call}|
+    } catch (const std::exception&) {|\label{lst:catch}|
+      if (argc < 0) throw; |\label{lst:source-rethrow}|
+      return 0; |\label{lst:good-termination}|
+    }
+  }
+\end{lstlisting}
 
 We here provide a formal definition of an EICFG.
 \begin{definition}\label{def:eicfg}

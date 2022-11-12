@@ -94,7 +94,7 @@ jumps, \inlineasm{call}, \inlineasm{push}, \inlineasm{pop}, \inlineasm{enter},
 Reads and writes of the machine model's memory space take a specific form.
 They operate on \emph{memory regions}.%
 \index{memory!region}
-A memory region $\region{a}{s}$ is defined to have type $\word\times\nat$;
+A memory region $\region{a}{s}$ is defined to have type $\gls{word}\times\gls{nat}$;
 that is, its starting address~$a$ is a 64-bit word
 and its size in bytes~$s$ is a natural number.
 
@@ -106,13 +106,13 @@ and converts it to a word.
 If it is clear from context which state is meant, the state will be omitted.
 Meanwhile, writing to memory uses the notation $x\coloneqq e$,%
 \nomenclature[operator]{$\coloneqq$}{Indicates a memory write for the \acs*{cfg}/syntax-guided works}
-which has type~$\asp=(\var{SP},\esp)$;
+which has type~$\gls{assign}=(\var{SP},\gls{esp})$;
 these \emph{assignments} denote writing an expression~$e$ to some location~$x$
 that is a \emph{state part},~$\var{SP}$;%
 \index{state!part}%
 \index{symbolic!register}%
 \index{symbolic!flag}%
-\index{memory!region}}%
+\index{memory!region}%
 \index{state!part}
 it can be a region, register, or flag.%
 \index{symbolic!register}%
@@ -123,7 +123,7 @@ the result for a register must be a 64-bit word.
 The behavior for regions in Isabelle
 is to internally decompose the expression to write
 into its component bytes and then write those into memory in the appropriate order.
-The expressions themselves are of type~$\esp$,
+The expressions themselves are of type~\gls{esp},
 representing expressions over state parts.
 These expressions consist of common bit-vector\index{symbolic!bit vector}
 operations including
@@ -131,7 +131,7 @@ taking subsets of bits, bitstring concatenation, logical operators, casting,
 and floating-point, signed, and unsigned arithmetic.
 
 In this dissertation,
-modifications to state are represented as sets of assignments,~$\powerset(\asp)$,
+modifications to state are represented as sets of assignments,~$\powerset(\gls{assign})$,
 formulated as $\alpha=\{x_0\coloneqq e_0,x_1\coloneqq e_1,\dotsc\}$.
 These assignments are all independent; their initial conditions
 are based off of whatever state is present before application of the assignments,
@@ -220,7 +220,7 @@ The actual definitions of those relations are as follows.
 \begin{definition}[Separation]\label{def:sep}
   Two regions $r_0=\region{a_0}{s_0}$ and $r_1=\region{a_1}{s_1}$ are \emph{separate},%
   \index{memory!region!separation}
-  notation $r_0\separate r_1$, if and only if the following is true:
+  notation $r_0\gls{separate}r_1$, if and only if the following is true:
   \begin{equation*}
     s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
   \end{equation*}
@@ -231,7 +231,7 @@ the upper bound of the other, those two regions are separate.
 If those regions are not separate, they \emph{overlap}.
 
 \begin{definition}[Enclosure]\label{def:enc}
-  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\enclosed r_1$,%
+  Region $r_0$ is \emph{enclosed} by $r_1$, notation $r_0\gls{enclosed}r_1$,%
   \index{memory!region!enclosure}
   if and only if:
   \begin{equation*}
@@ -296,9 +296,9 @@ They are the subterms not in \emph{normal form},%
 \index{normal form}
 the ones that may be rewritten again after application of the rewrite rule.
 \begin{equation}
-  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\equiv\begin{cases}
+  \sigma(r_0\coloneqq v_0)(r_1\coloneqq v_1)\gls{equiv}\begin{cases}
     \underline{\sigma(r_1\coloneqq v_1)}(r_0\coloneqq v_0) &
-      \text{if } r_0\separate r_1 \\
+      \text{if } r_0\gls{separate}r_1 \\
     \underline{\sigma((r_0\coloneqq v_0)\mmerge(r_1\coloneqq v_1))} &
       \text{otherwise}
   \end{cases}\label{eqn:writeM}
@@ -316,16 +316,16 @@ using \cref{algo:mem_read} as our guide.
 \begin{algorithm}
   \caption{Symbolically reading from memory}\label{algo:mem_read}
   \begin{algorithmic}
-    \Require{A set of assignments~$\alpha:\asp$ and symbolic region $\region{a}{s}$}
+    \Require{A set of assignments~$\alpha:\gls{assign}$ and symbolic region $\region{a}{s}$}
     \Ensure{A symbolic value and possibly-updated~$\alpha$}
     \Function{readMem}{$\alpha,\region{a}{s}$}
       \If{$\exists v\cdot(\region{a}{s}\coloneqq v)\in\alpha$}
         \State\Return $(\alpha,v)$
       \Else
         \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
-        \alpha\mid\region{a'}{s'}\not\separate\region{a}{s}\}$
+        \alpha\mid\region{a'}{s'}\not\gls{separate}\region{a}{s}\}$
         \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in
-        \alpha\mid\region{a'}{s'}\separate\region{a}{s}\}$
+        \alpha\mid\region{a'}{s'}\gls{separate}\region{a}{s}\}$
         \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets
         \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
         \State $r\gets\region{a_l}{a_r-a_l+s_r}$
@@ -408,8 +408,8 @@ if their addresses are non-trivial expressions.
   Let~$M$ be a set of pairs of unique IDs and regions.
   $M$ is \emph{separated} if and only if all of its regions are separated:
   \begin{equation}
-    \seps M\equiv\forall(i_0,r_0),(i_1,r_1)\in M\cdot
-    \text{if }i_0=i_1\text{ then }r_0=r_1\text{ else }r_0\separate r_1
+    \seps M\gls{equiv}\forall(i_0,r_0),(i_1,r_1)\in M\cdot
+    \text{if }i_0=i_1\text{ then }r_0=r_1\text{ else }r_0\gls{separate}r_1
   \end{equation}
 \end{definition}
 This function over memory region sets compares all possible combinations of
@@ -422,13 +422,13 @@ As the rewrite rules are focused on smaller regions, such as per-variable region
 rules that infer properties over smaller regions from larger ones are needed.
 \begin{subequations}\label{rules_sep_enc}
   \begin{align}
-    r &\enclosed r \\
-    r_0\bowtie r_1 &= r_1\separate r_0 \\
-    r_0\enclosed r_2\wedge r_1\enclosed r_3\wedge r_2\separate r_3 &\longrightarrow r_0\separate r_1 \\
-    r_0\enclosed r_1\wedge r_1\enclosed r_0 &\longrightarrow r_0=r_1 \\
-    r_0\enclosed r_1\wedge r_1\enclosed r_2 &\longrightarrow r_0\enclosed r_2 \\
+    r &\gls{enclosed}r \\
+    r_0\gls{separate}r_1 &= r_1\gls{separate}r_0 \\
+    r_0\gls{enclosed}r_2\wedge r_1\gls{enclosed}r_3\wedge r_2\gls{separate}r_3 &\longrightarrow r_0\gls{separate}r_1 \\
+    r_0\gls{enclosed}r_1\wedge r_1\gls{enclosed}r_0 &\longrightarrow r_0=r_1 \\
+    r_0\gls{enclosed}r_1\wedge r_1\gls{enclosed}r_2 &\longrightarrow r_0\gls{enclosed}r_2 \\
     r_0\bowtie r_1\wedge\snd{r_0}\neq 0\wedge\snd{r_1}\neq 0 &\longrightarrow r_0 \not\sqsubseteq r_1 \\
-    \seps(M)\wedge(i_0,r_0),(i_1,r_1)\in M\wedge i_0\neq i_1 &\longrightarrow r_0\separate r_1
+    \seps(M)\wedge(i_0,r_0),(i_1,r_1)\in M\wedge i_0\neq i_1 &\longrightarrow r_0\gls{separate}r_1
   \end{align}
 \end{subequations}
 \Cref{rules_sep_enc} shows the inference rules for properties over memory regions.

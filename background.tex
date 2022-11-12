@@ -88,7 +88,7 @@ Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare}%
 describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!triple}
 \begin{definition}[Basic Hoare triple]
   Given predicates on state~$P$ and~$Q$ and a program~$C$,
-  $\htriple{P}C{Q}$ asserts that executing~$C$ on a state where~$P$ holds
+  $\htriple{P}dC{Q}$ asserts that executing~$C$ on a state where~$P$ holds
   will result in a state where~$Q$ holds (as long as~$C$ terminates, that is).
 
   In a more formal form and using $C(\sigma)$ to represent the result
@@ -607,7 +607,7 @@ Several contributions of this work were inspired by
 % This definition coincides exactly with the standard notion of a behavioural simulation \autocite{milner1971algebraic}, but is formulated in terms of the concepts used in abstract interpretation.
 
 % We use $s,s',\dotsc$ to denote \emph{concrete states} and $S,S',\dotsc$ to denote sets of concrete states.
-% The concrete transition relation over concrete states is denoted $\concTransition$. Similarly, \emph{abstract states} are denoted by $\sigma,\sigma',\dotsc$ and sets of abstract states by $\absState,\absState',\dotsc$, while the abstract transition relation is $\absTransition$.
+% The concrete transition relation over concrete states is denoted $\concTransition$. Similarly, \emph{abstract states} are denoted by $\sigma,\sigma',\dotsc$ and sets of abstract states by $\gls{abs-state},\gls{abs-state}['],\dotsc$, while the abstract transition relation is $\absTransition$.
 
 % Abstract interpretation requires the definition of a Galois connection $\alphagamma$ that respectively does abstraction and concretization \autocite{cousot1977abstract,cousot1996abstract}.
 % A Galois connection can be used to construct an overapproximative abstraction of a transition system, by using~$\alpha$ as a simulation-relation and $\gamma$ to map properties on abstract states back to properties over the concrete system \autocite{yavuz16}.

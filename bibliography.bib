@@ -34,6 +34,7 @@
   volume = {11698},
   venue = {Turku, Finland},
   eventdate = {2019-09-11/2019-09-13},
+  doi = {10.1007/978-3-030-26601-1_3},
   xdata = {springer}
 }
 
@@ -1294,8 +1295,6 @@
   number = 18,
   pages = "115-120",
   date = {1988-11},
-  series = "SAFECOMP '88",
-  location = "Fulda, FRG",
   issn = "1474-6670",
   doi = "10.1016/S1474-6670(17)54540-1",
   venue = "Fulda, FRG",
@@ -1360,14 +1359,15 @@
   title="Model Checking and the State Explosion Problem",
   author="Clarke, Edmund M. and Klieber, William and Nov\'a\v{c}ek, Milo\v{s} and Zuliani, Paolo",
   editor="Meyer, Bertrand and Nordio, Martin",
-  bookTitle="Tools for Practical Software Verification: LASER, International Summer School 2011, Revised Tutorial Lectures",
-  year="2012",
+  bookTitle="Tools for Practical Software Verification: LASER",
+  booktitleaddon="International Summer School 2011, Revised Tutorial Lectures",
+  year=2012,
   venue = {Elba Island, Italy},
   series = {Lecture Notes in Computer Science},
   shortseries = {LNCS},
   number = 7682,
   xdata = {springer},
-  pages="1--30",
+  pages="1-30",
   isbn="978-3-642-35746-6",
   doi="10.1007/978-3-642-35746-6_1"
 }
@@ -1375,11 +1375,12 @@
 @inproceedings{lipp2018meltdown,
   title = {Meltdown: Reading Kernel Memory from User Space},
   author = {Moritz Lipp and Michael Schwarz and Daniel Gruss and Thomas Prescher and Werner Haas and Anders Fogh and Jann Horn and Stefan Mangard and Paul Kocher and Daniel Genkin and Yuval Yarom and Mike Hamburg},
-  booktitle = {27th {USENIX} Security Symposium ({USENIX} Security 18)},
+  booktitle = {27th {USENIX} Security Symposium},
+  shorttitle = {{USENIX} Security 18},
   date = {2018-08},
   isbn = {978-1-939133-04-5},
   address = {Baltimore, MD, USA},
-  pages = {973--990},
+  pages = {973-990},
   url = {https://www.usenix.org/conference/usenixsecurity18/presentation/lipp},
   publisher = {{USENIX} Association}
 }
@@ -1387,7 +1388,9 @@
 @inproceedings{kocher2018spectre,
   title = {Spectre Attacks: Exploiting Speculative Execution},
   author = {Paul Kocher and Jann Horn and Anders Fogh and Daniel Genkin and Daniel Gruss and Werner Haas and Mike Hamburg and Moritz Lipp and Stefan Mangard and Thomas Prescher and Michael Schwarz and Yuval Yarom},
-  booktitle = {40th IEEE Symposium on Security and Privacy (S\&P'19)},
+  booktitle = {Security and Privacy},
+  booktitleaddon = {40th IEEE Symposium},
+  shorttitle = {S\&P'19},
   year = 2019,
   url = {https://meltdownattack.com/}
 }
@@ -1395,7 +1398,8 @@
 @inproceedings{zhang2014iot,
   title={{IoT} Security: Ongoing Challenges and Research Opportunities},
   author={Zhi-Kai Zhang and Michael Cheng Yi Cho and Chia-Wei Wang and Chia-Wei Hsu and Chong-Kuan Chen and Shiuhpyng Shieh},
-  booktitle={IEEE 7th International Conference on Service-Oriented Computing and Applications},
+  booktitle={Service-Oriented Computing and Applications},
+  booktitleaddon={Proceedings of the IEEE 7th International Conference},
   date={2014-12-08},
   pages={230-234},
   doi={10.1109/SOCA.2014.58},
@@ -1711,6 +1715,7 @@
   eprint = {800078.802557},
   eprinttype = {acm},
   acmid = {802557},
+  doi = {10.5555/800078.802557},
   xdata = {ieee}
 }
 
@@ -1976,7 +1981,28 @@
 
 @book{cormen2009introduction,
   title={Introduction to Algorithms},
-  author={Cormen, Thomas H and Leiserson, Charles E and Rivest, Ronald L and Stein, Clifford},
-  year=2009,
+  author={Cormen, Thomas H. and Leiserson, Charles E. and Rivest, Ronald L. and Stein, Clifford},
+  date=2009,
   publisher={MIT Press}
+}
+
+% Presentation rather than paper, but I guess it still works?
+@inproceedings{dinaburg2014mcsema,
+  title={Mc{S}ema: Static Translation of x86 Instructions to {LLVM}},
+  author={Dinaburg, Artem and Ruef, Andrew},
+  booktitle={ReCon},
+  date=2014,
+  venue={Montreal, Canada},
+  url={https://recon.cx/2014/slides/McSema.pdf}
+}
+
+@inproceedings{duck2020binary,
+  title={Binary Rewriting Without Control Flow Recovery},
+  author={Duck, Gregory J. and Gao, Xiang and Roychoudhury, Abhik},
+  booktitle={Programming Language Design and Implementation},
+  booktitleaddon={Proceedings of the 41st ACM SIGPLAN Conference},
+  shorttitle={PLDI 2020},
+  pages={151-163},
+  date=2020,
+  doi = {10.1145/3385412.3385972},
 }

@@ -1,7 +1,72 @@
-\chapter{Experimental Results}\label{ch:lattice-results}
+\chapter{Experimental Results}\label{ch:hg-results}
+This chapter covers the \todo\dots
 
 \section{\acl*{hg} Extraction}
-\todo{This was my part so I can probably keep most of it}
+We have applied \ac{hg} extraction to:
+\begin{enumerate}
+  \item several stripped binaries of CoreUtils as found in a standard Ubuntu distribution;
+  \item a binary with a manually induced buffer overflow, confirming that no \ac{hg} is extracted; and
+  \item all 63 \todo{65?} \gls{arch} binaries and all 2151 functions from the 25 shared objects we identified in the Xen Hypervisor.
+  \todo{make nums gls entries with number type?}
+\end{enumerate}
+All results are publicly available; we report here on the Xen case study.
+The Xen Project is a mature, industrial-strength hypervisor used in many production systems such as Amazon's cloud platforms \autocite{chisnall2008definitive}.
+Hypervisors provide a method for managing multiple virtual instances of operating systems (guests) on a physical host.
+Xen is a suitable case study because of its complexity and wide range of programs and shared libraries produced by its build process.
+
+\begin{table}
+  \centering
+  \newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+  \caption{Xen Case Study Statistics Summary}
+  \label{tab:xen}
+  \begin{tabular}{lC{4.8ex}@{$=$}C{4.8ex}@{$+$}C{2.4ex}@{$+$}C{2.4ex}@{$+$}rrrrrrr}
+    \toprule
+    \thead{Directory} & \multicolumn{5}{c}{} & {\thead{~~Instrs.~~}} & {\thead{Symbolic\\States}} & {\thead{~A~}} & {\thead{~~B~~}} & {\thead{~~C~~}} & \thead{Time\\~~(h:m:s)~~} \\
+    \midrule
+    & \multicolumn{5}{c}{\thead{Binaries}} &&&&&&\\
+    \texttt{\dots/bin} & 15 & 12 & 2 & 1 & 0 & 6751 & 6829 & 21 & 19 & 0 & 0:15:54 \\
+    \texttt{\dots/xen/bin} & 17 & 7 & 1 & 8 & 1 & 2433 & 2468 & 8 & 3 & 3 & 0:01:17 \\
+    \texttt{\dots/libexec} & 1 & 1 & 0 & 0 & 0 & 82 & 87 & 1 & 0 & 0 & 0:00:10 \\
+    \texttt{\dots/sbin} & 30 & 25 & 1 & 4 & 0 & 8858 & 9178 & 26 & 4 & 8 & 0:18:39 \\
+    %    \texttt{local/\ldots/boot} & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    %    \texttt{lib/debug} & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+    \midrule
+    Total & 63 & 45 & 3 & 13 & 1 & 18\,124 & 18\,562 & 56 & 26 & 11 & 0:35:59 \\
+    \midrule
+    & \multicolumn{5}{c}{\thead{Library functions}} &&&&&&\\
+    \texttt{\dots/lib} & 1907 & 1874 & 29 & 0 & 4 & 353\,433 & 362\,635 & 1 & 244 & 600 & 15:28:17 \\
+    \texttt{\dots/xenfsimage} & 109 & 106 & 3 & 0 & 0 & 17\,184 & 17\,683 & 0 & 0 & 27 & 1:58:36 \\
+    \texttt{\dots/dist-packages} & 16 & 16 & 0 & 0 & 0 & 379 & 407 & 0 & 0 & 3 & 0:00:06 \\
+    \texttt{\dots/lowlevel} & 119 & 119 & 0 & 0 & 0 & 10\,651 & 10\,799 & 0 & 0 & 90 & 0:08:43 \\
+    \midrule
+    Total & 2151 & 2115 & 32 & 0 & 4 & 381\,647 & 391\,524 & 1 & 244 & 720 & 17:35:42 \\
+    \bottomrule
+  \end{tabular}\\
+  \begin{tabular}{rcl rcl rcl}
+    \multicolumn{9}{c}{$w+x+y+z$: $w$ lifted, $x$ unprovable return address, $y$ concurrency, $z$ timeout} \\
+    A &=& Resolved indirection & B &=& Unresolved jump(s) & C &=& Unresolved call(s) \\
+  \end{tabular}
+\end{table}
+
+The analysis was performed on a machine running Linux Mint 20.1 Cinnamon
+with a 6-core, 2.9 GHz Intel Core i9-8950HK CPU.
+The machine had 31 GiB of RAM
+and 32 GiB of swap space on a KXG50PNV1T02 NVMe SSD.
+The version of Xen used was 4.12.
+%Our implementation of HG extraction is not in itself parallelized,
+%meaning the core count is not so important for the execution times shown below.
+%However, the compiled tool is self-contained
+%and any number of executions may be performed at once,
+%limited only by the availability of system resources.
+%Thus, in the artifact we have made available,
+%we have provided examples of using GNU parallel to perform analyses efficiently.
+
+Table~\ref{tab:xen} shows an overview.
+The upper part of the table shows binaries.
+Lifting one binary means starting the extraction algorithm at the entry point and exploring all reachable assembly instructions in the binary, including internal function calls.
+The lower part shows library functions in a shared object.
+For every \lstinline|.so| file, all externally exposed functions as reported by the \lstinline|nm| utility are considered.
+Lifting one such function means starting the extraction algorithm at the function's address and exploring all reachable assembly instructions from that point, including calls to other internal functions.
 
 \subsection{Failure Cases}
 

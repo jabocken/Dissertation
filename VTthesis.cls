@@ -153,8 +153,8 @@
 
 % So algorithm numbering matches other floats (doesn't work with acmart class, but that doesn't use chapters anyway)
 \renewcommand\thealgorithm{\arabic{chapter}.\arabic{algorithm}}
-% Fix for hyperref with algorithmicx (from http://tex.stackexchange.com/a/156404/87320)
-%\renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
+% Fix for hyperref with algorithm floats (from http://tex.stackexchange.com/a/156404/87320)
+\renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
 
 \RequirePackage{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings); trying without [capitalize] to see how I like it
 
@@ -197,7 +197,7 @@
 \newtheorem{remark}[proposition]{Remark}
 
 \lstset{ % command to set programming language parameter(s)
-  frame=single,
+  frame=single, % Dunno if I like the frame
   showstringspaces=false,
   showlines=false, %get rid of trailing white lines
   emptylines=1, %allow blank line
@@ -208,7 +208,9 @@
   numbersep=5pt,
   tabsize=2, %set tabs to two spaces
   basicstyle=\ttfamily, % typewriter type for code
-  keywordstyle=\bfseries, % green keywords
+  keywordstyle=\bfseries\color{blue}, % bold blue keywords
+  commentstyle=\color{gray},
+  stringstyle=\color{brown},
 %  keepspaces, % So literate mappings don't gobble the following space
   literate= % For Isabelle notation
     {\\<times>}{$\times$}1

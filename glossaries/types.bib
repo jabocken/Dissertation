@@ -5,7 +5,7 @@
 @index{state}
 @index{memory}
 
-F@symbol{bool,
+@symbol{bool,
   name = {\ensuremath{\mathbb B}},
   description = {Type of boolean values, True and False \todo{use the notation eventually}},
   parent = {numeric}
@@ -57,7 +57,7 @@ F@symbol{bool,
 % moving away from just $A$
 @symbol{inst1,
   name = {\ensuremath{\mathbb A}},
-  description = {Type of instructions for syntax-driven work \todo{would like to change}},
+  description = {Type of instructions for \ac{cfg}- and syntax-driven works \todo{would like to change}},
   seealso = {inst2}
 }
 @symbol{isabelle-state,
@@ -129,7 +129,7 @@ F@symbol{bool,
   parent = {graph}
 }
 @symbol{edge,
-  name = {\ensuremath{\node\times\node\times(\inst|\bot)}},
+  name = {\ensuremath{\glssymbol{node}\times\glssymbol{node}\times(\glssymbol{inst2}|\glssymbol{bot})}},
   description = {Type of graph edges},
   parent = {graph},
   seealso = {node}
@@ -139,7 +139,7 @@ F@symbol{bool,
   description = {Type of exceptions}
 }
 @symbol{pointer,
-  name = {\ensuremath{\mathbb E}},
+  name = {\ensuremath{\mathbb P}},
   description = {Type of pointers; a 64-bit word},
   parent = {numeric},
   seealso = {word}

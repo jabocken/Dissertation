@@ -119,7 +119,7 @@ and that basis is the machine model from \cref{se:machine_model}.
 While \cref{ch:symbolic_execution} provided a general overview of symbolic execution,
 this chapter requires a more specific look.
 The step function for this methodology takes the form
-$\step:S\rightarrow(S\mid\err)$.%
+$\gls{step}:S\rightarrow(S\mid\err)$.%
 \nomenclature{$\err$}{Indicates exceptional state}
 It takes the current state~$\sigma$ to execute from
 and returns the state~$\sigma'$ after execution of the current instruction,
@@ -130,7 +130,7 @@ the function returns~$\err$ instead.
 
 From the machine model, we manually derived a run function%
 \index{function!run}
-$\run:(S\rightarrow\bool)\times S\rightarrow(S\mid\err\mid\infloop)$.
+$\run:(S\rightarrow\gls{bool})\times S\rightarrow(S\mid\err\mid\infloop)$.
 This partial function takes as input a state predicate~$H$ and a state~$\sigma$,%
 \index{state!predicate}
 producing a state~$\sigma'$ on successful completion.
@@ -138,7 +138,7 @@ Predicate~$H$ denotes a \emph{halting condition},%
 \index{symbolic!execution!halting condition}
 which typically instructs the run function to stop
 at a certain instruction address, such as that following a \inlineasm{ret}.
-The run function executes $\step$ until~$H$, applied to the current state,
+The run function executes $\gls{step}$ until~$H$, applied to the current state,
 is true. Whenever an exception occurs, it stops and returns~$\err$.
 If the execution were to continue forever
 without an exception or reaching the halting condition
@@ -206,7 +206,7 @@ can be inferred for the program as a whole (\cref{thm:floyd_hoare}).
 More formally, the \emph{Floyd invariant}%
 \index{Floyd!invariant}
 for a function is a partial function that takes the form
-$I:\glssymbol{insts}\rightharpoonup(S\rightarrow\bool)$.
+$I:\gls{inst1}\rightharpoonup(S\rightarrow\gls{bool})$.
 This function maps from instruction addresses with invariants
 to the corresponding state predicate that is the invariant.
 As a technical detail, some function proofs require additional arguments to $I$
@@ -294,7 +294,7 @@ The notation for this formulation is shown below.
   A piece of assembly demonstrates \emph{memory preservation} if and only if,
   for any address~$a$ and byte value~$v_0$, the following implication holds:
   \begin{equation}
-  (\forall r\in M\cdot r\separate\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
+  (\forall r\in M\cdot r\gls{separate}\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
   \end{equation}
 \end{definition}
 This definition states that, for every byte in memory outside of the memory region set,
@@ -372,7 +372,7 @@ Doing so is still possible, however.
   while~$l_P$ denotes the initial location of program~$P$.
   \Cref{thm:comp} can be used by instantiating~$H$ to halt
   at either location~$l_f$ or~$l_P$ and instantiating~$H'$ to halt at~$l_f$.
-  As long as programs~$x$ and~$y$ do not contain \lstinline[style=C]|goto|s
+  As long as programs~$x$ and~$y$ do not contain \lstinline[language=C]|goto|s
   or some other instruction that violates expected control flow,
   condition~$H$ will ultimately be equivalent to just halting at~$l_P$.
   As~$H'$ is stronger than~$H$, compositionality is possible.
@@ -456,7 +456,7 @@ with \ac{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
 mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
 \begin{lstlisting}[
-  style=C,
+  language=C,
   gobble=2,
   float=*,
   caption=\texttt{pow2} in C,
@@ -574,7 +574,7 @@ Expressed in recursive form, that definition is:
 \end{equation}
 The C equivalent of that function is shown in \cref{factorial-c}.
 \begin{lstlisting}[
-  style=C,
+  language=C,
   gobble=2,
   float=*,
   caption=Factorial in C,

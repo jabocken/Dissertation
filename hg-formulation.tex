@@ -1,4 +1,4 @@
-\chapter{Technical Formulation}
+\chapter{Technical Formulation}\label{ch:hg-formulation}
 \todo{copy the rest of the stuff over here}
 
 \section{Predicates}
@@ -873,7 +873,7 @@ A global mapping is maintained that remembers that symbol $\mathcal{S}_\mathtt{0
 It may be the case that the internal function is called from different call sites, in which case the mapping is updated accordingly: one symbol may be mapped to multiple return addresses.
 As soon as the instruction pointer is set to symbol $\mathcal{S}_\mathtt{0x400}$ (for example, by a \inlineasm{ret} instruction), all mapped return addresses are set to reachable.
 
-\todo{put back ummary?}
+\todo{put back summary?}
 \begin{comment}
   To summarize, for the internal function call above, the following actions are undertaken:
   \begin{enumerate}
