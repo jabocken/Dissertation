@@ -1,18 +1,25 @@
 \chapter{Experimental Results}\label{ch:hg-results}
 This chapter covers the \todo\dots
 
-\section{\acl*{hg} Extraction}
-We have applied \ac{hg} extraction to:
+\section{Hoare Graph Extraction}\label{hg-extraction}
+We applied \ac{hg} extraction to:
 \begin{enumerate}
   \item several stripped binaries of CoreUtils as found in a standard Ubuntu distribution;
   \item a binary with a manually induced buffer overflow, confirming that no \ac{hg} is extracted; and
-  \item all 63 \todo{65?} \gls{arch} binaries and all 2151 functions from the 25 shared objects we identified in the Xen Hypervisor.
+  \item all 63 \todo{65?} \gls{arch} binaries and all 2151 functions from the 25 shared objects we identified in the Xen hypervisor.
   \todo{make nums gls entries with number type?}
+  \todo{gls entry for hypervisor?}
 \end{enumerate}
-All results are publicly available; we report here on the Xen case study.
-The Xen Project is a mature, industrial-strength hypervisor used in many production systems such as Amazon's cloud platforms \autocite{chisnall2008definitive}.
+This \namecref{hg-extraction} % make lnamecref if switching to capitalize
+focuses on the Xen case study specifically.
+The Xen Project is a mature, industrial-strength hypervisor used in many production systems, including Amazon's cloud platforms \autocite{chisnall2008definitive}.
 Hypervisors provide a method for managing multiple virtual instances of operating systems (guests) on a physical host.
-Xen is a suitable case study because of its complexity and wide range of programs and shared libraries produced by its build process.
+\todo{glossary entry for hypervisor?}
+Xen is a suitable case study because of two things:
+\begin{itemize}
+  \item its complexity and
+  \item the wide range of programs and shared libraries produced by its build process.
+\end{itemize}
 
 \begin{table}
   \centering
@@ -21,7 +28,7 @@ Xen is a suitable case study because of its complexity and wide range of program
   \label{tab:xen}
   \begin{tabular}{lC{4.8ex}@{$=$}C{4.8ex}@{$+$}C{2.4ex}@{$+$}C{2.4ex}@{$+$}rrrrrrr}
     \toprule
-    \thead{Directory} & \multicolumn{5}{c}{} & {\thead{~~Instrs.~~}} & {\thead{Symbolic\\States}} & {\thead{~A~}} & {\thead{~~B~~}} & {\thead{~~C~~}} & \thead{Time\\~~(h:m:s)~~} \\
+    \thead{Directory} & \multicolumn{5}{c}{} & {\thead{~~Instrs.~~}} & {\thead{Symbolic\\States}} & {\thead{~A~}} & {\thead{~~B~~}} & {\thead{~~C~~}} & \thead{Time/\\h:m:s} \\
     \midrule
     & \multicolumn{5}{c}{\thead{Binaries}} &&&&&&\\
     \texttt{\dots/bin} & 15 & 12 & 2 & 1 & 0 & 6751 & 6829 & 21 & 19 & 0 & 0:15:54 \\
@@ -48,38 +55,108 @@ Xen is a suitable case study because of its complexity and wide range of program
   \end{tabular}
 \end{table}
 
-The analysis was performed on a machine running Linux Mint 20.1 Cinnamon
-with a 6-core, 2.9 GHz Intel Core i9-8950HK CPU.
-The machine had 31 GiB of RAM
-and 32 GiB of swap space on a KXG50PNV1T02 NVMe SSD.
-The version of Xen used was 4.12.
-%Our implementation of HG extraction is not in itself parallelized,
-%meaning the core count is not so important for the execution times shown below.
-%However, the compiled tool is self-contained
-%and any number of executions may be performed at once,
-%limited only by the availability of system resources.
-%Thus, in the artifact we have made available,
-%we have provided examples of using GNU parallel to perform analyses efficiently.
+The analysis was performed on a machine with a six-core (twelve logical cores), \SI{2.9}{\giga\hertz} Intel Core i9-8950HK \ac{cpu}.
+That machine had \SI{31}{\gibi\byte} of \ac{ram}
+and \SI{32}{\gibi\byte} of swap space on a KXG50PNV1T02 NVMe \ac{ssd}.
+\todo{does NVMe have a proper long-form or is it fine as is?}
+Its \ac{os} was Linux Mint 20.1 Cinnamon.
+The version of Xen under test was 4.12.
+\begin{remark}[Parallelization]
+  Our tool for \ac{hg} extraction is not in itself parallelized.
+  That means the core count listed above did not directly affect the execution times shown below.
+  However, the only restriction on running multiple instances of the tool simultaneously is the availability of system resources.
+  Thus, in the published artifact \autocite{bockenek2022artifact} we provided examples of using GNU parallel \autocite{Tange2011a} to perform analyses efficiently.
+\end{remark}
 
-Table~\ref{tab:xen} shows an overview.
+\Cref{tab:xen} shows an overview of the results.
 The upper part of the table shows binaries.
-Lifting one binary means starting the extraction algorithm at the entry point and exploring all reachable assembly instructions in the binary, including internal function calls.
-The lower part shows library functions in a shared object.
-For every \lstinline|.so| file, all externally exposed functions as reported by the \lstinline|nm| utility are considered.
-Lifting one such function means starting the extraction algorithm at the function's address and exploring all reachable assembly instructions from that point, including calls to other internal functions.
+Lifting of the binaries was done by starting the extraction algorithm at each binary's \ac{elf} entry point and exploring all reachable assembly instructions.
+This includes all resolvable internal function calls.
+The lower part shows library functions in \acp{so}.
+For every \ac{so} file, all externally exposed functions as reported by the \lstinline|nm| utility were considered.
+Lifting individual functions required starting the extraction algorithm at the function's address and exploring all reachable assembly instructions from that point.
+As with the binaries, that included resolvable calls to other internal functions.
 
 \subsection{Failure Cases}
+Three issues may prevent lifting a binary to an HG, shown in the second column of \cref{tab:xen}. These issues are explained below.
 
 \subsubsection{Unprovable Return Addresses}
-\todo\dots
+This case calls back to \cref{sec:ssms}.
+When a \inlineasm{ret} instruction is encountered,
+the current precondition\footnote{symbolic state predicate}
+must be strong enough to prove that the return address at the top of the current stack frame has not been modified.
+Furthermore, that precondition must also be strong enough to show that the value of the stack pointer has been restored to the initial value it held on function entry.
+If the current precondition is not strong enough to satisfy those conditions, the algorithm does not produce \iac{hg}.
+This is because it cannot prove return address integrity.
+\todo{This should have been mentioned earlier, double check. also add glossary entry?}
 
 \subsubsection{Concurrency}
-\todo\dots
+Binaries that contain multithreading-related function calls are out of scope for this analysis.
+This was determined primarily by the presence of \inlineasm{pthread} calls, mutexes, and semaphores.
+\todo{glossary entries for mutex/semaphore?}
+However, those binaries were still included in \cref{tab:xen} in order to account for all \gls{arch} Xen binaries.
 
 \subsubsection{Timeout}
-\todo{maybe just make these part of a listing or like in the paper}
+While our algorithm has a proof of termination \todo{double-check, it looks like we do but I want to make sure},
+state space explosion or other resource limitations sometimes make full execution infeasible.
+In order to ensure a full analysis, we set a timeout on analysis to \SI4\hour\ per binary/function.
+This resulted in failure for only one binary and four library functions.
+\todo{This is actually discussed in two places, either consolidate the discussion of timing here or down below!}
 
 \subsection{Successful Cases}
+\todo{here right now}
+In total, for 45 out of 63 binaries and 2115 out of 2151 library functions, the basic sanity properties (return address integrity, bounded control flow and calling convention adherence) could be proven and \iac{hg} could be generated.
+
+The third and fourth columns of \cref{tab:xen} show the number of instructions lifted out of the binary and the number of states of the \ac{hg}.
+Taking both the binaries and shared objects into account, \numberinstructions\ instructions were lifted.
+Since states belonging to the same address are joined whenever compatible, the number of states is close to the number of instructions.
+%Overhead occurs when states are not compatible due to the second extension of the algorithm (see Section~\ref{sec:algorithm}).
+%Overall, the number of states is a factor 1.06 larger than the number of instructions.
+
+
+Column~A shows the number of resolved indirections, i.e., the indirections where the effect of the instruction on the instruction pointer could be overapproximatively established.
+Columns~B and~C show the \emph{annotations}, i.e., the numbers of unresolved indirect jumps and calls, respectively.
+% Unresolved indirect jumps typically where caused by \todo{why?}.
+Unresolved indirect calls are often caused by function callbacks: a function pointer is passed as a parameter (or through a global variable) from function to function.
+Programmer-supplied function arrays are another source of non-resolution.
+Since function calls are handled without context, the function pointer is unknown at the time it is actually called.
+
+\begin{figure}
+  \centering
+  \todo{figure out how to make this wide}
+  \begin{tikzpicture}
+    \begin{axis}[
+      date coordinates in=y,
+      date ZERO=0-0-0,
+      yticklabel=\hour:\minute,
+      xlabel=Instruction Count,
+      ylabel=Time/h:m,
+      title=Distribution of time versus instructions
+      ]
+      \addplot[scatter, only marks] table [col sep=comma]{data/timing-hg.csv};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Case study timing analysis}\label{fig:distr}
+\end{figure}
+\Cref{fig:distr} relates the sizes of functions (in numbers of instructions) to the verification time.
+The largest function successfully verified was \lstinline|libxl_domain_suspend| from \lstinline|libxenlight.so.4.12.0|, with 3925 instructions and 4207 symbolic states. The analysis took 49 minutes and 10 seconds to complete. The second-largest function verified, \lstinline|libxl_domain_suspend_only|, had 3713 instructions with 4100 symbolic states and took 16 minutes 34 seconds to complete. The longest verification time was around 2 hours for function \lstinline|libxl_domain_build_info_gen_json| with 1584 instructions.
+For the 1907 functions, we had 4 timeouts (not included in the 15:28 hrs of verification time). These functions generally had a large number of states that could not be joined (causing explosion in the number of states to be explored).
+Figure~\ref{fig:distr}  shows that there is very little correlation between verification times and instruction count.
+
+In total, we lifted an HG for 2115 out 2151 functions (98\%).
+We can account for why this number is relatively high:
+\begin{itemize}[wide, labelwidth=!, labelindent=0pt,nosep]
+  \item For many functions, any pair of pointers \emph{to the local stack frame} abided by any of the four relations for which we accurately model memory relations (aliasing, separations, enclosed within, encloses).
+  As a result, even if the heap and the global memory space were grossly overapproximated, the local stack frame was modelled accurately and return address integrity could be proven.
+  \item In case of an unresolved function call, we treated the function overapproximatively as an unknown external function.
+  Typical reasons for unresolved indirections include callbacks: a function pointer is set by some function $f$ and is retrieved and called back in function $g$. A context-sensitive approach would be able to increase the number of supported indirect calls, but this would need to be done sufficiently scalable.
+  \item Some of the rejections constitute functions that do not adhere to the calling convention. Manual analysis of these cases shows that these are all compiler-generated functions that are not required to follow a calling conventions.
+  \item Other rejections were caused by a precondition insufficient to derive an overapproximative bounded set of concrete values for the next instruction pointer.
+  This may occur when an array or struct is stored on the stack and accessed via variable offset.
+  Such constructs may lead to complicated pointer arithmetic \emph{within} the stack frame.
+  The result is that the algorithm cannot prove that a memory region was separate from the top of the stack frame, storing the return address.
+  \item Even though not all instructions of the \gls{arch} \ac{isa} are supported, all instructions occurring in the case study are, so this is not a reason why functions were rejected.
+\end{itemize}
 
 \section{Formal Proofs in Isabelle/HOL}
 \todo{This was \emph{not} my work, need to figure out how to include it.}
