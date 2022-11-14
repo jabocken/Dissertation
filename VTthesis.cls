@@ -126,7 +126,7 @@
   nostyles,% don't load default style packages; this is the recommendation
   % load glossaries-extra-stylemods.sty and glossary-tree.sty, bookindex
   stylemods={tree,bookindex},
-  symbols,index % want symbol and index glossaries; maybe numbers too?
+  symbols,index,numbers % want these glossaries
 ]{glossaries-extra}
 \RequirePackage{glossaries-prefix} % for a(n) configuration
 

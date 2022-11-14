@@ -1,3 +1,6 @@
+\glsxtrsetgrouptitle{hg}{\acp{hg}}
+\glsxtrsetgrouptitle{eicfg}{\acp{eicfg}}
+
 \glsxtrsetgrouptitle{element}{Elements}
 \glsxtrsetgrouptitle{function}{Functions}
 \glsxtrsetgrouptitle{relation}{Relations}
@@ -8,11 +11,15 @@
   src=glossaries/terms
 ]
 \GlsXtrLoadResources[
+  src=glossaries/numbers, % I actually want to sort off the labels for these so no fallback needed
+  type=numbers % no need for field-aliases={value=user1} as I'm putting the numbers in the symbol field anyway
+]
+\GlsXtrLoadResources[
   src=glossaries/elements,
   group=element,
   type=symbols,
-  symbol-sort-fallback=name,
-  break-at=none
+  symbol-sort-fallback=name, % use the name instead of label for sorting
+  break-at=none % prevents non-letters being discarded when sorting
 ]
 \GlsXtrLoadResources[
   src=glossaries/functions,

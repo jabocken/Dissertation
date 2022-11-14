@@ -231,7 +231,7 @@
 
 \addbibresource{bibliography.bib}
 
-\includeonly{hg-results}
+\includeonly{hg-results,hg-discussion}
 
 % This isn't working but whatever
 \newcommand\nomenclature[2]{}
@@ -252,6 +252,7 @@
 
   \printacronyms[heading=chapter]
   \printunsrtglossary[type=symbols,style=indexgroup] % no default style for symbols
+  \printunsrtglossary[type=numbers,style=indexgroup] % no default style for numbers
   \acresetall % Any acronyms used inside the glossaries should start over here.
 
   \input{attribution} % prefaces go in front matter

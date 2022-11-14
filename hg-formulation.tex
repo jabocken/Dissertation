@@ -263,13 +263,13 @@ Notation $t_0\gls{alias}t_1$ ($t_0\gls{enclosed}t_1$) denotes that some region i
 
 \subsection{Insertion}
 Construction of a memory model is performed
-using the recursive $\mathit{ins}$ function shown below.
+using the recursive \gls{insertM} function shown below.
 It takes as input a memory tree~$t$ and the current memory model~$M$.
 The current predicate~$P$ is also supplied
 to assist in the region relationship analysis.
 However, it is elided from the below presentation as it is a read-only value
 that is passed along through the function call chain.
-For output, function $\mathit{ins}$ produces, nondeterministically,
+For output, function \gls{insertM} produces, nondeterministically,
 a set of new memory models based on all possible pointer relationships
 for the newly-inserted region.
 If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{sec:intro}).

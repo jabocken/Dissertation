@@ -1,6 +1,10 @@
 \chapter{Experimental Results}\label{ch:hg-results}
 This chapter covers the \todo\dots
 
+As a recap, I performed the real-world analysis on the Xen case study in \cref{hg-extraction}.
+Howeever, I did not contribute to the work on formal verification of our \acp{hg} and development of examples of failures in \cref{sec:not-me-proofs,sec:not-me-failures}.
+Those \namecrefs{sec:not-me-proofs} have been included and revised for completeness and consistency but are credited primarily to Dr.~Freek Verbeek.
+
 \section{Hoare Graph Extraction}\label{hg-extraction}
 We applied \ac{hg} extraction to:
 \begin{enumerate}
@@ -38,15 +42,15 @@ Xen is a suitable case study because of two things:
     %    \texttt{local/\ldots/boot} & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     %    \texttt{lib/debug} & 1 & 0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
     \midrule
-    Total & 63 & 45 & 3 & 13 & 1 & 18\,124 & 18\,562 & 56 & 26 & 11 & 0:35:59 \\
+    Total & \glssymbol{bin-total} & \glssymbol{bin-success} & 3 & 13 & 1 & 18\,124 & 18\,562 & 56 & 26 & 11 & 0:35:59 \\
     \midrule
     & \multicolumn{5}{c}{\thead{Library functions}} &&&&&&\\
-    \texttt{\dots/lib} & 1907 & 1874 & 29 & 0 & 4 & 353\,433 & 362\,635 & 1 & 244 & 600 & 15:28:17 \\
+    \texttt{\dots/lib} & 1907 & 1874 & 29 & 0 & \glssymbol{lib-func-fail} & 353\,433 & 362\,635 & 1 & 244 & 600 & 15:28:17 \\
     \texttt{\dots/xenfsimage} & 109 & 106 & 3 & 0 & 0 & 17\,184 & 17\,683 & 0 & 0 & 27 & 1:58:36 \\
     \texttt{\dots/dist-packages} & 16 & 16 & 0 & 0 & 0 & 379 & 407 & 0 & 0 & 3 & 0:00:06 \\
     \texttt{\dots/lowlevel} & 119 & 119 & 0 & 0 & 0 & 10\,651 & 10\,799 & 0 & 0 & 90 & 0:08:43 \\
     \midrule
-    Total & 2151 & 2115 & 32 & 0 & 4 & 381\,647 & 391\,524 & 1 & 244 & 720 & 17:35:42 \\
+    Total & \glssymbol{lib-func-total} & \glssymbol{lib-func-success} & 32 & 0 & \glssymbol{lib-func-fail} & 381\,647 & 391\,524 & 1 & 244 & 720 & 17:35:42 \\
     \bottomrule
   \end{tabular}\\
   \begin{tabular}{rcl rcl rcl}
@@ -77,8 +81,9 @@ For every \ac{so} file, all externally exposed functions as reported by the \lst
 Lifting individual functions required starting the extraction algorithm at the function's address and exploring all reachable assembly instructions from that point.
 As with the binaries, that included resolvable calls to other internal functions.
 
-\subsection{Failure Cases}
-Three issues may prevent lifting a binary to an HG, shown in the second column of \cref{tab:xen}. These issues are explained below.
+\subsection{Failure Cases}\label{sec:failure}
+Three issues may prevent lifting a binary to \iac{hg}, shown in the second column of \cref{tab:xen}.
+These issues are explained below.
 
 \subsubsection{Unprovable Return Addresses}
 This case calls back to \cref{sec:ssms}.
@@ -89,6 +94,7 @@ Furthermore, that precondition must also be strong enough to show that the value
 If the current precondition is not strong enough to satisfy those conditions, the algorithm does not produce \iac{hg}.
 This is because it cannot prove return address integrity.
 \todo{This should have been mentioned earlier, double check. also add glossary entry?}
+A breakdown of these cases occurs later in \cref{hg-results-summary}.
 
 \subsubsection{Concurrency}
 Binaries that contain multithreading-related function calls are out of scope for this analysis.
@@ -101,65 +107,171 @@ While our algorithm has a proof of termination \todo{double-check, it looks like
 state space explosion or other resource limitations sometimes make full execution infeasible.
 In order to ensure a full analysis, we set a timeout on analysis to \SI4\hour\ per binary/function.
 This resulted in failure for only one binary and four library functions.
-\todo{This is actually discussed in two places, either consolidate the discussion of timing here or down below!}
+Further discussion of the function timeouts can be found later in \cref{sec:timing}.
 
 \subsection{Successful Cases}
-\todo{here right now}
-In total, for 45 out of 63 binaries and 2115 out of 2151 library functions, the basic sanity properties (return address integrity, bounded control flow and calling convention adherence) could be proven and \iac{hg} could be generated.
+As a reminder, the basic sanity properties being checked were return address integrity, bounded control flow, and calling convention adherence.
+In total, those properties could be proven and \iac{hg} could be generated for \glssymbol{bin-success} out of \glssymbol{bin-total} binaries and \glssymbol{lib-func-success} out of \glssymbol{lib-func-total} library functions.
 
-The third and fourth columns of \cref{tab:xen} show the number of instructions lifted out of the binary and the number of states of the \ac{hg}.
-Taking both the binaries and shared objects into account, \numberinstructions\ instructions were lifted.
-Since states belonging to the same address are joined whenever compatible, the number of states is close to the number of instructions.
-%Overhead occurs when states are not compatible due to the second extension of the algorithm (see Section~\ref{sec:algorithm}).
-%Overall, the number of states is a factor 1.06 larger than the number of instructions.
+The third and fourth columns of \cref{tab:xen} show the number of instructions lifted and the number of states of the \ac{hg}.
+Taking both the binaries and shared objects into account, \glssymbol{inst-total-lifted} instructions were lifted.
+As states belonging to the same address are joined whenever compatible, the number of resultant states is close to the number of instructions.
+State overhead scales with the amount of predicted control flow-related immediate values.
+This was described in the addendum to \cref{def:compatibility}.
 
-
-Column~A shows the number of resolved indirections, i.e., the indirections where the effect of the instruction on the instruction pointer could be overapproximatively established.
-Columns~B and~C show the \emph{annotations}, i.e., the numbers of unresolved indirect jumps and calls, respectively.
-% Unresolved indirect jumps typically where caused by \todo{why?}.
-Unresolved indirect calls are often caused by function callbacks: a function pointer is passed as a parameter (or through a global variable) from function to function.
+Moving on, column~A shows the number of \emph{resolved} indirections.
+By resolved, we mean the indirect jumps and calls where the postcondition's instruction pointer value could be overapproximatively established.
+Meanwhile, columns~B and~C show the number of \emph{annotations} for unresolved indirect jumps and calls, respectively.
+Unresolved indirect jumps were primarily caused by two things.
+First, a handcrafted jump-table-matching heuristic that did not necessarily match all possible jump tables.
+Second, a lack of context for those indirect jumps not involving jump tables.
+Similarly, unresolved indirect calls are often caused by a lack of context for function callbacks.
+In such cases, a function pointer is passed as a parameter (or through a global variable) from function to function.
 Programmer-supplied function arrays are another source of non-resolution.
-Since function calls are handled without context, the function pointer is unknown at the time it is actually called.
+As function calls are handled without context, the specific function pointer to select is unknown at call time.
+The utilized jump table heuristic cannot deal with such cases either as it cannot process the programmer-provided \ac{elf} data sections.
 
+\subsection{Timing}\label{sec:timing}
 \begin{figure}
-  \centering
-  \todo{figure out how to make this wide}
-  \begin{tikzpicture}
+%  \centering
+  \begin{tikzpicture}[trim axis left]
     \begin{axis}[
+      scale only axis,
+      width=\textwidth, % .95 wanted to fit to the full width exactly but the ticks/labels prevent doing that easily and there isn't an easy package/simple one-liner to do the fix in a way that fits my workflow. Trying trim axis left+scale only axis to just have y-ticks in the margin and the plot itself fit to the width perfectly, doesn't look perfect but it does feel better.
+      height=.4\textwidth, % .475
       date coordinates in=y,
       date ZERO=0-0-0,
       yticklabel=\hour:\minute,
       xlabel=Instruction Count,
       ylabel=Time/h:m,
-      title=Distribution of time versus instructions
-      ]
+      title=Distribution of instructions versus time
+    ]
       \addplot[scatter, only marks] table [col sep=comma]{data/timing-hg.csv};
     \end{axis}
   \end{tikzpicture}
-  \caption{Case study timing analysis}\label{fig:distr}
+  \caption{Case study library function timing analysis}\label{fig:distr}
 \end{figure}
-\Cref{fig:distr} relates the sizes of functions (in numbers of instructions) to the verification time.
-The largest function successfully verified was \lstinline|libxl_domain_suspend| from \lstinline|libxenlight.so.4.12.0|, with 3925 instructions and 4207 symbolic states. The analysis took 49 minutes and 10 seconds to complete. The second-largest function verified, \lstinline|libxl_domain_suspend_only|, had 3713 instructions with 4100 symbolic states and took 16 minutes 34 seconds to complete. The longest verification time was around 2 hours for function \lstinline|libxl_domain_build_info_gen_json| with 1584 instructions.
-For the 1907 functions, we had 4 timeouts (not included in the 15:28 hrs of verification time). These functions generally had a large number of states that could not be joined (causing explosion in the number of states to be explored).
-Figure~\ref{fig:distr}  shows that there is very little correlation between verification times and instruction count.
+\Cref{fig:distr} relates the instruction count of library functions to their verification time.
+The largest function successfully verified was \lstinline|libxl_domain_suspend| from \lstinline|libxenlight.so.4.12.0|, with \num{3925} instructions and \num{4207} symbolic states.
+Its analysis took \num{49} minutes and \num{10} seconds to complete.
+The second-largest function verified, \lstinline|libxl_domain_suspend_only|, had \num{3713} instructions with \num{4100} symbolic states and took \num{16} minutes \num{34} seconds to complete.
+Interestingly, the longest verification time did \emph{not} inolve the largest function.
+It was instead an outlier.
+Function \lstinline|libxl_domain_build_info_gen_json| took around \num{2} hours despite having only \num{1584} instructions.
 
-In total, we lifted an HG for 2115 out 2151 functions (98\%).
+As shown in \cref{tab:xen} and as previously mentioned in \cref{sec:failure}, out of the \glssymbol{lib-func-total} library functions, we had \glssymbol{lib-func-fail} timeouts.\footnote{%
+  Because they timed out, they were not included in the 15:28 total verification time.%
+}
+The functions that timed out have a large number of states that could not be joined, causing explosion in the number of states to be explored.
+In general, while some correlation exists between instruction count and verification time, there are major outliers.
+It can thus be inferred that complexity of the control flow itself is a major contributor to analysis time.
+
+\subsection{Summary}\label{hg-results-summary}
+To reiterate, we lifted \iac{hg} for \glssymbol{lib-func-success} out \glssymbol{lib-func-total} functions (\SI{98}\percent).
 We can account for why this number is relatively high:
-\begin{itemize}[wide, labelwidth=!, labelindent=0pt,nosep]
+\begin{itemize}
   \item For many functions, any pair of pointers \emph{to the local stack frame} abided by any of the four relations for which we accurately model memory relations (aliasing, separations, enclosed within, encloses).
-  As a result, even if the heap and the global memory space were grossly overapproximated, the local stack frame was modelled accurately and return address integrity could be proven.
-  \item In case of an unresolved function call, we treated the function overapproximatively as an unknown external function.
-  Typical reasons for unresolved indirections include callbacks: a function pointer is set by some function $f$ and is retrieved and called back in function $g$. A context-sensitive approach would be able to increase the number of supported indirect calls, but this would need to be done sufficiently scalable.
-  \item Some of the rejections constitute functions that do not adhere to the calling convention. Manual analysis of these cases shows that these are all compiler-generated functions that are not required to follow a calling conventions.
-  \item Other rejections were caused by a precondition insufficient to derive an overapproximative bounded set of concrete values for the next instruction pointer.
-  This may occur when an array or struct is stored on the stack and accessed via variable offset.
-  Such constructs may lead to complicated pointer arithmetic \emph{within} the stack frame.
-  The result is that the algorithm cannot prove that a memory region was separate from the top of the stack frame, storing the return address.
+  As a result, even if the heap and the global memory space were grossly overapproximated, the local stack frame was modeled accurately and return address integrity could be proven.
+  \item In the case of an unresolved function call, we treated the function overapproximatively as an unknown external function, allowing continued analysis.
+  Typical reasons for unresolved indirections include callbacks: a function pointer is set by some function~$f$ and is retrieved and called back in function~$g$. A context-sensitive approach would be able to increase the number of supported indirect calls, but this would need to be done in a sufficiently scalable way.
   \item Even though not all instructions of the \gls{arch} \ac{isa} are supported, all instructions occurring in the case study are, so this is not a reason why functions were rejected.
 \end{itemize}
+The unprovable return address cases can also be broken down further:
+\todo{perhaps I should move this upwards into the ``Failure Case'' section}
+\begin{itemize}
+  \item Some of the rejections constitute functions that do not adhere to the calling conventions of the System V \ac{abi}.
+  Manual analysis of these cases shows that these are all compiler-generated functions that are not required to follow calling conventions.
+  \todo{and optimized cases?}
+  \item Other rejections were caused by preconditions that were insufficiently strong enough for the derivation of overapproximative bounded sets of concrete values for the next instruction pointers.
+  This may occur when an array or struct is stored on the stack and accessed via variable offset.
+  Such constructs may lead to complicated pointer arithmetic \emph{within} the stack frame.
+  The result is that the algorithm cannot prove that a memory region was separate from the top of the stack frame that stores the return address.
+\end{itemize}
 
-\section{Formal Proofs in Isabelle/HOL}
-\todo{This was \emph{not} my work, need to figure out how to include it.}
+\section{Formal Proofs in Isabelle/HOL}\label{sec:not-me-proofs}
+\todo{put more in Josh words}
+For several CoreUtils binaries, we extracted \iac{hg} and exported it to the Isabelle/HOL theorem prover.
+The binaries are closed-source, taken from a standard MacOS 11.5.2 distribution.
+\Cref{tab:isa} provides an overview of the binaries, the number of instructions and Hoare triples, and the number of resolved indirections (there are no unresolved indirections).
+Without exception, all Hoare triples could be proven automatically.
 
-\section{Examples of Failures}
-\todo{This was not my work either, maybe come up with some of my own examples?}
+\begin{table}
+  \centering
+  \caption{Overview of binaries exported to Isabelle/HOL}
+  \label{tab:isa}
+  \begin{tabular}{lSS}
+    \toprule
+    \thead{Binary} & {\thead{Number of Instructions}} & {\thead{Number of Indirections}}\\
+    \midrule
+    \texttt{hexdump} & 2515 & 11 \\
+    \texttt{od}      & 3040 & 11 \\
+    \texttt{wc}      &  445 &  0 \\
+    \texttt{tar}     & 5730 & 5 \\
+    \texttt{du}      &  883 & 3\\
+    \texttt{gzip}    & 3465 & 7\\
+    \midrule
+    Total            & 16078 & 37 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+We have developed a formal model of the semantics of roughly \num{120} different \gls{arch} assembly instructions.
+These instructions include various moves, arithmetic/logical operations, jumps, and \inlineasm{call}/\inlineasm{ret}.
+Floating-point operations are mapped to uninterpreted functions.
+The model provides semantics for register aliasing and a byte-level little-endian memory model.
+Moreover, we have developed a symbolic execution engine that applies the formal semantics of an instruction to a symbolic state, and matches that to a given postcondition.
+This engine is based on a library of formally proven correct simplification theorems, as well as theorems that prove separation properties over different memory writes.
+Finally, we support automatic generation of implicit assumptions necessary for formal proofs.
+The informal algorithm can implicitly make assumptions that, e.g., regions in the global memory space are not overlapping with regions from the stack frame.
+A formal proof must explicitly assume that.
+Effectively, each and any implicit assumption made during \ac{hg} generation is formalized and exported to Isabelle/HOL.
+
+\section{Examples of Failures}\label{sec:not-me-failures}
+This \namecref{sec:not-me-failures} covers some specific failure cases for our verification tool.
+
+\subsection{Stack Overflow}
+ROP emporium\fturl{https://ropemporium.com} provides pedagogical examples that contain an exploitable stack overflow.
+For the \texttt{ret2win} example, the exploit simply amounts to ensuring that a call to \texttt{memset} writes 48 bytes to its given pointer.
+For our tool, \texttt{memset} is an unknown external function, and thus it is annotated with the assumptions needed to ensure return address integrity.
+The annotation states that:
+\\[1ex]
+\begin{tabular}{l}
+  $\mathtt{@400701: memset(RDI:=RSP_0 - 40)~MUST~PRESERVE }$\\
+  \hspace{32ex}$\mathtt{ [ RSP_0 - 8~TO~RSP_0 + 8 ]}$
+\end{tabular}
+\\[1ex]
+At address \texttt{0x400701}, a call to \inlineasm{memset} occurs with as first parameter a pointer into the stack frame of the caller ($\mathtt{RSP_0 - 40}$).
+The algorithm needed to assert that this call did not overwrite the memory region $\mathtt{[ RSP_0 - 8 ~TO~ RSP_0 + 8 ]}$, where, among other things, the return address is stored.
+In other words, the algorithm asserted and noted as proof obligation that the write executed by \inlineasm{memset} did not exceed 32 bytes.
+In this example, the algorithm did not produce a verification error, but generated proof obligations that can be violated. Such a violation constituted an exploit candidate.
+
+\subsection{Stack Probing}
+In the binary \texttt{/usr/bin/zip}---as available in a standard MacOS distribution---a certain function executes the following function call:
+\\[1ex]
+\hspace{3em}\begin{tabular}{ll}
+  \texttt{100009fe6:} & \texttt{mov	eax, 0x1400}\\
+  \texttt{100009feb:} & \texttt{call	0x10000a6a0}\\
+  \texttt{100009ff0:} & \texttt{sub	rsp, rax}
+\end{tabular}
+\\[1ex]
+Register \texttt{rax} gets the value \texttt{0x1400}, then an internal function is called, and then the number of bytes in \texttt{rax} is allocated locally on the stack frame.
+The called function executes a compiler-generated technique called \emph{stack probing}.
+That function traverses the stack and reads-then-discards individual bytes below the current stack pointer at intervals of \texttt{0x1000} bytes.
+The instruction at address \texttt{0x100009ff0} eventually causes a verification error, since the tool cannot establish whether register \rax\ has been modified during that function call.
+
+\subsection{Non-standard Stackpointer Restoration}
+Normally, a function restores the stackpointer \rsp\ to its initial value, plus eight due to the pushing of the return address. That is, after a \inlineasm{ret} statement the symbolic state is verified for:
+\begin{equation*}
+  \mathtt{RSP} == \mathtt{RSP_0} + 8
+\end{equation*}
+In the binary \texttt{/usr/bin/ssh}---as available in a standard MacOS distribution---a function returns with the stackpointer \rsp\ set to the following symbolic value:
+\begin{equation*}
+  \begin{array}{ll}
+    \multicolumn{2}{l}{\mathtt{RSP == *[ }}\\
+    & \mathtt{ ~~~((RSP_0 - (48 - (((-4) - R9_0) * 8))) ~\&~(-400))  }\\
+    & \mathtt{ ~~~ +~((udiv64(R9_0,4) * 4) * 8) + 8}\\
+    & \mathtt{ ~] + 56}\\
+  \end{array}
+\end{equation*}
+This complicated symbolic value shows that the stackpointer is not normally restored, but instead read from a region in memory whose address is based on the initial value of register $\mathtt{R9}$ (notation $\mathtt{*[a]}$ denotes reading from address $\mathtt{a}$ \todo{this was already introduced though}).
+This function leads to a verification error, as the stack pointer cannot be proven to be normally restored, no accurate memory relations over the local stack frame can be formulated.
