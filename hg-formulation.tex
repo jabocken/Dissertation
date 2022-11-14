@@ -387,7 +387,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
   The base case is trivial.
   For the inductive case, we insert region~$r$ into $\{t_1\} \cup M$.
   Four cases are possible:
-  \begin{enumerate}[style=unboxed,leftmargin=0cm,labelindent=0pt,wide] % get too much sentence spacing with [wide, labelindent=0pt]
+  \begin{enumerate}
     \item Region $r_0$ necessarily aliases with $t_1$.
     In this case, since mapping $f$ is possibly true, it must assign \gls{alias} to all top-level regions of $t_1$, \gls{encloses} to all other regions in $t_1$ and \gls{separate} to all regions in $M$.
     The created memory model contains these relations.
@@ -399,14 +399,14 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
     Since mapping $f$ is possibly true, it must assign \gls{separate} to all regions of $M$.
     Therefore, the insertion function does not modify $M$.
     Since $r_0$ and $r_1$ do not alias, the top-level regions $R_1$ of tree $t_1$ can remain unmodified as well.
-    Region $r_0$ is recursively inserted into a child of $t_1$, proof follows form the \ac{ih}.
+    Region $r_0$ is recursively inserted into a child of $t_1$, proof follows from the \ac{ih}.
     \item Tree $r_1$ is necessarily enclosed into region $r_0$.
     In this case, since mapping $f$ is possibly true, it must assign $\succeq$ to all regions of $t_1$.
     Therefore, tree $t_1$ is recursively inserted as subtree of $r_0$, producing a set of trees.
     For the remaining regions not in $t_1$, $f$ can hold arbitrary relations.
     Therefore any $t'$ in the produced set is recursively inserted into $M$.
-    Again, the IH then finishes the proof.
-    % \item No necessarily relation can be established. In that case, all of the above proofs apply, since memory models are generated for each possible case.
+    Again, the \ac{ih} then finishes the proof.
+    \item As an extra case, consider when no relation can necessarily be established. In that case, all of the above proofs apply, as memory models are generated for each possible case. \todo{Shouldn't I include this part? Not sure why it was commented out.}
   \end{enumerate}
 \end{proof}
 
