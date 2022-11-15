@@ -1,13 +1,100 @@
 \chapter{Technical Formulation}\label{ch:hg-formulation}
-\todo{copy the rest of the stuff over here}
+In this \namecref{ch:hg-formulation}, you will learn about the details of \ac{hg} lifting and the \emph{symbolic states} contained within.
+First with some introductory concepts for our symbolic states in \cref{hg-concepts},
+then detailed coverage of our state predicates and memory models in \cref{sec:predicates,sec:memory-models},
+and finally the lifting algorithm itself in \cref{sec:algorithm}.
+These concepts are accompanied by explanations and proofs.
 
-\section{Predicates}
+The concepts and definitions presented here were developed in concert with Dr.~Freek Verbeek.
+In particular, he was a significant contributor to the proofs in this \namecref{ch:hg-formulation}.
+
+\section{Starting Concepts}\label{hg-concepts}
+\todo{maybe move some of this to an earlier/communal chapter?}
+For this \namecref{hg}, we have the following types:
+\todo{how to align these again?}
+\begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries \glsentryname{mem}}]
+  \item[\gls{inst2}] a structured representation of assembly instructions
+  \item[\gls{predicate}] state predicates (\cref{sec:predicates})
+  \item[\gls{mem}] memory models (\cref{sec:memory-models})
+  \item[\glsxtrfmt{word}n] words of bit length~$n$, with a default of \SI{64}\bit
+\end{description}
+The vertices of \iac{hg} are represented by the aforementioned symbolic states, which are tuples of type
+\begin{equation*}
+  \gls{predicate}\times\gls{mem}.
+\end{equation*}
+We use~\gls{symbolic-state} and \gls{concrete-state} to respectively denote symbolic and concrete states.
+Additionally, notation $\gls{concrete-state}\gls{holds}X$ indicates that~$X$ holds in concrete state~\gls{concrete-state},
+where~$X$ can be either a predicate or a memory model.
+\begin{definition}[Binaries]
+  A binary is defined by a tuple of the form
+  \begin{equation*}
+    \langle a_e,\gls{fetch},\gls{conc-state},\gls{black-box-transition}\rangle,
+  \end{equation*}
+  where~$a_e$ of type~\glsxtrfmt{word}{64} is the entry point of the binary and \gls{fetch} of type $\glsxtrfmt{word}{64}\mapsto\gls{inst2}$ returns the instruction at the supplied address.
+  The behavior of the binary is modeled by some set of concrete states~\gls{concrete-state} and some deterministic black-box transition relation~\gls{black-box-transition} over concrete states.
+\end{definition}
+\begin{definition}[Hoare graphs]
+  \Iac{hg} is defined as a tuple
+  \begin{equation*}
+    \langle\gls{abs-state}, \gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle,
+  \end{equation*}
+  where symbolic states in $\gls{abs-state}=\gls{predicate}\times\gls{mem}$ consist of predicates and memory models, $\gls{symbolic-state}[_I] \in \gls{abs-state}$ is an initial symbolic state, and \gls{symbolic-transition} of type $\gls{abs-state} \times \gls{inst2}\times\gls{abs-state}\mapsto\gls{bool}$ is a non-deterministic transition relation labeled with instructions.
+\end{definition}
+
+Moving on, the algorithm requires the definition of a \emph{join} operation over symbolic states.
+This operation soundly merges the information stored in two such states.
+It is required because the algorithm explores the \ac{hg} state space by recursively adding new vertices/states and edges on the fly.
+Joining serves two purposes:
+\begin{enumerate}
+  \item to prevent state space explosion and
+  \item to ensure termination.
+\end{enumerate}
+If an instruction address is visited more than once,
+the \emph{supremum}\footnote{equivalent of summation for joining}
+of all symbolic states associated with that address
+is computed until \iac{lfp} is reached.
+
+We therefore define an algebraic \emph{join-semilattice} as discussed in \cref{lattice-background} over symbolic states.
+That is, we define our join operation
+such that it establishes a partial order over our symbolic states,
+allowing us to calculate a least upper bound for any two symbolic states.
+This join-semilattice is depicted as the tuple $\langle\gls{abs-state},\gls{join}\rangle$,
+where~\gls{abs-state} is the type of symbolic states
+and~\gls{join} denotes the join operation.
+The desired partial ordering over~\gls{abs-state}, \gls{order}, is then derived
+by defining $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1]$ as $\gls{symbolic-state}[_1] = \gls{symbolic-state}[_0] \sqcup \gls{symbolic-state}[_1]$.
+Intuitively, $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1]$ denotes that $\gls{symbolic-state}[_0]$ is ``less abstract'' tha	n $\gls{symbolic-state}[_1]$.
+
+In a typical setting, the join operation would be implemented by a disjunction.
+However, using plain disjunction as a join does not provide sufficient abstraction for our purposes; it is too precise.
+As an example, using disjunction with two predicates where one has $x=1$ and the other has $x=10$ would produce a predicate equivalent to $x\in\{1,10\}$.
+We therefore provide a join operation that abstracts
+by \emph{overapproximating} the disjunction; in other words, making it coarser.
+To reuse the previous example, the result would instead be $1\leq x\leq 10$.
+The join must then satisfy the following soundness criterion
+for any concrete state~\gls{concrete-state}:
+\begin{equation}
+  (\gls{concrete-state}\gls{holds}P \vee Q) \implies (\gls{concrete-state}\gls{holds}P\sqcup Q).
+\end{equation}
+
+Furthermore, the partial ordering derived from this join is \emph{coarser} than ordering based on implication.
+That is, $P\gls{order}Q\implies(s\gls{holds}P\implies Q)$.
+As \gls{order} is used as a termination condition during \ac{lfp} computation,
+its coarseness is important both to ensure termination of the algorithm and to reduce running time.
+In other words, the join must be of sufficient coarseness to ensure that there are no infinitely descending chains of symbolic states $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1] \gls{order} \dotsb$.
+However, too much coarseness is undesirable.
+An overly coarse join, such as one that just produces an always-true predicate,
+would result in \iac{hg} that is too abstract and over which no properties could be proven.
+
+Finally, as a symbolic state consists of a predicate and a memory model, we define a subjoin for both.
+
+\section{Predicates}\label{sec:predicates}
 \emph{Predicates}\index{state!predicate} are assertions on state.
 A predicate~$P$\nomenclature{$P$}{A state predicate}
 consists of a set of \emph{clauses}\index{state!predicate!clause}.
-$P$ holds in state~$s$%
-\nomenclature{$s$}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs; gets introduced earlier though so maybe not?}}
-($s\gls{holds}P$) if and only if all clauses hold.
+$P$ holds in state~\gls{concrete-state}%
+\nomenclature{\gls{concrete-state}}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs; gets introduced earlier though so maybe not?}}
+($\gls{concrete-state}\gls{holds}P$) if and only if all clauses hold.
 
 \todo{maybe put more here? Connect to logical predicates}
 
@@ -61,7 +148,7 @@ There are also two special clauseless predicates,~\gls{top}%
 and~\gls{bot}.
 Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
 \Gls{bot} is also used to indicate an unknown~\gls{constant}.%
-\begin{definition}\label{def:join}
+\begin{definition}[Predicate Join]\label{def:join}
   The aforementioned join\index{lattice!join}
   of two predicates~$P$ and~$Q$,%
   \index{state!predicate}
@@ -121,9 +208,9 @@ and minimum/maximum%
 \index{minimum}%
 \index{maximum}
 are associative operations.
-The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following for any state~$s$\index{state}:
+The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following for any state~\gls{concrete-state}\index{state}:
 \begin{lemma}\label{lem:pred_soundness}
-  $s\gls{holds}P\vee Q\implies s\gls{holds}P\gls{join}Q$
+  $\gls{concrete-state}\gls{holds}P\vee Q\implies s\gls{holds}P\gls{join}Q$
 \end{lemma}
 \begin{proof}
   The proof of this lemma consists of two cases:
@@ -133,8 +220,8 @@ The join is commutative and idempotent due to the commutativity and idempotency 
   \end{align*}
   Only one of those cases needs to be proven;
   the other follows from the symmetry of the join\index{lattice!join} operation.
-  Assuming~$s\gls{holds}P$, we now show $s\gls{holds}P\gls{join}Q$.
-  For $s\gls{holds}P\gls{join}Q$ to be true, all of its clauses%
+  Assuming $\gls{concrete-state}\gls{holds}P$, we now show $\gls{concrete-state}\gls{holds}P\gls{join}Q$.
+  For $\gls{concrete-state}\gls{holds}P\gls{join}Q$ to be true, all of its clauses%
   \index{state!predicate!clause}
   must hold.
   Let~$c$ be one of the clauses resulting from the join.
@@ -230,7 +317,7 @@ Finally, regions in sibling nodes are separate.
 \end{figure}
 
 \begin{definition}\label{def:memory-relations}
-  Let~$s$ be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.
+  Let~\gls{concrete-state} be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.
   Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations \gls{alias}, \gls{separate}, and \gls{enclosed}, respectively, are defined as:
   \begin{align*}
     r_0\gls{alias}r_1 &\gls{defeq}s \gls{holds} e_0 = e_1 \wedge n_0 = n_1 \\
@@ -238,7 +325,7 @@ Finally, regions in sibling nodes are separate.
     r_0\gls{enclosed}r_1 &\gls{defeq}s \gls{holds} e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
   \end{align*}
 \end{definition}
-Such relations hold \emph{necessarily} if and only if they hold in all concrete states~$s$.
+Such relations hold \emph{necessarily} if and only if they hold in all concrete states~\gls{concrete-state}.
 For example, $\region{\rsio}{4}\gls{separate}\region{\rsio+4}{4}$ is a necessarily-separate relation as there are no values of~$\rsio$ for which those two regions are not separate.
 The \ac{smt} solver/theorem prover Z3 \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses\index{symbolic!address}
 given the current state predicate\index{state!predicate}.
@@ -337,15 +424,15 @@ As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be ins
     mov qword ptr [rsi],   1002
   \end{lstlisting}
 \end{example}
-A memory model~$M$ \emph{holds} in concrete state~$s$ if all siblings are separate and all trees hold.
+A memory model~$M$ \emph{holds} in concrete state~\gls{concrete-state} if all siblings are separate and all trees hold.
 A tree holds if its node contains only aliasing regions and all trees in its sub-forest are enclosed. Formally, this is expressed as:
 \begin{definition}
-  A memory model~$M$ \emph{holds} in state~$s$, notation $s\gls{holds}M$,
+  A memory model~$M$ \emph{holds} in state~\gls{concrete-state}, notation $\gls{concrete-state}\gls{holds}M$,
   if and only if:
   \begin{equation*}
     (\forall t_0, t_1\in M\sepdot t_0\neq t_1\implies s\gls{holds}t_0 \gls{separate}t_1) \wedge (\forall t\in M\sepdot s\gls{holds}t)
   \end{equation*}
-  A memory tree~$t = \langle R,M\rangle$ \emph{holds} in state~$s$, notation $s\gls{holds}t$, if and only if:
+  A memory tree~$t = \langle R,M\rangle$ \emph{holds} in state~\gls{concrete-state}, notation $\gls{concrete-state}\gls{holds}t$, if and only if:
   \begin{equation*}
     (\forall r_0,r_1 \in R\sepdot s\gls{holds}r_0\gls{alias}r_1) \wedge (\forall t'\in M\sepdot s\gls{holds}t'\gls{enclosed}t) \wedge (s\gls{holds}M)
   \end{equation*}
@@ -374,7 +461,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
   Assume that $f$ is possibly true:
   \todo{glossary entry for $\models$}
   \begin{equation*}
-    \exists s \sepdot s \gls{holds}M \wedge (\forall r' \in R(M) \sepdot s \models r_0~f(r')~r')
+    \exists\gls{concrete-state} \sepdot \gls{concrete-state} \gls{holds}M \wedge (\forall r' \in R(M) \sepdot \gls{concrete-state} \models r_0~f(r')~r')
   \end{equation*}
   Then, insertion of region $r_0$ into $M$ will produce at least a corresponding memory model:
   \begin{equation*}
@@ -406,13 +493,13 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
     For the remaining regions not in $t_1$, $f$ can hold arbitrary relations.
     Therefore any $t'$ in the produced set is recursively inserted into $M$.
     Again, the \ac{ih} then finishes the proof.
-    \item As an extra case, consider when no relation can necessarily be established. In that case, all of the above proofs apply, as memory models are generated for each possible case. \todo{Shouldn't I include this part? Not sure why it was commented out.}
+    \item As an extra case, consider when no relation can necessarily be established. In that case, all of the above proofs apply, as memory models are generated for each possible case. \todo{Shouldn't I include this part? Not sure why it was commented out.}\qedhere
   \end{enumerate}
 \end{proof}
 
 \subsection{Joining}
 As with state predicates, memory models have a join operation.
-\begin{definition}\label{def:mem-join}
+\begin{definition}[Memory Model Join]\label{def:mem-join}
   The join of two memory models~$M_0$ and~$M_1$,
   notation $M_0\gls{join}M_1$, is recursively defined as:
   \begin{align*}
@@ -482,7 +569,7 @@ and the supremum of their child memory models.
 
 To strengthen our arguments, we prove that the join over memory models we have provided is sound.
 \begin{lemma}\label{lem:mem_soundness}
-  Let~$s$ be a state and~$M_0$ and~$M_1$ be memory models. Then:
+  Let~\gls{concrete-state} be a state and~$M_0$ and~$M_1$ be memory models. Then:
   \begin{equation*}
     (s\models M_0 \vee M_1) \implies (s\models M_0\gls{join}M_1)
   \end{equation*}
@@ -498,22 +585,24 @@ To strengthen our arguments, we prove that the join over memory models we have p
 
 \begin{definition}
   \todo{did we introduce the \emph{symbolic} state terminology before this?}
-  The join of two symbolic states $\sigma_0=\langle P_0,M_0\rangle$
-  and $\sigma_1=\langle P_1,M_1\rangle$, notation $\sigma_0\gls{join}\sigma_1$, is:
+  The join of two symbolic states $\gls{symbolic-state}[_0]=\langle P_0,M_0\rangle$
+  and $\gls{symbolic-state}[_1]=\langle P_1,M_1\rangle$, notation $\gls{symbolic-state}[_0]\gls{join}\gls{symbolic-state}[_1]$, is:
   \begin{equation*}
-    \sigma_0\gls{join}\sigma_1\gls{defeq}\langle P_0\gls{join}P_1,M_0\gls{join}M_1\rangle
+    \gls{symbolic-state}[_0]\gls{join}\gls{symbolic-state}[_1]\gls{defeq}\langle P_0\gls{join}P_1,M_0\gls{join}M_1\rangle
   \end{equation*}
 \end{definition}
 
-Do keep in mind that this join in its full form \emph{loses} information.
-It can thus only be applied in a sound fashion for postcondition weakening \autocite{hoare1969axiomatic}.
-In other words, dropping clauses and performing state cleanup
-serve only to reduce state constraints; they never add additional ones.
-In practice, this loss of information means that we may produce a state
-that would not actually be encountered during program execution.
-Alternatively, we may be unable to resolve some indirections or prove some return addresses, which would result in additional annotations generated or even tool failure.
-Despite this, in cases with successful completion and no annotations produced,
-we will always produce all states that would be encountered during concrete execution.
+\begin{remark}[Loss of Information]
+  This join in its full form \emph{loses} information.
+  It can thus only be applied in a sound fashion for \emph{postcondition weakening} \autocite{hoare1969axiomatic}.
+  In other words, dropping clauses and performing state cleanup
+  serve only to reduce state constraints; they never add additional ones.
+  In practice, this loss of information means that we may produce a state
+  that would not actually be encountered during program execution.
+  Alternatively, we may be unable to resolve some indirections or prove some return addresses, which would result in additional annotations generated or even tool failure.
+  Despite this, in cases with successful completion and no annotations produced,
+  we will always produce all states that would be encountered during concrete execution.
+\end{remark}
 
 \section{Algorithm}\label{sec:algorithm}
 \Cref{alg:invgen} provides the base functionality for \ac{hg} extraction.
@@ -542,7 +631,7 @@ that reference memory locations.
 
 
 The algorithm also requires an expression evaluation function
-$\gls{eval}:\gls{expression}\times\gls{pred}\mapsto\gls{constant}$,
+$\gls{eval}:\gls{expression}\times\gls{predicate}\mapsto\gls{constant}$,
 which maps an expression (containing registers, flags, and dereferenced memory regions)
 to a constant expression.
 To that end, it requires the predicate of the current symbolic state.
@@ -560,10 +649,10 @@ that information is only required when writing to a location in memory.
 
 That evaluation function is then used by the algorithm in the process of executing steps according to the following step function:
 \begin{definition}
-  The \emph{symbolic state step function} for symbolic state $\sigma = \langle P,M\rangle$, notation $\gls{step-hg}[(\sigma)]$, is defined as:
+  The \emph{symbolic state step function} for symbolic state $\gls{symbolic-state}=\langle P,M\rangle$, notation $\gls{step-hg}[(\gls{symbolic-state})]$, is defined as:
   \begin{equation*}
     \begin{array}{l}
-      ~~\gls{step-hg}[(\sigma)]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \wedge M' \in \gls{insertM}[(R,M)] \} \\
+      ~~\gls{step-hg}[(\gls{symbolic-state})]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \wedge M' \in \gls{insertM}[(R,M)] \} \\
       \mbox{\normalfont{\textbf{where}}}\\
       ~~\begin{aligned}
         R &\gls{defeq} \{ [\gls{eval}[(a,P)],s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\}\\
@@ -572,7 +661,7 @@ That evaluation function is then used by the algorithm in the process of executi
     \end{array}
   \end{equation*}
 \end{definition}
-Given the current symbolic state $\sigma$, the set of next symbolic states is obtained by performing the following two actions:
+Given the current symbolic state~\gls{symbolic-state}, the set of next symbolic states is obtained by performing the following two actions:
 \begin{itemize}
   \item inserting relevant regions into the current memory model and
   \item applying predicate transformation to the current predicate.
@@ -596,7 +685,7 @@ we produce an annotation and stop further exploration from that state.
 This primarily occurs for unresolved indirect jumps and calls.
 
 \begin{definition}[Compatibility]\label{def:compatibility}
-  Two symbolic states $\sigma$ and $\sigma'$ are \emph{compatible}, notation $\sigma_0\gls{compatible}\sigma_1$, if and only if their instruction pointers ($\rip$) are equal.
+  Two symbolic states \gls{symbolic-state} and $\gls{symbolic-state}[']$ are \emph{compatible}, notation $\gls{symbolic-state}[_0]\gls{compatible}\gls{symbolic-state}[_1]$, if and only if their instruction pointers ($\rip$) are equal.
   States will only be joined when they are compatible.
 \end{definition}
 An extension to the base algorithm presented below in \cref{alg:invgen} modifies this definition.
@@ -627,49 +716,48 @@ In very specific cases it even results in more preciseness.
   \algnewcommand{\IIf}[2]{\State\algorithmicif\ #1\ \algorithmicthen~#2}
   \begin{algorithmic}[1]
     \Function{explore}{} \todo{gls link for {explore} here?}
-      \State pop $\sigma$ from \gls{bag}\label{line:pop}
-      \If{$\exists \sigma_c \in\gls{hg}\sepdot \sigma_c\gls{compatible}\sigma$}\label{line:compat}
-        \IIf{$\sigma \sqsubseteq \sigma_c$}{\Return}\label{line:terminate}
-        \State $\sigma_j \coloneqq \sigma\gls{join}\sigma_c$\label{line:join}
-        \State $\gls{hg}[\sigma_c \coloneqq \sigma_j]$
+      \State pop \gls{symbolic-state} from \gls{bag}\label{line:pop}
+      \If{$\exists\gls{symbolic-state}[_c]\in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state}$}\label{line:compat}
+        \IIf{$\gls{symbolic-state}\gls{order} \gls{symbolic-state}[_c]$}{\Return}\label{line:terminate}
+        \State $\gls{symbolic-state}[_j]\coloneqq \gls{symbolic-state}\gls{join}\gls{symbolic-state}[_c]$\label{line:join}
+        \State $\gls{hg}{}[\gls{symbolic-state}[_c]\coloneqq\gls{symbolic-state}[_j]]$
       \Else
-        \State $\sigma_j \coloneqq \sigma$\label{line:nocompat}
+        \State $\gls{symbolic-state}[_j]\coloneqq \gls{symbolic-state}$\label{line:nocompat}
       \EndIf
-      \ForAll{$\sigma' \in \gls{step-hg}[(\sigma_j)]$}\label{line:forall}
-        \State $\gls{hg} ~\gls{pluseq}~ (\sigma_j, \sigma')$
-        \If {$\gls{eval}(\rip, \gls{pred}[(\sigma')])$ is not immediate}
-          \State \textbf{annotate, stop further exploration}\label{line:undsound}
+      \ForAll{$\gls{symbolic-state}[']\in \gls{step-hg}(\gls{symbolic-state}[_j])$}\label{line:forall}
+        \State $\gls{hg} ~\gls{pluseq}~ (\gls{symbolic-state}[_j], \gls{symbolic-state}['])$
+        \If {$\gls{eval}(\rip, \gls{pred}(\gls{symbolic-state}[']))$ is not immediate}
+          \State \textbf{annotate, stop further exploration}\label{line:unsound}
         \Else
-          \State $\gls{bag}\gls{pluseq}\sigma'$\label{line:addbag}
+          \State $\gls{bag}\gls{pluseq}\gls{symbolic-state}[']$\label{line:addbag}
         \EndIf
       \EndFor\label{line:endforall}
     \EndFunction
   \end{algorithmic}
 \end{algorithm}
 
-Let $\sigma$ be some symbolic state from the~\gls{bag} (\cref{line:pop}).
-Function \gls{explore} first searches for a current symbolic state~$\sigma_c$ already in the current~\gls{hg} that is compatible (\cref{line:compat}).
-If such a state exists and it is more abstract (based on ordering $\sqsubseteq$)
+Let~\gls{symbolic-state} be some symbolic state from the~\gls{bag} (\cref{line:pop}).
+Function \gls{explore} first searches for a current symbolic state~$\gls{symbolic-state}[_c]$ already in the current~\gls{hg} that is compatible (\cref{line:compat}).
+If such a state exists and it is more abstract (based on ordering~\gls{order})
 \todo{glossary entry for this ordering, and also probably needs to be explained earlier or in the background chapter section on lattices!}
-than state~$\sigma$, no further exploration is necessary (\cref{line:terminate}).
-Otherwise,~$\sigma$ and~$\sigma_c$ are joined (\cref{line:join}).
+than state~\gls{symbolic-state}, no further exploration is necessary (\cref{line:terminate}).
+Otherwise,~\gls{symbolic-state} and~$\gls{symbolic-state}[_c]$ are joined (\cref{line:join}).
 The~\gls{hg} is modified by replacing the current state with the joined one.
 This replacement maintains all current edges: only the state is modified.
-Symbolic state~$\sigma_j$ is the state to be explored further.
-If no compatible state exists in the current~\gls{hg}, then~$\sigma$ is the state to be explored further (\cref{line:nocompat}).
+Symbolic state~$\gls{symbolic-state}[_j]$ is the state to be explored further.
+If no compatible state exists in the current~\gls{hg}, then~\gls{symbolic-state} is the state to be explored further (\cref{line:nocompat}).
 Exploration occurs at \crefrange{line:forall}{line:endforall}.
-For every successor~$\sigma'$ (possibly none), an edge is added to the~\gls{hg}.
+For every successor~$\gls{symbolic-state}[']$ (possibly none), an edge is added to the~\gls{hg}.
 If, for some successor evaluation of the instruction pointer,~$\rip$ does not produce an immediate concrete value, there are two possibilities.
 Either
 \begin{enumerate}
   \item a return statement has been encountered (after which \rip\ is set to the symbol pushed to the top of the stack in the initial state), or
   \item the current symbolic state does not provide sufficient information to resolve the computation of \rip\ (because of an indirect branch, for example).
 \end{enumerate}
-In the second case, the state is annotated with an unsoundness warning (\cref{line:undsound}) and the algorithm terminates early.
+In the second case, the state is annotated with an unsoundness warning (\cref{line:unsound}) and the algorithm terminates early.
 Otherwise, the successor is added to the bag.
 
-\paragraph{Soundness}
-\todo{Another relation to glossarify}
+\subsubsection{Soundness} % While technically there should be multiple subsubsections for usage of stuff like this, I think it looks better this way than using \paragraph. It should be fine as subsubsections aren't numbered anyway.
 To formulate soundness and present a proof, we first define a relation $\mathbf{R}$
 \todo{this relation needs a glossary entry!}
 between the concrete transition system and the \ac{hg}.
@@ -677,81 +765,72 @@ We then prove \cref{lem:simulation}, which shows that this relation is a simulat
 As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function~\gls{step-hg}.
 
 \begin{definition}
-  A concrete state~$s$ is \emph{related to} symbolic state $\sigma = \langle P,M \rangle$, notation $s~\mathbf{R}~\sigma$, if and only if:
+  A concrete state~\gls{concrete-state} is \emph{related to} symbolic state $\gls{symbolic-state}=\langle P,M \rangle$, notation $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}$, if and only if:
   \begin{equation*}
-    s~\mathbf{R}~\sigma \gls{defeq} (s\gls{holds}P) \wedge (s\gls{holds}M)
+    \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\gls{defeq} (\gls{concrete-state}\gls{holds}P) \wedge (\gls{concrete-state}\gls{holds}M)
   \end{equation*}
 \end{definition}
 
 \begin{lemma}\label{lem:simulation}
   Assume that predicate transformation~\gls{step-hg-semantics} is correct:
   \begin{equation*}
-    \forall s~s' \sepdot s \rightarrow_B s' \wedge (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
+    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \wedge (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
   \end{equation*}
   Then relation $\mathbf{R}$ is a simulation between the concrete transition system and the transition system obtained by abstract step function \gls{step-hg}:
   \begin{equation*}
-    \forall s~s' \sepdot s \rightarrow_B s' \wedge s~\mathbf{R}~\sigma \implies \exists \sigma' \in \gls{step-hg}[(\sigma)] \sepdot s'~\mathbf{R}~\sigma'
+    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \wedge \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\implies \exists \gls{symbolic-state}[']\in \gls{step-hg}[(\gls{symbolic-state})] \sepdot \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
   \end{equation*}
 \end{lemma}
 \begin{proof}
-  Let $s$ and $\sigma$ be two related states.
+  Let~\gls{concrete-state} and~\gls{symbolic-state} be two related states.
   Hence $(s\gls{holds}P) \wedge (s\gls{holds}M)$.
-  By correctness of~\gls{step-hg-semantics}, we obtain a predicate $Q\in\gls{step-hg-semantics}[(P,M)]$ such that $s'\gls{holds}Q$.
-  By \cref{lem:insert} (completeness of the insertion function), the memory model that holds in state~$s'$ is generated.
-  Since the step function overapproximates by taking any combination of predicates in $\gls{step-hg-semantics}[(P,M)]$ and generated memory models, there exists at least one symbolic state that is related to~$s'$.
+  By correctness of~\gls{step-hg-semantics}, we obtain a predicate $Q\in\gls{step-hg-semantics}[(P,M)]$ such that $\gls{concrete-state}[']\gls{holds}Q$.
+  By \cref{lem:insert} (completeness of the insertion function), the memory model that holds in state~$\gls{concrete-state}[']$ is generated.
+  Since the step function overapproximates by taking any combination of predicates in $\gls{step-hg-semantics}[(P,M)]$ and generated memory models, there exists at least one symbolic state that is related to~$\gls{concrete-state}[']$.
 \end{proof}
 
 \begin{definition}
-  \Ac{hg} $H = \langle \Sigma, \sigma_I, \rightarrow_\Sigma\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, S, \rightarrow_B \rangle$, notation $\gls{sound}(H,B)$, if and only if:
+  \Ac{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, S,\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
-    \gls{sound}(H,B) \gls{equiv} \forall s_0 \rightarrow_B^\ast s \rightarrow_B s' \sepdot \exists \sigma \rightarrow_\Sigma \sigma' \sepdot s~\mathbf{R}~\sigma \wedge s'~\mathbf{R}~\sigma'
+    \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition}[^\ast] \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition} \gls{symbolic-state}['] \sepdot \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \wedge \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
   \end{equation*}
 \end{definition}
-In words, for every reachable transition from~$s$ to~$s'$ in the binary, there must exist a related transition in the \ac{hg}.
+In words, for every reachable transition from~\gls{concrete-state} to~$\gls{concrete-state}[']$ in the binary, there must exist a related transition in the \ac{hg}.
 
-%\subsubsection{Termination}
-%\begin{lemma}
-%  Algorithm~\ref{alg:invgen} terminates.
-%\end{lemma}
-%\begin{proof}
-%
-%\end{proof}
-%
-%\subsubsection{Pulling it all together}
 \begin{theorem}[Soundness]\label{thm:algo_soundness}
   \Cref{alg:invgen} constructs a sound \ac{hg}.
 \end{theorem}
 \begin{proof}
   The structure of the algorithm is close to \iac{dfs}.
   For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.\todo{glossary entry!}
-  For a normal \ac{dfs}, the white-path lemma states that the \ac{dfs} will eventually explore some state~$s'$ if and only if there exists some state~$s$ currently in the bag \emph{and} there exists a ``white'' path from~$s$ to~$s'$.
+  For a normal \ac{dfs}, the white-path lemma states that the \ac{dfs} will eventually explore some state~$\gls{concrete-state}[']$ if and only if there exists some state~\gls{concrete-state} currently in the bag \emph{and} there exists a ``white'' path from~\gls{concrete-state} to~$\gls{concrete-state}[']$.
   A key difference between \cref{alg:invgen} and a normal \ac{dfs} is that states are joined.
-  For the sake of this proof, a state is therefore considered ``white'' if the current \ac{hg} contains no compatible state that is equal or more abstract (under $\sqsubseteq$).
+  For the sake of this proof, a state is therefore considered ``white'' if the current \ac{hg} contains no compatible state that is equal or more abstract (under~\gls{order}).
   We reformulate the white-path lemma as follows:
   \begin{equation*}
     \begin{array}{l}
-      \indent\mathsf{sup}(\sigma') \text{ is explored } \Longleftrightarrow \\
-      \indent\exists \sigma \in\gls{bag}\sepdot \exists \pi = [\sigma, \dotsc, \sigma'] \sepdot \mathsf{white}(\pi)
+      \indent\suprem(\gls{symbolic-state}[']) \text{ is explored } \Longleftrightarrow \\
+      \indent\exists \gls{symbolic-state} \in\gls{bag}\sepdot \exists \pi = [\gls{symbolic-state}, \dotsc, \gls{symbolic-state}[']] \sepdot \mathsf{white}(\pi)
       \\
       \textbf{where}
       \\
-      \mathsf{sup}(\sigma') \gls{equiv} \bigsqcup \{ \sigma'' \mid \sigma''\gls{compatible}\sigma' \wedge \exists \pi = [\sigma, \dotsc, \sigma''] \sepdot \mathsf{white}(\pi) \}
+      \suprem(\gls{symbolic-state}[']) \gls{equiv} \bigsqcup \{ \gls{symbolic-state}[''] \mid \gls{symbolic-state}['']\gls{compatible}\gls{symbolic-state}['] \wedge \exists \pi = [\gls{symbolic-state}, \dotsc, \gls{symbolic-state}['']] \sepdot \mathsf{white}(\pi) \}
     \end{array}
   \end{equation*}
-  In words, $\mathsf{sup}(\sigma')$, the supremum of all compatible states that are currently reachable through white paths, is explored by the algorithm if and only if there exists a white path from some~$\sigma$ currently in the bag to~$\sigma'$.
+  In words, $\suprem(\gls{symbolic-state}['])$, the supremum of all compatible states that are currently reachable through white paths, is explored by the algorithm if and only if there exists a white path from some~\gls{symbolic-state} currently in the bag to~$\gls{symbolic-state}[']$.
   Given this version of the white-path lemma, it directly follows that if the bag initially contains the initial state only:
   \begin{equation*}
-    \mathsf{sup}(\sigma') \mbox{~is explored} \Longleftrightarrow \sigma' \mbox{~is reachable from $\sigma_0$}
+    \suprem(\gls{symbolic-state}[']) \mbox{~is explored} \Longleftrightarrow \gls{symbolic-state}['] \mbox{~is reachable from $\gls{symbolic-state}[_0]$}
   \end{equation*}
-  Now let~$s$ be a reachable concrete state and $s'$ be a successor.
-  \Cref{lem:simulation} shows that the path from~$s_0$ to~$s$ can be simulated by a path of related symbolic states.
-  Let~$\sigma$ be the symbolic state related to concrete state~$s$, i.e., $s~\mathbf{R}~\sigma$.
-  Since~$\sigma$ is reachable, $\mathsf{sup}(\sigma)$ is explored.
+  Now let~\gls{concrete-state} be a reachable concrete state and~$\gls{concrete-state}[']$ be a successor.
+  \Cref{lem:simulation} shows that the path from~$\gls{concrete-state}[_0]$ to~\gls{concrete-state} can be simulated by a path of related symbolic states.
+  Let~\gls{symbolic-state} be the symbolic state related to concrete state~\gls{concrete-state}, i.e., $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}$.
+  Since~\gls{symbolic-state} is reachable, $\suprem(\gls{symbolic-state})$ is explored.
   We thus have
-  $s~\mathbf{R}~\sigma \implies s~\mathbf{R}~\mathsf{sup}(\sigma)$.
+  $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \implies \gls{concrete-state}~\mathbf{R}~\suprem(\gls{symbolic-state})$.
   This is a direct implication of \cref{lem:mem_soundness}: since joining makes the states more abstract, it makes the set of related concrete states larger.
-  \Cref{line:forall} will then explore some state $\sigma' \in \gls{step-hg}[(\sigma_j]$.
-  By \cref{lem:simulation}, we have $s'~\mathbf{R}~\sigma'$.
+  \Cref{line:forall} will then explore some state $\gls{symbolic-state}['] \in \gls{step-hg}(\gls{symbolic-state}[_j])$.
+  By \cref{lem:simulation}, we have $\gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']$.
 \end{proof}
 
 \subsection{Extension: Function Calls}\label{subsec:function_calls}
@@ -768,7 +847,6 @@ We present an extension to the algorithm that treats internal function calls com
 %Instead of symbolically executing the instructions found in the \texttt{.plt} section, these instructions are used to derive a function address.
 %That address is looked up in the symbol table of the binary.
 %If that table associates a name with the address, then that name is the function name of the external function.
-
 
 The function name is matched against a list of hard-coded function names that are known to be terminating, such as \inlineasm{exit} and \inlineasm{stack_chk_fail}.
 In case of a terminating function, function \gls{step-hg} will produce the empty set, stopping further exploration from the current state.
@@ -836,7 +914,7 @@ States in the bag whose reachability field is false are not selected.
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{2}
-        \State \algorithmicif\ {$\exists \sigma_c \in\gls{hg}\sepdot \sigma_c\gls{compatible}\sigma \wedge \mathsf{reachable}(\sigma_c)$}\ \algorithmicthen
+        \State \algorithmicif\ {$\exists \gls{symbolic-state}[_c] \in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state} \wedge \mathsf{reachable}(\gls{symbolic-state}[_c])$}\ \algorithmicthen
       \end{algorithmic}
     \end{minipage}
     \\\hline
@@ -844,7 +922,7 @@ States in the bag whose reachability field is false are not selected.
 }\\
 
 \noindent
-Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the newly explored~$\sigma'$ is marked as reachable:
+Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the newly explored~$\gls{symbolic-state}[']$ is marked as reachable:
 \\
 
 \noindent
@@ -855,7 +933,7 @@ Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{13}
-        \State mark all $\sigma \in\gls{bag}$ with $\rip(\sigma) = \rip(\sigma')$ as reachable
+        \State mark all $\gls{symbolic-state}\in\gls{bag}$ with $\rip(\gls{symbolic-state}) = \rip(\gls{symbolic-state}['])$ as reachable
       \end{algorithmic}
     \end{minipage}
     \\\hline

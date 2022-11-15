@@ -166,13 +166,13 @@ Looked at another way, the edges in the path $\mathtt{0}\rightarrow\mathtt{5}\ri
 \index{Hoare!triple}
 \todo{reference back to previous chapters for discussions of Hoare triples}
 
-\subsection{Disassembly Requires Pointer Analysis}
+\subsection{Disassembly Requires Alias Analysis}
 The predicate for vertex~$\mathtt{14}$ does not contain any information regarding the aliasing relationship between the pointers in registers \reg{edi} and \reg{esi}.
 Thus we must overapproximate nondeterministically by having one outgoing edge for each case.
 In the aliasing (\gls{alias}) case, the \inlineasm{mov} on \cref{hg-example-mov2} overwrites the previous \inlineasm{mov} on \cref{hg-example-mov1}.
 The program would then jump to address~$\mathtt{1}$ instead of performing the intended jump to address~$a_\mathtt{jt}$.
 
-\subsection{Disassembly Requires Bounds Analysis}
+\subsection{Disassembly Requires Bounds Checking}
 Another symbolic value,~$a_\mathtt{r}$, represents the address initially stored at the top of the stack frame.
 The \ac{hg} contains an edge to a final vertex\footnote{state} where the instruction pointer is set to that address.
 To obtain that result, every other vertex on the path from vertex~$\mathtt{0}$ to that final vertex must contain enough information preserve the stack.

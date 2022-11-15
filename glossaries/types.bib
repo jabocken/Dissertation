@@ -1,3 +1,5 @@
+@preamble{"\newcommand*\wordfmtfn[1]{\ensuremath{\mathbb{W}_{#1}}}"}
+
 % Maybe give some of the symbol ones proper names?
 %% Shared types
 @index{numeric}
@@ -17,8 +19,9 @@
 }
 @symbol{word,
   name = {\ensuremath{\mathbb W}},
-  description = {Type of 64-bit (unsigned) words},
-  parent = {numeric}
+  description = {Type of (unsigned) words; defaults to 64 bits, but may be qualified with the bit size},
+  parent = {numeric},
+  format = {wordfmtfn}
 }
 
 @symbol{register,
@@ -42,6 +45,17 @@
   description = {Type of expressions for \ac{cfg}/syntax-guided work},
   parent = {symbolic},
   seealso = {val}
+}
+
+@symbol{abs-state,
+  name = {\ensuremath{\mathbbm\Sigma}},
+  description = {Type of symbolic states for the \ac{hg} work and abstract states for \ac{eicfg} work},
+  parent = {state}
+}
+@symbol{conc-state,
+  name = {\ensuremath{\mathbb S}},
+  description = {Type of concrete states},
+  parent = {state}
 }
 
 %% From CFG-driven work
@@ -98,7 +112,7 @@
 
 @symbol{predicate,
   name = {\ensuremath{\mathsf{Pred}}},
-  description = {Type of state predicates (for \ac{hg} work)},
+  description = {Type of symbolic state predicates (for \ac{hg} work)},
   parent = {state}
 }
 @symbol{memtree,
@@ -147,14 +161,4 @@
 @symbol{termination,
   name = {\ensuremath{\mathbb T}},
   description = {Type of termination conditions; could be empty}
-}
-@symbol{abs-state,
-  name = {\ensuremath{\mathbbm\Sigma}},
-  description = {Type of abstract states for \ac{eicfg} work},
-  parent = {state}
-}
-@symbol{conc-state,
-  name = {\ensuremath{\mathbb S}},
-  description = {Type of concrete states for \ac{eicfg} work},
-  parent = {state}
 }

@@ -80,8 +80,6 @@
 \newcommand{\err}{\bot_\mathrm{E}}
 \newcommand{\bop}{\mathbin\bigcirc}
 
-\newcommand{\true}{\mathcal T}
-\newcommand{\false}{\mathcal F}
 \DeclareMathOperator{\powerset}{\mathcal P}
 
 \DeclareMathOperator{\unat}{unat}
@@ -154,6 +152,8 @@
 %% FROM PLDI 2022 (Hoare graph) paper
 \newcommand*{\cons}{\mathbin{:}}
 \newcommand*{\sepdot}{\cdot}
+
+\DeclareMathOperator\suprem{sup}
 
 % Variable names for algorithms; maybe make into glossary?
 \newcommand{\nextstates}{\var{nextStates}}
@@ -231,7 +231,7 @@
 
 \addbibresource{bibliography.bib}
 
-\includeonly{hg-lifting,hg-formulation,hg-results,hg-discussion}
+\includeonly{hg-formulation,hg-results,hg-discussion,hg-lifting}
 
 % This isn't working but whatever
 \newcommand\nomenclature[2]{}

@@ -47,6 +47,12 @@
   description = {The join of two states, predicates, or memory models},
   parent = {lattice}
 }
+@symbol{order,
+  name = {\ensuremath\sqsubseteq},
+  description = {Partial ordering over symbolic states for \ac{hg} work where the \ac{lhs} is ``less abstract'' than the \ac{rhs}},
+  parent = {lattice},
+  seealso = {abs-state}
+}
 @symbol{defeq,
   name = {\ensuremath{\stackrel{\text{def}}{=}}},
   description = {For \acp{hg}, used in place of \glssymbol{equiv} as that symbol is used to indicate aliasing instead \todo{should probably change that}},
@@ -60,4 +66,16 @@
 @symbol{pluseq,
   name = {\ensuremath{\mathrel{+}=}},
   description = {In-place addition}
+}
+@symbol{black-box-transition,
+  name = {\ensuremath{\rightarrow_B}},
+  description = {A deterministic black-box transition relation over concrete states for \acp{hg}},
+  parent = {state},
+  seealso = {concrete-state}
+}
+@symbol{symbolic-transition,
+  name = {\ensuremath{\rightarrow_\Sigma}},
+  description = {A nondeterministic transition relation over symbolic states for \acp{hg}},
+  parent = {state},
+  seealso = {symbolic-state}
 }
