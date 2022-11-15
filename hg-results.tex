@@ -88,7 +88,7 @@ Three issues may prevent lifting a binary to \iac{hg}, shown in the second colum
 These issues are explained below.
 
 \subsubsection{Unprovable Return Addresses}
-This case calls back to \cref{sec:ssms}.
+This case calls back to \cref{hg-example}.
 When a \inlineasm{ret} instruction is encountered,
 the current precondition\footnote{symbolic state predicate}
 must be strong enough to prove that the return address at the top of the current stack frame has not been modified.
@@ -111,7 +111,7 @@ In order to ensure a full analysis, we set a timeout on analysis to \SI4\hour\ p
 This resulted in failure for only one binary and four library functions.
 Further discussion of the function timeouts can be found later in \cref{sec:timing}.
 
-\subsection{Successful Cases}
+\subsection{Successful Cases}\label{hg-successes}
 As a reminder, the basic sanity properties being checked were return address integrity, bounded control flow, and calling convention adherence.
 In total, those properties could be proven and \iac{hg} could be generated for \glssymbol{bin-success} out of \glssymbol{bin-total} binaries and \glssymbol{lib-func-success} out of \glssymbol{lib-func-total} library functions.
 

@@ -272,7 +272,7 @@ that is passed along through the function call chain.
 For output, function \gls{insertM} produces, nondeterministically,
 a set of new memory models based on all possible pointer relationships
 for the newly-inserted region.
-If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{sec:intro}).
+If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{something-from-the-intro}).
 If a necessarily-relation can be established between tree~$t$ and some tree already in~$M$, then only the relevant memory models need to be produced.
 
 To ensure that the invariants for the memory model~$M$ being inserted into
@@ -515,7 +515,7 @@ Alternatively, we may be unable to resolve some indirections or prove some retur
 Despite this, in cases with successful completion and no annotations produced,
 we will always produce all states that would be encountered during concrete execution.
 
-\section{Algorithm}
+\section{Algorithm}\label{sec:algorithm}
 \Cref{alg:invgen} provides the base functionality for \ac{hg} extraction.
 That base functionality is then extended in two ways:
 \begin{enumerate}

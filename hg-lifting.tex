@@ -1,11 +1,213 @@
 \chapter{Lattice-Based Formal Lifting and Hoare Graphs}\label{ch:hg-lifting}
+\acreset{hg} % for now
+As we continue moving onward from \todo\dots
 
-\label{hg-intro}
+In this \namecref{hg} of my dissertation, we introduce an algorithm and tool for the generation of \emph{\acp{hg}}.
 
-\Ac{hg}
+\todo\dots
 
 \section{Properties of Interest}
+\todo\dots
 
-\section{Assumptions and Scope}
+\section{Assumptions and Scope}\label{hg-assumptions}
+\todo\dots
 
-\section{Example}
+\section{Example}\label{hg-example}
+\Cref{lst:ssm,fig:ssm} show a snippet of a binary in assembly form and a sample of its lifted \ac{hg}, respectively.
+For the sake of presentation, the example uses 32-bit instructions.
+Additionally, the symbolic value~\texttt{a} is used to represent the base address of some jump table.
+\todo{Find a way to reference the ``symbolic value'' glossary entry here.}
+The operations of that assembly snippet are as follows.
+\begin{enumerate}
+  \item The \inlineasm{cmp} and \inlineasm{ja} instructions on \cref{hg-example-cmp,hg-example-ja} compare the current value of register \reg{eax} to the constant value~\texttt{0xc3}.
+  If \reg{eax} is less than or equal to~\texttt{0xc3}, the \inlineasm{mov} at address \texttt{0xb} (\cref{hg-example-jump-table-read}) reads from a jump table with base address~\texttt{a} and the value stored in register \reg{eax} as the jump table index.
+  The pointer read from the jump table (referred to as~$a_\mathtt{jt}$) is stored in register \reg{eax}.
+  \item Two memory writes happen:
+  \begin{enumerate}
+    \item Pointer~$a_\mathtt{jt}$ is written to memory at the address stored in register \reg{edi} (\cref{hg-example-mov1}).
+    \item The immediate value~\num1 is written to memory at the address stored in register \reg{esi} (\cref{hg-example-mov1}).
+  \end{enumerate}
+  \item On \cref{hg-example-indirect-jump}, pointer~$a_\mathtt{jt}$ is used as the target of an indirect branch.
+\end{enumerate}
+In short, the expected behavior of this assembly is that it reads an address from a jump table containing~$\mathtt{0xc3}$ addresses and jumps to that address.
+
+However, the example is constructed as an example of ``weird'' control flow
+\autocite{shapiro2013weird,dullien2017weird}.
+\todo{glossary entry for weirdness?}
+At first glance, there are no \inlineasm{ret} instructions in \cref{lst:ssm}.
+Despite this, under specific circumstance, a \inlineasm{ret} instruction may be executed.
+That circumstance is if the pointers in registers \reg{esi} and \reg{edi} alias.
+\todo{reference the ``alias'' symbol entry somehow? Not as big of an issue as we reference the alias symbol, but it would be nice. Maybe switch to having that as an entry/provide a distinct symbol to use with glssymbol?}
+If that is the case, one of the bytes of the first instruction ($\mathtt{0xc3}$) is interpreted as \emph{another} instruction, specifically \inlineasm{ret}.
+As this is a real concrete execution path, any overapproximative lifted representation must model such behavior.
+
+We explain several of the points made in the introduction using this example.
+\begin{remark}[Notation]
+  The notation at state~$\mathtt{14}$ indicates that reading~\SI4\byte\ from address \reg{edi} produces value~$a_\mathtt{jt}$.
+  Additionally, \gls{alias} and \gls{separate} denote aliasing and separation, respectively.
+  \todo{utilize Gls description somehow?}
+\end{remark}
+
+\begin{lstlisting}[
+  float,
+  style=x64,
+  gobble=2,
+  caption=Example binary snippet for Hoare graph lifting,
+  label=lst:ssm
+]
+  0x0 : 3dc3000000   cmp eax,c3 |\label{hg-example-cmp}|
+  0x5 : 0f8718000000 ja  1c     |\label{hg-example-ja}|
+  0xb : 8b0485__a___ mov eax,DWORD PTR [eax*4+a] |\label{hg-example-jump-table-read}|
+  0x12: 8907         mov DWORD PTR [edi],eax |\label{hg-example-mov1}|
+  0x14: c70601000000 mov DWORD PTR [esi],1   |\label{hg-example-mov2}|
+  0x1a: ff27         jmp DWORD PTR [edi]     |\label{hg-example-indirect-jump}|
+\end{lstlisting}
+\begin{figure}
+  \centering
+  \todo{ideally want to redo this diagram in my own way as iirc Freek put it together, though I did tweak it. Needs redoing anyway, there's overlaps and stuff.}
+
+  % combination insser sep/minimum size ensures all nodes have exactly same size
+  \tikzset{vertex/.style = {shape=circle,draw,inner sep=0pt,minimum size=0.7cm}}
+  \tikzset{edge/.style = {->,> = latex'}}
+  \begin{tikzpicture}
+    \node[vertex]    (0)     at  (0,0)  {$\mathtt{0}$};
+    \node[vertex]    (5)     at  (1.5,0)  {$\mathtt{5}$};
+    \node[vertex]    (1c)    at  (3,0.5) {$\mathtt{1c}$};
+    \node[draw=none] (1cret) at  (5,0.5)  {};
+    \node[vertex]    (b)     at  (3,-0.5)  {$\mathtt{b}$};
+    \node[draw=none] (120)   at  (1.6,-1.5)  {};
+    \node[draw=none] (121)   at  (2.3,-1.5)  {};
+    \node[vertex]    (122)   at  (3,-2)  {$\mathtt{12}$};
+    \node[draw=none] (123)   at  (3.7,-1.5)  {};
+    \node[draw=none] (124)   at  (4.4,-1.5)  {};
+    \node[vertex]    (14)    at  (3,-3.5)  {$\mathtt{14}$};
+    \node[vertex]    (1a2)   at  (3.5,-4.75)  {$\mathtt{1a}$};
+    \node[vertex]    (ptr)   at  (3.5,-6)  {$a_\mathtt{jt}$};
+    \node[draw=none] (ptret) at  (5,-6)  {};
+    \node[vertex]    (1a1)   at  (2.5,-4.75)  {$\mathtt{1a}$};
+    \node[vertex]    (1)     at  (2.5,-6)  {$\mathtt{1}$};
+    \node[vertex]    (ret)   at  (1,-6)  {$a_\mathtt{r}$};
+
+    % right tells tikz to start drawing the node right of the position (instead of centered)
+    \node[right,text width=3.4cm,align=left] at (-1,1) {\begin{align*}
+        P_0 &= *[\reg{rsp},4] == a_\mathtt{r}\\
+        M_0 &= \emptyset
+    \end{align*}};
+
+    \node[right,text width=3cm,align=left] at (3.3,1) {$
+      \reg{eax} \geq \mathtt{0xc3}
+      $};
+
+    \node[right,text width=3cm,align=left] at (3.3,-0.2) {$
+      \reg{eax} < \mathtt{0xc3}
+      $};
+
+    \node[right,text width=3cm,align=left] at (3.3,-2) {$
+      \reg{eax} == a_\mathtt{jt}
+      $};
+
+    \node[right,text width=3cm,align=left] at (3.3,-3.5) {$
+      *[\reg{edi},4] == a_\mathtt{jt}
+      $};
+
+    \node[right,text width=3cm,align=left] at (4,-4.75) {$
+      \begin{array}{l}
+        [\reg{edi},4] \bowtie [\reg{esi},4] \\
+        *[\reg{edi},4] == a_\mathtt{jt}
+      \end{array}
+      $};
+
+    \node[left,text width=3cm,align=left] at (2.25,-4.75) {$
+      \begin{array}{r}
+        [\reg{edi},4] \equiv [\reg{esi},4] \\
+        *[\reg{edi},4] == 1
+      \end{array}
+      $};
+
+    \draw [overlay,decorate,decoration={brace,amplitude=5pt,mirror},xshift=-4pt,yshift=0pt] (5,-1.75) -- (5,-0.5) node [black,midway,xshift=1.2cm] {
+      \begin{tabular}{l}
+        up to $\mathtt{0xc3}$\\
+        edges: one\\
+        per read\\
+        value
+      \end{tabular}
+    };
+
+    \path[->] (0) edge node [above] {\inlineasm{cmp}} (5);
+    \path[->] (5) edge node [above] {\inlineasm{ja}} (1c);
+    \path[->] (5) edge node [below] {\inlineasm{ja}} (b);
+    \draw[dotted,->] (1c)  to (1cret);
+    \draw[dotted,->] (b)   to (120);
+    \draw[dotted,->] (b)   to (121);
+    \draw[->]        (b)   to (122);
+    \draw[dotted,->] (b)   to (123);
+    \path[dotted,->] (b)   edge node [right,xshift=0.1] {\inlineasm{mov}} (124);
+    \path[->]        (122) edge node [right] {\inlineasm{mov}} (14);
+    \path[->]        (1a2) edge node [right] {\inlineasm{jmp}} (ptr);
+    \draw[dotted,->] (ptr) to (ptret);
+    \path[->]        (14)  edge node [left]  {\inlineasm{mov}} (1a1);
+    \path[->]        (14)  edge node [right] {\inlineasm{mov}} (1a2);
+    \path[line width=2.5pt,->] (1a1) edge node [left] {\inlineasm{jmp}} (1);
+    \path[line width=2.5pt,->] (1) edge node [below] {{\textbf{\inlineasm{ret}}}} (ret);
+  \end{tikzpicture}
+  \caption{Hoare graph example}\label{fig:ssm}
+  %\Description{A diagram illustrating control flow represented by part of a symbolic state machine, representing instructions as edges and showing some predicate information as well as relevant memory model components.
+    %It illustrates the overapproximation of the involved jump table
+    %and shows a possible ``weird'' edge with the jump to instruction 1.}
+\end{figure}
+
+\subsection{The Hoare Graph is Provably Overapproximative}
+Consider the set of outgoing edges from vertex~$\mathtt{b}$.
+The predicate associated with that vertex contains clauses indicating that register \reg{eax} is bounded.
+That information is sufficient for proving that reading the jump table provides at most~$\mathtt{0xc3}$ possible values for~$a_\mathtt{jt}$.
+In order to derive that information, the predicate for vertex~$\mathtt{5}$ must contain information on the flags read by the \inlineasm{ja} instruction.
+Those flags are set by \inlineasm{cmp}.
+Looked at another way, the edges in the path $\mathtt{0}\rightarrow\mathtt{5}\rightarrow\mathtt{b}$ each form a Hoare triple with the predicates at each vertex as their pre- and postconditions.%
+\index{Hoare!triple}
+\todo{reference back to previous chapters for discussions of Hoare triples}
+
+\subsection{Disassembly Requires Pointer Analysis}
+The predicate for vertex~$\mathtt{14}$ does not contain any information regarding the aliasing relationship between the pointers in registers \reg{edi} and \reg{esi}.
+Thus we must overapproximate nondeterministically by having one outgoing edge for each case.
+In the aliasing (\gls{alias}) case, the \inlineasm{mov} on \cref{hg-example-mov2} overwrites the previous \inlineasm{mov} on \cref{hg-example-mov1}.
+The program would then jump to address~$\mathtt{1}$ instead of performing the intended jump to address~$a_\mathtt{jt}$.
+
+\subsection{Disassembly Requires Bounds Analysis}
+Another symbolic value,~$a_\mathtt{r}$, represents the address initially stored at the top of the stack frame.
+The \ac{hg} contains an edge to a final vertex\footnote{state} where the instruction pointer is set to that address.
+To obtain that result, every other vertex on the path from vertex~$\mathtt{0}$ to that final vertex must contain enough information preserve the stack.
+Specifically, they must show that the return address has not been modified and that the frame and stack pointers (\rbp\ and \rsp) are managed properly throughout function execution.
+
+\subsection{Weird Edges are Found}
+A jump to address~$\mathtt{1}$ jumps into the middle of an instruction.
+Since byte $\mathtt{c3}$  corresponds to the \texttt{ret} instruction, this is actually ROP gadget.
+An unexpected ``weird'' edge leading to unexpected control flow has been found.
+In \cref{fig:ssm}, they are denoted with bold arrows.
+\begin{remark}[Memory regions are assumed to not partially overlap]
+  The branch at vertex~\texttt{14} produces two edges, one for aliasing and one for separation.
+  Hypothetically, the two 4-byte regions $\region{\reg{edi}}4$ and $\region{\reg{esi}}4$ could also partially overlap.
+  For example, there may be a case where $\reg{edi} = \reg{esi} + 2$.
+  We exclude this case, because it rarely occurs in binaries compiled from source code, even at high optimization levels.
+  We do support enclosure of regions within larger ones, however.
+\end{remark}
+
+\subsection{Hoare Graphs Expedite Formal Verification}
+\todo{``Expedite'' isn't quite the right word}
+The \ac{hg} is generated by the algorithm presented in \cref{sec:algorithm}.
+While that algorithm has been proven sound with pencil-and-paper proofs for \cref{thm:algo_soundness}, stronger guarantees can be provided by formal verification.\index{formal!verification}
+To that end, \acp{hg} can be exported to the interactive theorem prover Isabelle/HOL.
+\todo{glossary entry for interactive theorem provers and Isabelle would both be nice}
+In that formulation, akin to our \ac{fmuc} work from \cref{ch:syntax}, each vertex becomes its own theorem.
+\todo{does the \ac{cfg} work have a similar Hoare triple approach? I forget. Could just reference background work}
+For example, vertex~\texttt{14} is translated to a Hoare triple that states that the invariant associated to instruction address~\texttt{14} ensures as postcondition the disjunction of the invariants associated to address~\texttt{1a}.
+Essentially, this step removes the need for trusting the implementation of the algorithm presented in this paper.
+
+At first glance, it may seem that a small piece of code leads to an exorbitant number of states and edges.
+However, typically the state space is close to the number of instruction addresses (see \cref{hg-successes}), as
+we apply joining of states to reduce the state space whenever possible.
+
+\section{Summary}
+This \namecref{ch:hg-lifting} provided an introduction to \acp{hg}, the motivation for their development, and a small example explaining their usage.
+It is followed up by an in-depth exploration of the technical details of \ac{hg} generation in \cref{ch:hg-formulation}.
+After that is a practical demonstration of lifting to \acp{hg} as well as their verification in \cref{ch:hg-results}.
+To wrap up, a further discussion on \acp{hg} can be found in \cref{ch:hg-discussion}.
