@@ -1,6 +1,6 @@
 @String{CACM = "Communications of the ACM"}
 @String{JACM = "Journal of the ACM"}
-@String{ACM = "ACM"}
+@String{ACM = "Association for Computing Machinery"}
 @String{ACMLoc = "New York, NY, USA"}
 @String{IEEE = "IEEE"}
 @String{IEEELoc = "Piscataway, NJ, US"}
@@ -13,15 +13,18 @@
   publisher = ACM,
   location = ACMLoc
 }
-@XData{springer,
+@XData{lncs,
   publisher = Springer,
-  location = SpringerLoc
+  location = SpringerLoc,
+  series = {Lecture Notes in Computer Science},
+  shortseries = {LNCS}
 }
 @XData{ieee,
   publisher = IEEE,
   location = IEEELoc
 }
 
+% using number instead of volume as volume goes with the title/journal but number goes with the series
 @inproceedings{bockenek2019preservation,
   title = {Formal Verification of Memory Preservation of x86-64 Binaries},
   author = {Bockenek, Joshua A. and Verbeek, Freek and Lammich, Peter and Ravindran, Binoy},
@@ -29,13 +32,11 @@
   booktitle = {Computer Safety, Reliability and Security},
   booktitleaddon = {Proceedings of the 38th International Conference},
   shorttitle = {SAFECOMP 2019},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
-  volume = {11698},
+  number = 11698,
   venue = {Turku, Finland},
   eventdate = {2019-09-11/2019-09-13},
   doi = {10.1007/978-3-030-26601-1_3},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @software{bockenek2019artifact,
@@ -154,14 +155,12 @@
   booktitleaddon = {Proceedings of the 9th International Symposium},
   shorttitle = {ATVA 2011},
   year = 2011,
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 6996,
   pages = {453-462},
   venue = {Taipei, Taiwan},
   eventdate = {2001-10-11/2001-10-14},
   doi={doi.org/10.1007/978-3-642-24372-1_34},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{lankes2016hermitcore,
@@ -274,15 +273,13 @@
   booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
   booktitleaddon = {Proceedings of the 13th International Conference},
   shorttitle = {TACAS 2007},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 4424,
   year = 2007,
   doi = {10.1007/978-3-540-71209-1_44},
   venue = {Braga, Portugal},
   eventdate = {2007-03-24/2007-04-01},
-  xdata = {springer},
-  pages = {568-582}
+  pages = {568-582},
+  xdata = {lncs}
 }
 
 @article{king1976symbolic,
@@ -378,11 +375,9 @@
   venue = {Budapest, Hungary},
   eventdate = {2008-03-29/2008-04-06},
   year = 2008,
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 4963,
   doi = {10.1007/978-3-540-78800-3_24},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @online{capstone,
@@ -429,16 +424,14 @@
   booktitle = {Computer Science Logic},
   booktitleaddon = {Proceedings of the 15th International Workshop},
   shorttitle = {CSL 2001},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 2142,
   date = {2001-08-30},
   venue = {Paris, France},
   eventdate = {2001-09-10/2001-09-13},
   pages = {1-19},
-  xdata = {springer},
   isbn = {978-3-540-44802-0},
-  doi = {doi.org/10.1007/3-540-44802-0}
+  doi = {doi.org/10.1007/3-540-44802-0},
+  xdata = {lncs}
 }
 
 @inproceedings{krebbers2017essence,
@@ -454,7 +447,7 @@
   date = {2017-03-19},
   venue = {Uppsala, Sweden},
   eventdate = {2017-04-22/2017-04-29},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{cowan1998stackguard,
@@ -515,12 +508,10 @@
 @book{nipkow2002isabelle,
   title = {Isabelle/{HOL}: A Proof Assistant for Higher-Order Logic},
   author = {Nipkow, Tobias and Paulson, Lawrence C. and Wenzel, Markus},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 2283,
   date = {2002-01},
   doi = {10.1007/3-540-45949-9},
-  xdata = {springer},
+  xdata = {lncs},
   url = {https://isabelle.in.tum.de/}
 }
 
@@ -703,14 +694,12 @@
   booktitleaddon = {Proceedings of the 13th International Conference},
   shorttitle = {LPAR 2006},
   pages = {362-376},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 4246,
   year = 2006,
   venue = {Phnom Penh, Cambodia},
   eventdate = {2006-11-13/2006-11-17},
   doi = {10.1007/11916277_25},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{goel2014syscalls,
@@ -743,8 +732,6 @@
   booktitle = {Verified Software: Theories, Tools and Experiments},
   booktitleaddon = {Revised Selected Papers from the 7th International Conference},
   shorttitle = {VSTTE 2015},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 9593,
   pages = {202-222},
   date = {2015-07},
@@ -796,15 +783,13 @@
   booktitle = {Theorem Proving in Higher Order Logics},
   booktitleaddon = {Proceedings of the 21st International Conference},
   shorttitle = {TPHOLs 2008},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 5170,
   pages = {28-32},
   year = 2008,
   venue = {Montreal, Canada},
   eventdate = {2008-08-18/2008-08-21},
   doi = {10.1007/978-3-540-71067-7_6},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{sewell2013tvv,
@@ -908,15 +893,13 @@
   booktitle = {Interactive Theorem Proving},
   booktitleaddon = {Proceedings of the Third International Conference},
   shorttitle = {ITP 2012},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 7406,
   pages = {99-115},
   date = {2012-08},
   venue = {Princeton, NJ, USA},
   eventdate = {2012-08-13/2012-08-15},
   doi = {10.1007/978-3-642-32347-8_8},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @INPROCEEDINGS{shi2012orientais,
@@ -1050,8 +1033,6 @@
   booktitle={Computer Aided Verification},
   booktitleaddon={Proceedings of the 23rd International Conference},
   shorttitle={CAV 2011},
-  series={Lecture Notes in Computer Science},
-  shortseries={LNCS},
   number=6806,
   pages={463-469},
   year=2011,
@@ -1059,7 +1040,7 @@
   doi = {10.1007/978-3-642-22110-1_37},
   venue={Snowbird, UT, USA},
   eventdate={2011-07-14/2011-07-20},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{fox2010arm,
@@ -1069,8 +1050,6 @@
   booktitle = "Interactive Theorem Proving",
   booktitleaddon = "Proceedings of the First International Conference",
   shorttitle = "ITP 2010",
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 6172,
   year = 2010,
   venue = {Edinburgh, UK},
@@ -1078,7 +1057,7 @@
   pages = {243-258},
   isbn = {978-3-642-14052-5},
   doi = {10.1007/978-3-642-14052-5_18},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{fox2015improved,
@@ -1088,8 +1067,6 @@
   booktitle={Interactive Theorem Proving},
   booktitleaddon={Proceedings of the 6th International Conference},
   shorttitle={ITP 2015},
-  series={Lecture Notes in Computer Science},
-  shortseries={LNCS},
   number=9236,
   pages={187-202},
   date={2015-08-19},
@@ -1105,13 +1082,11 @@
   title = "Computer Aided Verification",
   titleaddon = "Proceedings of the 19th International Conference",
   shorttitle = "CAV 2007",
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 4590,
   year = 2007,
   venue = "Berlin, Germany",
   eventdate = "2007-07-03/2007-07-07",
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @InProceedings{ganesh2007stp,
@@ -1165,13 +1140,11 @@
   author={Gu\'eneau, Arma\"el and Myreen, Magnus O. and Kumar, Ramana and Norrish, Michael},
   editor="Yang, Hongseok",
   shorttitle="ESOP 2017",
-  series="Lecture Notes in Computer Science",
-  shortseries="LNCS",
   number=10201,
   date="2017-03-19",
   pages="584-610",
   isbn="978-3-662-54434-1",
-  xdata="springer",
+  xdata = {lncs},
   venue="Uppsala, Sweden",
   eventdate="2017-04-22/2017-04-29"
 }
@@ -1182,7 +1155,7 @@
   booktitle={USENIX Security Symposium},
   volume=14,
   pages={161-176},
-  year=2005,
+  date=2005,
   organization={USENIX Association}
 }
 
@@ -1195,12 +1168,10 @@
   booktitle = {Information Systems Security},
   booktitleaddon = {Proceedings of the 4th International Conference},
   shorttitle = {ICISS 2008},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 5352,
   venue = {Hyderabad, India},
   eventdate = {2008-12-16/2008-12-20},
-  xdata = {springer},
+  xdata = {lncs},
   date = {2008-12},
   isbn = {978-3-540-89861-0},
   note = {Keynote invited paper}
@@ -1222,13 +1193,11 @@
   shorttitle = {CAV 2004},
   pages = {515-518},
   year = 2004,
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 3114,
   venue = {Boston, MA, USA},
   eventdate = {2004-07-13/2004-07-17},
   doi = {10.1007/978-3-540-27813-9_49},
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @inproceedings{barrett2007cvc3,
@@ -1246,8 +1215,6 @@
   booktitleaddon="Proceedings of the Third International Symposium",
   shorttitle="NFM 2011",
   year=2011,
-  series={Lecture Notes in Computer Science},
-  shortseries={LNCS},
   number=6617,
   pages="459-465",
   venue="Pasadena, CA, USA",
@@ -1255,7 +1222,7 @@
   isbn="978-3-642-20398-5",
   doi="10.1007/978-3-642-20398-5_33",
   url="https://fbinfer.com/",
-  xdata = {springer}
+  xdata = {lncs}
 }
 
 @article{hovemeyer2004findbugs,
@@ -1363,10 +1330,8 @@
   booktitleaddon="International Summer School 2011, Revised Tutorial Lectures",
   year=2012,
   venue = {Elba Island, Italy},
-  series = {Lecture Notes in Computer Science},
-  shortseries = {LNCS},
   number = 7682,
-  xdata = {springer},
+  xdata = {lncs},
   pages="1-30",
   isbn="978-3-642-35746-6",
   doi="10.1007/978-3-642-35746-6_1"
@@ -1630,8 +1595,6 @@
   booktitle="Computer Aided Verification",
   booktitleaddon="Proceedings Part II of the 28th International Conference",
   shorttitle="CAV 2016",
-  series="Lecture Notes in Computer Science book",
-  shortseries="LNCS",
   number=9780,
   venue="Toronto, Ontario, Canada",
   eventdate="2016-07-17/2016-07-23",
@@ -1743,8 +1706,6 @@
   isbn="978-3-319-22102-1",
   publisher="Springer International Publishing",
   address="Cham",
-  series="Lecture Notes in Computer Science",
-  shortseries="LNCS",
   number=9236,
   venue="Nanjing, China",
   eventdate="2015-08-24/2015-08-27"
@@ -1795,15 +1756,13 @@
   booktitle="Fast Software Encryption",
   booktitleaddon="12th International Workshop Revised Selected Papers",
   shorttitle="FSE 2005",
-  series="Lecture Notes in Computer Science",
-  shortseries="LNCS",
   number=3557,
   date="2005",
   pages="32-49",
   isbn="978-3-540-31669-5",
   venue="Paris, France",
   eventdate="2005-02-21/2005-02-23",
-  xdata="springer"
+  xdata = {lncs}
 }
 
 @inproceedings{bond2017vale,
@@ -1831,7 +1790,7 @@
   pages="433--448",
   isbn="978-3-662-07964-5",
   doi="10.1007/978-3-662-07964-5_16",
-  xdata="springer"
+  xdata = {lncs}
 }
 
 @online{systemv,
@@ -1865,8 +1824,6 @@
   booktitle="Theorem Proving in Higher Order Logics",
   booktitleaddon="Proceedings of the 22nd International Conference",
   shorttitle="TPHOLs 2009",
-  series="Lecture Notes in Computer Science",
-  shortseries="LNCS",
   number=5674,
   venue="Munich, Germany",
   eventdate="2009-08-17/2009-08-20",
@@ -1874,7 +1831,7 @@
   pages="391-407",
   isbn="978-3-642-03359-9",
   doi="10.1007/978-3-642-03359-9_27",
-  xdata="springer"
+  xdata = {lncs}
 }
 
 @TechReport{owens2009tsoextended,
@@ -1946,8 +1903,6 @@
   booktitle="Verification, Model Checking, and Abstract Interpretation",
   booktitleaddon="Proceedings of the 17th International Conference",
   shorttitle="VMCAI 2016",
-  series="Lecture Notes in Computer Science",
-  shortseries="LNCS",
   number=9583,
   venue="St. Petersburg, FL, USA",
   eventdate="2016-01-17/2016-01-19",
@@ -1956,7 +1911,7 @@
   doi="10.1007/978-3-662-49122-5_4",
   pages="85-103",
   isbn="978-3-662-49122-5",
-  xdata="springer"
+  xdata = {lncs}
 }
 
 @online{quickcheck,
@@ -2030,6 +1985,38 @@
   doi          = {10.5281/zenodo.6330573}
 }
 
+
+@inproceedings{verbeek2022lifting,
+  title = {Formally Verified Lifting of {C}-Compiled x86-64 Binaries},
+  author = {Verbeek, Freek and Bockenek, Joshua and Fu, Zhoulai and Ravindran, Binoy},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 43rd ACM SIGPLAN International Conference},
+  shorttitle = {PLDI 2022},
+  date = {2022-06-09},
+  eventdate = {2022-06-13/2022-06-17},
+  isbn = {9781450392655},
+  doi = {10.1145/3519939.3523702},
+  pages = {934-949},
+  venue = {San Diego, CA, USA},
+  xdata = {acm}
+}
+
+@inproceedings{roessle2019formally,
+  title = {Formally Verified Big Step Semantics out of x86-64 Binaries},
+  author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
+  booktitle = {Certified Programs and Proofs},
+  booktitleaddon = {Proceedings of the 8th ACM SIGPLAN International Conference},
+  shorttitle = {CPP 2019},
+  date = {2019-01-14},
+  isbn = {978-1-4503-6222-1},
+  venue = {Cascais, Portugal},
+  pages = {181-195},
+  numpages = 15,
+  acmid = 3294102,
+  xdata = {acm},
+  doi = {10.1145/3293880.3294102},
+}
+
 @article{dullien2017weird,
   title={Weird Machines, Exploitability, and Provable Unexploitability},
   author={Dullien, Thomas F.},
@@ -2044,6 +2031,156 @@
   title={``Weird Machines'' in {ELF}: A Spotlight on the Underappreciated Metadata},
   author={Shapiro, Rebecca and Bratus, Sergey and Smith, Sean W.},
   booktitle={7th {USENIX} Workshop on Offensive Technologies},
-  shorttitle={{WOOT} 13},
-  date=2013
+  shorttitle={WOOT '13},
+  date={2013-08},
+  eventdate={2013-08-13},
+  venue={Washington, D.C.},
+  publisher = {USENIX Association},
+  url={https://www.usenix.org/conference/woot13/workshop-program/presentation/shapiro}
+}
+
+@inproceedings{brumley2013native,
+  title={Native x86 Decompilation Using Semantics-Preserving Structural Analysis and Iterative Control-Flow Structuring},
+  author={Brumley, David and Lee, JongHyup and Schwartz, Edward J. and Woo, Maverick},
+  booktitle={22nd {USENIX} Security Symposium},
+  shorttitle={USENIX Security 13},
+  pages={353-368},
+  isbn={978-1-931971-03-4},
+  venue={Washington, D.C.},
+  publisher = {USENIX Association},
+  date={2013-08},
+  url={https://www.usenix.org/conference/usenixsecurity13/technical-sessions/presentation/schwartz}
+}
+
+@inproceedings{wartell2012binary,
+  title={Binary Stirring: Self-Randomizing Instruction Addresses of Legacy x86 Binary Code},
+  author={Wartell, Richard and Mohan, Vishwath and Hamlen, Kevin W. and Lin, Zhiqiang},
+  booktitle={Computer and Communications Security},
+  booktitleaddon={Proceedings of the 2012 ACM Conference},
+  shorttitle={CCS '12},
+  pages={157-168},
+  date={2012-10-16},
+  venue={Raleigh, North Carolina, USA},
+  isbn = {9781450316514},
+  doi={10.1145/2382196.2382216},
+  xdata={acm}
+}
+
+@inproceedings{kim2017revarm,
+  title={Rev{ARM}: A Platform-Agnostic {ARM} Binary Rewriter for Security Applications},
+  author={Kim, Taegyu and Kim, Chung Hwan and Choi, Hongjun and Kwon, Yonghwi and Saltaformaggio, Brendan and Zhang, Xiangyu and Xu, Dongyan},
+  booktitle={Annual Computer Security Applications Conference},
+  booktitleaddon={Proceedings of the 33rd},
+  shorttitle={ACSAC '17},
+  pages={412-424},
+  date={2017-12-04},
+  doi={10.1145/3134600.3134627},
+}
+
+@inproceedings{davi2009dynamic,
+  title = {Dynamic Integrity Measurement and Attestation: Towards Defense against Return-Oriented Programming Attacks},
+  author = {Davi, Lucas and Sadeghi, Ahmad-Reza and Winandy, Marcel},
+  booktitle = {Scalable Trusted Computing},
+  booktitleaddon = {Proceedings of the 2009 ACM Workshop},
+  shorttitle = {STC ’09},
+  date = {2009-11-13},
+  isbn = {9781605587882},
+  doi = {10.1145/1655108.1655117},
+  pages = {49-54},
+  venue = {Chicago, Illinois, USA},
+  xdata = {acm}
+}
+
+@InProceedings{balakrishnan2004analyzing,
+  title="Analyzing Memory Accesses in x86 Executables",
+  author="Balakrishnan, Gogul and Reps, Thomas",
+  editor="Duesterwald, Evelyn",
+  booktitle="Compiler Construction",
+  booktitladdon={13th International Conference},
+  shorttitle={CC 2004},
+  venue={Barcelona, Spain},
+  eventdate={2004-03-29/2004-04-02},
+  date=2004,
+  pages="5--23",
+  isbn="978-3-540-24723-4",
+  number = 2985,
+  doi={10.1007/978-3-540-24723-4_2},
+  xdata = {lncs}
+}
+
+@InProceedings{balakrishnan2005codesurfer,
+  title="{CodeSurfer}/x86---A Platform for Analyzing x86 Executables",
+  author="Balakrishnan, Gogul and Gruian, Radu and Reps, Thomas and Teitelbaum, Tim",
+  editor="Bodik, Rastislav",
+  booktitle="Compiler Construction",
+  booktitleaddon={14th International Conference},
+  shorttitle={CC 2005},
+  venue={Edinburgh, UK},
+  date=2005,
+  eventdate={2005-04-04/2005-04-08},
+  pages="250-254",
+  number=3443,
+  isbn="978-3-540-31985-6",
+  doi={10.1007/978-3-540-31985-6_19},
+  xdata = {lncs}
+}
+
+@inproceedings{schwartz2002disassembly,
+  title={Disassembly of Executable Code Revisited},
+  author={Benjamin Schwarz and Saumya Debray and Gregory Andrews},
+  booktitle={Reverse Engineering},
+  booktitleaddon={Proceedings of the Ninth Working Conference},
+  eventdate={2002-10-29/2002-11-01},
+  date=2002,
+  pages={45-54},
+  venue={Richmond, VA, USA},
+  isbn={0-7695-1799-4},
+  issn={1095-1350},
+  doi={10.1109/WCRE.2002.1173063},
+  xdata={ieee}
+}
+
+@article{horspool1980approach,
+  title={An approach to the Problem of Detranslation of Computer Programs},
+  author={Horspool, R. Nigel and Marovac, Nenad},
+  journal={The Computer Journal},
+  volume=23,
+  number=3,
+  pages={223-229},
+  date=1980,
+  publisher={The British Computer Society},
+  doi={10.1093/comjnl/23.3.223}
+}
+
+@inproceedings{wartell2011differentiating,
+  title={Differentiating Code from Data in {x86} Binaries},
+  author={Wartell, Richard and Zhou, Yan and Hamlen, Kevin W. and Kantarcioglu, Murat and Thuraisingham, Bhavani},
+  booktitle={Machine Learning and Knowledge Discovery in Databases},
+  booktitleaddon={Joint European Conference},
+  shorttitle={ECML PKDD 2011},
+  venue={Athens, Greece},
+  eventdate={2011-09-05/2011-09-09},
+  pages={522-536},
+  date=2011,
+  xdata={lncs},
+  series={Lecture Notes in Artificial Intelligence},
+  shortseries={LNAI},
+  number=6913,
+  doi={10.1007/978-3-642-23808-6_34}
+}
+
+@inproceedings{khadra2016speculative,
+  title = {Speculative Disassembly of Binary Code},
+  author = {Ben~Khadra, Mohamed Ammar and Stoffel, Dominik and Kunz, Wolfgang},
+  booktitle = {Compliers, Architectures, and Sythesis of Embedded Systems},
+  booktitleaddon = {Proceedings of the 2016 International Conference},
+  shorttitle = {CASES '16},
+  date = {2016-10-01},
+  eventdate = {2016-10-01/2016-10-07},
+  venue = {Pittsburgh, Pennsylvania},
+  pages = {1-10},
+  articleno = 16,
+  isbn = {9781450344821},
+  doi = {10.1145/2968455.2968505},
+  xdata = {acm}
 }

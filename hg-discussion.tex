@@ -2,6 +2,8 @@
 Having covered the basic concepts (\cref{ch:hg-lifting}), formulation (\cref{ch:hg-formulation}), and experimental results (\cref{ch:hg-discussion}) of \acp{hg}, we draw to an end for this  \namecref{hg} of my dissertation.
 This \namecref{ch:hg-discussion} wraps things up with a discussion of applications and assumptions in \cref{hg-discussion} followed by a final conclusion in \cref{hg-conclusion}.
 
+This \namecref{ch:hg-discussion} was again a joint effort with the co-authors of the original paper \autocite{verbeek2022lifting}.
+
 \section{Discussion}\label{hg-discussion}
 The approach taken in this paper necessarily makes assumptions, as shown in \cref{hg-assumptions}.
 We provide here a high-level discussion on how those assumptions affect the usability of overapproximative binary lifting in various application domains.
@@ -40,9 +42,9 @@ It produces \iac{hg} as output that contains:
 \begin{enumerate}
   \item the assembly instructions found in the binary;
   \item the control flow; and
-  \item evidence, in the form of inductive invariants that are sufficiently strong to prove soundness.
+  \item evidence in the form of inductive invariants that are sufficiently strong enough to prove soundness.
 \end{enumerate}
-Our approach can deal with overlapping instructions and aims at providing overapproximative bounds to indirect branches ( such as when a \inlineasm{jmp} is based on a computation instead of on a constant).
+Our approach can deal with overlapping instructions and aims at providing overapproximative bounds to indirect branches (such as when a \inlineasm{jmp} is based on a computation instead of on a constant).
 In some cases, unsoundness annotations are used to indicate possible issues.
 Also, assumptions are enumerated explicitly in the form of proof obligations asserting requirements over external functions.
 If our technique succeeds and the proof obligations are proven true, then under these assumptions, the lifted representation is a provable overapproximation of the binary.
@@ -51,7 +53,7 @@ This case study shows that our methodology is scalable and applicable to commerc
 \Acp{hg} can then be exported to the Isabelle/HOL theorem prover, where they can be formally verified.
 This second step essentially validates any inference made by the algorithms during Step~1.
 
-\todo{maybe this should be moved elsewhere?}
+\todo{this can probably be moved to the final conclusion chapter}
 In future work, we aim to provide support for concurrency.
 Moreover, we find that the context-free nature of our approach limits the number of function callbacks that are properly dealt with.
 We will study passing around stateful information between functions to find a midpoint between scalability and better support for function callbacks.

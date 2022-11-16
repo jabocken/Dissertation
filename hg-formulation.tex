@@ -6,7 +6,7 @@ and finally the lifting algorithm itself in \cref{sec:algorithm}.
 These concepts are accompanied by explanations and proofs.
 
 The concepts and definitions presented here were developed in concert with Dr.~Freek Verbeek.
-In particular, he was a significant contributor to the proofs in this \namecref{ch:hg-formulation}.
+In particular, he was a significant contributor to the initial algorithmic setup and the proofs in this \namecref{ch:hg-formulation}.
 
 \section{Starting Concepts}\label{hg-concepts}
 \todo{maybe move some of this to an earlier/communal chapter?}
@@ -359,7 +359,7 @@ that is passed along through the function call chain.
 For output, function \gls{insertM} produces, nondeterministically,
 a set of new memory models based on all possible pointer relationships
 for the newly-inserted region.
-If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{something-from-the-intro}).
+If no necessarily-relation can be established between~$t$ and any tree in~$M$, then all trees possibly overlapping with~$t$ are destroyed (see \cref{hg-assumptions}).
 If a necessarily-relation can be established between tree~$t$ and some tree already in~$M$, then only the relevant memory models need to be produced.
 
 To ensure that the invariants for the memory model~$M$ being inserted into
@@ -608,7 +608,7 @@ To strengthen our arguments, we prove that the join over memory models we have p
 \Cref{alg:invgen} provides the base functionality for \ac{hg} extraction.
 That base functionality is then extended in two ways:
 \begin{enumerate}
-  \item the addition of a context-free approach to function calls (see \cref{subsec:function_calls}) and
+  \item the addition of a context-free approach to function calls (see \cref{function-call-extension}) and
   \item the prevention of states from being joined when they are incompatible (i.e.\ not matching \cref{def:compatibility}). \todo{index entry that just points to compatible's?}
 \end{enumerate}
 In order to do this, the algorithm maintains two objects.
@@ -833,7 +833,7 @@ In words, for every reachable transition from~\gls{concrete-state} to~$\gls{conc
   By \cref{lem:simulation}, we have $\gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']$.
 \end{proof}
 
-\subsection{Extension: Function Calls}\label{subsec:function_calls}
+\subsection{Extension: Function Calls}\label{function-call-extension}
 The base algorithm as presented in \cref{alg:invgen} does not treat function calls as special instructions.
 This is unsatisfactory for two reasons.
 First, for \emph{external} function calls, a function~\gls{step-hg-semantics} that transforms the predicate may not be available.
