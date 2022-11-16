@@ -843,7 +843,7 @@ We present an extension to the algorithm that treats internal function calls com
 
 \subsubsection{External Functions}
 %An assembly instruction of the form \texttt{call op} is recognized as an external call as soon as the operand can be resolved as an address that belongs to some \texttt{.plt} section.
-%This is specific to the ELF format.
+%This is specific to the \ac{elf} format.
 %Instead of symbolically executing the instructions found in the \texttt{.plt} section, these instructions are used to derive a function address.
 %That address is looked up in the symbol table of the binary.
 %If that table associates a name with the address, then that name is the function name of the external function.
@@ -851,7 +851,7 @@ We present an extension to the algorithm that treats internal function calls com
 The function name is matched against a list of hard-coded function names that are known to be terminating, such as \inlineasm{exit} and \inlineasm{stack_chk_fail}.
 In case of a terminating function, function \gls{step-hg} will produce the empty set, stopping further exploration from the current state.
 Otherwise, the function is some unknown external function.
-We make the assumption that this unknown function adheres to the 64-bit System V \ac{abi}'s calling convention.
+We make the assumption that this unknown function adheres to the 64-bit System~V \ac{abi}'s calling convention.
 Function \gls{step-hg} therefore modifies the current state by assigning~\gls{bot} to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
 In other words, only the clauses concerning the stack frame and callee-saved non-volatile registers are kept.
 Similarly, all relations in the memory model concerning the heap are removed.

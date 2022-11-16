@@ -1,5 +1,6 @@
 \chapter{Related Work}\label{ch:related}
 Verification of assembly has been an active field of research for decades.
+Binary analysis in general, both static and dynamic, has a rich history as well.
 This chapter covers some of that history.
 
 Up first in \cref{se:previous_assembly}
@@ -13,6 +14,8 @@ in \cref{se:verified,se:static_analysis}.
 \Cref{related-table} provides an overview of the assembly,
 hardware, and integrated projects.
 It also includes the works presented in this dissertation.
+
+\todo{mention stuff from HG, EICFG papers here}
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
 \textcite{clutterbuck1988verification} performed formal verification
@@ -394,14 +397,16 @@ by starting from a base machine model
 and proving a refinement relation with each layer of abstraction placed on top of it.
 As they started off with a mostly-verified kernel, it is likely they would have had
 more difficulty if they had started with a kernel
-not explicitly designed to be verified. While we did isolate functions
-for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
+not explicitly designed to be verified.
+\begin{remark}[Function Isolation]
+  While we did isolate functions for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
+\end{remark}
 
 \section{Non-Formal Static Analysis}\label{se:static_analysis}
 Non-formal static analysis of binary code for the detection of bugs
 has also been an active research field for decades
 \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
-This section covers some of the projects in that field from the past fifteen years.
+This section covers some of the projects in that field from the past twenty years.
 
 The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
 provides a tool called Vine which lifts x86 instructions to its own \ac{il} for assembly
@@ -464,15 +469,6 @@ is that these tools are generally highly suited to finding bugs
 but are not able to prove their absence. This is due to a reliance on
 efficient but incomplete techniques, such as depth-bounded searches.
 
-\section{Other Stuff from PLDI paper?}
-\todo{Need to figure out what is shared and what isn't!}
-
-\section{Abstract Interpretation}
-\todo{from PLDI paper}
-
-\section{Exception Handling Analysis}
-\todo\dots
-
 \begin{table*}
   \centering
   \caption{Overview of related assembly verification and other work}\label{related-table}
@@ -486,22 +482,22 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
     Goel et al. & \gls{arch} & \acs*{itp} & word-count  & \num{186} insts \\
     Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
-    Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
+    Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
     Schlich et al. & ATmega16 & MC & Auto funcs & Around 8k insts \\
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
-      \makecell[l]{\num{2630} \acs*{sloc}\\
-        \num{935} \acs*{sloc}} \\
+      \makecell[l]{\num{2630} \acs{sloc}\\
+        \num{935} \acs{sloc}} \\
     Fromherz et al. & C/\gls{arch} & ATP+\acs*{vcg} & \acs{aes} funcs & \\
-    \textbf{\cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
-    \textbf{\cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
+    \textbf{\Cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
+    \textbf{\Cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
-    Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs*{sloc} \\
-    Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs*{sloc} \\
-    Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs*{sloc}, 60 insts \\
+    Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs{sloc} \\
+    Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
+    Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
     Dam et al. & ARMv7 & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
-    Baumann et al. & ARMv8-A & \acs*{atp}+UC & HAPSOC & \num{8000} \acs*{sloc} \\
-    Bevier et al. & PDP-11-like & \acs*{itp}+\acs*{tv} & Full system & 3k+ \acs*{sloc}/insts \\
+    Baumann et al. & ARMv8-A & \acs*{atp}+UC & HAPSOC & \num{8000} \acs{sloc} \\
+    Bevier et al. & PDP-11-like & \acs*{itp}+\acs*{tv} & Full system & 3k+ \acs{sloc}/insts \\
     \bottomrule
     \multicolumn{5}{c}{
       \small
@@ -519,6 +515,105 @@ efficient but incomplete techniques, such as depth-bounded searches.
   \end{tabular}
 \end{table*}
 
+\section{(Other) Stuff from HG paper}
+\todo\dots
+
+\section{Abstract Interpretation}
+\todo{any?}
+
+\section{Exception Handling Analysis}
+\todo{figure out if anything is shared with the above. It isn't with }
+
+The two main approaches to analyzing exceptional behavior for \Cpp\ programs, and behavioral program analysis in general, are bottom-up and top-down.
+Bottom-up tools include decompilers and disassemblers, as well as this work.
+Top-down tools focus on analysis of source code or other higher-level representations. This section focuses on bottom-up approaches.
+
+\subsection{Bottom-Up Approaches: Decompilers and Disassemblers}
+We provide a summary of such works in \cref{tab:comparisons}.
+The table describes whether or not the works do intra- or interprocedural exception analysis and if so, if it is static or dynamic.
+Static approaches, such as the one presented in this paper, typically aim for overapproximation.
+They utilize abstraction or other methods to model paths symbolically.
+In contrast, dynamic approaches are inherently underapproximative.
+This is because they rely on concrete runtime behavior and evaluating all possible concrete paths is infeasible.
+% TODO: Even works that hijack runtime control flow to force specific path execution must do it in a sampled fashion: https://link.springer.com/chapter/10.1007/978-3-540-74320-0_12
+\begin{table}
+  \centering
+  \begin{threeparttable}
+    \caption{Bottom-up Exceptional Analysis Comparisons}\label{tab:comparisons}
+    \begin{tabular}{llll}
+      \toprule
+      Program & Intraproc.\tnote\dag & Interproc.\tnote\ddag & Academic Evals \\
+      \midrule
+      \textbf{This work} & \textbf{Statically} & \textbf{Statically} & \\
+      Binary Ninja & Statically\tnote{*} & Dynamically & \\
+      IDA Pro & Statically & Dynamically & \autocite{g2019idapro,liu2020correctness} \\
+      Ghidra & Statically & Dynamically & \autocite{rohleder2019ghidra,pang2021sok,liu2020correctness} \\
+      McSema \autocite{mcsema,mcsema-exceptions} & Statically & No & \autocite{pang2021sok,dasgupta2020scalable} \\
+      RetDec & Unknown & No & \autocite{liu2020correctness} \\
+      \bottomrule 
+    \end{tabular}
+    \begin{tablenotes}
+      \item[\dag] Can it identify the landing pads in a function?
+      \item[\ddag] Can it trace from (re)throw to landing pad?
+      \item[*] Via \url{https://github.com/EliseZeroTwo/SEH-Helper}
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}
+
+While Binary Ninja \autocite{binary-ninja}, IDA Pro \autocite{ida}, and Ghidra \autocite{ghidra} all support some form of intraprocedural exception handling analysis, they can only perform interprocedural exception handling analysis dynamically via debugging.
+For example, Ghidra provides default, platform-dependent analyses that extract try-catch block information and other landing pad information for exception handling.
+However, it does not provide unwinding control flow in the generated block/call graphs, only cross-references for the $\landingpadtable$.
+This means that it can identify landing pads and analyze the code following them, but it cannot identify the exceptions that will reach them.
+Its built-in debugger that can perform unwinding is also ultimately just an interface to external, dynamic debugging tools such as \ac{gdb} or \href{https://lldb.llvm.org/}{LLDB},
+which perform dynamic analysis and instrumentation. Traces are also supported,
+but those require the program to have been run previously.
+
+McSema is an executable lifter \autocite{mcsema}: It lifts machine code to LLVM bitcode.
+It provides intraprocedural exception analysis by generating the LLVM representation for exception landing pads \autocite{mcsema-exceptions}.  However, it does not perform interprocedural analysis as it merely lifts to LLVM bitcode, rather than tracing the execution of exceptions from throw site to landing pad.
+
+RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-LLVM, though it also supports C output.
+However, we could not find information about its ability, or lack thereof, to deal with exception handling. We also were unable to successfully apply it to programs using \Cpp\ exceptions.
+Furthermore, even when it does work it suffers from accuracy issues and produces non-semantically-equivalent results, many of which do not even run \autocite{foudree2019regsym}.
+As with McSema, it does not perfom interprocedural exception analysis.
+
+\subsection{Top-Down Approaches}
+By contrast, there are tools that analyze exceptions from the source-code side.
+This prevents the analysis of legacy code without source but allows for better static analysis during development, or even formal proofs of correctness of the exceptional semantics.
+
+\Textcite{hutton2004compiling} provided basic formal semantics for source-level \Cpp-like exceptions.
+They accompanied this with a compiler for a small language with exceptions and a proof of correctness of that compilation.
+This is different from our approach as we do not aim to verify the correctness of exceptional behavior due to our lack of ground truth (source code or some program specification).
+
+\Textcite{prabhu2011interprocedural} provide source-level generation of \acp{iecfg} for \Cpp\ exceptions.
+These \acp{iecfg} are much like our \acp{eicfg}, but for source code.
+Unlike our work, however, \acp{iecfg} are used to \emph{eliminate} exceptions when compiling to a binary to make static analysis easier.
+They cannot be used to analyze already-compiled programs with exceptions.
+
+Java programs use exceptions as well. \Textcite{kechagia2019misuse} provide a tool for identifying unhandled \ac{api} misuses via static exception propagation and test case generation. This differs from our work as we detect in-program exceptional behavior, not exceptions produced by \ac{api} or other external calls.
+
+\subsection{Tools that use \texttt{libunwind}}
+A standard library for instrumented/(pseudo-?)dynamic unwinding is
+\href{https://www.nongnu.org/libunwind/}{libunwind}. \todo{make a citation instead}
+It has been utilized by tools such as \url{https://dl.acm.org/doi/abs/10.1145/2660267.2660281},
+\todo{a few others}.
+It can function without source code. However, as an instrumenting library, it requires a running program and thus must operate dynamically.
+
+Our tool, as well as all of the other bottom-up analysis tools mentioned above, assumes both the existence and correctness of the \inlineasm{.eh_frame} and \inlineasm{.gcc_except_table} \ac{elf} sections.
+However, neither of those cases are guaranteed.
+To deal with such scenarios, \textcite{bastian2019dwarf} provide tools for the validation as well as synthesis of exception-handling-related table-based unwinding information. 
+
+\subsection{Component-based Approaches}
+There are also tools for validating and verifying fault handling behavior
+for software systems that involve high-level component-based development:
+ 
+\todo{figure out if this is worth it}
+
+\url{https://www.researchgate.net/publication/3921585_Exception_handling_in_component-based_system_development},
+
+\url{https://link.springer.com/chapter/10.1007/11572329_8},
+
+\url{https://journal-bcs.springeropen.com/articles/10.1007/BF03192362}.
+
 \section{Summary}
 This section covered some of the work related to that presented in this dissertation.
 Previous assembly- and hardware-level formal verification efforts,
@@ -531,3 +626,6 @@ than the over \num{2379} instructions achieved by the work in \cref{ch:cfg},
 none appear to have achieved the \num{12252}
 verified instructions covered in \cref{ch:syntax} except the work produced by
 Arm\index{Arm Ltd.} employees.
+
+
+\todo{Add in talk about HG, EICFG works}

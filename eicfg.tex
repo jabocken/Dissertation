@@ -42,20 +42,20 @@ That tool produces \acp{eicfg}, that document the direct exception-handling-rela
 
 The tool itself targets binaries using \Cpp\ exception handling%
 \fturl{https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html}
-that were compiled for the x86-64 \ac{isa} and System V \ac{abi}.
+that were compiled for the x86-64 \ac{isa} and System~V \ac{abi}.
 Symbol-stripped binaries are supported, but may not perform well if they contain unresolvable indirections or unmodeled callbacks.
 Non-\Cpp\ binaries, or \Cpp\ ones that do not use exception handling, are supported as well for flexibility.
 We assume that all external calls do not produce exceptions themselves.
-We also do not model \lstinline[language=C++]{setjmp}/\lstinline[language=C++]{longjmp}, as they do not interact well with structured exception handling\cite{using-setjmp-and-longjmp}.
+We also do not model \lstinline{setjmp}/\lstinline{longjmp}, as they do not interact well with structured exception handling \autocite{using-setjmp-and-longjmp}.
 
 % VALIDATION
 A desired characteristic is that the produced \acp{eicfg} are \emph{overapproximative}: every concrete path, i.e., every path possible during dynamic execution, is included in the \ac{eicfg}.
-We informally argue that the abstract semantics that are symbolically executed overapproximate the concrete semantics~\cite{cousot1996abstract}.
+We informally argue that the abstract semantics that are symbolically executed overapproximate the concrete semantics \autocite{cousot1996abstract}.
 To strengthen this claim, we validated our abstract transition rules for exception handling against the concrete implementations of the corresponding library functions.
 This was done by fuzzing abstract states, concretization to a concrete CPU state, running the function under validation in an instrumented binary, observing the CPU state, and verifying that the concrete transition is correctly contained in the abstract transition.
 %This was done by \emph{fuzzing} dynamically instrumented test binaries using generated abstract start and end states.
 We informally argue that our approach is overapproximative unless an indirection cannot be resolved, which is clearly marked in the \ac{eicfg}.
-%The methodology is informally based on abstract interpretation\cite{cousot1996abstract}, where an abstract transition relation overapproximates concrete transitions.
+%The methodology is informally based on abstract interpretation \autocite{cousot1996abstract}, where an abstract transition relation overapproximates concrete transitions.
 
 
 \subsection{Results and Organization}
