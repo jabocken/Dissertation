@@ -12,8 +12,7 @@ We applied \ac{hg} extraction to:
 \begin{enumerate}
   \item several stripped binaries of CoreUtils as found in a standard Ubuntu distribution;
   \item a binary with a manually induced buffer overflow, confirming that no \ac{hg} is extracted; and
-  \item all 63 \todo{65?} \gls{arch} binaries and all 2151 functions from the 25 shared objects we identified in the Xen hypervisor.
-  \todo{make nums gls entries with number type?}
+  \item all \gls{bin-total} \gls{arch} binaries and all \gls{lib-func-total} functions from the 25 shared objects we identified in the Xen hypervisor.
   \todo{gls entry for hypervisor?}
 \end{enumerate}
 This \namecref{hg-extraction} % make lnamecref if switching to capitalize
@@ -47,12 +46,12 @@ Xen is a suitable case study because of two things:
     Total & \glssymbol{bin-total} & \glssymbol{bin-success} & 3 & 13 & 1 & 18\,124 & 18\,562 & 56 & 26 & 11 & 0:35:59 \\
     \midrule
     & \multicolumn{5}{c}{\thead{Library functions}} &&&&&&\\
-    \texttt{\dots/lib} & 1907 & 1874 & 29 & 0 & \glssymbol{lib-func-fail} & 353\,433 & 362\,635 & 1 & 244 & 600 & 15:28:17 \\
+    \texttt{\dots/lib} & 1907 & 1874 & 29 & 0 & \glssymbol{lib-func-timeout} & 353\,433 & 362\,635 & 1 & 244 & 600 & 15:28:17 \\
     \texttt{\dots/xenfsimage} & 109 & 106 & 3 & 0 & 0 & 17\,184 & 17\,683 & 0 & 0 & 27 & 1:58:36 \\
     \texttt{\dots/dist-packages} & 16 & 16 & 0 & 0 & 0 & 379 & 407 & 0 & 0 & 3 & 0:00:06 \\
     \texttt{\dots/lowlevel} & 119 & 119 & 0 & 0 & 0 & 10\,651 & 10\,799 & 0 & 0 & 90 & 0:08:43 \\
     \midrule
-    Total & \glssymbol{lib-func-total} & \glssymbol{lib-func-success} & 32 & 0 & \glssymbol{lib-func-fail} & 381\,647 & 391\,524 & 1 & 244 & 720 & 17:35:42 \\
+    Total & \glssymbol{lib-func-total} & \glssymbol{lib-func-success} & 32 & 0 & \glssymbol{lib-func-timeout} & 381\,647 & 391\,524 & 1 & 244 & 720 & 17:35:42 \\
     \bottomrule
   \end{tabular}\\
   \begin{tabular}{rcl rcl rcl}
@@ -161,7 +160,7 @@ Interestingly, the longest verification time did \emph{not} inolve the largest f
 It was instead an outlier.
 Function \lstinline|libxl_domain_build_info_gen_json| took around \num{2} hours despite having only \num{1584} instructions.
 
-As shown in \cref{tab:xen} and as previously mentioned in \cref{sec:failure}, out of the \glssymbol{lib-func-total} library functions, we had \glssymbol{lib-func-fail} timeouts.\footnote{%
+As shown in \cref{tab:xen} and as previously mentioned in \cref{sec:failure}, out of the \glssymbol{lib-func-total} library functions, we had \glssymbol{lib-func-timeout} timeouts.\footnote{%
   Because they timed out, they were not included in the 15:28 total verification time.%
 }
 The functions that timed out have a large number of states that could not be joined, causing explosion in the number of states to be explored.
