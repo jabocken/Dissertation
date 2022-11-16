@@ -222,7 +222,7 @@ The actual definitions of those relations are as follows.
   \index{memory!region!separation}
   notation $r_0\gls{separate}r_1$, if and only if the following is true:
   \begin{equation*}
-    s_0=0\vee s_1=0\vee a_0+s_0\leq a_1\vee a_1+s_1\leq a_0.
+    s_0=0\lor s_1=0\lor a_0+s_0\leq a_1\lor a_1+s_1\leq a_0.
   \end{equation*}
 \end{definition}
 This means that, if at least one of the regions has zero size
@@ -235,7 +235,7 @@ If those regions are not separate, they \emph{overlap}.
   \index{memory!region!enclosure}
   if and only if:
   \begin{equation*}
-    a_0\geq a_1\wedge a_0+s_0\leq a_1+s_1.
+    a_0\geq a_1\land a_0+s_0\leq a_1+s_1.
   \end{equation*}
 \end{definition}
 This means that, if the lower bound of the first region is the same as
@@ -424,11 +424,11 @@ rules that infer properties over smaller regions from larger ones are needed.
   \begin{align}
     r &\gls{enclosed}r \\
     r_0\gls{separate}r_1 &= r_1\gls{separate}r_0 \\
-    r_0\gls{enclosed}r_2\wedge r_1\gls{enclosed}r_3\wedge r_2\gls{separate}r_3 &\longrightarrow r_0\gls{separate}r_1 \\
-    r_0\gls{enclosed}r_1\wedge r_1\gls{enclosed}r_0 &\longrightarrow r_0=r_1 \\
-    r_0\gls{enclosed}r_1\wedge r_1\gls{enclosed}r_2 &\longrightarrow r_0\gls{enclosed}r_2 \\
-    r_0\bowtie r_1\wedge\snd{r_0}\neq 0\wedge\snd{r_1}\neq 0 &\longrightarrow r_0 \not\sqsubseteq r_1 \\
-    \seps(M)\wedge(i_0,r_0),(i_1,r_1)\in M\wedge i_0\neq i_1 &\longrightarrow r_0\gls{separate}r_1
+    r_0\gls{enclosed}r_2\land r_1\gls{enclosed}r_3\land r_2\gls{separate}r_3 &\longrightarrow r_0\gls{separate}r_1 \\
+    r_0\gls{enclosed}r_1\land r_1\gls{enclosed}r_0 &\longrightarrow r_0=r_1 \\
+    r_0\gls{enclosed}r_1\land r_1\gls{enclosed}r_2 &\longrightarrow r_0\gls{enclosed}r_2 \\
+    r_0\bowtie r_1\land\snd{r_0}\neq 0\land\snd{r_1}\neq 0 &\longrightarrow r_0 \not\sqsubseteq r_1 \\
+    \seps(M)\land(i_0,r_0),(i_1,r_1)\in M\land i_0\neq i_1 &\longrightarrow r_0\gls{separate}r_1
   \end{align}
 \end{subequations}
 \Cref{rules_sep_enc} shows the inference rules for properties over memory regions.

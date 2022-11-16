@@ -94,7 +94,7 @@ describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!trip
   In a more formal form and using $C(\sigma)$ to represent the result
   of executing program~$C$ from initial state~$\sigma$, we have:
   \begin{equation*}
-    \htriple{P}C{Q}\equiv P(\sigma)\wedge C(\sigma)\neq\infloop\longrightarrow
+    \htriple{P}C{Q}\equiv P(\sigma)\land C(\sigma)\neq\infloop\longrightarrow
     Q(C(\sigma)).
   \end{equation*}
 \end{definition}
@@ -483,17 +483,17 @@ This section covers some of the important \gls{arch} instructions.
   \item[jnb] Jump if not below ($\neg\mathtt{CF}$)
   \item[jae] Jump if above or equal
   \item[jnc] Jump if not carry
-  \item[jbe] Jump if below or equal ($\mathtt{CF}\vee\mathtt{ZF}$)
+  \item[jbe] Jump if below or equal ($\mathtt{CF}\lor\mathtt{ZF}$)
   \item[jna] Jump if not above
-  \item[ja] Jump if above ($\neg\mathtt{CF}\wedge\neg\mathtt{ZF}$)
+  \item[ja] Jump if above ($\neg\mathtt{CF}\land\neg\mathtt{ZF}$)
   \item[jnbe] Jump if not below or equal
   \item[jl] Jump if less ($\mathtt{SF}\neq\mathtt{OF}$)
   \item[jnge] Jump if not greater or equal
   \item[jge] Jump if greater or equal ($\mathtt{SF}=\mathtt{OF}$)
   \item[jnl] Jump if not less
-  \item[jle] Jump if less or equal ($\mathtt{ZF}\vee\mathtt{SF}\neq\mathtt{OF}$)
+  \item[jle] Jump if less or equal ($\mathtt{ZF}\lor\mathtt{SF}\neq\mathtt{OF}$)
   \item[jng] Jump if not greater
-  \item[jg] Jump if greater ($\neg\mathtt{ZF}\wedge\mathtt{SF}=\mathtt{OF}$)
+  \item[jg] Jump if greater ($\neg\mathtt{ZF}\land\mathtt{SF}=\mathtt{OF}$)
   \item[jnle] Jump if not less or equal
   \item[jp] Jump if parity ($\mathtt{PF}$)
   \item[jpe] Jump if parity even
