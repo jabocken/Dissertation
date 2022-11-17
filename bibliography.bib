@@ -1882,7 +1882,7 @@
   organization={Dunod}
 }
 
-@inproceedings{cousot1977aiu,
+@inproceedings{cousot1977abstract,
   title = {Abstract Interpretation: A Unified Lattice Model for Static Analysis of Programs by Construction or Approximation of Fixpoints},
   author = {Cousot, Patrick and Cousot, Radhia},
   booktitle = {Principles of Programming Languages},
@@ -2140,6 +2140,58 @@
   xdata={ieee}
 }
 
+@inproceedings{wartell2014shingled,
+  title={Shingled Graph Disassembly: Finding the Undecideable Path},
+  author={Wartell, Richard and Zhou, Yan and Hamlen, Kevin W. and Kantarcioglu, Murat},
+  booktitle={Pacific-Asia Conference on Knowledge Discovery and Data Mining},
+  pages={273--285},
+  year=2014,
+  organization={Springer},
+  doi={10.1007/978-3-319-06608-0_23}
+}
+
+@inproceedings{miller2019probabilistic,
+  title={Probabilistic Disassembly},
+  author={Miller, Kenneth and Kwon, Yonghwi and Sun, Yi and Zhang, Zhuo and Zhang, Xiangyu and Lin, Zhiqiang},
+  booktitle={2019 IEEE/ACM 41st International Conference on Software Engineering (ICSE)},
+  pages={1187--1198},
+  year=2019,
+  organization={IEEE},
+  doi={10.1109/ICSE.2019.00121}
+}
+
+@inproceedings{kruegel2004static,
+  title={Static Disassembly of Obfuscated Binaries},
+  author={Kruegel, Christopher and Robertson, William and Valeur, Fredrik and Vigna, Giovanni},
+  booktitle={USENIX Security Symposium},
+  volume=13,
+  pages={18--18},
+  year=2004
+}
+
+@inproceedings{verbeek2020sound,
+  title = {Sound {C} Code Decompilation for a subset of x86-64 Binaries},
+  author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
+  booktitle = {Proceedings of the 18th International Conference on Software Engineering and Formal Methods},
+  series = {SEFM 2020},
+  year = 2020,
+  month = sep,
+  day = {14--18},
+  location = {Amsterdam, The Netherlands},
+  url = {https://ssrg-vt.github.io/FoxDec/}
+}
+
+@inproceedings{fokin2011smartdec,
+  title={{SmartDec}: Approaching {C++} Decompilation},
+  author={Alexander Fokin and Egor Derevenetc and Alexander Chernov and Katerina Troshina},
+  booktitle={2011 18th Working Conference on Reverse Engineering},
+  year=2011,
+  pages={347--356},
+  doi={10.1109/WCRE.2011.49},
+  ISSN={2375-5369},
+  month=oct
+}
+
 @article{horspool1980approach,
   title={An approach to the Problem of Detranslation of Computer Programs},
   author={Horspool, R. Nigel and Marovac, Nenad},
@@ -2246,9 +2298,9 @@
 }
 
 @inproceedings{gedich2015switch,
-  title={Improved Algorithm for Identification of Switch Tables in Executable Code}, 
+  title={Improved Algorithm for Identification of Switch Tables in Executable Code},
   author={Gedich, Andrei and Lazdin, Artur},
-  booktitle={2015 17th Conference of Open Innovations Association (FRUCT)}, 
+  booktitle={2015 17th Conference of Open Innovations Association (FRUCT)},
   year=2015,
   volume={},
   number={},
@@ -2299,6 +2351,16 @@
   month=may,
   year=2022,
   note={Accessed May 18, 2022}
+}
+
+@misc{binary-ninja-decompiler,
+  title={Binary Ninja},
+  author={Jordan Wiens},
+  url={https://binary.ninja/2020/05/11/decompiler-stable-release.html},
+  year=2020,
+  month=may,
+  day=11,
+  note={Accessed 2020-07-06}
 }
 
 @misc{ida,
@@ -2391,9 +2453,9 @@
 % volume={},
 % number={},
 @INPROCEEDINGS{pang2021sok,
-  title={{SoK}: All You Ever Wanted to Know About x86/x64 Binary Disassembly But Were Afraid to Ask}, 
+  title={{SoK}: All You Ever Wanted to Know About x86/x64 Binary Disassembly But Were Afraid to Ask},
   author={Pang, Chengbin and Yu, Ruotong and Chen, Yaohui and Koskinen, Eric and Portokalidis, Georgios and Mao, Bing and Xu, Jun},
-  booktitle={2021 IEEE Symposium on Security and Privacy (SP)}, 
+  booktitle={2021 IEEE Symposium on Security and Privacy (SP)},
   year=2021,
   pages={833--851},
   doi={10.1109/SP40001.2021.00012}
@@ -2482,4 +2544,153 @@
   articleno = 146,
   numpages = 24,
   keywords = {stack unwinding, DWARF, debugging}
+}
+
+@inproceedings{kumar2018software,
+  title={Software Verification with {ITPs} Should Use Binary Code Extraction to Reduce the {TCB}},
+  author={Kumar, Ramana and Mullen, Eric and Tatlock, Zachary and Myreen, Magnus O.},
+  booktitle={International Conference on Interactive Theorem Proving},
+  pages={362--369},
+  year=2018,
+  organization={Springer},
+  doi={10.1007/978-3-319-94821-8_21}
+}
+
+@incollection{klein2010refinement,
+  title = {Refinement in the Formal Verification of the {seL4} Microkernel},
+  author = {Klein, Gerwin and Sewell, Thomas and Winwood, Simon},
+  editor = {Hardin, David S.},
+  bookTitle = {Design and Verification of Microprocessor Systems for High-Assurance Applications},
+  year = 2010,
+  publisher = {Springer Science+Business Media, LLC},
+  address = {Boston, MA},
+  pages = {323--339},
+  isbn = {978-1-4419-1539-9},
+  doi = {10.1007/978-1-4419-1539-9_11},
+}
+
+@InProceedings{kamkin2020deductive,
+  title="Deductive Binary Code Verification Against Source-Code-Level Specifications",
+  author="Kamkin, Alexander and Khoroshilov, Alexey and Kotsynyak, Artem and Putro, Pavel",
+  editor="Ahrendt, Wolfgang and Wehrheim, Heike",
+  booktitle="Tests and Proofs",
+  year=2020,
+  publisher="Springer International Publishing",
+  address="Cham",
+  pages="43--58",
+  doi= {10.1007/978-3-030-50995-8_3},
+}
+
+@inproceedings{verbeek2019establishing,
+  title={Establishing a refinement relation between binaries and abstract code},
+  author={Verbeek, Freek and Bockenek, Joshua and Bharadwaj, Abhijith and Ravindran, Binoy and Roessle, Ian},
+  booktitle={Proceedings of the 17th ACM-IEEE International Conference on Formal Methods and Models for System Design},
+  pages={1--5},
+  year={2019},
+  doi={10.1145/3359986.3361215}
+}
+
+@inproceedings{verbeek2020automated,
+  title = {Highly Automated Formal Proofs over Memory Usage of Assembly Code},
+  author = {Freek Verbeek and Joshua Bockenek and Binoy Ravindran},
+  booktitle = {Proceedings of the 25th International Conference on Tools and Algorithms for the Construction and Analysis of Systems},
+  series = {TACAS 2020},
+  year = 2020,
+  month = jul,
+  day = 2,
+  pages= {98--117},
+  doi={10.1007/978-3-030-45237-7_6}
+}
+
+@inproceedings{bardin2011bincoa,
+  title={The BINCOA framework for binary code analysis},
+  author={Bardin, S{\'e}bastien and Herrmann, Philippe and Leroux, J{\'e}r{\^o}me and Ly, Olivier and Tabary, Renaud and Vincent, Aymeric},
+  booktitle={International Conference on Computer Aided Verification},
+  pages={165--170},
+  year={2011},
+  organization={Springer},
+  doi ={10.1007/978-3-642-22110-1_13}
+}
+
+@inproceedings{daniel2020binsec,
+  title={Binsec/rel: Efficient relational symbolic execution for constant-time at binary-level},
+  author={Daniel, Lesly-Ann and Bardin, S{\'e}bastien and Rezk, Tamara},
+  booktitle={2020 IEEE Symposium on Security and Privacy (SP)},
+  pages={1021--1038},
+  year={2020},
+  organization={IEEE},
+  doi={10.1109/SP40000.2020.00074}}
+}
+
+@inproceedings{reinbacher2011test,
+  title={Test-case generation for embedded binary code using abstract interpretation},
+  author={Reinbacher, Thomas and Brauer, J{\"o}rg and Horauer, Martin and Steininger, Andreas and Kowalewski, Stefan},
+  booktitle={Sixth Doctoral Workshop on Mathematical and Engineering Methods in Computer Science (MEMICS'10)--Selected Papers},
+  year={2011},
+  organization={Schloss Dagstuhl-Leibniz-Zentrum fuer Informatik},
+  doi =	{10.4230/OASIcs.MEMICS.2010.101}
+}
+
+@inproceedings{redini2019b,
+  title={Bin{T}rimmer: Towards static binary debloating through abstract interpretation},
+  author={Redini, Nilo and Wang, Ruoyu and Machiry, Aravind and Shoshitaishvili, Yan and Vigna, Giovanni and Kruegel, Christopher},
+  booktitle={International Conference on Detection of Intrusions and Malware, and Vulnerability Assessment},
+  pages={482--501},
+  year={2019},
+  organization={Springer},
+  doi={10.1007/978-3-030-22038-9_23 },
+}
+
+@Inproceedings{steffen2011active,
+  title="Introduction to Active Automata Learning from a Practical Perspective",
+  author="Steffen, Bernhard and Howar, Falk and Merten, Maik",
+  editor="Bernardo, Marco and Issarny, Val\'erie",
+  bookTitle="Formal Methods for Eternal Networked Software Systems: 11th International School on Formal Methods for the Design of Computer, Communication and Software Systems",
+  series="SFM 2011",
+  year=2011,
+  month=jun,
+  day="13--18",
+  location="Bertinoro, Italy",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="256--296",
+  isbn="978-3-642-21455-4",
+  doi="10.1007/978-3-642-21455-4\_8"
+}
+
+@inproceedings{fiter2017ssh,
+  author = {Fiter\u{a}u-Bro\c{s}tean, Paul and Lenaerts, Toon and Poll, Erik and de~Ruiter, Joeri and Vaandrager, Frits and Verleg, Patrick},
+  title = {Model Learning and Model Checking of {SSH} Implementations},
+  year = 2017,
+  isbn = 9781450350778,
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/3092282.3092289},
+  booktitle = {Proceedings of the 24th ACM SIGSOFT International SPIN Symposium on Model Checking of Software},
+  pages = {142--151},
+  numpages = 10,
+  location = {Santa Barbara, CA, USA},
+  series = {SPIN 2017}
+}
+
+@inproceedings{raffelt2005learnlib,
+  author = {Raffelt, Harald and Steffen, Bernhard and Berg, Therese},
+  title = {LearnLib: A Library for Automata Learning and Experimentation},
+  year = 2005,
+  isbn = 1595931481,
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/1081180.1081189},
+  booktitle = {Proceedings of the 10th International Workshop on Formal Methods for Industrial Critical Systems},
+  pages = {62--71},
+  numpages = 10,
+  location = {Lisbon, Portugal},
+  series = {FMICS ’05}
+}
+
+@mastersthesis{kerkers2017assessing,
+  title={Assessing the Security of {IEC} 60870-5-104 Implementations Using Automata Learning},
+  author={Kerkers, Max},
+  year=2017,
+  school={University of Twente}
 }

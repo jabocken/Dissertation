@@ -1,4 +1,6 @@
 \chapter{Related Work}\label{ch:related}
+\todo{Treat \ac{sloc} as a unit?}
+
 Verification of assembly has been an active field of research for decades.
 Binary analysis in general, both static and dynamic, has a rich history as well.
 This chapter covers some of that history.
@@ -409,7 +411,7 @@ has also been an active research field for decades
 This section covers some of the projects in that field from the past twenty years.
 
 The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
-provides a tool called Vine which lifts x86 instructions to its own \ac{il} for assembly
+provides a tool called Vine that lifts x86 instructions to its own \ac{il} for assembly
 in order to perform analyses on a higher level.
 That language is fully-featured and can itself be compiled back down to assembly
 if so desired.
@@ -515,18 +517,156 @@ efficient but incomplete techniques, such as depth-bounded searches.
   \end{tabular}
 \end{table*}
 
-\section{(Other) Stuff from HG paper}
+\section{Lifting \Acs*{cfg} from Binaries}
 \todo\dots
 
-\section{Abstract Interpretation}
-\todo{any?}
+\subsection{Disassembly}
+Disassemblers are tools that take a binary and lift it to an assembly language.
+Traditionally, there are two main methods of disassembly: \emph{linear sweep}
+and \emph{recursive traversal}~\cite{schwartz2002disassembly}.
+Modern disassemblers may combine the two or use other techniques like probabilistic~\cite{wartell2011differentiating,wartell2014shingled,miller2019probabilistic} or conflict analyses~\cite{khadra2016speculative}.
+%Linear sweep disassemblers, such as GNU's \lstinline|objdump|, scan through a binary linearly
+%in areas where code is typically encountered
+%to extract instructions~\cite{schwartz2002disassembly}.
+%Linear sweep may be unsound.
+%For example, unsoundness may occur when working with variable-length instructions (such as x86), with ISAs that do not have strict alignment requirements and when a binary contains mixed code and data.
+%No reachability analysis is done to determine which bytes are actually reachable.
+%Concretely, it considers the instruction after a \texttt{call} reachable by default, without doing reachability analysis.
+%In contrast, our technique does not analyze that instruction until it is known that the call returns.
+%By following control flow rather than making a best guess of instruction addresses, our technique can handle variable-length instructions and any alignment.
+Linear sweep algorithms are easy to implement but well-known to be unsound~\cite{schwartz2002disassembly}.
+Recursive traversal algorithms are more complex than linear sweep.
+They operate by starting from some initial instruction and then trace the possible paths of execution, interpreting instructions as they proceed~\cite{schwartz2002disassembly,kruegel2004static}.
+Our work is an example of a recursive traversal disassembler.
+This allows higher accuracy than linear sweep.
+%For example, cases where a byte-sequence may be executable in different ways depending on the exact location in that byte-sequence where execution starts (such as jumping to the start versus jumping into the middle).
+%They will also exclude code that is not executed.
+The major challenge of recursive traversal is properly dealing with indirect calls and jumps.
+A tool that primarily uses recursive traversal is IDA~\cite{ida}, intended for interactive debugging and reverse engineering.
+Typically, existing approaches to recursive traversal use heuristics or guesses to approximate indirect branches.
+
+Probabilistic approaches to disassembly~\cite{khadra2016speculative,miller2019probabilistic} include machine learning techniques, such as BYTEWEIGHT~\cite{bao2014byteweight} or the works of Wartell et al.~\cite{wartell2011differentiating,wartell2014shingled}.
+In general, these techniques attempt to identify sequences of bytes as instructions
+based on their context, using large amounts of \emph{training sets} as a guide.
+%The approach of Miller et al.~\cite{miller2019probabilistic} identifies the probability of byte sequences representing instructions based on the context.
+%It uses manually derived \emph{hints} rather than training sets.
+%Spedi provides a speculative, conflict analysis-based approach~\cite{khadra2016speculative}.
+%This approach involves scanning through a binary and speculatively extracting basic blocks of instructions and then eliminating infeasible possibilities via a conflict analysis process.
+%While it is able to handle switch statements (jump tables), it does not handle other types of indirection.
+The main disadvantage of probabilistic/speculative techniques is that they inherently cannot provably overapproximate the behavior of the binary.
+Although they typically have very few cases of underapproximation, such cases are not impossible.
+
+The key difference between our work and existing disassemblers is that:
+\begin{enumerate}
+  \item no existing disassembler aims at providing a guarantee that the lifted representation is a sound overapproximation of the binary; and
+  \item our approach goes beyond disassembly, providing both control flow and invariants that are sufficiently strong enough to prove control flow.
+\end{enumerate}
+The cost of our approach is that it may fail, whereas other approaches are able to guess or use heuristics to continue.
+
+\subsection{Binary Decompilation}
+A decompiler takes a binary as input and lifts to a higher-level representation.
+Ghidra \autocite{ghidra}, RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to C code.
+SmartDec \autocite{fokin2011smartdec} lifts to \Cpp{} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM.
+Ramblr \autocite{wang2017ramblr} lifts a binary to \emph{symbolized} assembly, where concrete addresses are replaced with symbolic labels.
+CodeSurfer/x86 \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}
+provides a graphical interface for lifting binaries
+to an intermediate representation
+and interactively analyzing them.
+Decompilers are often integrated into reverse engineering
+and program exploration tools
+such as IDA Pro, % \fturl{https://www.hex-rays.com/products/decompiler/},
+\todo{citation}
+Binary Ninja \autocite{binary-ninja-decompiler}, and Ghidra.
+
+A key factor in decompilation approaches, and also in other approaches that aim at producing control flow graphs or dataflow analyses, is that many of them assume that disassembly has been done by an external tool that is assumed to be sound.
+Our algorithm thus \emph{complements} these works.
+%For example, McSema requires an external source of control flow information, which can be generated from our solution.
+
+\Ac{dil} \autocite{myreen2007hoare,myreen2012decompilation}
+uses operational semantics of machine code to lift binaries into a \emph{functional} representation in \ac{hol}.
+It is a technique that can be used in formal verification contexts. % , as the functional representation is overapproximative.
+Howeer, \ac{dil} does not deal with indirect branching and \emph{assumes} that return addresses are not overwritten.
+In their own words, their ``heuristic is easily confused by computed branches'' \autocite{myreen2008decompilation}.
+In contrast, our lifting approach supports various forms of indirect branches and can detect potentially-overwritten return addresses.
+
+\subsection{Relation to Binary Verification}
+Binary verification techniques aim to prove properties on the machine code level \autocite{kumar2018software}.
+Typically, binary verification aims at proving that the binary is correct with respect to some higher-level artifact (source code or a specification).
+\Textcite{klein2009sel4,klein2010refinement,sewell2013tvv} used a refinement-based approach to verify the seL4 microkernel binary.
+\todo{seL4 citation or glosary entry?}
+\Textcite{kamkin2020deductive} developed a methodology for verifying that the machine code of RISC-V binaries satisfy annotations in the binaries' source code.
+\todo{glossary entry for RISC-V?}
+For a top-down approach, proof-carrying code \autocite{necula1997proof}
+integrates a proof of correctness into the binary that is verified at runtime.
+If the proof fails, the binary cannot be executed.
+This does require some additional functionality, with both the compiler and the program host needing to support it.
+
+In contrast, our improved control flow extraction approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
+In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019establishing}.
+\todo{maybe flesh the Goel bits out again?}
+\Textcite{verbeek2020automated} provided a binary verification methodology tailored to memory preservation properties, with a ``manual effort vs. instruction count ratio'' of roughly 1 to 11.\footnote{%
+  This is the paper version of \cref{ch:syntax}.
+}
+\Textcite{tan2015auspice} provide a fully automated method, AUSPICE, that takes about \SI6\hour\ for a \num{533}-instruction string search algorithm.
+Our approach \emph{complements} formal verifiers that generate invariants for proving functional correctness.
+\begin{remark}[Lifting in the \acs*{tcb}]
+  The invariants our approach generates do not contain enough information to prove full functional correctness; they are tailored for control flow and pointer relations.
+  The tool instead serves to remove the lifting process from the \ac{tcb}.
+  This is useful because verification based on untrustworthy disassemblers and control-flow reconstruction is itself untrustworthy.
+\end{remark}
+
+\subsection{Abstract Interpretation}
+The general problem of lifting binary code from a string of zeroes and ones to a higher-level form is known to be undecidable.
+Thus, approximate solutions have been extensively studied, especially in the framework of \emph{abstract interpretation} \autocite{cousot1977abstract}.
+\todo{glossary entry?}
+Abstract interpretation provides gives a mathematical foundation for reasoning over abstractions ov.
+
+%Binary analysis is an actively studied application of abstract interpretation, which gives mathematical foundations to reason about approximations and their computations.
+\Textcite{bardin2011bincoa,daniel2020binsec} provide Binsec, which utilizes abstract interpretation in the process of information flow analysis for cryptographic implementations.
+%Zhang et al. provide a path sampling algorithm and use abstract interpretation to prune infeasible paths.
+\Textcite{reinbacher2011test} use abstract interpretation in a similar fashion for binary-level test case generation.
+These works aim at orthogonal usages of abstract interpretation with respect to this paper, and \emph{assume} availability of a tool that provides overapproximative control flow.
+Our approach is thus highly complementary to all these works.
+
+BinTrimmer, developed by \textcite{redini2019b}, uses abstract interpretation to refine \acp{cfg} from binaries for debloating.
+Its deal with indirect branches in an overapproximative fashion.
+The key distinction between \todo{the work presented in } and BinTrimmer is that it is \emph{solely} concerneed with indirections.
+That is, it is not concerned with proving various other properties ovr asembly.
+that a return address is not overwritten, with stack overflows, jump-in-the-middle behavior, or providing invariants sufficiently strong to serve as evidence for overapproximation.
+Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \ac{sloc}, in contrast to our Xen Hypervisor case study.
+
+\subsection{Automata Learning}
+Automata learning algorithms are a different approach to state machine extraction.
+They perform black-box testing in order to \emph{learn} the behavior of a system \autocite{steffen2011active}.
+For example, \textcite{fiter2017ssh} used automata learning to infer the functionality of three \ac{ssh} server implementations.
+Their learning methodology was based on LearnLib \autocite{raffelt2005learnlib}, an automata learning library.
+Automata learning typically produces abstract high-level models concerning the in/output relations at the protocol level.
+Their \emph{mapper}, which maps back and forth from abstract inputs/outputs to concrete packages to be sent to/received from the server,
+was based on the Paramiko\fturl{https://www.paramiko.org/}
+\ac{ssh} client implementation.
+\todo{Paramiko citation?}
+
+\Textcite{kerkers2017assessing} performed security analysis
+of power distribution ICS using automata learning.
+\todo{acronym}
+LearnLib was again used to provide the necessary learning features.
+In addition to implementing a mapper to support the necessary ICS
+protocols, Kerkers also had to provide software and hardware testing interfaces for the physical ICS that were under test.
+
+Automata learning techniques can be used to infer state machines when source code is not available.
+However, they do not provide formal statements of overapproximation.
+They also require development of a \emph{mapper}, which translates between the learner and the black box.
+Developing such a mapper is a significant per-binary manual effort.
+Its implementation has a severe impact on the validity of the inferred state machine.
+In contrast, our disassembly approach does not require such manual effort.
 
 \section{Exception Handling Analysis}
-\todo{figure out if anything is shared with the above. It isn't with }
+\todo{figure out if anything is shared with the above. Most don't seem to be, but still}
 
 The two main approaches to analyzing exceptional behavior for \Cpp\ programs, and behavioral program analysis in general, are bottom-up and top-down.
 Bottom-up tools include decompilers and disassemblers, as well as this work.
-Top-down tools focus on analysis of source code or other higher-level representations. This section focuses on bottom-up approaches.
+Top-down tools focus on analysis of source code or other higher-level representations.
+%This section focuses on bottom-up approaches.
 
 \subsection{Bottom-Up Approaches: Decompilers and Disassemblers}
 We provide a summary of such works in \cref{tab:comparisons}.
@@ -550,7 +690,7 @@ This is because they rely on concrete runtime behavior and evaluating all possib
       Ghidra & Statically & Dynamically & \autocite{rohleder2019ghidra,pang2021sok,liu2020correctness} \\
       McSema \autocite{mcsema,mcsema-exceptions} & Statically & No & \autocite{pang2021sok,dasgupta2020scalable} \\
       RetDec & Unknown & No & \autocite{liu2020correctness} \\
-      \bottomrule 
+      \bottomrule
     \end{tabular}
     \begin{tablenotes}
       \item[\dag] Can it identify the landing pads in a function?
@@ -568,8 +708,9 @@ Its built-in debugger that can perform unwinding is also ultimately just an inte
 which perform dynamic analysis and instrumentation. Traces are also supported,
 but those require the program to have been run previously.
 
-McSema is an executable lifter \autocite{mcsema}: It lifts machine code to LLVM bitcode.
-It provides intraprocedural exception analysis by generating the LLVM representation for exception landing pads \autocite{mcsema-exceptions}.  However, it does not perform interprocedural analysis as it merely lifts to LLVM bitcode, rather than tracing the execution of exceptions from throw site to landing pad.
+McSema \autocite{mcsema} is back too! It is relevant because its decompilation process lifts machine code to LLVM bitcode.
+This allows providing intraprocedural exception analysis by generating the LLVM representation for exception landing pads \autocite{mcsema-exceptions}.
+However, it does not perform interprocedural analysis as it merely lifts to LLVM bitcode rather than tracing the execution of exceptions from throw site to landing pad.
 
 RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-LLVM, though it also supports C output.
 However, we could not find information about its ability, or lack thereof, to deal with exception handling. We also were unable to successfully apply it to programs using \Cpp\ exceptions.
@@ -592,27 +733,27 @@ They cannot be used to analyze already-compiled programs with exceptions.
 Java programs use exceptions as well. \Textcite{kechagia2019misuse} provide a tool for identifying unhandled \ac{api} misuses via static exception propagation and test case generation. This differs from our work as we detect in-program exceptional behavior, not exceptions produced by \ac{api} or other external calls.
 
 \subsection{Tools that use \texttt{libunwind}}
-A standard library for instrumented/(pseudo-?)dynamic unwinding is
-\href{https://www.nongnu.org/libunwind/}{libunwind}. \todo{make a citation instead}
-It has been utilized by tools such as \url{https://dl.acm.org/doi/abs/10.1145/2660267.2660281},
-\todo{a few others}.
+A standard library for instrumented/dynamic unwinding is
+\href{https://www.nongnu.org/libunwind/}{libunwind}. \todo{make a citation instead, clean up more}
+It has been utilized by tools such as \url{https://dl.acm.org/doi/abs/10.1145/2660267.2660281}.
+%\todo{a few others}.
 It can function without source code. However, as an instrumenting library, it requires a running program and thus must operate dynamically.
 
-Our tool, as well as all of the other bottom-up analysis tools mentioned above, assumes both the existence and correctness of the \inlineasm{.eh_frame} and \inlineasm{.gcc_except_table} \ac{elf} sections.
+Our final tool, as well as all of the other bottom-up analysis tools mentioned above, assumes both the existence and correctness of the \inlineasm{.eh_frame} and \inlineasm{.gcc_except_table} \ac{elf} sections.
 However, neither of those cases are guaranteed.
-To deal with such scenarios, \textcite{bastian2019dwarf} provide tools for the validation as well as synthesis of exception-handling-related table-based unwinding information. 
+To deal with such scenarios, \textcite{bastian2019dwarf} provide tools for the validation as well as synthesis of exception-handling-related table-based unwinding information.
 
-\subsection{Component-based Approaches}
-There are also tools for validating and verifying fault handling behavior
-for software systems that involve high-level component-based development:
- 
-\todo{figure out if this is worth it}
-
-\url{https://www.researchgate.net/publication/3921585_Exception_handling_in_component-based_system_development},
-
-\url{https://link.springer.com/chapter/10.1007/11572329_8},
-
-\url{https://journal-bcs.springeropen.com/articles/10.1007/BF03192362}.
+%\subsection{Component-based Approaches}
+%There are also tools for validating and verifying fault handling behavior
+%for software systems that involve high-level component-based development:
+%
+%\todo{figure out if this is worth it}
+%
+%\url{https://www.researchgate.net/publication/3921585_Exception_handling_in_component-based_system_development},
+%
+%\url{https://link.springer.com/chapter/10.1007/11572329_8},
+%
+%\url{https://journal-bcs.springeropen.com/articles/10.1007/BF03192362}.
 
 \section{Summary}
 This section covered some of the work related to that presented in this dissertation.
