@@ -6,9 +6,6 @@ formal methods (\cref{se:formal_methods}),
 assembly language (\cref{se:assembly_language}),
 and structured exception handling (\cref{se:structured_exceptions}).
 
-% Hiding while working on new content
-%\begin{comment}
-
 %The section on formal methods explains formal semantics,
 %symbolic execution, and the basics of Floyd and Hoare proving.
 %It also talks a bit about \ac{smt} solvers, model checking, and theorem proving.
@@ -94,7 +91,7 @@ describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!trip
   In a more formal form and using $C(\sigma)$ to represent the result
   of executing program~$C$ from initial state~$\sigma$, we have:
   \begin{equation*}
-    \htriple{P}C{Q}\equiv P(\sigma)\wedge C(\sigma)\neq\infloop\longrightarrow
+    \htriple{P}C{Q}\equiv P(\sigma)\land C(\sigma)\neq\infloop\longrightarrow
     Q(C(\sigma)).
   \end{equation*}
 \end{definition}
@@ -483,17 +480,17 @@ This section covers some of the important \gls{arch} instructions.
   \item[jnb] Jump if not below ($\neg\mathtt{CF}$)
   \item[jae] Jump if above or equal
   \item[jnc] Jump if not carry
-  \item[jbe] Jump if below or equal ($\mathtt{CF}\vee\mathtt{ZF}$)
+  \item[jbe] Jump if below or equal ($\mathtt{CF}\lor\mathtt{ZF}$)
   \item[jna] Jump if not above
-  \item[ja] Jump if above ($\neg\mathtt{CF}\wedge\neg\mathtt{ZF}$)
+  \item[ja] Jump if above ($\neg\mathtt{CF}\land\neg\mathtt{ZF}$)
   \item[jnbe] Jump if not below or equal
   \item[jl] Jump if less ($\mathtt{SF}\neq\mathtt{OF}$)
   \item[jnge] Jump if not greater or equal
   \item[jge] Jump if greater or equal ($\mathtt{SF}=\mathtt{OF}$)
   \item[jnl] Jump if not less
-  \item[jle] Jump if less or equal ($\mathtt{ZF}\vee\mathtt{SF}\neq\mathtt{OF}$)
+  \item[jle] Jump if less or equal ($\mathtt{ZF}\lor\mathtt{SF}\neq\mathtt{OF}$)
   \item[jng] Jump if not greater
-  \item[jg] Jump if greater ($\neg\mathtt{ZF}\wedge\mathtt{SF}=\mathtt{OF}$)
+  \item[jg] Jump if greater ($\neg\mathtt{ZF}\land\mathtt{SF}=\mathtt{OF}$)
   \item[jnle] Jump if not less or equal
   \item[jp] Jump if parity ($\mathtt{PF}$)
   \item[jpe] Jump if parity even
@@ -515,7 +512,7 @@ only go up to \keyword{xmm}. In some cases, they are just used for internal movi
 of several values at once, but several of the functions rely on \ac{simd} instructions
 to support variable-length argument lists.
 
-\subsection{The System~V AMD64 Application Binary Interface}
+\subsection{The System~V \glsentryname{amd64} Application Binary Interface}
 While \iac{isa} specifies the features of a processor and what it can do,
 there is plenty more that must be standardized for easy interoperability of
 software. \Iac{abi} specifies the interfaces for different components
@@ -524,8 +521,8 @@ the binary format of \emph{object files}, the format of program libraries,
 how system calls are made, and the standard \emph{calling convention},
 how function calls are structured on the machine code level.
 
-As the programs used in \cref{ch:cfg,ch:syntax} were compiled and run on Linux,
-this dissertation focuses on the System~V AMD64 \ac{abi} \autocite{systemv-ABI-git},
+As the programs used in \cref{ch:cfg,ch:syntax} were compiled and run on Linux,\index{linux}
+this dissertation focuses on the System~V \gls{amd64} \ac{abi} \autocite{systemv-ABI-git},
 which is the standard for most Unix-based systems.
 The relevant aspects are the fact that the System~V \ac{abi} uses the \ac{elf}
 format for binaries, though we do not care about that
@@ -583,8 +580,6 @@ as imperative languages like C were not designed with such features in mind.
 The technique also supports optimizing non-recursive tail calls, however,
 and that has a lower bar.
 
-%\end{comment}
-
 \section{Lattices and Their Usage in Programming}\label{lattice-background}
 \todo{talk about how lattices are an ordering, their properties, and how we use a join-semilattice}
 \todo{make a glossary entry for join-semilattice so we can reference it later}
@@ -601,8 +596,8 @@ Several contributions of this work were inspired by
 \todo\dots
 % Removing abstract interpretation talk for VSTTE as we're going for a more informal approach; can discuss it more later in dissertation though maybe.
 % \subsection{Abstract Interpretation}\label{sec:abstract-interpretation}
-% The key property we aim to prove is correctness of the produced \ac{EICFG}.
-% Intuitively, correctness means that the \ac{EICFG} is an \emph{abstraction} of the actual binary.
+% The key property we aim to prove is correctness of the produced \ac{eicfg}.
+% Intuitively, correctness means that the \ac{eicfg} is an \emph{abstraction} of the actual binary.
 % Specifically, one that preserves its properties pertaining to control flow.
 % We therefore restate the definition of an \emph{$\alpha$-simulation} \autocite{clarke94,loiseaux1995property}.
 % This definition coincides exactly with the standard notion of a behavioural simulation \autocite{milner1971algebraic}, but is formulated in terms of the concepts used in abstract interpretation.

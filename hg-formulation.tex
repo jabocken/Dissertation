@@ -74,7 +74,7 @@ To reuse the previous example, the result would instead be $1\leq x\leq 10$.
 The join must then satisfy the following soundness criterion
 for any concrete state~\gls{concrete-state}:
 \begin{equation}
-  (\gls{concrete-state}\gls{holds}P \vee Q) \implies (\gls{concrete-state}\gls{holds}P\sqcup Q).
+  (\gls{concrete-state}\gls{holds}P \lor Q) \implies (\gls{concrete-state}\gls{holds}P\sqcup Q).
 \end{equation}
 
 Furthermore, the partial ordering derived from this join is \emph{coarser} than ordering based on implication.
@@ -210,7 +210,7 @@ and minimum/maximum%
 are associative operations.
 The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following for any state~\gls{concrete-state}\index{state}:
 \begin{lemma}\label{lem:pred_soundness}
-  $\gls{concrete-state}\gls{holds}P\vee Q\implies s\gls{holds}P\gls{join}Q$
+  $\gls{concrete-state}\gls{holds}P\lor Q\implies s\gls{holds}P\gls{join}Q$
 \end{lemma}
 \begin{proof}
   The proof of this lemma consists of two cases:
@@ -320,9 +320,9 @@ Finally, regions in sibling nodes are separate.
   Let~\gls{concrete-state} be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.
   Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations \gls{alias}, \gls{separate}, and \gls{enclosed}, respectively, are defined as:
   \begin{align*}
-    r_0\gls{alias}r_1 &\gls{defeq}s \gls{holds} e_0 = e_1 \wedge n_0 = n_1 \\
-    r_0\gls{separate}r_1 &\gls{defeq}s \gls{holds} (e_0 + n_0 \le e_1) \vee (e_1 + n_1 \le e_0)\\
-    r_0\gls{enclosed}r_1 &\gls{defeq}s \gls{holds} e_0 \ge e_1 \wedge e_0 + n_0 \le e_1 + n_1
+    r_0\gls{alias}r_1 &\gls{defeq}s \gls{holds} e_0 = e_1 \land n_0 = n_1 \\
+    r_0\gls{separate}r_1 &\gls{defeq}s \gls{holds} (e_0 + n_0 \le e_1) \lor (e_1 + n_1 \le e_0)\\
+    r_0\gls{enclosed}r_1 &\gls{defeq}s \gls{holds} e_0 \ge e_1 \land e_0 + n_0 \le e_1 + n_1
   \end{align*}
 \end{definition}
 Such relations hold \emph{necessarily} if and only if they hold in all concrete states~\gls{concrete-state}.
@@ -430,11 +430,11 @@ A tree holds if its node contains only aliasing regions and all trees in its sub
   A memory model~$M$ \emph{holds} in state~\gls{concrete-state}, notation $\gls{concrete-state}\gls{holds}M$,
   if and only if:
   \begin{equation*}
-    (\forall t_0, t_1\in M\sepdot t_0\neq t_1\implies s\gls{holds}t_0 \gls{separate}t_1) \wedge (\forall t\in M\sepdot s\gls{holds}t)
+    (\forall t_0, t_1\in M\sepdot t_0\neq t_1\implies s\gls{holds}t_0 \gls{separate}t_1) \land (\forall t\in M\sepdot s\gls{holds}t)
   \end{equation*}
   A memory tree~$t = \langle R,M\rangle$ \emph{holds} in state~\gls{concrete-state}, notation $\gls{concrete-state}\gls{holds}t$, if and only if:
   \begin{equation*}
-    (\forall r_0,r_1 \in R\sepdot s\gls{holds}r_0\gls{alias}r_1) \wedge (\forall t'\in M\sepdot s\gls{holds}t'\gls{enclosed}t) \wedge (s\gls{holds}M)
+    (\forall r_0,r_1 \in R\sepdot s\gls{holds}r_0\gls{alias}r_1) \land (\forall t'\in M\sepdot s\gls{holds}t'\gls{enclosed}t) \land (s\gls{holds}M)
   \end{equation*}
 \end{definition}
 \begin{example}
@@ -461,7 +461,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
   Assume that $f$ is possibly true:
   \todo{glossary entry for $\models$}
   \begin{equation*}
-    \exists\gls{concrete-state} \sepdot \gls{concrete-state} \gls{holds}M \wedge (\forall r' \in R(M) \sepdot \gls{concrete-state} \models r_0~f(r')~r')
+    \exists\gls{concrete-state} \sepdot \gls{concrete-state} \gls{holds}M \land (\forall r' \in R(M) \sepdot \gls{concrete-state} \models r_0~f(r')~r')
   \end{equation*}
   Then, insertion of region $r_0$ into $M$ will produce at least a corresponding memory model:
   \begin{equation*}
@@ -573,7 +573,7 @@ To strengthen our arguments, we prove that the join over memory models we have p
 \begin{lemma}\label{lem:mem_soundness}
   Let~\gls{concrete-state} be a state and~$M_0$ and~$M_1$ be memory models. Then:
   \begin{equation*}
-    (s\models M_0 \vee M_1) \implies (s\models M_0\gls{join}M_1)
+    (s\models M_0 \lor M_1) \implies (s\models M_0\gls{join}M_1)
   \end{equation*}
 \end{lemma}
 \begin{proof}
@@ -654,7 +654,7 @@ That evaluation function is then used by the algorithm in the process of executi
   The \emph{symbolic state step function} for symbolic state $\gls{symbolic-state}=\langle P,M\rangle$, notation $\gls{step-hg}[(\gls{symbolic-state})]$, is defined as:
   \begin{equation*}
     \begin{array}{l}
-      ~~\gls{step-hg}[(\gls{symbolic-state})]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \wedge M' \in \gls{insertM}[(R,M)] \} \\
+      ~~\gls{step-hg}[(\gls{symbolic-state})]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \land M' \in \gls{insertM}[(R,M)] \} \\
       \mbox{\normalfont{\textbf{where}}}\\
       ~~\begin{aligned}
         R &\gls{defeq} \{ [\gls{eval}[(a,P)],s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\}\\
@@ -769,23 +769,23 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \begin{definition}
   A concrete state~\gls{concrete-state} is \emph{related to} symbolic state $\gls{symbolic-state}=\langle P,M \rangle$, notation $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}$, if and only if:
   \begin{equation*}
-    \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\gls{defeq} (\gls{concrete-state}\gls{holds}P) \wedge (\gls{concrete-state}\gls{holds}M)
+    \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\gls{defeq} (\gls{concrete-state}\gls{holds}P) \land (\gls{concrete-state}\gls{holds}M)
   \end{equation*}
 \end{definition}
 
 \begin{lemma}\label{lem:simulation}
   Assume that predicate transformation~\gls{step-hg-semantics} is correct:
   \begin{equation*}
-    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \wedge (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
+    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \land (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
   \end{equation*}
   Then relation $\mathbf{R}$ is a simulation between the concrete transition system and the transition system obtained by abstract step function \gls{step-hg}:
   \begin{equation*}
-    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \wedge \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\implies \exists \gls{symbolic-state}[']\in \gls{step-hg}[(\gls{symbolic-state})] \sepdot \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
+    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \land \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\implies \exists \gls{symbolic-state}[']\in \gls{step-hg}[(\gls{symbolic-state})] \sepdot \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
   \end{equation*}
 \end{lemma}
 \begin{proof}
   Let~\gls{concrete-state} and~\gls{symbolic-state} be two related states.
-  Hence $(s\gls{holds}P) \wedge (s\gls{holds}M)$.
+  Hence $(s\gls{holds}P) \land (s\gls{holds}M)$.
   By correctness of~\gls{step-hg-semantics}, we obtain a predicate $Q\in\gls{step-hg-semantics}[(P,M)]$ such that $\gls{concrete-state}[']\gls{holds}Q$.
   By \cref{lem:insert} (completeness of the insertion function), the memory model that holds in state~$\gls{concrete-state}[']$ is generated.
   Since the step function overapproximates by taking any combination of predicates in $\gls{step-hg-semantics}[(P,M)]$ and generated memory models, there exists at least one symbolic state that is related to~$\gls{concrete-state}[']$.
@@ -794,7 +794,7 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \begin{definition}
   \Ac{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, S,\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
-    \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition}[^\ast] \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition} \gls{symbolic-state}['] \sepdot \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \wedge \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
+    \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition}[^\ast] \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition} \gls{symbolic-state}['] \sepdot \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \land \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
   \end{equation*}
 \end{definition}
 In words, for every reachable transition from~\gls{concrete-state} to~$\gls{concrete-state}[']$ in the binary, there must exist a related transition in the \ac{hg}.
@@ -816,7 +816,7 @@ In words, for every reachable transition from~\gls{concrete-state} to~$\gls{conc
       \\
       \textbf{where}
       \\
-      \suprem(\gls{symbolic-state}[']) \gls{equiv} \bigsqcup \{ \gls{symbolic-state}[''] \mid \gls{symbolic-state}['']\gls{compatible}\gls{symbolic-state}['] \wedge \exists \pi = [\gls{symbolic-state}, \dotsc, \gls{symbolic-state}['']] \sepdot \mathsf{white}(\pi) \}
+      \suprem(\gls{symbolic-state}[']) \gls{equiv} \bigsqcup \{ \gls{symbolic-state}[''] \mid \gls{symbolic-state}['']\gls{compatible}\gls{symbolic-state}['] \land \exists \pi = [\gls{symbolic-state}, \dotsc, \gls{symbolic-state}['']] \sepdot \mathsf{white}(\pi) \}
     \end{array}
   \end{equation*}
   In words, $\suprem(\gls{symbolic-state}['])$, the supremum of all compatible states that are currently reachable through white paths, is explored by the algorithm if and only if there exists a white path from some~\gls{symbolic-state} currently in the bag to~$\gls{symbolic-state}[']$.
@@ -845,7 +845,7 @@ We present an extension to the algorithm that treats internal function calls com
 
 \subsubsection{External Functions}
 %An assembly instruction of the form \texttt{call op} is recognized as an external call as soon as the operand can be resolved as an address that belongs to some \texttt{.plt} section.
-%This is specific to the ELF format.
+%This is specific to the \ac{elf} format.
 %Instead of symbolically executing the instructions found in the \texttt{.plt} section, these instructions are used to derive a function address.
 %That address is looked up in the symbol table of the binary.
 %If that table associates a name with the address, then that name is the function name of the external function.
@@ -853,7 +853,7 @@ We present an extension to the algorithm that treats internal function calls com
 The function name is matched against a list of hard-coded function names that are known to be terminating, such as \inlineasm{exit} and \inlineasm{stack_chk_fail}.
 In case of a terminating function, function \gls{step-hg} will produce the empty set, stopping further exploration from the current state.
 Otherwise, the function is some unknown external function.
-We make the assumption that this unknown function adheres to the 64-bit System V \ac{abi}'s calling convention.
+We make the assumption that this unknown function adheres to the 64-bit System~V \ac{abi}'s calling convention.
 Function \gls{step-hg} therefore modifies the current state by assigning~\gls{bot} to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
 In other words, only the clauses concerning the stack frame and callee-saved non-volatile registers are kept.
 Similarly, all relations in the memory model concerning the heap are removed.
@@ -916,7 +916,7 @@ States in the bag whose reachability field is false are not selected.
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{2}
-        \State \algorithmicif\ {$\exists \gls{symbolic-state}[_c] \in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state} \wedge \mathsf{reachable}(\gls{symbolic-state}[_c])$}\ \algorithmicthen
+        \State \algorithmicif\ {$\exists \gls{symbolic-state}[_c] \in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state} \land \mathsf{reachable}(\gls{symbolic-state}[_c])$}\ \algorithmicthen
       \end{algorithmic}
     \end{minipage}
     \\\hline

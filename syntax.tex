@@ -410,8 +410,8 @@ that were completely unmodified by any assignment in~$\alpha$:
 \begin{equation}
   \post(\phi,\alpha)\footnote{%
     This is a different $\post$ from that used to identify \ac{cfg} block children.
-  }\equiv\{(v,e)\mid(v\coloneqq e\in\alpha\wedge(v,\_)\in\phi)
-  \vee((v,e)\in\phi\wedge(v,e)\text{ is unmodified by }\alpha)\}.
+  }\equiv\{(v,e)\mid(v\coloneqq e\in\alpha\land(v,\_)\in\phi)
+  \lor((v,e)\in\phi\land(v,e)\text{ is unmodified by }\alpha)\}.
 \end{equation}
 \begin{example}[Invariant propagation]
   Once again consider \cref{ex:simple}.
@@ -643,8 +643,8 @@ with respect to state changes is required.
 
 Using \cref{def:mem_preserve}, each block gets a lemma of the form
 \begin{equation}
-  P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\wedge
-  Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma').\label{eq:block_lemma}
+  P(\sigma)\longrightarrow\execblock(n,a,i,\sigma,\sigma')\land
+  Q(\sigma')\land\usage(M(\sigma),\sigma,\sigma').\label{eq:block_lemma}
 \end{equation}
 Note that~$M$ is a state-dependent function.
 Every generated version of \cref{eq:block_lemma} is discharged
@@ -680,8 +680,8 @@ Syntactic structure is required because Hoare logic is a syntax-guided approach.
 \begin{definition}[Hoare triple for \ac{scf}]\label{def:preserve}
   \begin{equation}
     \htriple*{P}f{Q}{M}\equiv
-    \forall\sigma~\sigma'\cdot P(\sigma)\wedge\exec(f,\sigma,\sigma')\longrightarrow
-    Q(\sigma')\wedge\usage(M,\sigma,\sigma')
+    \forall\sigma~\sigma'\cdot P(\sigma)\land\exec(f,\sigma,\sigma')\longrightarrow
+    Q(\sigma')\land\usage(M,\sigma,\sigma')
   \end{equation}
 \end{definition}
 The above definition states the following:
@@ -701,10 +701,10 @@ the related instructions will not complete.
   \subcaptionbox{Introduction rule\label{fig:intro-rule}}{
     \AxiomC{$\begin{multlined}
       \forall\sigma~\sigma'\cdot P(\sigma)\longrightarrow \\
-      \execblock(n,a,i,\sigma,\sigma')\wedge{} \\
-      Q(\sigma')\wedge\usage(M(\sigma),\sigma,\sigma')
+      \execblock(n,a,i,\sigma,\sigma')\land{} \\
+      Q(\sigma')\land\usage(M(\sigma),\sigma,\sigma')
     \end{multlined}$}
-    \AxiomC{$M'=\{r\mid\exists\sigma\cdot P(\sigma)\wedge r\in M(\sigma)\}$}
+    \AxiomC{$M'=\{r\mid\exists\sigma\cdot P(\sigma)\land r\in M(\sigma)\}$}
     \BinaryInfC{$\htriple*{P}{\ABB~\Block*{n}{a}{i}}{Q}{M'}$}
     \DisplayProof
   }
@@ -718,18 +718,18 @@ the related instructions will not complete.
   }
 
   \subcaptionbox{Conditional rule}{
-    \AxiomC{$\htriple*{P\wedge B}f{Q_1}{M_1}$}
-    \AxiomC{$\htriple*{P\wedge\neg B}g{Q_2}{M_2}$}
-    \AxiomC{$Q_1\vee Q_2\longrightarrow Q$}
+    \AxiomC{$\htriple*{P\land B}f{Q_1}{M_1}$}
+    \AxiomC{$\htriple*{P\land\neg B}g{Q_2}{M_2}$}
+    \AxiomC{$Q_1\lor Q_2\longrightarrow Q$}
     \AxiomC{$M=M_1\cup M_2$}
     \QuaternaryInfC{$\htriple*{P}{\AIf~B~\AThen~f~\AElse~g~\AFi}{Q}{M}$}
     \DisplayProof
   }
 
   \subcaptionbox{While rule\label{fig:hoare-loop}}{
-    \AxiomC{$\htriple*{I\wedge B}f{I'}{M}$}
+    \AxiomC{$\htriple*{I\land B}f{I'}{M}$}
     \AxiomC{$I'\longrightarrow I$}
-    \AxiomC{$I\wedge\neg b\longrightarrow Q$}
+    \AxiomC{$I\land\neg b\longrightarrow Q$}
     \TrinaryInfC{$\htriple*{I}{\texttt{While}~B\texttt{ DO }f\texttt{ OD}}{Q}{M}$}
     \DisplayProof
   }
@@ -813,8 +813,8 @@ If the Hoare logic introduction rule were to be applied to the block
 that is the body of the loop, the result would be as follows:
 \begin{subequations}
   \begin{align}
-    M' &= \{r\mid\exists\sigma\cdot I(\sigma)\wedge r\in M(\sigma)\} \\
-    &= \{r\mid\exists\sigma\cdot i(\sigma)<10\wedge r=\region{a+i(\sigma)}1\} \\
+    M' &= \{r\mid\exists\sigma\cdot I(\sigma)\land r\in M(\sigma)\} \\
+    &= \{r\mid\exists\sigma\cdot i(\sigma)<10\land r=\region{a+i(\sigma)}1\} \\
     &= \{\region{a'}1\mid a\leq a'\le a+10\}
   \end{align}
 \end{subequations}
@@ -1021,12 +1021,12 @@ Fourth and finally,~$\psep$ and~$Q_f$ should imply postcondition$~Q$.
   \begin{prooftree}
     \def\defaultHypSeparation{\hskip.18in}
     \AxiomC{$\htriple*{P_f}{f}{Q_f}{M_f}$}
-    \AxiomC{$P\longrightarrow P_f\wedge\psep$}
+    \AxiomC{$P\longrightarrow P_f\land\psep$}
     \AxiomC{$\forall s~s'\cdot\begin{array}{l}
-      (\usage(M_f,s,s')\wedge{} \\
+      (\usage(M_f,s,s')\land{} \\
       \psep(s))\longrightarrow\psep(s')
     \end{array}$}
-    \AxiomC{$Q_f\wedge\psep\longrightarrow Q$}
+    \AxiomC{$Q_f\land\psep\longrightarrow Q$}
     \QuaternaryInfC{$\htriple*{P}{\ACall f}{Q}{M_f}$}
   \end{prooftree}
   \caption{Frame rule for composition of memory usage}\label{fig:composition}
@@ -1271,7 +1271,7 @@ The third binary used, \lstinline|qemu-img-xen|,
 consists of over three hundred functions
 that are not present in the Xen source code.
 It provides some of the functionality of \ac{qemu}.
-\Ac{qemu} is a free, open-source emulator\fturl{https://www.qemu.org/}.%
+\Ac{qemu} is a free, open-source emulator.\fturl{https://www.qemu.org/}%
 \index{emulator}
 Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
 

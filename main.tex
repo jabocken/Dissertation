@@ -228,7 +228,7 @@
 
 \addbibresource{bibliography.bib}
 
-\includeonly{hg-formulation,hg-results,hg-discussion,hg-lifting}
+\includeonly{related}
 
 % This isn't working but whatever
 \newcommand\nomenclature[2]{}
@@ -252,7 +252,7 @@
   \printunsrtglossary[type=numbers,style=indexgroup] % no default style for numbers
   \acresetall % Any acronyms used inside the glossaries should start over here.
 
-  \input{attribution} % prefaces go in front matter
+  \include{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
 
@@ -276,6 +276,7 @@
   \include{eicfg}
   \include{eicfg-formulation}
   \include{eicfg-validation}
+  \include{eicfg-conclusion}
 
   \part{Finals}
   \include{conclusions}

@@ -56,7 +56,7 @@ At a minimum, a disassembler that supports call and indirect jump traversal need
 \begin{description}
   \item[Return Address Integrity] Functions cannot overwrite their own return addresses.\footnote{assuming a standard structured programming methodology} This requires the absence of stack overflows or similar inappropriate stack manipulation.
   \item[Bounded Control Flow] All indirect, or non-immediate, branches transfer control flow to fixed, statically-calculated, bounded sets of addresses. This requires the ability to determine upper bounds on array indices.
-  \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System V \ac{abi} considers non-volatile.
+  \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \ac{abi} considers non-volatile.
 \end{description}
 At the time this work was written, no other tool operating on binaries answered the two base questions above.
 In fact, both questions are \emph{undecidable} \autocite{rice1953classes,horspool1980approach}.
@@ -120,7 +120,7 @@ That allows us to reduce the state space and also reuse previous executions.
 However, it also means that if a function pointer is passed as a parameter, its concrete value will be unknown.
 
 External functions also require some assumptions.
-Specifically, we assume that external calls properly follow the System V \ac{abi} and do not interfere with their parent stack frames.
+Specifically, we assume that external calls properly follow the System~V \ac{abi} and do not interfere with their parent stack frames.
 This means that those registers considered volatile are invalidated when we encounter such calls, but we do not have to invalidate most other components of the state.
 An in-depth exploration of function call handling comes later in \cref{function-call-extension}.
 

@@ -165,8 +165,8 @@ Thus, we have the following definition:
   This is formally expressed as:
   \begin{equation}
   \htriple{P}H{Q}\equiv\forall\sigma\cdot
-  P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
-  \sigma'\neq\err\wedge Q(\sigma'),
+  P(\sigma)\land\sigma'\neq\infloop\longrightarrow
+  \sigma'\neq\err\land Q(\sigma'),
   \end{equation}
   where $\sigma'=\run(H,\sigma)$.
 \end{definition}
@@ -215,7 +215,7 @@ that represent the arguments passed to the function.
   A Floyd invariant~$I$ \emph{holds} if and only if, for any state~$\sigma$,
   \begin{equation}
     I(\loc\sigma)(\sigma)\longrightarrow
-    \sigma'\neq\err\wedge(\sigma'=\infloop\vee I(\loc\sigma')(\sigma')),
+    \sigma'\neq\err\land(\sigma'=\infloop\lor I(\loc\sigma')(\sigma')),
   \end{equation}
   where
   $\sigma'=\run((\lambda\sigma_r\cdot I(\loc\sigma_r)\neq\gls{bot}),\sigma)$%
@@ -241,8 +241,8 @@ as a whole:
   Remember from \cref{def:htriple} that
   \begin{equation*}
     \htriple{P}H{Q}\equiv\forall\sigma\cdot
-    P(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
-    \sigma'\neq\err\wedge Q(\sigma').
+    P(\sigma)\land\sigma'\neq\infloop\longrightarrow
+    \sigma'\neq\err\land Q(\sigma').
   \end{equation*}
   Though there could be any number of additional annotations between~$l_0$
   and~$l_f$, \textcite{floyd1967assigning} showed by induction
@@ -252,21 +252,21 @@ as a whole:
   and~$I(l_f)(\sigma')$ for~$Q(\sigma')$ without issue,
   resulting in the following statement:
   \begin{equation*}
-      I(l_0)(\sigma)\wedge\sigma'\neq\infloop\longrightarrow
-      \sigma'\neq\err\wedge I(l_f)(\sigma').
+      I(l_0)(\sigma)\land\sigma'\neq\infloop\longrightarrow
+      \sigma'\neq\err\land I(l_f)(\sigma').
   \end{equation*}
   As we have already assumed that~$I$ holds,
   we can substitute in the right side of the implication from \cref{def:floyd_inv}
   to obtain
   \begin{equation*}
-    \sigma'\neq\err\wedge(\sigma'=\infloop\vee I(l_f)(\sigma'))\wedge
+    \sigma'\neq\err\land(\sigma'=\infloop\lor I(l_f)(\sigma'))\land
     \sigma'\neq\infloop\longrightarrow
-    \sigma'\neq\err\wedge I(l_f)(\sigma').
+    \sigma'\neq\err\land I(l_f)(\sigma').
   \end{equation*}
   This then simplifies to
   \begin{equation*}
-    \sigma'\neq\err\wedge I(l_f)(\sigma')\longrightarrow
-    \sigma'\neq\err\wedge I(l_f)(\sigma'),
+    \sigma'\neq\err\land I(l_f)(\sigma')\longrightarrow
+    \sigma'\neq\err\land I(l_f)(\sigma'),
   \end{equation*}
   which is trivial.
 \end{proof}
@@ -294,7 +294,7 @@ The notation for this formulation is shown below.
   A piece of assembly demonstrates \emph{memory preservation} if and only if,
   for any address~$a$ and byte value~$v_0$, the following implication holds:
   \begin{equation}
-  (\forall r\in M\cdot r\gls{separate}\region{a}1)\longrightarrow\htriple{P\wedge \readmem{a}1=v_0}H{Q\wedge\readmem{a}1=v_0}
+  (\forall r\in M\cdot r\gls{separate}\region{a}1)\longrightarrow\htriple{P\land \readmem{a}1=v_0}H{Q\land\readmem{a}1=v_0}
   \end{equation}
 \end{definition}
 This definition states that, for every byte in memory outside of the memory region set,
@@ -401,11 +401,11 @@ is treated as part of the callee.
   the pre- and postcondition have to meet the following requirements.
   First, the precondition must imply that the return address is pushed on the stack
   (a task performed by \lstinline{call}):
-  $\readmem{\rspo}{8}=l_\var{call}+5\wedge\mathrsp=\rspo$.
+  $\readmem{\rspo}{8}=l_\var{call}+5\land\mathrsp=\rspo$.
   Second, the postcondition must imply that after \lstinline{ret},
   the net effect of the function body
   is that the stack pointer has been incremented by 8:
-  $\mathrsp=\rspo+8\wedge\loc=l_\var{call}+5$.
+  $\mathrsp=\rspo+8\land\loc=l_\var{call}+5$.
   Note that \lstinline{call} itself decrements the stack pointer by~8,
   so this implies the net effect, from the point of view of the caller,
   is that the stack pointer is unchanged.
@@ -533,21 +533,21 @@ the function is also shown to preserve the value of the stack pointer.
   \begin{tikzpicture}[>=stealth]
     \graph[math nodes, grow down=2.2cm]{
       "1:\begin{array}{l}
-        \boxed{\readmem{a}{1}=v_0}\wedge\mathrbp=\rbpo\wedge\mathrsp=\rspo\wedge{} \\
+        \boxed{\readmem{a}{1}=v_0}\land\mathrbp=\rbpo\land\mathrsp=\rspo\land{} \\
         \readmem{\rspo}{8}=\retaddr
       \end{array}" ->[
         align=left,
         "$\mathrsp\coloneqq\mathrsp-8$\\
         $\mathrbp\coloneqq\mathrsp\dotso$"
       ] b/"12:\begin{array}{l}
-        \boxed{\readmem{a}{1}=v_0}\wedge\mathrbp=\mathrsp=\rspo-8\wedge{} \\
-        \readmem{\rspo-8}{8}=\rbpo\wedge{} \\
+        \boxed{\readmem{a}{1}=v_0}\land\mathrbp=\mathrsp=\rspo-8\land{} \\
+        \readmem{\rspo-8}{8}=\rbpo\land{} \\
         \readmem{\rspo}{8}=\retaddr
       \end{array}" ->[
         align=left,
         "$\mathrsp\coloneqq\mathrsp+16$\\
         $\mathrbp\coloneqq\rbpo$"
-      ] "\retaddr:\boxed{\readmem{a}{1}=v_0}\wedge\mathrbp=\rbpo\wedge\mathrsp=\rspo+8";
+      ] "\retaddr:\boxed{\readmem{a}{1}=v_0}\land\mathrbp=\rbpo\land\mathrsp=\rspo+8";
       b ->[out=-16, in=16, looseness=3] b;
     };
   \end{tikzpicture}
@@ -642,10 +642,10 @@ from~$\rspo$ due to the function's recursive nature.
   \begin{tikzpicture}[>=stealth]
     \graph[math nodes, grow down=3.5cm]{
       a/"1:\begin{array}{l}
-        \readmem{a}{1}=v_0\wedge\mathdil\le n\wedge{} \\
-        \mathrsp=\rspo-48*(n-\mathdil)\wedge{} \\
-        (\mathdil\not=n\longrightarrow\mathrbx=\mathdil+1)\wedge{} \\
-        \rbxpops(32,\rspo,n,\mathdil)\wedge{} \\
+        \readmem{a}{1}=v_0\land\mathdil\le n\land{} \\
+        \mathrsp=\rspo-48*(n-\mathdil)\land{} \\
+        (\mathdil\not=n\longrightarrow\mathrbx=\mathdil+1)\land{} \\
+        \rbxpops(32,\rspo,n,\mathdil)\land{} \\
         \retsites(0,\rspo,n,\mathdil)
       \end{array}" ->[
         align=left,
@@ -654,9 +654,9 @@ from~$\rspo$ due to the function's recursive nature.
           \mathrsp\coloneqq\mathrsp+8
         \end{array}$"
       ] b/"15:\begin{array}{c}
-        \readmem{a}{1}=v_0\wedge\mathrbx>0\wedge\mathrbx\le n\wedge{} \\
-        \mathrsp=\rspo-48*(n-\mathrbx+1)+8\wedge{} \\
-        \rbxpops(24,\rspo,n,\mathrbx-1)\wedge{} \\
+        \readmem{a}{1}=v_0\land\mathrbx>0\land\mathrbx\le n\land{} \\
+        \mathrsp=\rspo-48*(n-\mathrbx+1)+8\land{} \\
+        \rbxpops(24,\rspo,n,\mathrbx-1)\land{} \\
         \retsites(8,\rspo,n,\mathrbx-1)
       \end{array}" ->[
         align=left,
@@ -664,7 +664,7 @@ from~$\rspo$ due to the function's recursive nature.
           \text{if }\mathrbx = n \\
           \mathrsp\coloneqq\mathrsp+48
         \end{array}$"
-      ] "\retaddr:\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8";
+      ] "\retaddr:\readmem{a}{1}=v_0\land\mathrsp=\rspo+8";
       a ->[out=-17, in=17, swap, align=left, looseness=2,
         "$\text{if }\mathdil\neq 0$ \\
         $\mathrsp\coloneqq\mathrsp-48$ \\
@@ -706,7 +706,7 @@ For the first call, the topmost stack frame,
 the initial return address must also be properly stored.
 \begin{multline}
   \rbxpops(\var{offset},\rspo,n,x)\equiv \\
-  \forall i\cdot n>x\wedge
+  \forall i\cdot n>x\land
     i<n-x-1\longrightarrow\readmem{\mathrsp+i*48+\var{offset}}{8}=i+1+\mathrbx
   \label{eq:rbxpops}
 \end{multline}
@@ -743,9 +743,9 @@ as initially, no values or return addresses are pushed
 other than the upmost return address. The resulting Hoare triple becomes:
 \begin{equation}
   \begin{array}{l}
-    \{\readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge\readmem{\rspo}{8}=\retaddr\} \\
+    \{\readmem{a}{1}=v_0\land\mathrsp=\rspo\land\readmem{\rspo}{8}=\retaddr\} \\
     H \\
-    \{\readmem{a}{1}=v_0\wedge\mathrsp=\rspo+8\wedge\loc=\retaddr\}.
+    \{\readmem{a}{1}=v_0\land\mathrsp=\rspo+8\land\loc=\retaddr\}.
   \end{array}
 \end{equation}
 This, combined with the regions presented above as assumptions,
@@ -880,14 +880,14 @@ requires a loop invariant in addition to the pre- and postconditions.
     \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=2.5cm]{
         "129:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\
-          \mathrbp=\rbpo\wedge\mathrdi=\deqptr\wedge{} \\
+          \readmem{a}{1}=v_0\land\mathrsp=\rspo\land{} \\
+          \mathrbp=\rbpo\land\mathrdi=\deqptr\land{} \\
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           "\dots"
         ] "\retaddr:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge{} \\
-          \mathrsp=\rspo+8\wedge{} \\
+          \readmem{a}{1}=v_0\land{} \\
+          \mathrsp=\rspo+8\land{} \\
           \mathrbp=\rbpo
         \end{array}"
       };
@@ -898,25 +898,25 @@ requires a loop invariant in addition to the pre- and postconditions.
     \begin{tikzpicture}[>=stealth]
       \graph[math nodes, grow down=3cm]{
         "0:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo\wedge{} \\
-          \mathrbp=\rbpo\wedge
+          \readmem{a}{1}=v_0\land\mathrsp=\rspo\land{} \\
+          \mathrbp=\rbpo\land
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           align=left,
           "$\mathrsp\coloneqq\mathrsp-8$\\
           $\mathrbp\coloneqq\mathrsp$"
         ] b/"21:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge\mathrsp=\rspo-8\wedge{} \\
-          \mathrbp =\rspo-8\wedge{} \\
-          \readmem{\rspo-8}{8}=\rbpo\wedge{} \\
+          \readmem{a}{1}=v_0\land\mathrsp=\rspo-8\land{} \\
+          \mathrbp =\rspo-8\land{} \\
+          \readmem{\rspo-8}{8}=\rbpo\land{} \\
           \readmem{\rspo}{8}=\retaddr
         \end{array}" ->[
           align=left,
           "$\mathrbp\coloneqq\readmem{\mathrsp}{8}$\\
           $\mathrsp\coloneqq\mathrsp+16$"
         ] "\retaddr:\begin{array}{l}
-          \readmem{a}{1}=v_0\wedge{} \\
-          \mathrsp=\rspo+8\wedge{} \\
+          \readmem{a}{1}=v_0\land{} \\
+          \mathrsp=\rspo+8\land{} \\
           \mathrbp=\rbpo
         \end{array}";
         b ->[out=-15, in=15, looseness=1] b;
