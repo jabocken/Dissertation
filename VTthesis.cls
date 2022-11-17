@@ -102,9 +102,18 @@
 \RequirePackage[nottoc]{tocbibind}
 
 % Font setup
+\RequirePackage{fix-cm} % part of fix for lmodern small-caps with bold
 \RequirePackage[T1]{fontenc} % nice font encoding
 \RequirePackage{lmodern}     % Nice vector fonts
 \RequirePackage[tracking]{microtype}   % Has a subtle but definite effect; most of the features aren't supported when using XeLaTeX, so if you don't need the fancy font selection from that stick with fontenc+lmodern. Tracking option adds uniform letter spacing for small caps.
+
+% Fix for glossaries where small-caps with bold get converted to bold rather than staying as small-caps (From https://tex.stackexchange.com/a/386933)
+\rmfamily % To load Latin Modern Roman and enable the following NFSS declarations.
+% Declare that Latin Modern Roman (lmr) should take
+% its bold (b) and bold extended (bx) weight with small capital (sc) shape
+% from the corresponding Computer Modern Roman (cmr) font, for the T1 font encoding.
+\DeclareFontShape{T1}{lmr}{b}{sc}{<->ssub*cmr/bx/sc}{}
+\DeclareFontShape{T1}{lmr}{bx}{sc}{<->ssub*cmr/bx/sc}{}
 
 \RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
 
