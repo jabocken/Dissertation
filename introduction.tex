@@ -213,7 +213,7 @@ to ensure isolation of guest \acp{os}.
 That work was based on an earlier one for an ARMv7 separation kernel,
 PROSPER \autocite{dam2013hypervisor,dam2013formal}.
 
-Additionally, earlier this year, \textcite{fromherz2019verified} embedded a subset
+Additionally, a few years ago, \textcite{fromherz2019verified} embedded a subset
 of the \gls{arch} \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to perform a proof of correctness
@@ -226,12 +226,10 @@ it with proven-true Hoare rules.
 This dissertation presents two formal approaches to per-function verification
 of the assembly-level property we call memory preservation:
 \emph{control-flow-driven} verification and \emph{syntax-driven} verification.
-Both approaches use some form of control-flow analysis over functions in \gls{arch} assembly
-to generate incomplete proofs.
+Both approaches use some form of control-flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
 Those proofs are then loaded into the interactive theorem prover Isabelle/HOL
 and completed there. The proof strategies for both approaches involve
-\emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic},
-albeit in different ways.
+\emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic}, albeit in different ways.
 
 The main differences between the two approaches
 lie in their degrees of automation, the strengths of their invariants,
@@ -293,8 +291,8 @@ The control-flow-driven methodology was applied to \num{63} functions
 extracted from the HermitCore  \autocite{lankes2016hermitcore}
 unikernel library \autocite{madhavapeddy2014unikernels},
 covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
-Of those functions,~18 had loops and~33 had subcalls.
-Optimized variants were also verified for~12 of the functions involved,
+Of those functions,~\num{18} had loops and~\num{33} had subcalls.
+Optimized variants were also verified for~\num{12} of the functions involved,
 resulting in \num{75} functions verified.
 There was even one function that featured recursion,
 which turned out to be the most challenging function to handle.
@@ -366,6 +364,12 @@ for AUSPICE, \num{6.55} times as fast. We did have some functions that took
 an overly long period of time due to the suboptimality of \acl*{scf}
 with respect to minimizing symbolic execution, but those were atypical.
 
+\subsection{Hoare Graphs}
+\todo\dots
+
+\subsection{Exceptional Interprocedural Control Flow Graphs}
+\todo\dots
+
 \section{Organization of Dissertation}
 Following this introduction in \cref{ch:related} is a review of tools and work
 related to the field of assembly-level verification and software correctness in general.
@@ -378,7 +382,7 @@ see \cref{ch:symbolic_execution}.
 After that, the control-flow-driven approach to verification of memory preservation
 mentioned above is presented in \cref{ch:cfg}
 while the syntax-driven approach is presented in \cref{ch:syntax}.
-I then have \todo\dots in \cref{ch:hg-lifting,ch:hg-formulation,ch:hg-results,ch:hg-discussion}
-and \todo\dots in \cref{ch:eicfg,ch:eicfg-formulation,ch:eicfg-validation}.
+I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
+followed by the interprocedural, exception-aware \ac{cfg} extractor in \cref{eicfg}.
 Finally, my dissertation wraps up in \cref{ch:conclusions},
 which includes a discussion of possible post-preliminary exam work.

@@ -1,14 +1,14 @@
 % Hoare graph numbers
 @number{bin-success,
-  name = {Successful binaries},
+  name = {Successful programs},
   symbol = {\num{45}},
-  description = {The number of binaries tested for the Xen \todo{see also tag?} case study with successful analyses},
+  description = {The number of programs tested for the Xen \todo{see also tag?} case study with successful analyses},
   group = {hg}
 }
 @number{bin-total,
-  name = {Total binaries},
+  name = {Total programs},
   symbol = {\num{63}},
-  description = {The total number of binaries tested for the Xen \todo{see also tag?} case study},
+  description = {The total number of programs tested for the Xen \todo{see also tag?} case study},
   group = {hg}
 }
 @number{lib-func-timeout,
@@ -37,9 +37,15 @@
 }
 
 % EICFG numbers
+@number{eicfg-bin-success,
+  name = {Successful binaries},
+  symbol = {\num{316}},
+  description = {The number of case study binaries with successful \ac{eicfg} generation},
+  group = {eicfg}
+}
 @number{eicfg-inst-total,
   name = {Total instructions covered},
   symbol = {\num{4715806}},
-  description = {The combined total number of instructions covered from the binaries and shared objects of the \ac{eicfg} case study},
+  description = {The combined total number of instructions covered from the programs and shared objects of the \ac{eicfg} case study},
   group = {eicfg}
 }

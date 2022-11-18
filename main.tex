@@ -228,7 +228,7 @@
 
 \addbibresource{bibliography.bib}
 
-\includeonly{related}
+\includeonly{introduction}
 
 % This isn't working but whatever
 \newcommand\nomenclature[2]{}
@@ -236,7 +236,7 @@
 %\makeindex[intoc]
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
-%  \maketitle
+  \maketitle
 
   \microtypesetup{protrusion=false} % suggested by the docs to avoid the list dots getting misaligned
   \tableofcontents
@@ -250,11 +250,11 @@
   \printacronyms[heading=chapter]
   \printunsrtglossary[type=symbols,style=indexgroup] % no default style for symbols
   \printunsrtglossary[type=numbers,style=indexgroup] % no default style for numbers
-  \acresetall % Any acronyms used inside the glossaries should start over here.
 
   \include{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
+  \acresetall % Any acronyms used inside the glossaries should start over here.
 
   \part{Introductory Elements}
   \include{introduction}
