@@ -1,71 +1,9 @@
 \chapter{Exceptional Interprocedural Control Flow Graphs}\label{ch:eicfg}
 \acreset{eicfg}
 
-\todo{Full intro in progress/revising and replacing with putting my text back}
-
-\section{Introduction}
-
-% CONTEXT: CFGs are important + we reconstruct them from binaries
-% NOTE: in terms of academic writing, we have paragraph with two messages here (which should be 1). However, we are strapped for space.
-\Acp{cfg} are key components in both compilation and analysis of software.
-They provide information on the runtime execution of a program, i.e., which control flow paths are dynamically possible.
-Typically, they are constructed during compilation using the source code as ground truth.
-In the field of binary analysis, however, they must be \emph{reconstructed} from a binary.
-This is a challenge, since control flow transfers may be \emph{indirect}, i.e., their jump target may be resolved at runtime.
-This makes generating \iac{cfg} an undecidable problem, as it must be decided what the exact values of certain state parts can be at runtime.
-
-
-% CHALLENGE: EXCEPTIONAL CONTROL FLOW
-This problem is exacerbated when dealing with \emph{exceptional control flow}, induced mainly by the \Cpp{} \lstinline{throw} and \lstinline{catch} statements.
-The target of a throw, i.e., to which instruction address the control flow is transferred after execution of a throw statement, is decided dynamically at runtime.
-It is based on, among other things, the current call/return stack, the current caught exception stack, and low-level information pertaining to rethrows and catch statements.
-Moreover, it inherently requires \emph{interprocedural} analysis, as the function call history is relevant for assessing the throws’ targets.
-Interprocedural analysis is challenging, as one cannot simply isolate a function and do analysis, but most consider the binary as a whole.
-
-
-% EXISTING TOOLS DO NOT SOLVE THE PROBLEM
-Existing state-of-the-art disassemblers/decompilers, such as IDA Pro, Ghidra, and Binary Ninja, do not provide sufficient information on exceptional control flow.
-Typically, they are able to extract exception information statically available in binaries (e.g., landing pad locations).
-They can even provide interprocedural control flow graphs.
-However, they do not perform the interprocedural static analysis required for reconstructing \emph{exceptional} control flow.
-That is, they cannot trace the path from an exception throw site to the landing pad instructions that exception goes to in the process of unwinding.
-\Acp{cfg} under such analyses will have \emph{throw sites as terminating locations} with no outgoing edges.
-%Tracing an exception from throw site to catch is not a feature of such tools.
-%In order to analyze the stack unwinding caused by an exception being thrown, one must typically utilize a runtime debugger such as GDB.
-%In fact, many state-of-the- art disassembly tools, IDA Pro and Ghidra included, rely on GDB to perform dynamic analysis via debugging.
-%That is, they require runtime information in order to trace exceptional state.
-
-% OUR CONTRIBUTION
-This paper provides a tool for static, interprocedural, automated \Cpp-exception-aware control flow analysis on the binary level.
-That tool produces \acp{eicfg}, that document the direct exception-handling-related components of the state of the program, such as exception objects currently allocated, number of uncaught exceptions, and which exceptions are currently in a caught state.
-
-
-The tool itself targets binaries using \Cpp\ exception handling%
-\fturl{https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html}
-that were compiled for the \gls{arch} \ac{isa} and System~V \ac{abi}.
-Symbol-stripped binaries are supported, but may not perform well if they contain unresolvable indirections or unmodeled callbacks.
-Non-\Cpp\ binaries, or \Cpp\ ones that do not use exception handling, are supported as well for flexibility.
-We assume that all external calls do not produce exceptions themselves.
-We also do not model \lstinline{setjmp}/\lstinline{longjmp}, as they do not interact well with structured exception handling \autocite{using-setjmp-and-longjmp}.
-
-% VALIDATION
-A desired characteristic is that the produced \acp{eicfg} are \emph{overapproximative}: every concrete path, i.e., every path possible during dynamic execution, is included in the \ac{eicfg}.
-We informally argue that the abstract semantics that are symbolically executed overapproximate the concrete semantics \autocite{cousot1996abstract}.
-To strengthen this claim, we validated our abstract transition rules for exception handling against the concrete implementations of the corresponding library functions.
-This was done by fuzzing abstract states, concretization to a concrete CPU state, running the function under validation in an instrumented binary, observing the CPU state, and verifying that the concrete transition is correctly contained in the abstract transition.
-%This was done by \emph{fuzzing} dynamically instrumented test binaries using generated abstract start and end states.
-We informally argue that our approach is overapproximative unless an indirection cannot be resolved, which is clearly marked in the \ac{eicfg}.
-%The methodology is informally based on abstract interpretation \autocite{cousot1996abstract}, where an abstract transition relation overapproximates concrete transitions.
-
+\todo{proper intro}
 
 \subsection{Results and Organization}
-% RESULTS
-We applied the tool to \totalbins\ off-the-shelf binaries compiled from \Cpp, C, and Fortran source code.
-%The implemented tool was able to reach an average of \coveredpercent\ of the instructions from the \satisfactorybins\ binaries we examined that had satisfactory analyses (for our purposes, \cutoffpercent).
-The implemented tool was able to identify \uniquethrows\ unique throws and successfully trace the exceptional control flow for every one of them.
-On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
-Those edges are ones tools such as Ghidra do not produce.
-
 % ORGANIZATION
 We explain the contribution by example in \cref{sec:eicfg}.
 The technical formulation of our tool is then outlined in \cref{sec:formulation},
@@ -76,72 +14,19 @@ Finally, we wrap up in \cref{sec:conclusion}.
 
 All code used for \cref{sec:case-study,sec:validation}, to be published as an artifact, is available at \url{https://drive.google.com/file/d/1mFjHT0p-w9YbyRjcBCQ8sPHp3eboUdM2/view?usp=sharing}.
 
-\begin{comment}
-  Static program analysis is a difficult task, made even harder when the well-established
-  stack-based function call paradigm is not respected. In particular,
-  exception handling often includes violations of program control flow not visible
-  from within the source code or binary of the program.
-  Even structured exception handling, such as that provided by \Cpp,
-  requires information external to the binary in order to properly analyze it.
-  Modeling this information requires, at a minimum,
-  semantics for the library functions that perform the exception handling process.
+--------------------------
 
-  \subsection{Contribution}
-  This paper provides a tool for static, interprocedural,
-  \Cpp-exception-aware control flow analysis.
-  Specifically, the production of \acp{eicfg}.
-  It can do this even in the presence of recursion and some forms of indirect control flow.
-  The tool is guaranteed to provide overapproximative results for those paths of execution it can resolve, with those paths it cannot resolve clearly marked in its output.
-  The resulting \ac{eicfg} documents the direct exception-handling-related components of the state of the program, such as exception objects currently allocated, number of uncaught exceptions, and which exceptions are currently in a caught state.
-  This is done using an abstract interpretation-based methodology in a restricted domain that only concerns itself with the necessary components of program state required to perform function calls and exception handling.
+\subsection{Organization}
+For easier explanations,
+we provide a running example referenced throughout this work in \cref{sec:example}.
+The technical formulation of our tool is then outlined in \cref{sec:formulation},
+with a demonstration following in \cref{sec:case-study}.
+Next, in \cref{sec:related}, is a fleshed-out description of related tools.
+Finally, we wrap up in \cref{eicfg-conclusion}.
 
-  \todo\dots
 
-  It operates using a recursive-descent rather than linear sweep methodology.
 
-  \subsection{Motivation}
-  \Acp{eicfg}
 
-  Overapproximativity is necessary in order to provide complete coverage.
-  Alternate methods of uncovering exceptional state generally rely on
-
-  Interprocedural analysis is necessary as exception handling is inherently interprocedural. While
-
-  \todo{needs more work}
-
-  The information necessary for stack unwinding can be embedded within a program.
-  Debugging builds have it to provide support for unwinding during debugging.
-  Programs with structured exception handling require it even when debugging information
-  is excluded. However, even when such information exists, its support for interprocedural
-  analysis applies solely to the act of stack unwinding. Investigating the behavior of
-  exception handling in such scenarios requires the implementation of handling
-  for multiple runtime library functions.
-  These include \inlineasm{__cxa_throw}, \inlineasm{__cxa_begin_catch},
-  and \inlineasm{__cxa_end_catch}.
-
-  \subsection{Relation to State of the Art}
-  To the best of our knowledge, we are the first to provide a generator for
-  \ac{eicfg}-like constructs on the binary level.
-  Many state-of-the-art disassemblers/decompilers, such as IDA Pro, Ghidra, and Binary Ninja,
-  can extract exception information from binaries, including landing pad locations.
-  They can even provide interprocedural control flow graphs.
-  However, they do not provide features for interprocedural exception analysis.
-  Tracing an exception from throw site to catch is not a feature of such tools.
-  In order to analyze the stack unwinding caused by an exception being thrown,
-  one must typically utilize a runtime debugger such as GDB.
-  In fact, many state-of-the-art disassembly tools, IDA Pro and Ghidra included,
-  rely on GDB to perform dynamic analysis via debugging.
-  That is, they require runtime information in order to trace exceptional state.
-  In contrast, our \ac{eicfg} generator does not.
-
-  \subsection{Organization}
-  For easier explanations,
-  we provide a running example referenced throughout this work in \cref{sec:example}.
-  The technical formulation of our tool is then outlined in \cref{sec:formulation},
-  with a demonstration following in \cref{sec:case-study}.
-  Next, in \cref{sec:related}, is a fleshed-out description of related tools.
-  Finally, we wrap up in \cref{eicfg-conclusion}.
-\end{comment}
 
 \section{Extended Motivation}
 A normal \ac{cfg} provides a user with information on control flow transfers induced by \emph{jumps} and \emph{calls}.

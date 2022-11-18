@@ -1,4 +1,4 @@
-\title{Static Binary Analysis for Memory Properties and Exceptional Control Flow}
+\title{Static Binary Analysis for Memory Properties and Lifting of Control Flow}
 \keywords{%
   Formal Verification,
   \glsentryname{arch} Assembly,
@@ -108,7 +108,8 @@
   Because of this, we were able to test on more functions than before, but not a lot more.
 
   To deal with the main drawbacks of \acp{fmuc} mentioned above, we developed \emph{\acfp{hg}}, the third contribution of this dissertation.
-  These \acp{hg} use \emph{memory models} that take the form of \emph{forests}, or collections of tree data structures.
+  These \acp{hg} focus specifically on \emph{control flow reconstruction} (figuring out where in a program execution will go), meaning we do not need to prove specific properties that are not related to control flow.
+  Additionally, \acp{hg} use \emph{memory models} that take the form of \emph{forests}, or collections of tree data structures.
   A single tree represents a region in memory that may have multiple \emph{symbolic} references, or abstract representations of a value.
   The children of the tree represent regions used in the program that are \emph{enclosed} within their parent tree elements.
   Now, instead of assuming that all ambiguous memory regions are separate, we can use them under various aliasing conditions.

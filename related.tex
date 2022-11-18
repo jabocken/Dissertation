@@ -526,7 +526,7 @@ Unlike our lifting work, Jakstab often requires usage of manually-coded harnesse
 A harness provides property specification and additional intermediate operations not found in the actual binary, and possibly external call modeling.
 They may additionally be used to provide pointer initialization for library/driver code.
 However, an imprecise harness may lead to false positives requiring manual investigation, and that kind of harness is impossible to create precisely for \ac{cots} binaries, such as the binaries used in our case studies.
-Because of this, Jackstab offers a variety of heuristics to improve scalability and precision at the cost of making the results possibly unsound  \autocite[p.~129]{kinder2010static}.
+Because of this, Jakstab offers a variety of heuristics to improve scalability and precision at the cost of making the results possibly unsound  \autocite[p.~129]{kinder2010static}.
 
 Additionally, we argue that Jakstab is not overapproximative even for those sound cases.
 That is, even when no indirections occur, it will not always reach all instructions that are actually reachable in a binary.
