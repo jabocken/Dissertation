@@ -1,6 +1,4 @@
 \chapter{Related Work}\label{ch:related}
-\todo{Treat \ac{sloc} as a unit?}
-
 Verification of assembly has been an active field of research for decades.
 Binary analysis in general, both static and dynamic, has a rich history as well.
 This chapter covers some of that history.
@@ -15,12 +13,13 @@ and then verified compilation and static analysis tools are discussed
 in \cref{se:verified,se:static_analysis}.
 \Cref{related-table} provides an overview of the assembly,
 hardware, and integrated projects.
-It also includes the works presented in this dissertation.
+It also includes the first two works presented in this dissertation.
 
-\todo{mention stuff from HG, EICFG papers here}
+Moving to a more categorical representation for the second half of my dissertation, we have the following two \namecrefs{related-lifting}.
+First, a set of works covering the lifting or extraction of control flow and state machines in \cref{related-lifting}, followed by a coverage of tools that perform exception analysis in \cref{related-exceptions} (with bottom-up approaches summarized in \cref{tab:eicfg-comparisons}).
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
-\textcite{clutterbuck1988verification} performed formal verification
+\Textcite{clutterbuck1988verification} performed formal verification
 of assembly programs using SPACE-8080, a verifiable,
 analyzable subset of the Intel 8080 \ac{isa}.
 Their work used \ac{spade}, a set of software tools for ``the efficient development,
@@ -52,10 +51,9 @@ The only number given was that the specifications for about \SI{10}{\percent}
 of the code modules under test were clarified
 and one module received a code fix to improve its performance.
 
-Similarly, Yu and Boyer \autocite{yu1993automated,boyer1996automated}
+Similarly, \textcite{yu1993automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
-for approximately \SI{80}{\percent} of the instructions of the MC68020 microprocessor,
-over 85.
+for approximately \SI{80}\percent\ of the instructions of the MC68020 microprocessor, over \num{85}.
 They implemented those semantics and mechanized their approach
 in \ac{nqthm}, a precursor to the theorem prover ACL2 \autocite{ACL2}.
 They then applied their mechanized reasoning to check functional correctness
@@ -79,37 +77,37 @@ in order to generate \acp{vc} and then discharge them.
 They even supported compositionality by verifying subcalls individually.
 Both of the assembly-style languages they tested with feature a stack
 for handling scratch variables rather than a register file
-as x86, ARM, and most other mainstream \acp{isa} do.
+as \gls{x86}, \gls{arm}, and most other mainstream \acp{isa} do.
 The case studies they verified were an implementation of the Fibonacci sequence,
-a factorial function, and functions for CBC-mode encryption and decryption.
+a factorial function, and functions for \ac{cbc}-mode encryption and decryption.
 In total, they covered \num{631} assembly instructions,
-less than that handled by either of the methodologies presented in this dissertation.
-Of course, they were targeting a stronger property than either of those works,
+less than that handled by any of the methodologies presented in this dissertation.
+Of course, they were targeting a stronger property than those works,
 but they also did not perform any significant work to automate their approach.
 All in all, however, this work is the closest to the control-flow-driven approach
 presented in \cref{ch:cfg} of any of the works presented in this chapter,
 as they even implemented a version in Isabelle. Their Isabelle version did not support
 compositionality, however.
 
-Additionally, Goel et al.\ presented an approach for modeling and verifying
-non-deterministic programs on the binary level \autocite{goel2014syscalls,goelphd}.
+Additionally, \textcite{goel2014syscalls,goelphd} presented an approach for modeling and verifying
+non-deterministic programs on the binary level.
 As with \textcite{matthews2006verification}, their work was implemented in ACL2.
-In addition to formulating the semantics of most user-mode x86 instructions,
+In addition to formulating the semantics of most user-mode \gls{x86} instructions,
 they provided semantics for common system calls.
 System call semantics increase the spread of programs that can be fully verified.
 Their work was applied to multiple small case studies,
 including a word count program and two kernel-mode memory copying examples.
 
 Ultimately, the main difference between the above-mentioned existing approaches
-and the methodologies presented in this dissertation lies in the degree of automation.
+and the methodologies presented in \cref{prelim} of this dissertation lies in the degree of automation.
 As stated previously, \ac{itp} over semantics of assembly instructions
 does not scale under normal circumstances.
 This is again due to the amount of intricate user interaction required.
 
 Fully automated approaches to formal verification, however,
 do not necessarily scale either.
-The recent automated approach AUSPICE provided by \textcite{tan2015auspice}
-takes about 6 hours to run on a 533-instruction string search algorithm.
+The automated approach AUSPICE provided by \textcite{tan2015auspice}
+takes about \SI6\hour\ to run on a 533-instruction string search algorithm.
 This is despite the fact that, similar to our approaches, % todo: this sounds weird
 they were targeting weaker safety properties
 rather than going for functional correctness.
@@ -126,7 +124,7 @@ That functional form can then be used in a Hoare logic framework
 for program analysis \autocite{myreen2007hoare}.
 It formally covers the gap between machine code and \iac{hol} model
 and allows for verification of properties in a theorem prover that utilizes that model.
-\Ac{dil} has been used for both ARM and x86 \ac{isa} machine models
+\Ac{dil} has been used for both \gls{arm} and \gls{x86} \ac{isa} machine models
 and applied to various large examples,
 including benchmarks such as a garbage collector as well as the Skein hash function.
 It has even been used as a component in a binary-level verification methodology
@@ -161,7 +159,7 @@ The three programs they focused on for their case study
 were designed to record speed measurements from sensors on four wheels,
 calculate the actual speed, and then transmit it over \iac{can} bus.\footnote{%
   \Iac{can} bus is a standard bus for electronic communications
-  in automotive applications.%
+  in automotive applications. \todo{this would be great as a glossary entry!}%
 }
 Some of the programs required simplification to be checkable,
 so for consistency they applied, or at least attempted to apply,
@@ -170,14 +168,12 @@ They did what they could to remove sends over the \ac{can} bus
 and tried to focus on the speed signal from just one wheel rather than all four.
 Ultimately, they were able to reason about all three programs
 and prove both functional and non-functional properties of those programs.
-On average they covered around 700 lines of C or \num{2666} assembly instructions.
-In terms of the works presented in this dissertation,
-the case study on HermitCore in \cref{se:cfg_application}
-did involve isolating the functions under test before compiling them
-and covered less instructions.
-By contrast, the analyzed Xen functions in \cref{se:xen} were handled
-without any modification whatsoever to the Xen build process
-and covered even more instructions.
+On average they covered around \num{700} lines of C or \num{2666} assembly instructions.
+\begin{remark}[Function Isolation in Our Works]
+  The case study on HermitCore in \cref{se:cfg_application} did involve isolating the functions under test before compiling them and covered less instructions.
+  By contrast, the analyzed Xen functions in \cref{se:xen} were handled without any modification whatsoever to the Xen build process and covered even more instructions.
+  Building on that, \cref{hg} had a combination of full-binary and per-function analyses with even more instructions for its Xen case study (\cref{hg-extraction}), while \cref{eicfg} was primarily per-binary but had unsound additional coverage via per-function fallbacks and went far beyond just Xen for its case study (\cref{eicfg-results}).
+\end{remark}
 
 \Textcite{brauer2009sba} intially performed static analysis of stack bounds
 for the Atmel ATmega16 and Intel MCS-51 microcontrollers
@@ -227,13 +223,13 @@ is the work done by hardware designers and testers
 to verify the products that run those codes.
 Quite often this is done with model checkers.
 
-For example, ARM recently released several of their \acp{isa} in a machine-parsable,
+For example, \gls{arm} recently released several of their \acp{isa} in a machine-parsable,
 executable format called \ac{asl}, a result that took five years to develop.
 While not directly verifiable, the documents were automatically translated into
 a verifiable form for use with a verification tool
 called ISA-Formal \autocite{reid2016endtoend}.
 ISA-Formal is intended to verify processor pipeline control
-and has been successfully used for that purpose on multiple versions of the ARM \ac{isa}.
+and has been successfully used for that purpose on multiple versions of the \gls{arm} \ac{isa}.
 At its core, it uses bounded model checking for instruction sequence exploration.
 They accomplished this by developing a translator from \ac{asl}
 to the subset of System-Verilog that can be handled by commercial Verilog model checkers.
@@ -253,17 +249,17 @@ which supports automatic generation of emulation code
 and of proof definitions for Isabelle, HOL4, and in some cases Coq,
 has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
 \autocite{armstrong2018models,armstrong2019isa}.
-The \acp{isa} in question are ARMv8.3-A, CHERI-MIPS, and RISC-V.
+The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-MIPS, and RISC-V.
 It was also used to produce a proof of correctness for a model of
-ARMv8-A address translation in Isabelle.
+\gls{arm}[v8-A] address translation in Isabelle.
 
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
 was the verification of the seL4 kernel \autocite{klein2009sel4,Klein_AEMSKH_14}.
 The seL4 project provides a microkernel written in formally proven correct C code.
 The tool AutoCorres is used for C code verification \autocite{greenaway2012bridging}.
-\textcite{sewell2013tvv} verified a \emph{refinement relation} between the C source code
-and corresponding non-optimized and \lstinline|O2|-optimized ARM binaries.
+\Textcite{sewell2013tvv} verified a \emph{refinement relation} between the C source code
+and corresponding non-optimized and \lstinline|O2|-optimized \gls{arm} binaries.
 The major differences with respect to our work
 is that our methodology targets existing production code,
 instead of code written with verification in mind.
@@ -271,7 +267,7 @@ For example, the seL4 source code does not allow taking the addresses of stack v
 (such as in \cref{fig:example2-c}):
 their approach requires a static separation of stack and heap instead.
 
-\textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
+\Textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
 called ORIENTAIS.
 Part of their approach involved source-level verification
 using a combination of Hoare logic
@@ -291,7 +287,7 @@ that is still a higher-level language than \gls{arch} assembly.
 
 Targeting a similar case study as \cref{ch:syntax},
 \textcite{dam2013hypervisor,dam2013formal}
-formally verified a tiny ARMv7 \emph{separation kernel},%
+formally verified a tiny \gls{arm}[v7] \emph{separation kernel},%
 \index{separation kernel}
 PROSPER, at the assembly level.
 Separation kernels are similar to hypervisors,
@@ -301,8 +297,8 @@ Their methodology integrated HOL4 with \ac{bap}.
 \Ac{bap} utilizes a custom intermediate language
 that provides an architecture-agnostic representation of machine instructions
 and their side effects.
-First, the formal model of the ARM \ac{isa} provided by \textcite{fox2010arm} was used
-in an HOL4 tool to translate the ARM binary into \ac{bap}'s intermediate language.
+First, the formal model of the \gls{arm} \ac{isa} provided by \textcite{fox2010arm} was used
+in an HOL4 tool to translate the \gls{arm} binary into \ac{bap}'s intermediate language.
 Following that, the \ac{smt} solver \ac{stp}  \autocite{ganesh2007stp}
 was used to determine the targets of indirect branches
 and to perform weakest-precondition computation with Hoare triples
@@ -311,7 +307,7 @@ While the approach was generally automated,
 user input was still required to describe the contracts
 the separation kernel was verified against.
 An extension to the work is found in the HAPSOC project by \textcite{baumann2016high},
-who did a similar proof for the ARMv8-A model provided by \textcite{fox2015improved}.
+who did a similar proof for the \gls{arm}[v8-A] model provided by \textcite{fox2015improved}.
 
 Finally, \textcite{bevier1989approach} presented a systems approach
 to software verification that targeted correctness
@@ -400,9 +396,6 @@ and proving a refinement relation with each layer of abstraction placed on top o
 As they started off with a mostly-verified kernel, it is likely they would have had
 more difficulty if they had started with a kernel
 not explicitly designed to be verified.
-\begin{remark}[Function Isolation]
-  While we did isolate functions for verification in \cref{ch:cfg}, we did not do so for \cref{ch:syntax}.
-\end{remark}
 
 \section{Non-Formal Static Analysis}\label{se:static_analysis}
 Non-formal static analysis of binary code for the detection of bugs
@@ -411,7 +404,7 @@ has also been an active research field for decades
 This section covers some of the projects in that field from the past twenty years.
 
 The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
-provides a tool called Vine that lifts x86 instructions to its own \ac{il} for assembly
+provides a tool called Vine that lifts \gls{x86} instructions to its own \ac{il} for assembly
 in order to perform analyses on a higher level.
 That language is fully-featured and can itself be compiled back down to assembly
 if so desired.
@@ -483,8 +476,8 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
     Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
     Goel et al. & \gls{arch} & \acs*{itp} & word-count  & \num{186} insts \\
-    Tan et al. & ARMv7 & ATP & String search & \num{983} insts \\
-    Myreen et al. & ARM/x86 & \acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
+    Tan et al. & \gls{arm}[v7] & ATP & String search & \num{983} insts \\
+    Myreen et al. & \gls{arm}/\gls{x86} & \acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
     Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
     Schlich et al. & ATmega16 & MC & Auto funcs & Around 8k insts \\
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
@@ -494,11 +487,11 @@ efficient but incomplete techniques, such as depth-bounded searches.
     \textbf{\Cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
     \textbf{\Cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
-    Reid et al. & \acs*{asl} & MC+others & ARM \acp{isa} & \num{2209191}+ \acs{sloc} \\
+    Reid et al. & \acs*{asl} & MC+others & \gls{arm} \acp{isa} & \num{2209191}+ \acs{sloc} \\
     Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
-    Shi et al. & C/ARM9 & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
-    Dam et al. & ARMv7 & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
-    Baumann et al. & ARMv8-A & \acs*{atp}+UC & HAPSOC & \num{8000} \acs{sloc} \\
+    Shi et al. & C/\gls{arm}[9] & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
+    Dam et al. & \gls{arm}[v7] & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
+    Baumann et al. & \gls{arm}[v8-A] & \acs*{atp}+UC & HAPSOC & \num{8000} \acs{sloc} \\
     Bevier et al. & PDP-11-like & \acs*{itp}+\acs*{tv} & Full system & 3k+ \acs{sloc}/insts \\
     \bottomrule
     \multicolumn{5}{c}{
@@ -517,125 +510,179 @@ efficient but incomplete techniques, such as depth-bounded searches.
   \end{tabular}
 \end{table*}
 
-\section{Lifting \Acs*{cfg} from Binaries}
-\todo\dots
+\section{Lifting \Acsp*{cfg} from Binaries}\label{related-lifting}
+We relate our work for \ac{hg} lifting to existing approaches for disassembly (\cref{related-disassembly}), binary decompilation (\cref{related-decompilation}), binary verification (\cref{related-hg-verification}), and abstract interpretation (\cref{related-absint}), as well as ones that learn state machines from black-box implementations (\cref{related-automata}).
+To the best of our knowledge, the only existing work that has similar focus on disassembly based on formal methods is Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, which we therefore discuss in more detail.
 
-\subsection{Disassembly}
+\todo{comparison figure if I have time?}
+
+\subsection{Jakstab}
+Jakstab performs binary analysis and control flow reconstruction by utilizing abstract interpretation, like those works in \cref{related-absint}.
+Its main analysis was designed for binaries with potentially handcrafted, obfuscated behavior (such as device drivers and malware),
+and much like our \ac{hg} lifting, it uses a form of at-will disassembly.
+This means that only specific series of bytes queried from specific locations in the binary are disassembled.
+
+Unlike our lifting work, Jakstab often requires usage of manually-coded harnesses for binaries.
+A harness provides property specification and additional intermediate operations not found in the actual binary, and possibly external call modeling.
+They may additionally be used to provide pointer initialization for library/driver code.
+However, an imprecise harness may lead to false positives requiring manual investigation, and that kind of harness is impossible to create precisely for \ac{cots} binaries, such as the binaries used in our case studies.
+Because of this, Jackstab offers a variety of heuristics to improve scalability and precision at the cost of making the results possibly unsound  \autocite[p.~129]{kinder2010static}.
+
+Additionally, we argue that Jakstab is not overapproximative even for those sound cases.
+That is, even when no indirections occur, it will not always reach all instructions that are actually reachable in a binary.
+The instructions and states that are reached by Jakstab
+are \emph{relative to the harness}; that is, relative to some initialization
+and external information.
+In contrast, we make much fewer assumptions about the initial state and conditions.
+Furthermore, Jakstab's average coverage is only \SI{15}\percent\ of the instructions that are present in a binary \autocite[Table~6.2]{kinder2010static}.
+This percentage is computed exclusively over the case studies where it reports a complete and successful result (no counterexamples found for the property being checked).
+In general, programs do not normally exhibit that much dead code.
+Therefore Jakstab appears to underapproximate rather than overapproximate.
+% A sound overapproximative approach should explore---in the case of a successful exploration effort---%
+% 100\% of all viable instructions reachable from the main function,
+% though that does not necessarily correspond to 100\% of existing instructions.
+% In our case, the average percentage of explored instructions in case of successful exploration (successful completion, no unresolved indirections)
+% is 56\%.
+% The remaining 44\% is dead code
+% and code that is not contained in the body of the program
+% due to being present in functions only handled by the runtime library
+% (pre-start constructors, post-exit destructors, signal handlers, etc.).
+
+Also, Jakstab takes a slightly different approach to calculating \acp{lfp}.
+Rather than performing a join operation that may produce range bounds,
+it instead keeps track of a certain number of values for each ``variable'' (register, memory location).\index{symbolic!variable}
+Once that number is exceeded, the possible values are widened to an unknown (akin to \gls{bot}), though pointer type is preserved when possible.
+This operation does not appear to be utilized when control flow recombines
+after conditional statement divergence, however.
+Because of that, it results in a larger state space overall than our \ac{hg} lifting work, though potentially a more precise one.
+
+Related to this is Jakstab's memory handling approach.
+Unlike our more fine-grained memory model approach (described later in \cref{sec:memory-models}), it is all-or-nothing.
+This means it cannot handle writes to fully-unknown
+(or on-the-stack-but-exact-location-unknown) memory regions,
+as it will end up with overwritten return addresses in all such cases.
+While Jakstab can be configured to continue execution in such scenarios,
+the developers considered the results too imprecise for practical usage.
+Our lifting tool, meanwhile, is able to handle most such situations
+as it provides memory models for standard aliasing conditions.
+
+\begin{remark}[Issues using Jakstab]
+  We were not able to directly compare the behavior of Jakstab with our lifting mechanism.
+  Jakstab on its own did not work due to unsound assumptions on the structure of \ac{elf} binaries.\fturl{https://github.com/jkinder/jakstab/issues/9}
+  \todo{make a citation instead?}
+  This is likely due to its development being primarily focused on the handling of Windows programs.
+  Even so, while were able to successfully test with a modified version \autocite{peterson2019},%
+  \fturl{https://github.com/tpetersonkth/AlternatingControlFlowReconstruction/}
+  \todo{the footnote should be a citation too}
+  we were not able to do a comparison as Jakstab does not support 64-bit binaries.
+\end{remark}
+
+\subsection{Disassembly}\label{related-disassembly}
 Disassemblers are tools that take a binary and lift it to an assembly language.
 Traditionally, there are two main methods of disassembly: \emph{linear sweep}
-and \emph{recursive traversal}~\cite{schwartz2002disassembly}.
-Modern disassemblers may combine the two or use other techniques like probabilistic~\cite{wartell2011differentiating,wartell2014shingled,miller2019probabilistic} or conflict analyses~\cite{khadra2016speculative}.
-%Linear sweep disassemblers, such as GNU's \lstinline|objdump|, scan through a binary linearly
-%in areas where code is typically encountered
-%to extract instructions~\cite{schwartz2002disassembly}.
-%Linear sweep may be unsound.
-%For example, unsoundness may occur when working with variable-length instructions (such as x86), with ISAs that do not have strict alignment requirements and when a binary contains mixed code and data.
-%No reachability analysis is done to determine which bytes are actually reachable.
-%Concretely, it considers the instruction after a \texttt{call} reachable by default, without doing reachability analysis.
-%In contrast, our technique does not analyze that instruction until it is known that the call returns.
-%By following control flow rather than making a best guess of instruction addresses, our technique can handle variable-length instructions and any alignment.
-Linear sweep algorithms are easy to implement but well-known to be unsound~\cite{schwartz2002disassembly}.
+and \emph{recursive traversal} \autocite{schwartz2002disassembly}.
+Modern disassemblers may combine the two or use other techniques like probabilistic \autocite{wartell2011differentiating,wartell2014shingled,miller2019probabilistic} or conflict analyses \autocite{khadra2016speculative}.
+
+Linear sweep disassemblers, such as GNU's\index{GNU}
+\lstinline|objdump|, scan through a binary linearly
+in areas where code is typically encountered
+to extract instructions \autocite{schwartz2002disassembly}.
+Linear sweep algorithms are easy to implement but well-known to be unsound \autocite{schwartz2002disassembly}.
+\Acp{isa} with variable-length instructions/non-strict alignment requirements, such as \gls{x86}, pose problems to such disassemblers when complex indirect jumps are involved.
+Intermixed code and data also pose a problem.
+The lack of reachability analysis can also cause problems for code after function calls even when they are calls to internal functions.
+This is because, unless the disassembler does multiple sweeps, it cannot identify non-returning functions, though heuristics may be able to help with making reasonable assumptions.
+
 Recursive traversal algorithms are more complex than linear sweep.
-They operate by starting from some initial instruction and then trace the possible paths of execution, interpreting instructions as they proceed~\cite{schwartz2002disassembly,kruegel2004static}.
-Our work is an example of a recursive traversal disassembler.
+They operate by starting from some initial instruction and then trace the possible paths of execution, interpreting instructions as they proceed \autocite{schwartz2002disassembly,kruegel2004static}.
+Our work in \cref{hg} is an example of a recursive traversal disassembler, with \cref{eicfg} using a similar methodology.
 This allows higher accuracy than linear sweep.
-%For example, cases where a byte-sequence may be executable in different ways depending on the exact location in that byte-sequence where execution starts (such as jumping to the start versus jumping into the middle).
-%They will also exclude code that is not executed.
+For example, such disassemblers support cases where parts of instructions can be interpreted as other instructions, possible with \acp{isa} having unaligned/variable-length instructions.
+They will also be more likely to exclude code that is not executed.
 The major challenge of recursive traversal is properly dealing with indirect calls and jumps.
-A tool that primarily uses recursive traversal is IDA~\cite{ida}, intended for interactive debugging and reverse engineering.
+A tool that primarily uses recursive traversal is IDA Pro \autocite{ida}, intended for interactive debugging and reverse engineering.
 Typically, existing approaches to recursive traversal use heuristics or guesses to approximate indirect branches.
 
-Probabilistic approaches to disassembly~\cite{khadra2016speculative,miller2019probabilistic} include machine learning techniques, such as BYTEWEIGHT~\cite{bao2014byteweight} or the works of Wartell et al.~\cite{wartell2011differentiating,wartell2014shingled}.
-In general, these techniques attempt to identify sequences of bytes as instructions
-based on their context, using large amounts of \emph{training sets} as a guide.
-%The approach of Miller et al.~\cite{miller2019probabilistic} identifies the probability of byte sequences representing instructions based on the context.
-%It uses manually derived \emph{hints} rather than training sets.
-%Spedi provides a speculative, conflict analysis-based approach~\cite{khadra2016speculative}.
-%This approach involves scanning through a binary and speculatively extracting basic blocks of instructions and then eliminating infeasible possibilities via a conflict analysis process.
-%While it is able to handle switch statements (jump tables), it does not handle other types of indirection.
+Probabilistic approaches to disassembly \autocite{khadra2016speculative,miller2019probabilistic} include machine learning techniques, such as BYTEWEIGHT \autocite{bao2014byteweight} or the works of \textcite{wartell2011differentiating,wartell2014shingled}.
+In general, these techniques attempt to identify sequences of bytes as instructions based on their context, using large amounts of \emph{training sets} as a guide.
+The approach of \textcite{miller2019probabilistic} identifies the probability of byte sequences representing instructions based on the context.
+It uses manually derived \emph{hints} rather than training sets.
+Spedi by \textcite{khadra2016speculative} provides a speculative, conflict analysis-based approach.
+This approach involves scanning through a binary and speculatively extracting basic blocks of instructions and then eliminating infeasible possibilities via a conflict analysis process.
+While it is able to handle switch statements (jump tables), it does not handle other types of indirection.
 The main disadvantage of probabilistic/speculative techniques is that they inherently cannot provably overapproximate the behavior of the binary.
 Although they typically have very few cases of underapproximation, such cases are not impossible.
 
-The key difference between our work and existing disassemblers is that:
+The key differences between our lifting work and existing disassemblers are that:
 \begin{enumerate}
   \item no existing disassembler aims at providing a guarantee that the lifted representation is a sound overapproximation of the binary; and
   \item our approach goes beyond disassembly, providing both control flow and invariants that are sufficiently strong enough to prove control flow.
 \end{enumerate}
 The cost of our approach is that it may fail, whereas other approaches are able to guess or use heuristics to continue.
 
-\subsection{Binary Decompilation}
+\subsection{Binary Decompilation}\label{related-decompilation}
 A decompiler takes a binary as input and lifts to a higher-level representation.
-Ghidra \autocite{ghidra}, RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to C code.
-SmartDec \autocite{fokin2011smartdec} lifts to \Cpp{} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM.
+RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to C code.
+SmartDec \autocite{fokin2011smartdec} lifts to \Cpp{} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
 Ramblr \autocite{wang2017ramblr} lifts a binary to \emph{symbolized} assembly, where concrete addresses are replaced with symbolic labels.
-CodeSurfer/x86 \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}
-provides a graphical interface for lifting binaries
-to an intermediate representation
-and interactively analyzing them.
-Decompilers are often integrated into reverse engineering
-and program exploration tools
-such as IDA Pro, % \fturl{https://www.hex-rays.com/products/decompiler/},
-\todo{citation}
-Binary Ninja \autocite{binary-ninja-decompiler}, and Ghidra.
+CodeSurfer/\gls{x86} \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}
+provides a graphical interface for lifting binaries to an intermediate representation and interactively analyzing them.
+Additionally, decompilers are often integrated into reverse engineering and program exploration tools such as IDA Pro \autocite{ida-decompiler},
+Binary Ninja \autocite{binary-ninja-decompiler}, and Ghidra \autocite{ghidra}.
 
 A key factor in decompilation approaches, and also in other approaches that aim at producing control flow graphs or dataflow analyses, is that many of them assume that disassembly has been done by an external tool that is assumed to be sound.
 Our algorithm thus \emph{complements} these works.
-%For example, McSema requires an external source of control flow information, which can be generated from our solution.
+For example, McSema requires an external source of control flow information, which could be generated from our solution.
 
-\Ac{dil} \autocite{myreen2007hoare,myreen2012decompilation}
-uses operational semantics of machine code to lift binaries into a \emph{functional} representation in \ac{hol}.
-It is a technique that can be used in formal verification contexts. % , as the functional representation is overapproximative.
-Howeer, \ac{dil} does not deal with indirect branching and \emph{assumes} that return addresses are not overwritten.
-In their own words, their ``heuristic is easily confused by computed branches'' \autocite{myreen2008decompilation}.
-In contrast, our lifting approach supports various forms of indirect branches and can detect potentially-overwritten return addresses.
+For a more formal approach, we return to \ac{dil} \autocite{myreen2007hoare,myreen2012decompilation}.
+However, \ac{dil} does not deal with indirect branching and \emph{assumes} that return addresses are not overwritten.
+In their own words, ``[its] heuristic is easily confused by computed branches'' \autocite{myreen2008decompilation}.
+In contrast, our \ac{hg} lifting approach supports various forms of indirect branches and can detect potentially-overwritten return addresses.
 
-\subsection{Relation to Binary Verification}
-Binary verification techniques aim to prove properties on the machine code level \autocite{kumar2018software}.
+\subsection{Relation to Binary Verification}\label{related-hg-verification}
+As a reminder, binary verification techniques aim to prove properties on the machine code level \autocite{kumar2018software}.
 Typically, binary verification aims at proving that the binary is correct with respect to some higher-level artifact (source code or a specification).
-\Textcite{klein2009sel4,klein2010refinement,sewell2013tvv} used a refinement-based approach to verify the seL4 microkernel binary.
-\todo{seL4 citation or glosary entry?}
-\Textcite{kamkin2020deductive} developed a methodology for verifying that the machine code of RISC-V binaries satisfy annotations in the binaries' source code.
-\todo{glossary entry for RISC-V?}
+\Textcite{klein2009sel4,klein2010refinement,sewell2013tvv} used a refinement-based approach to verify the seL4\index{seL4} microkernel binary.
+\Textcite{kamkin2020deductive} developed a methodology for verifying that the machine code of RISC-V\index{RISC-V} binaries satisfy annotations in the binaries' source code.
 For a top-down approach, proof-carrying code \autocite{necula1997proof}
 integrates a proof of correctness into the binary that is verified at runtime.
 If the proof fails, the binary cannot be executed.
 This does require some additional functionality, with both the compiler and the program host needing to support it.
 
-In contrast, our improved control flow extraction approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
+In contrast, our \ac{hg} lifting approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
 In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019establishing}.
-\todo{maybe flesh the Goel bits out again?}
-\Textcite{verbeek2020automated} provided a binary verification methodology tailored to memory preservation properties, with a ``manual effort vs. instruction count ratio'' of roughly 1 to 11.\footnote{%
-  This is the paper version of \cref{ch:syntax}.
-}
-\Textcite{tan2015auspice} provide a fully automated method, AUSPICE, that takes about \SI6\hour\ for a \num{533}-instruction string search algorithm.
-Our approach \emph{complements} formal verifiers that generate invariants for proving functional correctness.
+Even our syntax-driven work presented in \cref{ch:syntax}, tailored to memory preservation properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \cite{verbeek2020automated}.
+\Textcite{tan2015auspice} provided a fully automated method, AUSPICE, that takes about \SI6\hour\ for a \num{533}-instruction string search algorithm.
+Our \ac{hg} lifting approach \emph{complements} formal verifiers that generate invariants for proving functional correctness.
 \begin{remark}[Lifting in the \acs*{tcb}]
-  The invariants our approach generates do not contain enough information to prove full functional correctness; they are tailored for control flow and pointer relations.
+  The invariants this lifting approach generates do not contain enough information to prove full functional correctness; they are tailored for control flow and pointer relations.
   The tool instead serves to remove the lifting process from the \ac{tcb}.
   This is useful because verification based on untrustworthy disassemblers and control-flow reconstruction is itself untrustworthy.
 \end{remark}
 
-\subsection{Abstract Interpretation}
+\subsection{Abstract Interpretation}\label{related-absint}
 The general problem of lifting binary code from a string of zeroes and ones to a higher-level form is known to be undecidable.
-Thus, approximate solutions have been extensively studied, especially in the framework of \emph{abstract interpretation} \autocite{cousot1977abstract}.
-\todo{glossary entry?}
-Abstract interpretation provides gives a mathematical foundation for reasoning over abstractions ov.
+Thus, approximate solutions have been extensively studied, especially in the framework of \emph{abstract interpretation} \autocite{cousot1976static,cousot1977abstract}.
+Such an approach gives mathematical foundations to reason about approximations and their computations (elaborated on in \cref{background-absint}).
 
-%Binary analysis is an actively studied application of abstract interpretation, which gives mathematical foundations to reason about approximations and their computations.
-\Textcite{bardin2011bincoa,daniel2020binsec} provide Binsec, which utilizes abstract interpretation in the process of information flow analysis for cryptographic implementations.
-\Textcite{zhang2019bda} provide a path sampling algorithm and use abstract interpretation to prune infeasible paths.
-\Textcite{reinbacher2011test} use abstract interpretation in a similar fashion for binary-level test case generation.
-These works aim at orthogonal usages of abstract interpretation with respect to this paper, and \emph{assume} availability of a tool that provides overapproximative control flow.
-Our approach is thus highly complementary to all these works.
+\Textcite{bardin2011bincoa,daniel2020binsec} provided Binsec, which utilizes abstract interpretation in the process of information flow analysis for cryptographic implementations.
+\Textcite{zhang2019bda} provided a path sampling algorithm and use abstract interpretation to prune infeasible paths.
+Meanwhile, \textcite{reinbacher2011test} used abstract interpretation in a similar fashion for binary-level test case generation.
+These works aim at orthogonal usages of abstract interpretation with respect to our \ac{hg} lifting work, as they \emph{assume} availability of a tool that provides overapproximative control flow.
+Our approach is thus highly complementary to them.
 
-BinTrimmer, developed by \textcite{redini2019b}, uses abstract interpretation to refine \acp{cfg} from binaries for debloating.
+Moving on: BinTrimmer, developed by \textcite{redini2019b}, uses abstract interpretation to refine \acp{cfg} from binaries for debloating.
 Its deal with indirect branches in an overapproximative fashion.
-The key distinction between \todo{the work presented in } and BinTrimmer is that it is \emph{solely} concerneed with indirections.
-That is, it is not concerned with proving various other properties ovr asembly.
-that a return address is not overwritten, with stack overflows, jump-in-the-middle behavior, or providing invariants sufficiently strong to serve as evidence for overapproximation.
-Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \ac{sloc}, in contrast to our Xen Hypervisor case study.
+The key distinction between our \ac{hg} approach and BinTrimmer is that it is \emph{solely} concerned with indirections.
+Other properties of assembly programs are not a consideration.
+These include security properties such as control flow integrity (return addresses are not overwritten and jumps/calls go where they are supposed to), avoidance of stack overflows, etc.
+BinTrimmer also does not provide invariants with sufficient strength to serve as evidence for overapproximation.
+Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \ac{sloc}, in contrast to the \ac{hg} Xen Hypervisor case study presented in \cref{hg-extraction}.
 
-\subsection{Automata Learning}
+Finally, while not a binary lifting approach, the tool Crab \autocite{crab}, uses abstract interpretation for loop invariant restriction \autocite{gange2016abstract}.
+This tool is part of the SeaHorn verification framework for LLVM \ac{ir} \autocite{seahorn}.
+
+\subsection{Automata Learning}\label{related-automata}
 Automata learning algorithms are a different approach to state machine extraction.
 They perform black-box testing in order to \emph{learn} the behavior of a system \autocite{steffen2011active}.
 For example, \textcite{fiter2017ssh} used automata learning to infer the functionality of three \ac{ssh} server implementations.
@@ -644,14 +691,12 @@ Automata learning typically produces abstract high-level models concerning the i
 Their \emph{mapper}, which maps back and forth from abstract inputs/outputs to concrete packages to be sent to/received from the server,
 was based on the Paramiko\fturl{https://www.paramiko.org/}
 \ac{ssh} client implementation.
-\todo{Paramiko citation?}
 
 \Textcite{kerkers2017assessing} performed security analysis
-of power distribution ICS using automata learning.
-\todo{acronym}
+of power distribution \acp{ics} using automata learning.
 LearnLib was again used to provide the necessary learning features.
-In addition to implementing a mapper to support the necessary ICS
-protocols, Kerkers also had to provide software and hardware testing interfaces for the physical ICS that were under test.
+In addition to implementing a mapper to support the necessary \ac{ics}
+protocols, Kerkers also had to provide software and hardware testing interfaces for the physical \acp{ics} that were under test.
 
 Automata learning techniques can be used to infer state machines when source code is not available.
 However, they do not provide formal statements of overapproximation.
@@ -660,31 +705,28 @@ Developing such a mapper is a significant per-binary manual effort.
 Its implementation has a severe impact on the validity of the inferred state machine.
 In contrast, our disassembly approach does not require such manual effort.
 
-\section{Exception Handling Analysis}
-\todo{figure out if anything is shared with the above. Most don't seem to be, but still}
-
+\section{Exception Handling Analysis}\label{related-exceptions}
 The two main approaches to analyzing exceptional behavior for \Cpp\ programs, and behavioral program analysis in general, are bottom-up and top-down.
 Bottom-up tools include decompilers and disassemblers, as well as this work.
 Top-down tools focus on analysis of source code or other higher-level representations.
-%This section focuses on bottom-up approaches.
 
 \subsection{Bottom-Up Approaches: Decompilers and Disassemblers}
-We provide a summary of such works in \cref{tab:comparisons}.
+We provide a summary of such works in \cref{tab:eicfg-comparisons}.
 The table describes whether or not the works do intra- or interprocedural exception analysis and if so, if it is static or dynamic.
 Static approaches, such as the one presented in this paper, typically aim for overapproximation.
 They utilize abstraction or other methods to model paths symbolically.
 In contrast, dynamic approaches are inherently underapproximative.
 This is because they rely on concrete runtime behavior and evaluating all possible concrete paths is infeasible.
-% TODO: Even works that hijack runtime control flow to force specific path execution must do it in a sampled fashion: https://link.springer.com/chapter/10.1007/978-3-540-74320-0_12
+Even works that hijack runtime control flow to force specific path execution must do it in a sampled fashion \autocite{wilhelm2007forced}.
 \begin{table}
   \centering
   \begin{threeparttable}
-    \caption{Bottom-up Exceptional Analysis Comparisons}\label{tab:comparisons}
+    \caption{Bottom-up Exceptional Analysis Comparisons}\label{tab:eicfg-comparisons}
     \begin{tabular}{llll}
       \toprule
       Program & Intraproc.\tnote\dag & Interproc.\tnote\ddag & Academic Evals \\
       \midrule
-      \textbf{This work} & \textbf{Statically} & \textbf{Statically} & \\
+      \textbf{\acs*{eicfg} work} & \textbf{Statically} & \textbf{Statically} & \\
       Binary Ninja & Statically\tnote{*} & Dynamically & \\
       IDA Pro & Statically & Dynamically & \autocite{g2019idapro,liu2020correctness} \\
       Ghidra & Statically & Dynamically & \autocite{rohleder2019ghidra,pang2021sok,liu2020correctness} \\
@@ -733,10 +775,8 @@ They cannot be used to analyze already-compiled programs with exceptions.
 Java programs use exceptions as well. \Textcite{kechagia2019misuse} provide a tool for identifying unhandled \ac{api} misuses via static exception propagation and test case generation. This differs from our work as we detect in-program exceptional behavior, not exceptions produced by \ac{api} or other external calls.
 
 \subsection{Tools that use \texttt{libunwind}}
-A standard library for instrumented/dynamic unwinding is
-\href{https://www.nongnu.org/libunwind/}{libunwind}. \todo{make a citation instead, clean up more}
-It has been utilized by tools such as \url{https://dl.acm.org/doi/abs/10.1145/2660267.2660281}.
-%\todo{a few others}.
+A standard library for instrumented/dynamic unwinding is \lstinline|libunwind| \autocite{libunwind}.
+It has been utilized by tools such as RockJIT, which protects \ac{jit} compilers by enforcing \ac{cfi} \autocite{niu2014rockjit}.
 It can function without source code. However, as an instrumenting library, it requires a running program and thus must operate dynamically.
 
 Our final tool, as well as all of the other bottom-up analysis tools mentioned above, assumes both the existence and correctness of the \inlineasm{.eh_frame} and \inlineasm{.gcc_except_table} \ac{elf} sections.
@@ -760,6 +800,7 @@ This section covered some of the work related to that presented in this disserta
 Previous assembly- and hardware-level formal verification efforts,
 verification efforts containing assembly or binary analysis components,
 verified compilation, and non-formal static analysis tools were all discussed.
+We also covered various tools and approaches for lifting or extracting control flow graphs/state machines from binaries as well as ones that perform exception-aware analyses.
 
 Notably, while multiple assembly-level verification efforts
 presented in this chapter achieved more coverage
@@ -767,6 +808,4 @@ than the over \num{2379} instructions achieved by the work in \cref{ch:cfg},
 none appear to have achieved the \num{12252}
 verified instructions covered in \cref{ch:syntax} except the work produced by
 Arm\index{Arm Ltd.} employees.
-
-
-\todo{Add in talk about HG, EICFG works}
+We then built further on that with our approaches in \cref{hg}, covering \glssymbol{inst-total-lifted} instructions, and \cref{eicfg}, covering \glssymbol{eicfg-inst-total} instructions.

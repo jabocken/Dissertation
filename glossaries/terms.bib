@@ -1,11 +1,32 @@
 @index{assembly}
+@entry{arm,
+  name = {ARM},
+  description = {The \ac{risc} \ac{isa} developed by Arm Ltd. Comes in both 32-bit and 64-bit forms},
+  parent = {assembly}
+}
+@entry{x86,
+  name = {x86},
+  description = {The family of \ac{cisc} \acp{isa} developed by Intel; in common parlance, refers to the 32-bit version},
+  parent = {assembly}
+}
 @entry{arch,
   name = {x86-64},
   description = {The 64-bit version of the Intel x86 \ac{isa}},
-  parent = {assembly}
+  parent = {assembly},
+  seealso = {x86}
 }
 @entry{amd64,
   name = {AMD64},
+  see = {arch},
+  parent = {assembly}
+}
+@entry{x86_64,
+  name = {x86\_64},
+  see = {arch},
+  parent = {assembly}
+}
+@entry{i64,
+  name = {Intel 64},
   see = {arch},
   parent = {assembly}
 }

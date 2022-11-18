@@ -276,10 +276,10 @@ In the end,
 this dissertation used the \gls{arch} \ac{isa} as it is a widely-used architecture
 that has had formal semantics derived for most of its instructions
 in previous works \autocite{heule2016stratified,roessle2019}.
-It is the 64-bit, mostly-backwards-compatible successor to the x86 \ac{isa},
-also known as x64, x86\_64, AMD64 (for AMD chips), and Intel 64 (for Intel chips).
-The x86 family of processors originated in 1978 with the 16-bit Intel 8086,
-whose design is still reflected in that of modern x86 \acp{isa}.
+It is the 64-bit, mostly-backwards-compatible successor to the \gls{x86} \ac{isa},
+also known as \gls{x64}, \gls{x86_64}, \gls{AMD64} (for AMD chips), and \gls{i64} (for Intel chips).
+The \gls{x86} family of processors originated in 1978 with the 16-bit Intel 8086,
+whose design is still reflected in that of modern \gls{x86} \acp{isa}.
 Many of the instructions are the same,
 though extended over the years to work with larger operands.
 There are also many new instructions that have been added over the years.
@@ -590,9 +590,19 @@ and that has a lower bar.
 \subsection{Least Fixed Point}
 \todo{Should this be Greatest Fixed Point instead?}
 
-\section{Abstract Interpretation}
+\section{Abstract Interpretation}\label{background-absint}
 Several contributions of this work were inspired by
-\emph{abstract interpretation}\index{abstract!interpretation}.
+abstract interpretation \autocite{cousot1976static,cousot1977abstract}
+\index{abstract!interpretation},
+previously mentioned in \cref{related-absint}.
+Abstract interpretation is a form of approximation
+in which the possible values for some variables in a program
+are constrained to some \emph{domain}.
+Some examples are sign or polyhedral ranges.
+It functions somewhat like a partial execution of the program under test
+in order to determine semantic information.
+\todo{glossary entry?}
+
 \todo\dots
 % Removing abstract interpretation talk for VSTTE as we're going for a more informal approach; can discuss it more later in dissertation though maybe.
 % \subsection{Abstract Interpretation}\label{sec:abstract-interpretation}

@@ -1897,6 +1897,22 @@
   xdata = {acm}
 }
 
+@online{crab,
+  title = {seahorn/crab: A library for building abstract interpretation-based analyses},
+  author = {{SeaHorn Contributors}},
+  url = {https://github.com/seahorn/crab},
+  date = {2022-11-05},
+  urldate = {2022-11-18}
+}
+
+@online{seahorn,
+  title = {SeaHorn | A Verification Framework},
+  author = {Arie Gurfinkel},
+  url = {https://seahorn.github.io/},
+  date = 2018,
+  urldate = {2022-11-18}
+}
+
 @InProceedings{gange2016abstract,
   title="An Abstract Domain of Uninterpreted Functions",
   author="Gange, Graeme and Navas, Jorge A. and Schachte, Peter and S\o{}ndergaard, Harald and Stuckey, Peter J.",
@@ -1984,7 +2000,6 @@
   version      = {v2.0.0.2},
   doi          = {10.5281/zenodo.6330573}
 }
-
 
 @inproceedings{verbeek2022lifting,
   title = {Formally Verified Lifting of {C}-Compiled x86-64 Binaries},
@@ -2237,6 +2252,14 @@
   xdata = {acm}
 }
 
+@online{libunwind,
+  title = {The libunwind project},
+  author = {David Mosberger and Dave Watson and Arun Sharma and Paulino, Jose Flavio Aguilar and Brian Sumner and Hans Boehm and Matthieu Delahaye and Max Asbock and Lassi Tuura},
+  url = {https://www.nongnu.org/libunwind/},
+  urldate = {2022-11-18}
+}
+
+
 
 %% Citations that need updating for biblatex style
 @inproceedings{bao2014byteweight,
@@ -2363,14 +2386,18 @@
   note={Accessed 2020-07-06}
 }
 
-@misc{ida,
+@online{ida,
   title={{IDA Pro} -- {Hex Rays}},
   author={{Hex-Rays SA}},
-  url={https://www.hex-rays.com/products/ida/},
-  day=16,
-  month=may,
-  year=2022,
-  note={Accessed May 18, 2022}
+  url={https://www.hex-rays.com/ida-pro/},
+  urldate={2022-11-18}
+}
+
+@online{ida-decompiler,
+  title = {{Hex-Rays} Decompiler},
+  author={{Hex-Rays SA}},
+  url = {https://www.hex-rays.com/decompiler/},
+  urldate = {2022-11-18}
 }
 
 @misc{ghidra,
@@ -2619,12 +2646,12 @@
   pages={1021--1038},
   year={2020},
   organization={IEEE},
-  doi={10.1109/SP40000.2020.00074}}
+  doi={10.1109/SP40000.2020.00074}
 }
 
 @inproceedings{reinbacher2011test,
   title={Test-case generation for embedded binary code using abstract interpretation},
-  author={Reinbacher, Thomas and Brauer, J{\"o}rg and Horauer, Martin and Steininger, Andreas and Kowalewski, Stefan},
+  author={Reinbacher, Thomas and Brauer, J\"org and Horauer, Martin and Steininger, Andreas and Kowalewski, Stefan},
   booktitle={Sixth Doctoral Workshop on Mathematical and Engineering Methods in Computer Science (MEMICS'10)--Selected Papers},
   year={2011},
   organization={Schloss Dagstuhl-Leibniz-Zentrum fuer Informatik},
@@ -2710,4 +2737,75 @@
   articleno = {137},
   numpages = {31},
   keywords = {Binary Analysis, Abstract Interpretation, Path Sampling, Data Dependence}
+}
+
+@phdthesis{kinder2010static,
+  title = {Static Analysis of x86 Executables},
+  author = {Johannes Kinder},
+  address = {Darmstadt},
+  school = {Technische Universit\"at},
+  year = 2010,
+  month = nov,
+  url = {http://tuprints.ulb.tu-darmstadt.de/2338/}
+}
+
+@InProceedings{kinder2012alternating,
+  title="Alternating Control Flow Reconstruction",
+  author="Kinder, Johannes and Kravchenko, Dmitry",
+  editor="Kuncak, Viktor and Rybalchenko, Andrey",
+  booktitle="Verification, Model Checking, and Abstract Interpretation",
+  year=2012,
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="267--282",
+  isbn="978-3-642-27940-9",
+  doi={10.1007/978-3-642-27940-9_18},
+}
+
+@INPROCEEDINGS{kinder2012virtualization,
+  title={Towards Static Analysis of Virtualization-Obfuscated Binaries},
+  author={Kinder, Johannes},
+  booktitle={2012 19th Working Conference on Reverse Engineering},
+  year=2012,
+  pages={61--70},
+  doi={10.1109/WCRE.2012.16}
+}
+
+@phdthesis{peterson2019,
+  series={TRITA-EECS-EX},
+  title={Alternating Control Flow Graph Reconstruction by Combining Constant Propagation and Strided Intervals with Directed Symbolic Execution},
+  url={http://urn.kb.se/resolve?urn=urn:nbn:se:kth:diva-271208},
+  author={Peterson, Thomas},
+  year=2019,
+  collection={TRITA-EECS-EX}
+}
+
+@InProceedings{wilhelm2007forced,
+  title="A Forced Sampled Execution Approach to Kernel Rootkit Identification",
+  author="Wilhelm, Jeffrey and Chiueh, Tzi-cker",
+  editor="Kruegel, Christopher
+  and Lippmann, Richard
+  and Clark, Andrew",
+  booktitle="Recent Advances in Intrusion Detection",
+  year="2007",
+  publisher="Springer Berlin Heidelberg",
+  address="Berlin, Heidelberg",
+  pages="219--235",
+  isbn="978-3-540-74320-0"
+}
+
+@inproceedings{niu2014rockjit,
+  author = {Niu, Ben and Tan, Gang},
+  title = {RockJIT: Securing Just-In-Time Compilation Using Modular Control-Flow Integrity},
+  year = {2014},
+  isbn = {9781450329576},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  doi = {10.1145/2660267.2660281},
+  booktitle = {Proceedings of the 2014 ACM SIGSAC Conference on Computer and Communications Security},
+  pages = {1317–1328},
+  numpages = {12},
+  keywords = {modularity, just-in-time compilation, control-flow integrity},
+  location = {Scottsdale, Arizona, USA},
+  series = {CCS '14}
 }
