@@ -792,7 +792,7 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \end{proof}
 
 \begin{definition}
-  \Ac{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, S,\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
+  \Ac{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
     \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition}[^\ast] \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition} \gls{symbolic-state}['] \sepdot \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \land \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
   \end{equation*}

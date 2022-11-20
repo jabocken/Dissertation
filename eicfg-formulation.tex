@@ -290,8 +290,7 @@ This models the concrete handling for carrying through exceptions during unwindi
 
 \begin{example}
   Consider instruction \instref{lst:unwind-resume}{1398} of \cref{lst:example-throw-landing-pad}.
-  %As previously described in \cref{sec:example},
-  As previously described in \cref{sec:eicfg},
+  As previously described in \cref{eicfg-example},
   this instruction is intended to continue unwinding for exceptions that do not satisfy the source code's catch type specification.
   Assuming no more applicable landing pad table entries, the only valid post-states for the transition here match $\sigma'.\stack=[]$ and $\sigma'.\terminated=\bad$.
 \end{example}
@@ -300,10 +299,7 @@ They add the condition that the post-state's uncaught exception count is increme
 
 \begin{example}
   Consider instruction \instref{lst:example-throw-call}{1286} of \cref{lst:example-throw}.
-  We previously stepped through the process of throwing using this instruction in
-  %    \cref{sec:example},
-  \cref{sec:eicfg},
-  so we merely state the results here.
+  We previously stepped through the process of throwing using this instruction in \cref{eicfg-example}, so we merely state the results here.
   As this is the first throw at this time, we have $\sigma'.\uncaught=1$.
   Additionally, the unwinding process stops for $\sigma'.\rip\in\landingpadtable(\mathtt{0x137e})=\{\mathtt{0x138b}\}$, giving us $\sigma'.\rip=\mathtt{0x138b}$.
 \end{example}
@@ -548,7 +544,7 @@ As an implementation detail, it also includes the temporary indices used by our 
 All other state parts are combined, with priority given to the first equivalent state produced.
 For a more aggressive join, $\emap$, $\uncaught$, and $\caught$ can be excluded from the preserved state parts. The abstract transition rules are also simplified to support this exclusion.
 
-\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{ch:hg-lifting,ch:hg-formulation,ch:hg-results,ch:hg-discussion}.}
+\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{hg}.}
 
 \section{Argument for Overapproximation}
 %Formally, correctness of the produced \ac{eicfg} can be proven by showing that the abstract transition relation overapproximates the concrete one (see \cref{def:simulation}).
@@ -583,8 +579,8 @@ the number of uncaught exceptions,
 and the IDs of those exception objects currently caught.
 The current jump table index and termination state will also included in this if they exist. In notation, this is
 $\gls{node}\colon\gls{pointer}\times[\gls{pointer}]\times[\gls{exception}]\times\gls{nat}\times[\gls{pointer}]\times(\gls{word}|\gls{bot})\times\gls{termination}$.
-We further have a function $\stateToNode\colon\Sigma\rightarrow\gls{node}$
-that maps from the more specific and detailed concolic states for execution
+We further have a function $\stateToNode\colon\gls{abs-state}\rightarrow\gls{node}$
+that maps from the more specific and detailed abstract states for execution
 to the exceptional state for control flow representation.
 
 \begin{definition}
@@ -598,8 +594,10 @@ to the exceptional state for control flow representation.
   Where $\operatorname{rip}$ gets the current \inlineasm{rip} from a register map and $\operatorname{retAddrs}$ extracts the list of return addresses from a stack.
 \end{definition}
 \begin{example}
-  Again consider the instruction \inlineasm{133d:	jg     1362 <main+0x3d>}.
-  The precondition for this instruction from \cref{ex:state} converts to
+  Again consider \instref{lst:example-conditional-jump}{135d} of \cref{lst:example-indirect-call}.
+  The precondition for this instruction
+  %from \cref{ex:state} % TODO: make an example again?
+  converts to
   \begin{equation*}
     (\mathtt{0x133d},[\mathtt{0x114e}],[],0,[],\gls{bot},\gls{bot}),
   \end{equation*}

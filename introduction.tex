@@ -14,7 +14,7 @@ Memory preservation cannot be proven fully automatically as it is an undecidable
 mandating an \emph{interactive} but \emph{scalable} approach.
 It also must be proven at the assembly level as it relies on concrete memory layout.
 Full automation can, however, be supported with a narrowing of scope, which is where the concepts of \acp{hg}, which operate on programs with indirect control flow, and \acp{eicfg}, which additionally operate on programs with \Cpp-style exception handling \autocite{cxxEhAbi}, come into play.
-Those constructs are targeted specifically at control flow reconstruction of binaries.
+Those constructs are targeted specifically at lifting the control flow out of binaries.
 
 Formal verification of software has been an active research field for decades.
 This dissertation aims to provide a formal verification method for real-world programs that is specifically tailored to memory preservation.
@@ -27,7 +27,7 @@ It also aims to provide methods for lifting control flow from binaries even in t
 These methods are fully automated and scalable, with the \ac{hg} work lifting \glssymbol{inst-total-lifted} instructions and the \ac{eicfg} work \glssymbol{eicfg-inst-total}.
 
 To the best of our knowledge, there exist no current state-of-the-art methods that specifically aim to formally verify memory preservation, nor to lift binaries to \ac{eicfg}-like constructs.
-\Ac{hg} lifting does have a similar work \autocite{\autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}}, but it takes some different approaches and we found it to be rather limited practically.
+\Ac{hg} lifting does have a similar work \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it takes some different approaches and we found it to be rather limited practically.
 
 \section{Motivation for Memory Preservation}
 As a basic property, memory preservation has potential applications to security analyses,
@@ -538,7 +538,7 @@ In particular, it is behavior that results because of lower-level semantics prov
 \Cref{hg-example} below contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
 That example exhibits a \iac{rop} gadget that depends on whether two pointers alias or not, with the aliasing case resulting in an unexpected \inlineasm{ret} being executed. That aspect of the example is discussed further in \cref{weird}.
 
-The soundness of this overapproximation is shown with pen-and-paper proofs in \cref{hg-formulation}.
+The soundness of this overapproximation is shown with pen-and-paper proofs in \cref{ch:hg-formulation}.
 
 \subsection{Exceptional Interprocedural Control Flow Graphs}
 This paper provides a tool for static, interprocedural, automated \Cpp-exception-aware control flow analysis on the binary level.
@@ -585,16 +585,12 @@ It operates using a recursive-descent rather than linear sweep methodology.
 
 
 \section{Organization of Dissertation}
-Following this introduction in \cref{ch:related} is a review of tools and work
-related to the field of assembly-level verification and software correctness in general.
-Domain-specific information necessary to understand the work
-and terminology can then be found in \cref{ch:background}.
-For an in-depth exploration of the basis for the symbolic execution engines
-and formal memory reasoning used by the contributions of this work,
+Following this introduction in \cref{ch:related} is a review of tools and work related to the field of assembly-level verification, control-flow lifting, and software correctness in general.
+Domain-specific information necessary to understand the work and terminology can then be found in \cref{ch:background}.
+For an in-depth exploration of the basis for the symbolic execution engines and formal memory reasoning used by the contributions of this work,
 see \cref{ch:symbolic_execution}.
 
-After that, the control-flow-driven approach to verification of memory preservation
-mentioned above is presented in \cref{ch:cfg}
+After that, the control-flow-driven approach to verification of memory preservation mentioned above is presented in \cref{ch:cfg}
 while the syntax-driven approach is presented in \cref{ch:syntax}.
 I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
 followed by the interprocedural, exception-aware \ac{cfg} extractor in \cref{eicfg}.
