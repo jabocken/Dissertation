@@ -1,32 +1,14 @@
 \chapter{Exceptional Interprocedural Control Flow Graphs}\label{ch:eicfg}
 \acreset{eicfg}
 
-\todo{proper intro}
+\todo{proper intro (summary of main intro, summary of attribution)}
 
-\subsection{Results and Organization}
-% ORGANIZATION
-We explain the contribution by example in \cref{sec:eicfg}.
-The technical formulation of our tool is then outlined in \cref{sec:formulation},
-with validation in \cref{sec:validation} and a demonstration following in \cref{sec:case-study}.
-Specifically, we demonstrate that \acp{eicfg} provide improved coverage compared to a non-exceptional baseline analysis.
-In \cref{sec:related} we discuss related work.
-Finally, we wrap up in \cref{sec:conclusion}.
+We first provide more motivation in \cref{eicfg-motivation} and explain the contribution with a running example in \cref{eicfg-example} below.
+This is followed by the technical formulation of our tool in \cref{ch:eicfg-formulation}.
+\Cref{ch:eicfg-validation} contains single-step validation in \cref{sec:validation} and a practical demonstration in \cref{sec:case-study}.
+The goal of that demonstration is to show that \acp{eicfg} provide improved coverage compared to a non-exceptional baseline analysis.
 
-All code used for \cref{sec:case-study,sec:validation}, to be published as an artifact, is available at \url{https://drive.google.com/file/d/1mFjHT0p-w9YbyRjcBCQ8sPHp3eboUdM2/view?usp=sharing}.
-
---------------------------
-
-\subsection{Organization}
-For easier explanations,
-we provide a running example referenced throughout this work in \cref{sec:example}.
-The technical formulation of our tool is then outlined in \cref{sec:formulation},
-with a demonstration following in \cref{sec:case-study}.
-Next, in \cref{sec:related}, is a fleshed-out description of related tools.
-Finally, we wrap up in \cref{eicfg-conclusion}.
-
-
-
-
+All code produced for this \namecref{eicfg}, to be published as an artifact, is available at \url{https://drive.google.com/file/d/1mFjHT0p-w9YbyRjcBCQ8sPHp3eboUdM2/view?usp=sharing}.
 
 \section{Extended Motivation}
 A normal \ac{cfg} provides a user with information on control flow transfers induced by \emph{jumps} and \emph{calls}.

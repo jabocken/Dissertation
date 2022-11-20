@@ -20,6 +20,7 @@ control-flow-driven verification and syntax-driven verification.
 Both approaches rely on the same symbolic execution model and memory-related rewrite rules
 documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
 
+\todo{remark}
 Technically they also both use Hoare triples, but only \cref{ch:syntax}
 uses proper Hoare rules. \cref{ch:cfg} uses a modified style
 that takes a halting condition~$H$ instead of a syntactic construct in the middle.
@@ -57,12 +58,79 @@ Ultimately, \num{12252} instructions were covered
 with only \num{1047} manual lines of proof required.
 
 \subsection{Hoare Graphs}
-\todo\dots
+\Cref{ch:hg-lifting,ch:hg-formulation,ch:hg-results} present the first \emph{provably overapproximative} lifting mechanism for \gls{arch} binaries.
+Any overapproximative representation of a binary must include both all its ``normal'' as well as all its ``weird'' behaviors.
+%As examples, if the binary has a stack overflow overwriting a return address, or if control flow depends on whether two pointers alias, this must be represented in the lifted model.
+We proposed a method that takes a potentially-stripped binary as input (no debugging information or address labeling is required).
+It produces \iac{hg} as output that contains:
+\begin{enumerate}
+  \item the assembly instructions found in the binary;
+  \item the control flow; and
+  \item evidence in the form of inductive invariants that are sufficiently strong enough to prove soundness.
+\end{enumerate}
+Our approach can deal with overlapping instructions and aims at providing overapproximative bounds to indirect branches (such as when a \inlineasm{jmp} is based on a computation instead of on a constant).
+In some cases, unsoundness annotations are used to indicate possible issues.
+Also, assumptions are enumerated explicitly in the form of proof obligations asserting requirements over external functions.
+If our technique succeeds and the proof obligations are proven true, then under these assumptions, the lifted representation is a provable overapproximation of the binary.
+We have applied our approach to binaries and shared objects of the Xen Hypervisor, covering \glssymbol{inst-total-lifted} instructions in total.
+This case study shows that our methodology is scalable and applicable to commercial off-the-shelf software written without verification in mind.
+\Acp{hg} can then be exported to the Isabelle/HOL theorem prover, where they can be formally verified.
+This second step essentially validates any inference made by the algorithms during Step~1.
+
+In future work, we aim to provide support for concurrency.
+Moreover, we find that the context-free nature of our approach limits the number of function callbacks that are properly dealt with.
+We will study passing around stateful information between functions to find a midpoint between scalability and better support for function callbacks.
+
+Handling for programmer-provided function arrays, such as those used to select behavior
+based on program arguments, would also be useful.
+
+Additionally, it is, in theory, possible to craft a program that would result in state explosion via sufficiently complex indirect control flow.
+That would result in state explosion due to the incompatibility factor we introduced to deal with jump tables.
+Detecting such situations may be useful, but do not seem necessary to deal with typical real-world programs.
+We are also looking into integrating better pointer inference support (which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling but ideally more in-depth).
+
+Finally, we aim to combine the lifted \acp{hg} with existing approaches to binary analysis.
+Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique,
+including decompilation, binary verification and binary patching.
 
 \subsection{Exceptional Interprocedural Control Flow Graphs}
-\todo\dots
+Many \Cpp\ programs exhibit exceptional control flow that standard \ac{cfg} extraction tools in disassemblers and decompilers do not identify.
+To deal with that issue, we have provided \acp{eicfg} and a tool for generating them.
+\acp{eicfg} extend standard \acp{cfg} extracted from binaries by including nodes and edges for exceptional control flow.
+Our abstract transition relation for exceptional control flow has been informally shown to overapproximate the concrete versions of those edges.
+Furthermore, we have applied our \ac{eicfg} generator to \totalbins\ real-world programs and libraries.
+We identified \uniquethrows\ unique throws and were able to trace each one's exceptional control flow: \caughtthrows\ were potentially caught while \uncaughtthrows\ had no identified potential for being caught.
+On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
+Those edges are ones tools such as Ghidra do not produce.
+%\satisfactorybins\ of which were analyzed in a satisfactory manner (\cutoffpercent\ coverage).
+%On average, we achieved \coveredpercent\ coverage.
 
-\section{Proposed Post-Preliminary Exam Work (Outdated but some text might be worth keeping)}
+\subsubsection{anything else?}
+
+\subsubsection{Limitations}
+One of the main drawbacks of our work is a propensity for state space explosion.
+While we were able to target programs with over \num{400000} instructions,
+our \acp{eicfg} generally do not scale far beyond that. Even for smaller programs, we experienced timeouts and out-of-memory cases when a significant number of control flow nodes and edges were generated.
+Methods of reducing the state space while maintaining interprocedural exceptional analysis would provide for increased scalability and the ability to target even larger programs.
+For example, modeling of exception type info and integrating it into the $\landingpadtable$ determinations would allow pruning of dead branches, reducing the tool's overapproximation.
+% Wanted to use this to begin with but I couldn't get types table parsing fully working right
+
+The other main drawback lies with stripped programs that do not perform indirect calls or jumps, but do pass non-immediate values to external or internal calls.
+Dealing with this requires significant manual modeling in our current approach.
+Additional heuristics for identifying possible function entry points \autocite{bao2014byteweight,pe2020probabilistic}
+may help with this drawback.
+
+Finally, unresolved indirections are also an issue, particularly in stripped binaries.
+Better jump table heuristics \autocite{cifuentes2001recovery,flexeder2010reconstruction,gedich2015switch,an2022dsv}
+may result in less false positives/negatives for jump table calculations without the need for manual tuning.
+This issue may also benefit from additional function entry heuristics as well,
+as they would allow per-function fallbacks in the presence of unresolved jumps even without function symbols.
+
+While we deal with structured \Cpp\ exceptions, we do not provide support for interrupt-based exception handling.
+Semantics are not provided for interrupt-triggering instructions; they are instead treated as no-ops.
+We also do not deal with concurrency.
+
+\section{Potential Improvements (old Post-Preliminary Exam Work)}
 As a formal property, memory preservation
 has been proven to never miss any memory regions written to,
 assuming the correctness of the semantics and model it is applied
