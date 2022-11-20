@@ -46,7 +46,7 @@
   Fully-interactive methods do not scale well either.
   The solution is to combine proof generation with interactive theorem proving in a \emph{semi-automated manner}: let some untrusted tool extract as much information as it can from the functions under test and then generate all the necessary proofs to be completed in a theorem prover.
   Pivoting to a nondeterministic, structured approach to memory representation and pen-and-paper proofs enables full automation and efficiency.
-  Adding modeling of exception handling then allows following previously-unknown paths.
+  Narrowing focus to a modeling of exception handling specifically then allows following previously-unknown paths.
 
   % First contribution
   The first contribution of this dissertation is a control-flow-driven verification approach with mostly manual invariant specification at automatically-selected cutpoints.
@@ -66,7 +66,7 @@
 
   % Fourth contribution
   The fourth and final contribution of this dissertation is a fully-automated tool for the extraction of \acp{eicfg} from binaries.
-  It models the \Cpp\ exception handling \ac{abi} and validated that modeling against some of the real-world implementation via fuzzing.
+  It narrows the scope of modeling to the \Cpp\ exception handling \ac{abi} and validated that modeling against some of the real-world implementation of that \ac{api} via fuzzing.
   It also provides an improved overapproximative approach to indirect branches.
   The tool was successfully applied to \glssymbol{eicfg-bin-success} binaries, covering a total of \glssymbol{eicfg-inst-total} instructions.%
 }
@@ -120,7 +120,7 @@
   Lastly, we provided the ability to directly load binaries into the tool, no external \emph{disassembly} (converting machine code into human-readable instructions) needed.
   This all allowed much greater testing than before, with applications to multiple programs and program libraries.
 
-  The fourth and final contribution of my dissertation iterates on the \ac{hg} work by moving focus to supporting \emph{exceptional control flow}.
+  The fourth and final contribution of my dissertation iterates on the \ac{hg} work by narrowing focus to the concept of \emph{exceptional control flow}.
   Specifically, it models the kind of exception handling used by \Cpp\ programs.
   This is important as, if you want to explore a program's behavior, you need to know all the places it goes to.
   If you use a tool that does not model exception handling, you may end up missing paths of execution caused by \emph{unwinding}.

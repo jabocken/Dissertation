@@ -9,7 +9,7 @@ To increase trustworthiness, we validated some of our abstract transition rules 
 Here $\alpha$ and $\gamma$ denote abstraction and concretization functions, and $\concTransition$ denotes concrete execution.
 
 Abstract states $\sigma$ are obtained through via \emph{fuzzing} \autocite{quickcheck}.
-For each rule under validation, we generated \fuzzcount\ arbitrary initial abstract states ($\sigma$) and then applied the rule to obtain the corresponding abstract post states ($\sigma'$).
+For each rule under validation, we generated \gls{fuzz-count} arbitrary initial abstract states ($\sigma$) and then applied the rule to obtain the corresponding abstract post states ($\sigma'$).
 Then, using a test harness implemented as a combination of Python and GNU Project debugger (\href{https://www.sourceware.org/gdb/}{GDB}) scripts, we ran constructed real-world binaries featuring the desired concrete functions.
 The usage of \acs{gdb} allowed easy interceding at specific points in the binaries in order to set up the initial state and extract the state after the step.
 Function $\gamma$ operates before the concrete library function is executed, setting the state parts in \cref{tbl:validation} to their test case values.

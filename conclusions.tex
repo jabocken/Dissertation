@@ -1,29 +1,34 @@
 \chapter{Conclusions}\label{ch:conclusions}
-Certain properties, such as memory preservation, can only be proven on the assembly level.
-This is due to memory preservation requiring a concrete representation of memory.
-Unfortunately, assembly-level verification is a fundamentally harder problem
-than source-level verification due to the low level of abstraction.
+Certain properties, such as memory preservation and control flow-related ones, can only be proven on the assembly level.
+This is due to
+\begin{enumerate}
+  \item memory preservation requiring a concrete representation of memory and
+  \item compiled programs having more options for control flow than are present in the source language.
+\end{enumerate}
+Unfortunately, assembly-level verification, or analysis in general, is a fundamentally harder problem than source-level analysis due to the low level of abstraction.
 However, it can also produce highly reliable claims over software.
-By eliminating the need to trust the compiler
-and the semantics of whatever source language the program was written in,
-you can drastically decrease the \ac{tcb} in use.
+Furthermore, by eliminating the need to trust the compiler and the semantics of whatever source language the program was written in, you can drastically decrease the \ac{tcb} in use.
 
-Additionally, the property of memory preservation cannot be determined automatically
-under all circumstances. It is an undecidable property.
-Because of this and the overheads that \ac{itp} can have,
-we designed \emph{semi-automated} methodologies for that purpose.
+Additionally, the set of properties mentioned above cannot be determined automatically under all circumstances. They are \emph{undecidable} properties.
+Because of this and the overheads that \ac{itp} can have, we designed
+\begin{enumerate}
+  \item \emph{semi-automated} methodologies for memory preservation and later
+  \item non-\ac{itp} \emph{fully automated} methodologies for targeted control flow analyses.
+\end{enumerate}
 Those methodologies are briefly revisited below.
 
 \section{Contributions Revisited}
 This dissertation presented two methods for proving memory preservation,
 control-flow-driven verification and syntax-driven verification.
-Both approaches rely on the same symbolic execution model and memory-related rewrite rules
-documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
+Both approaches rely on the same symbolic execution model and memory-related rewrite rules documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
+\begin{remark}[Hoare triple usage]
+  Technically they also both use Hoare triples, but only \cref{ch:syntax} uses proper Hoare rules.
+  \Cref{ch:cfg} uses a modified style that takes a halting condition~$H$ instead of a syntactic construct in the middle.
+\end{remark}
 
-\todo{remark}
-Technically they also both use Hoare triples, but only \cref{ch:syntax}
-uses proper Hoare rules. \cref{ch:cfg} uses a modified style
-that takes a halting condition~$H$ instead of a syntactic construct in the middle.
+\Cref{hg,eicfg} then each provided a method for the lifting of control flow from binaries.
+The former aims for general control flow in the absence of structured exceptions, while the latter is focused specifically on exception-related control flow.
+Neither can resolve all indirect branches, however.
 
 \subsection{Control-Flow-Driven Verification}
 This methodology uses a Floyd-style approach \autocite{floyd1967assigning}
@@ -31,150 +36,176 @@ with automatically-selected cutpoints.
 It is very similar to the work of \textcite{matthews2006verification},
 but with a focus on memory preservation specifically.
 The rewrite rules over memory accesses from \cref{memory_rewrite}
-result in additional \acp{vc} that would not be present in their framework.
-Those \acp{vc} require time-consuming word arithmetic
-when the appropriate preconditions/assumptions are not present.
-The preconditions/assumptions simply establish separation and enclosure relations
-for the necessary memory regions.
+result in additional \acp{vc} that would not be present in Matthews' framework.
+Those \acp{vc} would require time-consuming word arithmetic if the appropriate preconditions/assumptions were not present.
+The preconditions/assumptions simply establish separation and enclosure relations for the necessary memory regions.
 
-This methodology was applied to \num{63} functions
-extracted from the HermitCore unikernel library, plus \num{12} optimized versions,
-resulting in more than \num{2379} assembly instructions verified.
+As a case study, we applied the methodology to \num{63} functions extracted from the HermitCore unikernel library.
+Each function was compiled without optimizations, but for \num{12} we also targeted the optimized versions.
+In total, more than \num{2379} assembly instructions were verified in this way.
 
 \subsection{Syntax-Driven Verification}
 Rather than using a more general \ac{cfg} to guide the verification,
-a more structured \ac{scf} is extracted from the assembly under test.
-This \ac{scf} is used as one of the generated \ac{fmuc}'s proof ingredients.
-The other proof ingredients are the generated memory regions,
-\acp{mrr}, and block conditions.
-With the invariant generation as it currently is,
-the only user interaction required under normal circumstances
-is weakening the condition for a loop entry block
-by merging it with the condition for all of the loop's exit blocks.
+this methodology extracts more structured \acp{scf} from the function(s) under test.
+Such \iac{scf} is used as one of the proof ingredients for a generated \ac{fmuc}.
+The other proof ingredients are the generated memory regions, \acp{mrr}, and block conditions.
+With the invariant generation as it currently is, user interaction is minimal.
+Under normal circumstances, users only need to weaken the condition for a loop entry block by merging it with the conditions of all of the loop's exit blocks.
 
-This methodology was applied to 251 functions from the Xen Project binaries examined,
-\xenpercentage\ of the total functions from the examined binaries.
-Ultimately, \num{12252} instructions were covered
-with only \num{1047} manual lines of proof required.
+This methodology was applied to \num{251} functions from the Xen Project binaries examined, \xenpercentage\ of the total functions from those binaries.
+Ultimately, \num{12252} instructions were covered with only \num{1047} manual lines of proof required.
 
 \subsection{Hoare Graphs}
-\Cref{ch:hg-lifting,ch:hg-formulation,ch:hg-results} present the first \emph{provably overapproximative} lifting mechanism for \gls{arch} binaries.
-Any overapproximative representation of a binary must include both all its ``normal'' as well as all its ``weird'' behaviors.
-%As examples, if the binary has a stack overflow overwriting a return address, or if control flow depends on whether two pointers alias, this must be represented in the lifted model.
-We proposed a method that takes a potentially-stripped binary as input (no debugging information or address labeling is required).
-It produces \iac{hg} as output that contains:
+This contribution provides the first \emph{provably overapproximative} lifting mechanism for \gls{arch} binaries, with the closest similar work being Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}.
+Any overapproximative representation of a binary must \emph{all} of its behaviors.
+Those are not just the ``normal'' behaviors intended by the binary's programmers.
+They also include all of the ``weird'' behaviors that may arise due to the conversion from source code to machine code.
+As an example, any potential stack overflow that could overwrite a return address must be represented in the end product, even if not intended by the programmers or even not visible in the source code.
+This also applies to control flow that could change depending on whether or not two pointers alias.
+To achieve that goal, the method here takes a potentially-stripped binary as input, with no debugging information or address labeling required.
+It produces \iac{hg} that contains:
 \begin{enumerate}
   \item the assembly instructions found in the binary;
-  \item the control flow; and
-  \item evidence in the form of inductive invariants that are sufficiently strong enough to prove soundness.
+  \item the binary's control flow; and
+  \item evidence: specifically, inductive invariants that have sufficient information to prove soundness.
 \end{enumerate}
-Our approach can deal with overlapping instructions and aims at providing overapproximative bounds to indirect branches (such as when a \inlineasm{jmp} is based on a computation instead of on a constant).
-In some cases, unsoundness annotations are used to indicate possible issues.
-Also, assumptions are enumerated explicitly in the form of proof obligations asserting requirements over external functions.
-If our technique succeeds and the proof obligations are proven true, then under these assumptions, the lifted representation is a provable overapproximation of the binary.
-We have applied our approach to binaries and shared objects of the Xen Hypervisor, covering \glssymbol{inst-total-lifted} instructions in total.
-This case study shows that our methodology is scalable and applicable to commercial off-the-shelf software written without verification in mind.
-\Acp{hg} can then be exported to the Isabelle/HOL theorem prover, where they can be formally verified.
-This second step essentially validates any inference made by the algorithms during Step~1.
+Our approach can deal with overlapping instructions and aims at providing overapproximative bounds to indirect branches (such as when a \inlineasm{jmp} is based on a computation instead of a constant).
+Where necessary, unsoundness annotations are used to indicate possible issues.
+Additionally, calls to external functions require explicit assumptions represented as proof obligations.
+Full success occurs when our technique completes and the proof obligations are discharged (proven true).
+Such cases indicate that, under those assumptions, the lifted representation is a provable overapproximation of the binary.
 
-In future work, we aim to provide support for concurrency.
-Moreover, we find that the context-free nature of our approach limits the number of function callbacks that are properly dealt with.
-We will study passing around stateful information between functions to find a midpoint between scalability and better support for function callbacks.
-
-Handling for programmer-provided function arrays, such as those used to select behavior
-based on program arguments, would also be useful.
-
-Additionally, it is, in theory, possible to craft a program that would result in state explosion via sufficiently complex indirect control flow.
-That would result in state explosion due to the incompatibility factor we introduced to deal with jump tables.
-Detecting such situations may be useful, but do not seem necessary to deal with typical real-world programs.
-We are also looking into integrating better pointer inference support (which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling but ideally more in-depth).
-
-Finally, we aim to combine the lifted \acp{hg} with existing approaches to binary analysis.
-Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique,
-including decompilation, binary verification and binary patching.
+We have applied our approach to most of the binaries and shared objects of the Xen Hypervisor, covering \glssymbol{inst-total-lifted} instructions in total.
+This case study shows that our methodology is scalable and applicable to \ac{cots} software written without verification in mind.
+Though not my work, \acp{hg} can then be exported to the Isabelle/HOL theorem prover, where they can be formally verified.
+This second step essentially validates any inference made by the algorithms during step one.
 
 \subsection{Exceptional Interprocedural Control Flow Graphs}
 Many \Cpp\ programs exhibit exceptional control flow that standard \ac{cfg} extraction tools in disassemblers and decompilers do not identify.
 To deal with that issue, we have provided \acp{eicfg} and a tool for generating them.
-\acp{eicfg} extend standard \acp{cfg} extracted from binaries by including nodes and edges for exceptional control flow.
+\acp{eicfg} extend and narrow the focus of standard \acp{cfg} extracted from binaries.
+They do this by including nodes and edges for exceptional control flow while limiting the abstract state to only that domain required for exceptional info.
+
 Our abstract transition relation for exceptional control flow has been informally shown to overapproximate the concrete versions of those edges.
+This was achieved by fuzzing many of the individual functions of the \Cpp\ exception handling \ac{abi}.
+The functions tested were each executed with \gls{fuzz-count} test cases generated with arbitrary exceptional state.
+This approach also helped identify edge cases that were not specified in the \Cpp\ exception handling \ac{abi} \cite{cxxEhAbi}.
+
 Furthermore, we have applied our \ac{eicfg} generator to \totalbins\ real-world programs and libraries.
 We identified \uniquethrows\ unique throws and were able to trace each one's exceptional control flow: \caughtthrows\ were potentially caught while \uncaughtthrows\ had no identified potential for being caught.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
-%\satisfactorybins\ of which were analyzed in a satisfactory manner (\cutoffpercent\ coverage).
-%On average, we achieved \coveredpercent\ coverage.
 
-\subsubsection{anything else?}
+\section{Future Work}
+There are a multitude of ways in which the contributions of my dissertation could be improved.
+Below are some of them.
 
-\subsubsection{Limitations}
-One of the main drawbacks of our work is a propensity for state space explosion.
-While we were able to target programs with over \num{400000} instructions,
-our \acp{eicfg} generally do not scale far beyond that. Even for smaller programs, we experienced timeouts and out-of-memory cases when a significant number of control flow nodes and edges were generated.
-Methods of reducing the state space while maintaining interprocedural exceptional analysis would provide for increased scalability and the ability to target even larger programs.
-For example, modeling of exception type info and integrating it into the $\landingpadtable$ determinations would allow pruning of dead branches, reducing the tool's overapproximation.
-% Wanted to use this to begin with but I couldn't get types table parsing fully working right
-
-The other main drawback lies with stripped programs that do not perform indirect calls or jumps, but do pass non-immediate values to external or internal calls.
-Dealing with this requires significant manual modeling in our current approach.
-Additional heuristics for identifying possible function entry points \autocite{bao2014byteweight,pe2020probabilistic}
-may help with this drawback.
-
-Finally, unresolved indirections are also an issue, particularly in stripped binaries.
-Better jump table heuristics \autocite{cifuentes2001recovery,flexeder2010reconstruction,gedich2015switch,an2022dsv}
-may result in less false positives/negatives for jump table calculations without the need for manual tuning.
-This issue may also benefit from additional function entry heuristics as well,
-as they would allow per-function fallbacks in the presence of unresolved jumps even without function symbols.
-
-While we deal with structured \Cpp\ exceptions, we do not provide support for interrupt-based exception handling.
-Semantics are not provided for interrupt-triggering instructions; they are instead treated as no-ops.
-We also do not deal with concurrency.
-
-\section{Potential Improvements (old Post-Preliminary Exam Work)}
-As a formal property, memory preservation
-has been proven to never miss any memory regions written to,
-assuming the correctness of the semantics and model it is applied
-to \autocite{bockenek2019preservation,popl2019underreview}.
+\subsection{Invariant Strength}
+As a formal property, memory preservation has been proven to never miss any memory regions written to, assuming the correctness of the semantics and model it is applied to \autocite{bockenek2019preservation,verbeek2022lifting}.
 Put another way, however, this means that the methodology \emph{must} be conservative.
 If it cannot make a determination about the usage status of some region of memory,
 it must assume that that region is used. It must \emph{overapproximate}.%
 \index{overapproximation}
-It does not matter if the cause was an underdeveloped state
-or too large of one to easily reason about.
+It does not matter if the cause was an underdeveloped state or too large of one to easily reason about.
 
-There are two potential ways to reduce that overapproximation detailed below.
+Futhermore, in order to enhance automation, we currently generate very weak invariants.
+This means that our overapproximations may become \emph{very} overapproximative.
+While such an approach still works reasonably well, being able to generate stronger invariants would allow decreasing overapproximation.
+In other words, stronger invariants mean stricter memory preservation proofs.
 
-\subsection{Strengthen Invariants}
-In order to enhance automation, we currently generate very weak invariants.
-While this works reasonably well, being able to generate stronger invariants
-would be advantageous. Stronger invariants mean stricter memory preservation proofs.
+One way to do this would be to implement some form of abstract interpretation (\cref{background-absint}).
+As discussed, it has shown great success in the field of sound binary analysis \cref{related-jakstab,related-absint}.
+It was even used as inspiration for some of the contributions here (\cref{hg,eicfg}).
+However, abstract interpretation is formulated around domains.
+Determining the best domains to use for such an approach would be a challenge.
+In other words, what is the best way to maintain precision for the memory properties we want to state while approximating the parts we do not care about?
+That determination has yet to be made.
 
-\todo{no more abstract intrpretation here}
+\subsection{Memory Model Realism}
+Most applications do not run in isolation.
+Their behavior is limited by the kernel of whatever \ac{os} is in use, and that includes limits on the amount of memory they are allowed to use.
 
-\subsection{Model a More Realistic Memory Model}
-Most applications do not run in isolation. Their behavior is limited by
-the kernel of whatever \ac{os} is in use,
-and that includes limits on the amount of memory they are allowed to use.
+In particular, process and thread stacks are limited by how they are laid out in (virtual) memory, and on top of that most modern \ac{os} kernels put limits on stack size as sanity checks.
+The kernel limits are generally configurable, both at compile time as well as at runtime, but can require privileged access.
+Properly modeling those restrictions would potentially require formulating a more in-depth memory model.
+This is because the stack limits that are changed at runtime come in two forms:
+There is a \emph{soft} limit on stack size that unprivileged users can modify, but there is also a \emph{hard} limit that requires root access to modify.
 
-In particular, process and thread stacks are limited
-by how they are laid out in (virtual) memory, and on top of that
-most modern \ac{os} kernels put limits on stack size as sanity checks.
-The kernel limits are generally configurable,
-both at compile time as well as at runtime, but can require privileged access.
-Properly modeling those restrictions
-would potentially require formulating a more in-depth memory model
-as the stack limits that are changed at runtime come in two forms.
-There is a \emph{soft} limit on stack size that unprivileged users
-can modify, but there is also a \emph{hard} limit
-that requires root access to modify.
+Additional features that would be desirable would be the ability to treat memory as \emph{allocated} and \emph{deallocated}.
+On modern systems, this is usually handled on the page level, meaning via virtual memory management.
+Modeling virtual memory itself would likely not be a good idea, however, as we are currently focusing on userspace analysis.
+This means that all of the complexity of page mapping, swap spaces, and the like are hidden from the programs we analyze anyway.
 
-Additional features that would be desirable
-would be the ability to treat memory as \emph{allocated} and \emph{deallocated}.
-On modern systems, this is usually handled on the page level,
-meaning via virtual memory management.
-Modeling virtual memory would likely not be a good idea,
-as we are currently focusing on userspace analysis.
+Another restriction that would be interesting to model would be the practical restriction of addresses to their lower 48 bits for actual addressing (or \SI{57}\bit\ with extensions \autocite{la57}).
+This could potentially reduce the state spaces of all of the contributions in this dissertation, as it would be a global restriction on memory operations.
+However, it could also complicate things instead.
+That is because dereferenced addresses must be \emph{canonical}: they must have their remaining 16 bits be equal in value to their 48\textsuperscript{th} bit.
+Usage of non-canonical addresses results in \acp{gpf} \autocite{intel2019manual}.
+We would thus have to add another termination condition to our symbolic execution engines.
+If achieved efficiently, however, it would more closely model concrete execution and potentially uncover further weird behavior.
 
-The main restriction that would be interesting to model, however,
-would be the restriction of addresses to their lower 48 bits for actual addressing,
-with the remaining 16 bits being equal in value to the 48th bit.
+\subsection{Dealing with Contextual Information}
+Moreover, we find that the context-free nature of our \ac{hg} approach in \cref{hg} limits the number of function callbacks that are properly dealt with.
+Passing around immediates between functions as done in \cref{eicfg} does not significantly increase support for function callbacks either.
+This is because the \ac{eicfg} work currently requires the significant manual effort of building up a list of functions that take callbacks and their argument lists.
+That choice was made as treating all possible immediate-value function arguments as potential callbacks, even just ones within text section range, would cause too much overapproximation.
+Even then, with an abstract model that involves overapproximation, non-immediate values are sometimes passed to external or internal calls.
+One can check all not-known-to-be-executed function symbols in a binary, as also done for the \ac{eicfg} work, but that is unsound due to analyzing the functions out of context.
+
+The situation becomes even worse when stripped programs are involved, even ones that do not perform indirect calls or jumps.
+Such scenarios mean there are no function symbols available to check!
+Additional heuristics for identifying possible function entry points \autocite{bao2014byteweight,pe2020probabilistic}
+may help with this drawback, however.
+
+Of course, unresolved jumps are still an issue as well, even in non-stripped binaries.
+One solution is better jump table heuristics \autocite{cifuentes2001recovery,flexeder2010reconstruction,gedich2015switch,an2022dsv}.
+This may result in less false positives/negatives for jump table calculations without the need for manual tuning.
+Doing so would reduce excess nondeterminism and overapproximation without the need for explicit state space reduction techniques.
+
+\subsection{Concurrency and Interrupts and Signals}
+None of the contributions of this document fully support analysis of concurrent code.
+While \cref{eicfg} analyzes the callbacks passed to functions such as \inlineasm{pthread_create}, it does so by treating them as being called at that point.
+This means that even that contribution has no concept of multiple threads.
+
+Therefore, a significant improvement or future work would be support for concurrency.
+At the same time, doing so would contribute immensely to the state spaces being explored.
+It would also significantly increase any proof efforts, as many formal approaches to concurrent code verification require either detailed assumptions/proofs of \emph{non-interference} \autocite{owicki1976gries} or explicit resource allocation \autocite{xu1997rely-guarantee}.
+
+None of the contributions here provide support for dealing with interrupts or signal handling either.
+Semantics are not provided for interrupt-triggering instructions, which are instead treated as no-ops if they are included at all.
+While in principle simpler than modeling concurrency, this would still add additional complexity.
+Interrupts can be in both enabled and disabled states, and handlers can be changed.
+Both active interrupt handlers and signal handlers can be triggered at any point in a program when set.
+Neither of our \ac{cfg}-lifting approaches would be able to support state spaces of such sizes.
+They would require further enhancement of their state space reduction techniques, which leads into the next \namecref{conclusion-state-space}.
+
+\subsection{State Space Reduction}\label{conclusion-state-space}
+Additionally, it is, in theory, possible to craft a program that would result in state explosion via sufficiently complex indirect control flow.
+This is due to the overapproximation and prevention of early joining we do in order to deal with jump tables.
+The \ac{eicfg} work in particular suffers from such issues.
+While we were able to target programs with over \num{400000} instructions, our \acp{eicfg} generally do not scale far beyond that.
+Even for smaller programs, we experienced timeouts and out-of-memory cases when a significant number of control flow nodes and edges were generated.
+
+Methods of reducing the state space while maintaining interprocedural exceptional analysis would provide for increased scalability and the ability to target even larger programs.
+For example, modeling of exception type info and integrating it into the $\landingpadtable$ determinations would allow pruning of dead branches, reducing the \ac{eicfg} tool's overapproximation.
+% Wanted to use this to begin with but I couldn't get types table parsing fully working right
+
+Better pointer inference support would be beneficial as well.
+By that we mean identifying which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling.
+This could allow for reduction of infeasible memory models.
+
+\subsection{Extending and Integrating Later Contributions into Formal Frameworks}
+Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique, including decompilation, binary verification and binary patching.
+However, while some \acp{hg} have been validated, this validation is a manual approach.
+Furthermore, the validation done for \acp{eicfg} applies to individual steps and, while done as a concrete analysis, does not integrate with formal tools.
+
+Therefore, in order to increase reliability and trustworthiness of \cref{hg,eicfg}, full integration with \iac{itp} approach is desirable.
+For the \ac{hg} work, this would start off with increasing automation for the loading of \acp{hg} into a theorem prover and discharging the proofs.
+For the \ac{eicfg} work, this would involve providing \iac{itp} infrastructure for validating the work as a whole given the validation of individual steps.
+
+Both contributions would also benefit from a full formal implementation.
+That, however, would require the most work of all.
+Development of a rigorous, properly formal model is not a trivial task.
+This is the case even with access to mechanized proofs.
+As such, it would likely best be accomplished by breaking the task down into individual, reusable components.
+This may involve the development of a formal library for semantics that is specifically intended to lift machine code or assembly to \iac{ir} designed for the various tasks presented in this dissertation.

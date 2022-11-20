@@ -516,7 +516,7 @@ To the best of our knowledge, the only existing work that has similar focus on d
 
 \todo{comparison figure if I have time?}
 
-\subsection{Jakstab}
+\subsection{Jakstab}\label{related-jakstab}
 Jakstab performs binary analysis and control flow reconstruction by utilizing abstract interpretation, like those works in \cref{related-absint}.
 Its main analysis was designed for binaries with potentially handcrafted, obfuscated behavior (such as device drivers and malware),
 and much like our \ac{hg} lifting, it uses a form of at-will disassembly.
@@ -650,7 +650,7 @@ If the proof fails, the binary cannot be executed.
 This does require some additional functionality, with both the compiler and the program host needing to support it.
 
 In contrast, our \ac{hg} lifting approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
-In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019establishing}.
+In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019refinement}.
 Even our syntax-driven work presented in \cref{ch:syntax}, tailored to memory preservation properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \cite{verbeek2020automated}.
 \Textcite{tan2015auspice} provided a fully automated method, AUSPICE, that takes about \SI6\hour\ for a \num{533}-instruction string search algorithm.
 Our \ac{hg} lifting approach \emph{complements} formal verifiers that generate invariants for proving functional correctness.

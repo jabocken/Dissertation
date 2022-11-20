@@ -39,32 +39,95 @@
   xdata = {lncs}
 }
 
+@inproceedings{verbeek2019refinement,
+  title = {Establishing a Refinement Relation between Binaries and Abstract Code},
+  author = {Verbeek, Freek and Bockenek, Joshua A. and Bharadwaj, Abhijith and Ravindran, Binoy and Roessle, Ian},
+  booktitle = {Formal Methods and Models for System Design},
+  booktitleaddon = {Proceedings of the 17th ACM-IEEE International Conference},
+  shorttitle = {MEMOCODE'19},
+  date = 2019,
+  eventdate = {2019-10-09/2019-10-11},
+  isbn = {9781450369978},
+  doi = {10.1145/3359986.3361215},
+  venue = {La~Jolla, California},
+  pages = {1-5},
+  articleno = 17,
+  xdata = {acm}
+}
+
 @software{bockenek2019artifact,
   title = {Formal Verification of Memory Preservation of x86-64 Binaries},
   subtitle = {SAFECOMP 2019 supplemental material},
-  author = {Bockenek, Joshua A. and Verbeek, Freek and Lammich, Peter and Ravindran, Binoy},
+  author = {Bockenek, Joshua and Verbeek, Freek and Lammich, Peter and Ravindran, Binoy},
   date = {2019-07-24},
   origdate = {2018-11-20},
   version = 4,
   doi = {10.6084/m9.figshare.7356110.v4}
 }
 
-@unpublished{popl2019underreview,
-  title = {Highly Automated Formal Proofs over Memory Usage of Assembly Code},
-  author = {Verbeek, Freek and Bockenek, Joshua A. and Ravindran, Binoy},
-  year = 2019,
-  note = {Under review}
+@inproceedings{verbeek2020sound,
+  title = {Sound {C} Code Decompilation for a subset of x86-64 Binaries},
+  author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
+  booktitle = {Proceedings of the 18th International Conference on Software Engineering and Formal Methods},
+  series = {SEFM 2020},
+  year = 2020,
+  month = sep,
+  day = {14--18},
+  location = {Amsterdam, The Netherlands},
+  url = {https://ssrg-vt.github.io/FoxDec/}
 }
 
-@inproceedings{verbeek2019refinement,
-  title = {Establishing a Refinement Relation between Binaries and Abstract Code},
-  author = {Freek Verbeek and Joshua A. Bockenek and Abhijith Bharadwaj and Ian Roessle and Binoy Ravindran},
-  booktitle = {Formal Methods and Models for System Design},
-  booktitleaddon = {Proceedings of the 17th ACM-IEEE International Conference},
-  series = {MEMOCODE'19},
-  date = 2019,
-  eventdate = {2019-10-09/2019-10-11},
-  venue = {San Diego, CA, USA}
+@inproceedings{verbeek2020automated,
+  title = {Highly Automated Formal Proofs over Memory Usage of Assembly Code},
+  author = {Freek Verbeek and Joshua Bockenek and Binoy Ravindran},
+  booktitle = {Proceedings of the 25th International Conference on Tools and Algorithms for the Construction and Analysis of Systems},
+  series = {TACAS 2020},
+  year = 2020,
+  month = jul,
+  day = 2,
+  pages= {98--117},
+  doi={10.1007/978-3-030-45237-7_6}
+}
+
+@inproceedings{verbeek2022lifting,
+  title = {Formally Verified Lifting of {C}-Compiled x86-64 Binaries},
+  author = {Verbeek, Freek and Bockenek, Joshua and Fu, Zhoulai and Ravindran, Binoy},
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 43rd ACM SIGPLAN International Conference},
+  shorttitle = {PLDI 2022},
+  date = {2022-06-09},
+  eventdate = {2022-06-13/2022-06-17},
+  isbn = {9781450392655},
+  doi = {10.1145/3519939.3523702},
+  pages = {934-949},
+  venue = {San Diego, CA, USA},
+  xdata = {acm}
+}
+
+@software{bockenek2022artifact,
+  title        = {{jabocken/SSM-Construction}: Final Version of {PLDI}
+  2022 Artifact},
+  author       = {Joshua A. Bockenek and Freek Verbeek},
+  date         = {2022-03-05},
+  publisher    = {Zenodo},
+  version      = {v2.0.0.2},
+  doi          = {10.5281/zenodo.6330573}
+}
+
+@inproceedings{roessle2019formally,
+  title = {Formally Verified Big Step Semantics out of x86-64 Binaries},
+  author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
+  booktitle = {Certified Programs and Proofs},
+  booktitleaddon = {Proceedings of the 8th ACM SIGPLAN International Conference},
+  shorttitle = {CPP 2019},
+  date = {2019-01-14},
+  isbn = {978-1-4503-6222-1},
+  venue = {Cascais, Portugal},
+  pages = {181-195},
+  numpages = 15,
+  acmid = 3294102,
+  xdata = {acm},
+  doi = {10.1145/3293880.3294102},
 }
 
 @periodical{pacmpl2019popl,
@@ -341,6 +404,7 @@
   urldate = {2019-08-22}
 }
 
+% Can't tell if this is Bachelor's or Master's, but it's definitely not PhD
 @thesis{probst2001proper,
   title={Proper Tail Recursion in {C}},
   author={Probst, Mark},
@@ -1991,47 +2055,6 @@
   doi = {http://dx.doi.org/10.5281/zenodo.16303}
 }
 
-@software{bockenek2022artifact,
-  title        = {{{jabocken/SSM-Construction}: Final Version of {PLDI}
-2022 Artifact}},
-  author       = {Joshua A. Bockenek},
-  date         = {2022-03-05},
-  publisher    = {Zenodo},
-  version      = {v2.0.0.2},
-  doi          = {10.5281/zenodo.6330573}
-}
-
-@inproceedings{verbeek2022lifting,
-  title = {Formally Verified Lifting of {C}-Compiled x86-64 Binaries},
-  author = {Verbeek, Freek and Bockenek, Joshua and Fu, Zhoulai and Ravindran, Binoy},
-  booktitle = {Programming Language Design and Implementation},
-  booktitleaddon = {Proceedings of the 43rd ACM SIGPLAN International Conference},
-  shorttitle = {PLDI 2022},
-  date = {2022-06-09},
-  eventdate = {2022-06-13/2022-06-17},
-  isbn = {9781450392655},
-  doi = {10.1145/3519939.3523702},
-  pages = {934-949},
-  venue = {San Diego, CA, USA},
-  xdata = {acm}
-}
-
-@inproceedings{roessle2019formally,
-  title = {Formally Verified Big Step Semantics out of x86-64 Binaries},
-  author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
-  booktitle = {Certified Programs and Proofs},
-  booktitleaddon = {Proceedings of the 8th ACM SIGPLAN International Conference},
-  shorttitle = {CPP 2019},
-  date = {2019-01-14},
-  isbn = {978-1-4503-6222-1},
-  venue = {Cascais, Portugal},
-  pages = {181-195},
-  numpages = 15,
-  acmid = 3294102,
-  xdata = {acm},
-  doi = {10.1145/3293880.3294102},
-}
-
 @article{dullien2017weird,
   title={Weird Machines, Exploitability, and Provable Unexploitability},
   author={Dullien, Thomas F.},
@@ -2184,18 +2207,6 @@
   year=2004
 }
 
-@inproceedings{verbeek2020sound,
-  title = {Sound {C} Code Decompilation for a subset of x86-64 Binaries},
-  author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
-  booktitle = {Proceedings of the 18th International Conference on Software Engineering and Formal Methods},
-  series = {SEFM 2020},
-  year = 2020,
-  month = sep,
-  day = {14--18},
-  location = {Amsterdam, The Netherlands},
-  url = {https://ssrg-vt.github.io/FoxDec/}
-}
-
 @inproceedings{fokin2011smartdec,
   title={{SmartDec}: Approaching {C++} Decompilation},
   author={Alexander Fokin and Egor Derevenetc and Alexander Chernov and Katerina Troshina},
@@ -2259,6 +2270,14 @@
   urldate = {2022-11-18}
 }
 
+@report{la57,
+  title = {5-Level Paging and 5-Level {EPT}},
+  date = {2016-12},
+  type = {white paper},
+  version = {1.0},
+  number = {335252-001},
+  institution = {Intel Corporation}
+}
 
 
 %% Citations that need updating for biblatex style
@@ -2608,27 +2627,6 @@
   doi= {10.1007/978-3-030-50995-8_3},
 }
 
-@inproceedings{verbeek2019establishing,
-  title={Establishing a refinement relation between binaries and abstract code},
-  author={Verbeek, Freek and Bockenek, Joshua and Bharadwaj, Abhijith and Ravindran, Binoy and Roessle, Ian},
-  booktitle={Proceedings of the 17th ACM-IEEE International Conference on Formal Methods and Models for System Design},
-  pages={1--5},
-  year={2019},
-  doi={10.1145/3359986.3361215}
-}
-
-@inproceedings{verbeek2020automated,
-  title = {Highly Automated Formal Proofs over Memory Usage of Assembly Code},
-  author = {Freek Verbeek and Joshua Bockenek and Binoy Ravindran},
-  booktitle = {Proceedings of the 25th International Conference on Tools and Algorithms for the Construction and Analysis of Systems},
-  series = {TACAS 2020},
-  year = 2020,
-  month = jul,
-  day = 2,
-  pages= {98--117},
-  doi={10.1007/978-3-030-45237-7_6}
-}
-
 @inproceedings{bardin2011bincoa,
   title={The BINCOA framework for binary code analysis},
   author={Bardin, S{\'e}bastien and Herrmann, Philippe and Leroux, J{\'e}r{\^o}me and Ly, Olivier and Tabary, Renaud and Vincent, Aymeric},
@@ -2808,4 +2806,34 @@
   keywords = {modularity, just-in-time compilation, control-flow integrity},
   location = {Scottsdale, Arizona, USA},
   series = {CCS '14}
+}
+
+@article{owicki1976gries,
+  author = {Owicki, Susan and Gries, David},
+  title = {Verifying Properties of Parallel Programs: An Axiomatic Approach},
+  year = {1976},
+  issue_date = {May 1976},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {19},
+  number = {5},
+  issn = {0001-0782},
+  doi = {10.1145/360051.360224},
+  journal = {Commun. ACM},
+  month = {may},
+  pages = {279–285},
+  numpages = {7},
+  keywords = {correctness proofs, synchronization, mutual exclusion, concurrent processes, structured multiprogramming, deadlock, program verification}
+}
+
+@article{xu1997rely-guarantee,
+  title={The Rely-Guarantee Method for Verifying Shared Variable Concurrent Programs},
+  author={Xu, Qiwen and de Roever, Willem-Paul and He, Jifeng},
+  journal={Formal Aspects of Computing},
+  volume={9},
+  number={2},
+  pages={149--174},
+  year={1997},
+  publisher={Springer},
+  doi={10.1007/BF01211617}
 }
