@@ -5,33 +5,30 @@ Providing methods to ease the work of reasoning over programs is a necessity in 
 This is particularly important for programs that are intended for high-reliability applications,
 such as avionics, medical equipment, or other safety-critical systems.
 Formal verification allows reasoning over programs with a high degree of assurance.
+Even pen-and-paper proofs can provide guarantees that informal analysis does not.
 
-This dissertation introduces the property of \emph{memory preservation}.
-Memory preservation expresses that the memory a program writes to is bounded by prespecified regions.
-It also introduces the concepts of \emph{\acp{hg}} and \emph{\acp{eicfg}}, which deal with complex, interprocedural control flow.
+Furthermore, while formal verification of software has been an active field of research for over fifty years, there are still plenty of gaps.
+The gaps we have uncovered lie in the areas of trustworthy memory analysis and trustworthy control flow lifting.
 
-Memory preservation cannot be proven fully automatically as it is an undecidable property,
-mandating an \emph{interactive} but \emph{scalable} approach.
+To fill the former gap, we introduce the property of \emph{memory preservation}.
+This property indicates that the memory a program writes to is bounded by prespecified regions.
+To the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify that property.
+
+Complicating matters, memory preservation cannot be proven fully automatically as it is an undecidable property.
+This mandates \emph{interactive} but \emph{scalable} approaches.
 It also must be proven at the assembly level as it relies on concrete memory layout.
-Full automation can, however, be supported with a narrowing of scope, which is where the concepts of \acp{hg}, which operate on programs with indirect control flow, and \acp{eicfg}, which additionally operate on programs with \Cpp-style exception handling \autocite{cxxEhAbi}, come into play.
-Those constructs are targeted specifically at lifting the control flow out of binaries.
-
-Formal verification of software has been an active research field for decades.
-This dissertation aims to provide a formal verification method for real-world programs that is specifically tailored to memory preservation.
+We therefore provide formal verification methods for real-world programs that are specifically tailored to memory preservation.
 This allows more automation and scalability.
-For example, we have shown that we can formally verify
-approximately \num{12000} lines of assembly code
-obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
+For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
 
-It also aims to provide methods for lifting control flow from binaries even in the presence of indirect branches and other complex control flow constructs, such as exception handling.
-These methods are fully automated and scalable, with the \ac{hg} work lifting \glssymbol{inst-total-lifted} instructions and the \ac{eicfg} work \glssymbol{eicfg-inst-total}.
-
-To the best of our knowledge, there exist no current state-of-the-art methods that specifically aim to formally verify memory preservation, nor to lift binaries to \ac{eicfg}-like constructs.
-\Ac{hg} lifting does have a similar work \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it takes some different approaches and we found it to be rather limited practically.
+To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
+First, a more general \emph{\ac{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\acp{eicfg}}.
+We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
+\Ac{hg} lifting does have a similar work, Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it is targeted at a different set of applications from our work and we found it to be rather limited practically.
+Both methods are fully automated and scalable, with the \ac{hg} work lifting \glssymbol{inst-total-lifted} instructions and the \ac{eicfg} work \glssymbol{eicfg-inst-total}.
 
 \section{Motivation for Memory Preservation}
-As a basic property, memory preservation has potential applications to security analyses,
-compositional reasoning, and even concurrency.
+As a basic property, memory preservation has potential applications to security analyses, compositional reasoning, and even concurrency.
 These potential applications are described in more detail below.
 
 \subsection{Security}
@@ -107,8 +104,8 @@ to specifically-allowed regions of shared memory.
 Doing so would, of course, require a proper model of concurrency,
 which is out of scope of this dissertation.
 
-\section{Motivation for Control Flow Lifting}
-Every technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
+\section{Motivation for Trustworthy Control Flow Lifting}
+Every analysis or transformation technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
 Raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
 Typically, binary lifting requires answering \emph{at least} the following base questions:
 \begin{description}
