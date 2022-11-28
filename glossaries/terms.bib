@@ -2,32 +2,47 @@
 @entry{arm,
   name = {ARM},
   description = {The \ac{risc} \ac{isa} developed by Arm Ltd. Comes in both 32-bit and 64-bit forms},
-  parent = {assembly}
+  parent = {assembly},
+  prefix = {an~}
 }
 @entry{x86,
   name = {x86},
   description = {The family of \ac{cisc} \acp{isa} developed by Intel; in common parlance, refers to the 32-bit version},
-  parent = {assembly}
+  parent = {assembly},
+  prefix = {an~}
 }
 @entry{arch,
   name = {x86-64},
   description = {The 64-bit version of the x86 \ac{isa}},
   parent = {assembly},
-  seealso = {x86}
+  seealso = {x86},
+  prefix = {an~}
 }
 @entry{amd64,
   name = {AMD64},
   see = {arch},
-  parent = {assembly}
+  parent = {assembly},
+  prefix = {an~}
 }
 @entry{x86_64,
   name = {x86\_64},
   see = {arch},
-  parent = {assembly}
+  parent = {assembly},
+  prefix = {an~}
 }
 @entry{i64,
   name = {Intel 64},
   see = {arch},
-  parent = {assembly}
+  parent = {assembly},
+  prefix = {an~}
 }
 @index{x64,   see={arch}, parent={assembly}}
+
+% TODO: not sure how best to represent this one, usually index levels leave out the top word but I'm not sure how to do that with glossaries
+@index{hoare, name={Hoare}}
+@entry{hoare-logic,
+  name = {Hoare logic},
+  description = {An axiomatic framework for reasoning over the semantics of computer programs \autocite{hoare1969axiomatic}},
+  prefix = {a~},
+  parent = {hoare}
+}

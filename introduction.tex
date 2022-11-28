@@ -1,14 +1,137 @@
 \chapter{Introduction}
+% topic/basic motivation
 Proving that a non-trivial program has no bugs is not an easy task.
 As technology continues to improve, software will continue to increase in complexity.
 Providing methods to ease the work of reasoning over programs is a necessity in the modern world.
 This is particularly important for programs that are intended for high-reliability applications,
 such as avionics, medical equipment, or other safety-critical systems.
-Formal verification allows reasoning over programs with a high degree of assurance.
-Even pen-and-paper proofs can provide guarantees that informal analysis does not.
+Of course, software bugs have existed ever since the creation of non-trivial programs.
+For at least as long, researchers have been working on methods of bug-free programming and sound program analysis.
 
-Furthermore, while formal verification of software has been an active field of research for over fifty years, there are still plenty of gaps.
-The gaps we have uncovered lie in the areas of trustworthy memory analysis and trustworthy control flow lifting.
+Many have dipped into the field of \emph{formal methods} \autocite{butler:fm} to do this.\index{formal!methods}
+For our purposes, the field of \emph{formal verification}\index{formal!verification} specifically.
+Formal verification allows reasoning over programs with a high degree of assurance.
+This assurance is provided by sound mathematical representations and logical reasoning.
+Even pen-and-paper proofs can provide guarantees that purely informal analysis does not.
+
+Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis \todo\dots
+
+
+
+\todo{what are its challenges (summarized)?}
+
+\todo{what is binary analysis and why is it useful?}
+
+This dissertation consists of two main contributions: approaches to \emph{memory preservation} in \cref{memory-preservation} and approaches to \emph{control flow recovery} in \cref{hg,eicfg}.
+\todo{more?}
+
+\todo{paragraph(?) on memory preservation}
+
+\todo{paragraph(?) on control flow recovery}
+
+\section{Motivations}
+
+\subsection{Memory Preservation}
+
+\subsection{Control Flow Recovery}
+
+\section{Challenges}
+The challenges summarized above are detailed further here.
+\todo{integrate this into motivation?}
+
+Importantly, the properties explored in this dissertation are \emph{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
+There are no single fully-automated methods that can determine them effectively for all possible programs.
+This includes both concise statements of memory preservation as well as accurate and precise control flow recovery.
+
+\subsection{Memory Preservation}
+As fully automated approaches are not feasible, or even necessarily possible, one alternative is to use \ac{itp}.
+However, that does not scale well due to the amount of intricate user interaction and development involved.
+This dissertation therefore proposes \emph{semi-automated} approaches.
+They use \iac{itp} environment, but with automatic generation to produce as much of the theorem and proof code as possible.
+
+\section{Contributions}
+
+\subsection{Control-Flow-Driven Memory Preservation}
+\subsection{Syntax-Driven Memory Preservation}
+
+\subsection{Hoare-Logic-Based Control Flow Recovery}
+\subsection{Exceptional Interprocedural Control Flow Recovery}
+
+\section{Summary of Related Work}
+\todo\dots
+A full overview can be found in \cref{ch:related}.
+
+In 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
+for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
+That work allows mechanized reasoning over compiled programs in the ACL2 theorem prover \autocite{ACL2}.
+
+Soon after, \textcite{tan2015auspice} introduced a logic framework called AUSPICE for automated verification of safety properties on the assembly level.
+AUSPICE took six hours to execute on \num{533} instructions, but was applicable to unmodified code.
+Our methodology in \cref{ch:syntax} is also applicable to unmodified code, as long as that code is assembly.
+The contributions in \cref{hg,eicfg} go even further by being directly usable with existing binaries.
+
+More recently, \textcite{baumann2016high} provided \pgls{arm}[v8]-based hypervisor that was formally verified on the machine code level to ensure isolation of guest \acp{os}.
+That work was based on an earlier one for \pgls{arm}[v7] separation kernel, PROSPER \autocite{dam2013hypervisor,dam2013formal}.
+
+Additionally, a few years ago, \textcite{fromherz2019verified} embedded a subset of the \gls{arch} \ac{isa} in the functional, verification-oriented language F$^*$ \autocite{fstar}.
+This was done in order to perform a proof of correctness over the commonly-used cryptographic routine AES-GCM.\index{AES-GCM}
+Their usage of \iac{vcg} is similar to ours in \cref{ch:syntax}, but ours did not need to be separately formally verified as we implemented it with proven-true Hoare rules.\index{Hoare!rule}
+
+\subsection{Control Flow Recovery}
+\todo{still working here to combine old/new text, rewrite as needed too! And add more!}
+At the time this work was written, no other tool operating on binaries
+%answered the two base questions above.
+provided \todo{what?}
+The bulk of existing methods are either known to be unsound (they either  misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative}.
+The strength of those tools is their universality: they typically provide output for any binary, even in cases where guesses and non-validated assumptions have to be made.
+Their weakness is that their outputs are untrustworthy; thus, any analyses built on top of them are untrustworthy as well.
+
+% EXISTING TOOLS DO NOT SOLVE THE PROBLEM (eicfg)
+Existing state-of-the-art disassemblers/decompilers, such as IDA Pro, Ghidra, and Binary Ninja, do not provide sufficient information on exceptional control flow.
+Typically, they are able to extract exception information statically available in binaries (e.g., landing pad locations).
+They can even provide interprocedural control flow graphs.
+However, they do not perform the interprocedural static analysis required for reconstructing \emph{exceptional} control flow.
+That is, they cannot trace the path from an exception throw site to the landing pad instructions that exception goes to in the process of unwinding.
+\Acp{cfg} under such analyses will have \emph{throw sites as terminating locations} with no outgoing edges.
+%Tracing an exception from throw site to catch is not a feature of such tools.
+%In order to analyze the stack unwinding caused by an exception being thrown, one must typically utilize a runtime debugger such as GDB.
+%In fact, many state-of-the- art disassembly tools, IDA Pro and Ghidra included, rely on GDB to perform dynamic analysis via debugging.
+%That is, they require runtime information in order to trace exceptional state.
+
+
+---------------------------
+
+To the best of our knowledge, we are the first to provide a generator for
+\ac{eicfg}-like constructs on the binary level.
+Many state-of-the-art disassemblers/decompilers, such as IDA Pro, Ghidra, and Binary Ninja,
+can extract exception information from binaries, including landing pad locations.
+They can even provide interprocedural control flow graphs.
+However, they do not provide features for interprocedural exception analysis.
+Tracing an exception from throw site to catch is not a feature of such tools.
+In order to analyze the stack unwinding caused by an exception being thrown,
+one must typically utilize a runtime debugger such as GDB.
+In fact, many state-of-the-art disassembly tools, IDA Pro and Ghidra included,
+rely on GDB to perform dynamic analysis via debugging.
+That is, they require runtime information in order to trace exceptional state.
+In contrast, our \ac{eicfg} generator does not.
+
+\section{Limitations and Scope}
+
+\subsection{Memory Preservation}
+
+\subsection{Control Flow Recovery}
+
+\section{Impact}
+
+\subsection{Memory Preservation}
+
+\subsection{Control Flow Recovery}
+
+
+
+
+
+\chapter{Introduction (old)}
 
 To fill the former gap, we introduce the property of \emph{memory preservation}.
 This property indicates that the memory a program writes to is bounded by prespecified regions.
@@ -106,13 +229,13 @@ which is out of scope of this dissertation.
 
 \section{Motivation for Trustworthy Control Flow Lifting}
 Every analysis or transformation technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
-Raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
+That is, raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
 Typically, binary lifting requires answering \emph{at least} the following base questions:
 \begin{description}
   \item[Disassembly] \emph{What} instructions are potentially executed within the binary?
-  \item[Control Flow Recovery] In what \emph{order} can these instructions be executed?
+  \item[Control Flow Recovery] \emph{In what order} can these instructions be executed?
 \end{description}
-Those two questions are mutually recursive and cannot be isolated from each other.
+Those two questions are mutually recursive; they cannot be isolated from each other.
 Once analyzing more than one instruction, disassembly\footnote{%
   Specifically for our case, recursive descent disassembly.%
 }
@@ -120,8 +243,8 @@ requires knowledge of which instructions are to be executed next.
 Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
 Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \ac{rop}.}
 
-  Overapproximativity is necessary in order to provide complete coverage.
-Alternate methods of uncovering exceptional state generally rely on
+Overapproximativity is necessary in order to provide complete coverage.
+Alternate methods of uncovering exceptional state generally rely on unsound heuristics
 
 Interprocedural analysis is necessary as exception handling is inherently interprocedural. While
 
@@ -129,30 +252,17 @@ Interprocedural analysis is necessary as exception handling is inherently interp
 
 The information necessary for stack unwinding can be embedded within a program.
 Debugging builds have it to provide support for unwinding during debugging.
-Programs with structured exception handling require it even when debugging information
-is excluded. However, even when such information exists, its support for interprocedural
-analysis applies solely to the act of stack unwinding. Investigating the behavior of
-exception handling in such scenarios requires the implementation of handling
-for multiple runtime library functions.
+Programs with structured exception handling require it even when debugging information is excluded.
+However, even when such information exists, its support for interprocedural
+analysis applies solely to the act of stack unwinding.
+Investigating the behavior of exception handling in such scenarios requires the implementation of handling for multiple runtime library functions.
 These include \inlineasm{__cxa_throw}, \inlineasm{__cxa_begin_catch},
 and \inlineasm{__cxa_end_catch}.
 
 \section{Challenges}
 Here are some basic challenges for the concepts presented by my dissertation.
 
-\subsection{Challenges for Memory Preservation}
-A fully-automated verification effort to prove memory preservation would be ideal,
-but it is not a feasible approach \autocite{ouimet2008formal}.
-As per Rice's theorem \autocite{rice1953classes},
-memory preservation is ultimately an undecidable property.
-One alternative would be to use \ac{itp}, but that does not scale well either
-due to the amount of intricate user interaction involved.
-This dissertation therefore proposes a \emph{semi-automated} approach.
-It uses \iac{itp} environment,
-but with code generation to generate as much of the proof code as possible.
-
-
-\subsection{Challenges for Control Flow Lifting}\label{challenges-cfg}
+\subsection{Control Flow Lifting}\label{challenges-cfg}
 Because of the potentially dynamic nature of a program's control flow, determining where to go next requires knowing how the program got there.
 This produces the ``chicken-and-egg'' problem of disassembly \autocite{schwartz2002disassembly}.
 At a minimum, a disassembler that supports call and indirect jump traversal needs to ensure the following properties:
@@ -262,34 +372,7 @@ or local variables.
 Any verification effort that wishes to reason about low-level memory properties
 must provide its own abstractions and assumptions on layout.
 
-\subsection{Current Approaches to Assembly Verification}
-In 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
-for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
-That work allows mechanized reasoning over compiled programs
-in the ACL2 theorem prover \autocite{ACL2}.
-
-Soon after, \textcite{tan2015auspice} introduced a logic framework called AUSPICE
-for automated verification of safety properties on the assembly level.
-AUSPICE took six hours to execute on \num{533} instructions, but was applicable to unmodified code.
-Our methodology in \cref{ch:syntax} is also applicable to unmodified code,
-as long as that code is assembly.
-
-More recently, \textcite{baumann2016high} provided an ARMv8-based hypervisor
-that was formally verified on the machine code level
-to ensure isolation of guest \acp{os}.
-That work was based on an earlier one for an ARMv7 separation kernel,
-PROSPER \autocite{dam2013hypervisor,dam2013formal}.
-
-Additionally, a few years ago, \textcite{fromherz2019verified} embedded a subset
-of the \gls{arch} \ac{isa} in the functional, verification-oriented language
-F$^*$ \autocite{fstar}.
-This was done in order to perform a proof of correctness
-over the commonly-used cryptographic routine AES-GCM.
-Their usage of \iac{vcg} is similar to ours in \cref{ch:syntax},
-but ours did not need to be separately formally verified as we implemented
-it with proven-true Hoare rules.
-
-\section{Control Flow Lifting}
+\section{Control Flow Recovery}
 To account for some of those issues\todo{rewording!}, we here provide an approach to \emph{trustworthy binary lifting} that simultaneously performs
 \begin{enumerate}
   \item disassembly,
@@ -315,7 +398,8 @@ Specifically, we:
 \end{enumerate}
 In general, we assume that the per-instruction semantics in use and the state changes they express are sound
 (for example, semantics that have been machine-learned from actual hardware \autocite{heule2016stratified,roessle2019formally}).
-We also assume the existence of a \gls{fetch} function that, given an address, soundly retrieves the corresponding instruction from the binary.
+We also assume the existence of \pgls{fetch} function that, given an address, soundly retrieves the corresponding instruction from the binary.
+\todo{Maybe add a discussion of this to the conclusion, as we did in fact encounter a bug with this in the implementation used for HGs requiring changing to a different library.}
 Experimental results show that the majority of unsoundness annotations concern function callbacks.
 In order to gain scalability, we treat function calls as context free.
 That allows us to reduce the state space and also reuse previous executions.
@@ -330,42 +414,6 @@ Finally, to deal with the final assumption regarding aliasing/separation/enclosu
 In cases where we cannot obtain clean arrangements of regions and would instead require overlapping ones, we merely invalidate the regions under consideration.
 This ensures that the result of accessing such regions will just be \gls{bot}, allowing us to avoid engaging in generating innumerable states for all possible overlapping arrangements.
 From our experiments, this did not result in significant loss of the information necessary to successfully complete our analyses.
-
-\subsection{Current Approaches to Control Flow Lifting}
-At the time this work was written, no other tool operating on binaries answered the two base questions above.
-In fact, both questions are \emph{undecidable} \autocite{rice1953classes,horspool1980approach}.
-The bulk of existing methods are either known to be unsound (they either  misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative}.
-The strength of those tools is their universality: they typically provide output for any binary, even in cases where guesses and non-validated assumptions have to be made.
-Their weakness is that their outputs are untrustworthy; thus, any analyses built on top of them are untrustworthy as well.
-
-% EXISTING TOOLS DO NOT SOLVE THE PROBLEM (eicfg)
-Existing state-of-the-art disassemblers/decompilers, such as IDA Pro, Ghidra, and Binary Ninja, do not provide sufficient information on exceptional control flow.
-Typically, they are able to extract exception information statically available in binaries (e.g., landing pad locations).
-They can even provide interprocedural control flow graphs.
-However, they do not perform the interprocedural static analysis required for reconstructing \emph{exceptional} control flow.
-That is, they cannot trace the path from an exception throw site to the landing pad instructions that exception goes to in the process of unwinding.
-\Acp{cfg} under such analyses will have \emph{throw sites as terminating locations} with no outgoing edges.
-%Tracing an exception from throw site to catch is not a feature of such tools.
-%In order to analyze the stack unwinding caused by an exception being thrown, one must typically utilize a runtime debugger such as GDB.
-%In fact, many state-of-the- art disassembly tools, IDA Pro and Ghidra included, rely on GDB to perform dynamic analysis via debugging.
-%That is, they require runtime information in order to trace exceptional state.
-
-
----------------------------
-
-To the best of our knowledge, we are the first to provide a generator for
-\ac{eicfg}-like constructs on the binary level.
-Many state-of-the-art disassemblers/decompilers, such as IDA Pro, Ghidra, and Binary Ninja,
-can extract exception information from binaries, including landing pad locations.
-They can even provide interprocedural control flow graphs.
-However, they do not provide features for interprocedural exception analysis.
-Tracing an exception from throw site to catch is not a feature of such tools.
-In order to analyze the stack unwinding caused by an exception being thrown,
-one must typically utilize a runtime debugger such as GDB.
-In fact, many state-of-the-art disassembly tools, IDA Pro and Ghidra included,
-rely on GDB to perform dynamic analysis via debugging.
-That is, they require runtime information in order to trace exceptional state.
-In contrast, our \ac{eicfg} generator does not.
 
 
 \section{Contributions}

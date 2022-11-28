@@ -665,7 +665,7 @@ While symbolic execution works well to establish memory preservation on the leve
 the goal of this verification effort is to formally establish memory preservation
 on the function level. This section describes that process,
 which occurs after the individual blocks have had their semantics and memory preservation derived
-and relies on Hoare logic (described in \cref{se:hoare}).
+and relies on \gls{hoare-logic} (described in \cref{se:hoare}).
 
 \subsubsection{Hoare Rules}\label{scf_hoare}
 The Hoare triple formulation used for this work, $\htriple*{P}f{Q}M$,
@@ -676,7 +676,7 @@ it takes a syntactic representation of the program, an \ac{scf}.
 Unlike traditional Hoare triples, however,
 it also explicitly contains the set of memory regions,~$M$,
 that contain the areas of memory read and written by the program the \ac{scf} encodes.
-Syntactic structure is required because Hoare logic is a syntax-guided approach.
+Syntactic structure is required because \gls{hoare-logic} is a syntax-guided approach.
 \begin{definition}[Hoare triple for \ac{scf}]\label{def:preserve}
   \begin{equation}
     \htriple*{P}f{Q}{M}\equiv
@@ -809,7 +809,7 @@ The body of this example loop contains single-byte array assignment operations
 along the lines of $a[i]=v$.
 Verification of the loop requires the loop invariant $I(\sigma)=i(\sigma)<10$.
 The \ac{fmuc} of the loop body will have, as a state-dependent set of memory regions, $M(\sigma)=\{\region{a+i(\sigma)}1\}$, which is a single region of one byte.
-If the Hoare logic introduction rule were to be applied to the block
+If the \gls{hoare-logic} introduction rule were to be applied to the block
 that is the body of the loop, the result would be as follows:
 \begin{subequations}
   \begin{align}
@@ -849,7 +849,7 @@ for other situations, symbolic region sizes.
 \end{lstlisting}
 The \ac{vcg} presented here is a set of Eisbach proof methods,
 the entry point of which is shown in \cref{lst:vcg}.
-It is designed to automatically apply the proper Hoare logic rules
+It is designed to automatically apply the proper \gls{hoare-logic} rules
 as much as possible via the \lstinline|vcg_step| method in \cref{lst:vcg_step},
 driven by the formal \ac{scf} provided by the \ac{fmuc}.
 

@@ -120,7 +120,7 @@ there is also \ac{dil}.
 Developed by Myreen et al.\ in the HOL4 theorem prover \autocite{slind2008brief},
 \ac{dil} uses operational semantics of machine code
 to lift programs into a functional form.
-That functional form can then be used in a Hoare logic framework
+That functional form can then be used in \pgls{hoare-logic} framework
 for program analysis \autocite{myreen2007hoare}.
 It formally covers the gap between machine code and \iac{hol} model
 and allows for verification of properties in a theorem prover that utilizes that model.
@@ -270,7 +270,7 @@ their approach requires a static separation of stack and heap instead.
 \Textcite{shi2012orientais} formally verified \iac{rtos} for automotive use
 called ORIENTAIS.
 Part of their approach involved source-level verification
-using a combination of Hoare logic
+using a combination of \gls{hoare-logic}
 and abstract \ac{csp} model analysis \autocite{hoare1978csp}.
 Binary verification was done by lifting the \ac{rtos} binary to xBIL,
 a related hardware verification language \autocite{shi2012xbil}.
@@ -278,7 +278,7 @@ They translated requirements from the OSEK automotive industry standard
 to source code annotations.
 Ultimately, they proved properties such as deadlock-freedom, memory access safety,
 and bounded response time in the presence of interrupts \autocite{shi2012interrupt}.
-A similarity with our work was the usage of Hoare logic,
+A similarity with our work was the usage of \gls{hoare-logic},
 while the difference is that we performed verification solely on the assembly level
 and with a more complex \ac{isa}.
 We ultimately handled over \num{14631} \gls{arch} instructions compared to their \num{60}.
@@ -364,7 +364,7 @@ subset of Standard ML modeled with big-step operational semantics in \ac{hol}.
 Its main compiler frontend is designed to take ML-like \ac{hol} functions
 and translate them to a CakeML \ac{ast}, which is then translated into machine code
 using a verified backend. The compiler itself is bootstrapped,
-meaning it can compile itself in \ac{hol}. It also provides support for using Hoare logic
+meaning it can compile itself in \ac{hol}. It also provides support for using \gls{hoare-logic}
 to perform post-hoc verification using a version of the CFML verification framework
 \autocite{gueneau2017formulae,arthur2015union,chargueraud2011cfv}.
 
@@ -449,7 +449,7 @@ A somewhat older tool, Splint \autocite{evans2002static} detects buffer overflow
 and similar potential security flaws in C code.
 Splint relies on annotated preconditions to derive postconditions
 based on the syntactic structure of the code.
-While their methodology is very similar to the formal technique of Hoare logic,
+While their methodology is very similar to the formal technique of \gls{hoare-logic},
 described later on in this dissertation (\cref{se:hoare}),
 they used heuristics for loop analysis rather than proper invariants
 and thus could potentially miss bugs.

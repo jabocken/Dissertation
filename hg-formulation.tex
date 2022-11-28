@@ -614,7 +614,7 @@ That base functionality is then extended in two ways:
   \item the prevention of states from being joined when they are incompatible (i.e.\ not matching \cref{def:compatibility}). \todo{index entry that just points to compatible's?}
 \end{enumerate}
 In order to do this, the algorithm maintains two objects.
-First, a \gls{bag} of the produced symbolic states that have yet to be explored.
+First, \pgls{bag} of the produced symbolic states that have yet to be explored.
 Function \gls{explore} is repeatedly called until that \gls{bag} is empty.
 Second, the current \ac{hg} \gls{hg}.
 When the \gls{bag} is empty, \gls{hg} is the final \ac{hg}.

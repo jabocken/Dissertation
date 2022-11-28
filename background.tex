@@ -48,7 +48,7 @@ This dissertation comes under the \emph{verification} component of that.%
 %This form of semantics uses \emph{axioms} to describe behavior.
 %\todo{more}
 %
-%The canonical example is \emph{Hoare logic}.%
+%The canonical example is \gls{hoare-logic}.%
 %\index{Hoare!logic}
 %
 %\subsection{Fixed Point Representation}
@@ -80,8 +80,7 @@ allows aggregation of the individual state changes involved in the execution.
 \subsection{Hoare Logic}\label{se:hoare}
 A form of \emph{axiomatic semantics},
 \index{semantics!axiomatic}
-Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare}%
-\index{Hoare!logic}
+\gls{hoare-logic} \autocite{hoare1969axiomatic,myreen2007hoare}
 describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!triple}
 \begin{definition}[Basic Hoare triple]
   Given predicates on state~$P$ and~$Q$ and a program~$C$,
@@ -102,7 +101,7 @@ would be used to syntactically decompose the program into its constituent behavi
 If any loops were to be present, the loop rule would require an additional condition
 that would hold on every iteration, a \emph{loop invariant},\index{loop!invariant} for each loop.
 
-As Hoare logic was heavily inspired by Floyd's flowcharts, it is sometimes referred to
+As \gls{hoare-logic} was heavily inspired by Floyd's flowcharts, it is sometimes referred to
 as \emph{Floyd-Hoare logic}.
 
 \subsubsection{Verification Condition Generation}
@@ -146,7 +145,7 @@ was Isabelle 2018 \autocite{nipkow2002isabelle}.%
 \index{Isabelle/HOL!2018}
 It is a generic proof assistant with a flexible, extensible syntactic framework.
 Isabelle also utilizes a powerful proof language
-known as \ac{isar} \autocite{wenzel2007isabelle}
+known as \ac{isar} \autocite{wenzel2007isabelle}.
 Its most-commonly-used logic is \ac{hol}; when used with that logic,
 it is referred to as Isabelle/HOL.
 
@@ -215,6 +214,76 @@ You can also create methods that take terms as input:
     b[where l=L]
 \end{lstlisting}
 And then call it like \lstinline|apply (a \<open>[1, 2]\<close>)|.
+
+\subsection{Lattices}\label{lattice-background}
+\todo{talk about how lattices are an ordering, their properties, and how we use a join-semilattice}
+\todo{make a glossary entry for join-semilattice so we can reference it later}
+
+\subsubsection{Meet and Join}
+\todo{talk about the differences and how in this work we focus on join-semilattices}
+
+\subsubsection{Least Fixed Point}
+\todo{Should this be Greatest Fixed Point instead?}
+
+\subsection{Abstract Interpretation}\label{background-absint}
+Several contributions of this work were inspired by
+abstract interpretation \autocite{cousot1976static,cousot1977abstract}
+\index{abstract!interpretation},
+previously mentioned in \cref{related-absint}.
+Abstract interpretation is a form of approximation
+in which the possible values for some variables in a program
+are constrained to some \emph{domain}.
+Some examples are sign or polyhedral ranges.
+It functions somewhat like a partial execution of the program under test
+in order to determine semantic information.
+\todo{glossary entry?}
+
+\todo\dots
+% Removing abstract interpretation talk for VSTTE as we're going for a more informal approach; can discuss it more later in dissertation though maybe.
+% \subsection{Abstract Interpretation}\label{sec:abstract-interpretation}
+% The key property we aim to prove is correctness of the produced \ac{eicfg}.
+% Intuitively, correctness means that the \ac{eicfg} is an \emph{abstraction} of the actual binary.
+% Specifically, one that preserves its properties pertaining to control flow.
+% We therefore restate the definition of an \emph{$\alpha$-simulation} \autocite{clarke94,loiseaux1995property}.
+% This definition coincides exactly with the standard notion of a behavioural simulation \autocite{milner1971algebraic}, but is formulated in terms of the concepts used in abstract interpretation.
+
+% We use $s,s',\dotsc$ to denote \emph{concrete states} and $S,S',\dotsc$ to denote sets of concrete states.
+% The concrete transition relation over concrete states is denoted $\concTransition$. Similarly, \emph{abstract states} are denoted by $\sigma,\sigma',\dotsc$ and sets of abstract states by $\gls{abs-state},\gls{abs-state}['],\dotsc$, while the abstract transition relation is $\absTransition$.
+
+% Abstract interpretation requires the definition of a Galois connection $\alphagamma$ that respectively does abstraction and concretization \autocite{cousot1977abstract,cousot1996abstract}.
+% A Galois connection can be used to construct an overapproximative abstraction of a transition system, by using~$\alpha$ as a simulation-relation and $\gamma$ to map properties on abstract states back to properties over the concrete system \autocite{yavuz16}.
+
+% \begin{definition}\label{def:simulation} %[$\alpha$-similarity]
+  %     Transition system $T_\mathsf{C} = (S,s_0,\concTransition)$ is \emph{$\alpha$-simulated by} transition system $T_\mathsf{A} = (\Sigma,\sigma_0,\absTransition)$, notation $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$, if and only if $\sigma_0 = \alpha(s_0)$ and, for all concrete states $s$ and $s'$,
+  %     % \begin{equation*}
+    %     %     s \concTransition s'\implies\alpha(s)\absTransition\alpha(s').
+    %     % \end{equation*}
+  %     \begin{prooftree}
+    %         \AxiomC{$s \concTransition s'$}
+    %         \UnaryInfC{$\alpha(s)\absTransition\alpha(s')$}
+    %     \end{prooftree}
+  % \end{definition}
+
+% The next sections define abstract states and the abstract step rules.
+% Based on these, functions $\alpha$ and $\gamma$ are straightforward (more formal details can be found in \autocite{yavuz16}).
+% It is crucial that not too many details are abstracted away: information pertaining to exceptional control flow should be part of the abstract states.
+% Under that assumption, $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve properties of the universal fragment of computation tree logic ($\forall$CTL) \autocite{baier2008principles} pertaining to exceptional control flow.
+% This includes safety and liveness.
+
+
+
+
+%Traditionally, a key challenge in abstract interpretation is finding the proper abstract domain and formulating the Galois connection.
+%A technique addressing this challenge is \emph{predicate abstraction} \autocite{clarke94,graf97}.
+%Consider a list $\Pi$ of predicates over concrete states.
+%Abstraction occurs by valuating each of these predicates, resulting in abstract states that are lists of Booleans.
+%Concretization occurs by replacing Boolean values with the set of concrete states satisfying the corresponding %predicate.
+%Yavuz et al. provide formal definitions for $\alphagamma$ for abstract interpretation based on predicate abstraction \autocite{yavuz16}.
+
+%Correctness, then, is provided by Lemma~3 of \autocite{yavuz16}.
+%Having the list of concrete state predicates~$\Pi$, let $\alphagamma$ be the Galois connection as defined in \autocite{yavuz16}.
+%Then $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve \ac{ACTL} properties pertaining to $\Pi$.
+%In other words, $T_\mathsf{A}$ is a proper abstraction of $T_\mathsf{C}$ for all \ac{ACTL} properties formulated over $\Pi$-predicates.
 
 \section{Assembly Language}\label{se:assembly_language}
 No modern high-level programming language is ever executed directly on hardware.
@@ -521,12 +590,10 @@ the binary format of \emph{object files}, the format of program libraries,
 how system calls are made, and the standard \emph{calling convention},
 how function calls are structured on the machine code level.
 
-As the programs used in \cref{ch:cfg,ch:syntax} were compiled and run on Linux,\index{linux}
+As the programs used in \cref{memory-preservation,hg,eicfg} were compiled and run on Linux,\index{linux}
 this dissertation focuses on the System~V \gls{amd64} \ac{abi} \autocite{systemv-ABI-git},
 which is the standard for most Unix-based systems.
-The relevant aspects are the fact that the System~V \ac{abi} uses the \ac{elf}
-format for binaries, though we do not care about that
-once we are dealing with assembly, and the calling convention.
+The relevant aspects are the calling convention and the fact that the System~V \ac{abi} uses the \ac{elf} format for binaries.
 The important aspects of the calling convention for this \ac{abi}
 are the following:
 
@@ -580,76 +647,6 @@ as imperative languages like C were not designed with such features in mind.
 The technique also supports optimizing non-recursive tail calls, however,
 and that has a lower bar.
 
-\section{Lattices and Their Usage in Programming}\label{lattice-background}
-\todo{talk about how lattices are an ordering, their properties, and how we use a join-semilattice}
-\todo{make a glossary entry for join-semilattice so we can reference it later}
-
-\subsection{Meet and Join}
-\todo{talk about the differences and how in this work we focus on join-semilattices}
-
-\subsection{Least Fixed Point}
-\todo{Should this be Greatest Fixed Point instead?}
-
-\section{Abstract Interpretation}\label{background-absint}
-Several contributions of this work were inspired by
-abstract interpretation \autocite{cousot1976static,cousot1977abstract}
-\index{abstract!interpretation},
-previously mentioned in \cref{related-absint}.
-Abstract interpretation is a form of approximation
-in which the possible values for some variables in a program
-are constrained to some \emph{domain}.
-Some examples are sign or polyhedral ranges.
-It functions somewhat like a partial execution of the program under test
-in order to determine semantic information.
-\todo{glossary entry?}
-
-\todo\dots
-% Removing abstract interpretation talk for VSTTE as we're going for a more informal approach; can discuss it more later in dissertation though maybe.
-% \subsection{Abstract Interpretation}\label{sec:abstract-interpretation}
-% The key property we aim to prove is correctness of the produced \ac{eicfg}.
-% Intuitively, correctness means that the \ac{eicfg} is an \emph{abstraction} of the actual binary.
-% Specifically, one that preserves its properties pertaining to control flow.
-% We therefore restate the definition of an \emph{$\alpha$-simulation} \autocite{clarke94,loiseaux1995property}.
-% This definition coincides exactly with the standard notion of a behavioural simulation \autocite{milner1971algebraic}, but is formulated in terms of the concepts used in abstract interpretation.
-
-% We use $s,s',\dotsc$ to denote \emph{concrete states} and $S,S',\dotsc$ to denote sets of concrete states.
-% The concrete transition relation over concrete states is denoted $\concTransition$. Similarly, \emph{abstract states} are denoted by $\sigma,\sigma',\dotsc$ and sets of abstract states by $\gls{abs-state},\gls{abs-state}['],\dotsc$, while the abstract transition relation is $\absTransition$.
-
-% Abstract interpretation requires the definition of a Galois connection $\alphagamma$ that respectively does abstraction and concretization \autocite{cousot1977abstract,cousot1996abstract}.
-% A Galois connection can be used to construct an overapproximative abstraction of a transition system, by using~$\alpha$ as a simulation-relation and $\gamma$ to map properties on abstract states back to properties over the concrete system \autocite{yavuz16}.
-
-% \begin{definition}\label{def:simulation} %[$\alpha$-similarity]
-  %     Transition system $T_\mathsf{C} = (S,s_0,\concTransition)$ is \emph{$\alpha$-simulated by} transition system $T_\mathsf{A} = (\Sigma,\sigma_0,\absTransition)$, notation $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$, if and only if $\sigma_0 = \alpha(s_0)$ and, for all concrete states $s$ and $s'$,
-  %     % \begin{equation*}
-    %     %     s \concTransition s'\implies\alpha(s)\absTransition\alpha(s').
-    %     % \end{equation*}
-  %     \begin{prooftree}
-    %         \AxiomC{$s \concTransition s'$}
-    %         \UnaryInfC{$\alpha(s)\absTransition\alpha(s')$}
-    %     \end{prooftree}
-  % \end{definition}
-
-% The next sections define abstract states and the abstract step rules.
-% Based on these, functions $\alpha$ and $\gamma$ are straightforward (more formal details can be found in \autocite{yavuz16}).
-% It is crucial that not too many details are abstracted away: information pertaining to exceptional control flow should be part of the abstract states.
-% Under that assumption, $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve properties of the universal fragment of computation tree logic ($\forall$CTL) \autocite{baier2008principles} pertaining to exceptional control flow.
-% This includes safety and liveness.
-
-
-
-
-%Traditionally, a key challenge in abstract interpretation is finding the proper abstract domain and formulating the Galois connection.
-%A technique addressing this challenge is \emph{predicate abstraction} \autocite{clarke94,graf97}.
-%Consider a list $\Pi$ of predicates over concrete states.
-%Abstraction occurs by valuating each of these predicates, resulting in abstract states that are lists of Booleans.
-%Concretization occurs by replacing Boolean values with the set of concrete states satisfying the corresponding %predicate.
-%Yavuz et al. provide formal definitions for $\alphagamma$ for abstract interpretation based on predicate abstraction \autocite{yavuz16}.
-
-%Correctness, then, is provided by Lemma~3 of \autocite{yavuz16}.
-%Having the list of concrete state predicates~$\Pi$, let $\alphagamma$ be the Galois connection as defined in \autocite{yavuz16}.
-%Then $T_\mathsf{C} \sqsubseteq T_\mathsf{A}$ coincides with a behavioral simulation sufficiently strong to preserve \ac{ACTL} properties pertaining to $\Pi$.
-%In other words, $T_\mathsf{A}$ is a proper abstraction of $T_\mathsf{C}$ for all \ac{ACTL} properties formulated over $\Pi$-predicates.
-
 \section{Structured Exception Handling}\label{se:structured_exceptions}
 
 \subsection{Motivation: Structured Programming}
@@ -674,7 +671,7 @@ in order to determine semantic information.
 
 \section{Summary}
 This chapter gave an introduction to formal methods, including formal semantics,
-symbolic execution, Floyd verification, Hoare logic, model checking, and theorem provers.
+symbolic execution, Floyd verification, \gls{hoare-logic}, model checking, and theorem provers.
 It also described some basic aspects of the \gls{arch} \ac{isa} and System~V\index{ABI!System V}
 AMD64\index{ABI!AMD64} \ac{abi}
 as well as some general details on assembly.

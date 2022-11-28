@@ -49,7 +49,7 @@ My three main contributions to the memory preservation work presented here were:
 
 \section{Overview of Methodology}\label{se:cfg_overview}
 The first step in the process of analysis for a function
-is disassembly of an \gls{arch} binary containing it.
+is disassembly of \pgls{arch} binary containing it.
 This is done using a modified version of the \lstinline|reassembly| analysis
 \autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state,wang2017angr}.%
 \index{\texttt{angr}}
@@ -147,8 +147,7 @@ Formally, this is achieved by a standard \ac{lfp} construction.
 
 \subsection{Hoare Triples for Memory Preservation}
 Unlike the usual formulation of
-Hoare logic \autocite{hoare1969axiomatic,myreen2007hoare},%
-\index{Hoare!logic}
+\gls{hoare-logic} \autocite{hoare1969axiomatic,myreen2007hoare},%
 Hoare triples for this work take one of the aforementioned halting conditions%
 \index{Hoare!triple}
 as their middle input rather than a program statement.
