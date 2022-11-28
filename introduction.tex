@@ -1,4 +1,6 @@
 \chapter{Introduction}
+\todo{maybe take a similar approach to Rob's dissertation, where he integrated the related work into the motivation/start of the introduction? maybe not}
+
 % topic/basic motivation
 Proving that a non-trivial program has no bugs is not an easy task.
 As technology continues to improve, software will continue to increase in complexity.
@@ -14,11 +16,15 @@ Formal verification allows reasoning over programs with a high degree of assuran
 This assurance is provided by sound mathematical representations and logical reasoning.
 Even pen-and-paper proofs can provide guarantees that purely informal analysis does not.
 
-Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis \todo\dots
+Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis for the formal verification of software for over fifty years.
+\todo{what more to say here?}
 
+\todo{need another thesis sentence to build up a paragraph for that leads into the challenges}
 
-
-\todo{what are its challenges (summarized)?}
+% basic challenges
+However, many such properties are \emph{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
+There are no single, fully-automated methods that are guaranteed to determine them for all possible programs.
+% This includes both concise statements of memory preservation as well as accurate and precise control flow recovery.
 
 \todo{what is binary analysis and why is it useful?}
 
@@ -29,7 +35,7 @@ This dissertation consists of two main contributions: approaches to \emph{memory
 
 \todo{paragraph(?) on control flow recovery}
 
-\section{Motivations}
+\section{Motivation}
 
 \subsection{Memory Preservation}
 
@@ -39,15 +45,13 @@ This dissertation consists of two main contributions: approaches to \emph{memory
 The challenges summarized above are detailed further here.
 \todo{integrate this into motivation?}
 
-Importantly, the properties explored in this dissertation are \emph{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
-There are no single fully-automated methods that can determine them effectively for all possible programs.
-This includes both concise statements of memory preservation as well as accurate and precise control flow recovery.
-
 \subsection{Memory Preservation}
 As fully automated approaches are not feasible, or even necessarily possible, one alternative is to use \ac{itp}.
 However, that does not scale well due to the amount of intricate user interaction and development involved.
 This dissertation therefore proposes \emph{semi-automated} approaches.
 They use \iac{itp} environment, but with automatic generation to produce as much of the theorem and proof code as possible.
+
+\subsection{Control Flow Recovery}
 
 \section{Contributions}
 
@@ -122,6 +126,7 @@ In contrast, our \ac{eicfg} generator does not.
 \subsection{Control Flow Recovery}
 
 \section{Impact}
+\todo{What are the results? What can these contributions be used for?}
 
 \subsection{Memory Preservation}
 
@@ -188,7 +193,7 @@ or functions associated with those regions, so proving that the region sets
 for two functions are disjoint
 would essentially prove noninterference for those two functions.\footnote{%
   A weaker property would be showing that one of the functions does not write
-  to any of the memory regions read by the other, but that would actually be harder
+  to any of the memory regions read by the other, but that would actually be harder to prove
   as we do not currently differentiate between regions that are read and written.%
 }
 
