@@ -12,6 +12,8 @@ cleanall: cleanext
 
 cleanext:
 	rm -f extern/*
-	# don't know why these aren't handled even though they're in .latexmkrc
+	# Due to how latexmk works, even when certain extensions are listed for
+	# removal, not all actually are (for glstex it's the ones that don't fit the
+	# tex file being built, for bbl I don't know why).
 	rm *.glstex
 	rm *.bbl
