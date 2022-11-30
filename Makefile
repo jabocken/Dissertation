@@ -12,3 +12,6 @@ cleanall: cleanext
 
 cleanext:
 	rm -f extern/*
+	# don't know why these aren't handled even though they're in .latexmkrc
+	rm *.glstex
+	rm *.bbl
