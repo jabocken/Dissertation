@@ -1,6 +1,4 @@
 \chapter{Introduction}
-\todo{maybe take a similar approach to Rob's dissertation, where he integrated the related work into the motivation/start of the introduction? maybe not}
-
 % topic/basic motivation
 Proving that a non-trivial program has no bugs is not an easy task.
 As technology continues to improve, software will continue to increase in complexity.
@@ -10,59 +8,79 @@ such as avionics, medical equipment, or other safety-critical systems.
 Of course, software bugs have existed ever since the creation of non-trivial programs.
 For at least as long, researchers have been working on methods of bug-free programming and sound program analysis.
 
+\section{Formal Verification of Software}
 Many have dipped into the field of \emph{formal methods} \autocite{butler:fm} to do this.\index{formal!methods}
-For our purposes, the field of \emph{formal verification}\index{formal!verification} specifically.
+For our purposes, the subfield of \emph{formal verification}\index{formal!verification} specifically.
 Formal verification allows reasoning over programs with a high degree of assurance.
 This assurance is provided by sound mathematical representations and logical reasoning.
 Even pen-and-paper proofs can provide guarantees that purely informal analysis does not.
 
+% work context
 Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis for the formal verification of software for over fifty years.
 \todo{what more to say here?}
 
-\todo{need another thesis sentence to build up a paragraph for that leads into the challenges}
+\todo{need another thesis sentence to build up a paragraph for that leads into the challenges?}
 
 % basic challenges
-However, many such properties are \emph{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
+Despite this, formal verification of software is still a difficult task.
+Many useful properties are \emph{undecidable}\index{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
 There are no single, fully-automated methods that are guaranteed to determine them for all possible programs.
-% This includes both concise statements of memory preservation as well as accurate and precise control flow recovery.
+One alternative is to use \ac{itp} \todo{want a citation here}.
+However, that does not scale well due to the amount of intricate user interaction and development involved.
 
-\todo{what is binary analysis and why is it useful?}
+Furthermore, source-code-level formal verification requires a large \emph{\ac{tcb}} \todo{citation?}.
+Without a verified compiler \autocite{leroy:compcert}, one must trust the semantics of a binary reflect its original source.
+Even then, one must assume that the \ac{isa} in use has been correctly specified, that all libraries work correctly, and even that there are no hardware flaws in the physical computer being used to execute the program.
+Ultimately, it is not possible to eliminate the \ac{tcb} completely.
+However, it is possible to \emph{reduce} it, and not just via the usage of non-mainstream compilers that can only handle a subset of programs for their given language.
 
-This dissertation consists of two main contributions: approaches to \emph{memory preservation} in \cref{memory-preservation} and approaches to \emph{control flow recovery} in \cref{hg,eicfg}.
-\todo{more?}
+\section{Static Binary Analysis}
+As an alternative to top-down software analysis, the field of \emph{binary analysis} has taken root in the research community.
+We focus here on \emph{static} binary analysis specifically.
+That is, analyzing programs ``offline'' with the usage of external tools rather than instrumenting or hooking into a running program.
+This automatically eliminates the compiler and any optimizations it may do from the \ac{tcb}.
 
+% work context
+\todo{What are some big/seminal works in (static) binary analysis?}
+
+% basic challenges
+\todo{lack of abstraction}
+
+\todo{issues with disassembly}
+
+\section{Motivation}
 \todo{paragraph(?) on memory preservation}
 
 \todo{paragraph(?) on control flow recovery}
 
-\section{Motivation}
+This dissertation consists of two main contributions: approaches to \emph{memory preservation} in \cref{memory-preservation} and approaches to \emph{control flow recovery} in \cref{hg,eicfg}.
+\todo{more?}
 
 \subsection{Memory Preservation}
 
 \subsection{Control Flow Recovery}
 
 \section{Challenges}
-The challenges summarized above are detailed further here.
-\todo{integrate this into motivation?}
+The properties described above both suffer from the problem of undecidability\index{undecidable}.
 
 \subsection{Memory Preservation}
-As fully automated approaches are not feasible, or even necessarily possible, one alternative is to use \ac{itp}.
-However, that does not scale well due to the amount of intricate user interaction and development involved.
-This dissertation therefore proposes \emph{semi-automated} approaches.
-They use \iac{itp} environment, but with automatic generation to produce as much of the theorem and proof code as possible.
+\todo{anything more here?}
 
 \subsection{Control Flow Recovery}
 
 \section{Contributions}
 
 \subsection{Control-Flow-Driven Memory Preservation}
+This dissertation therefore proposes \emph{semi-automated} approaches.
+They use \iac{itp} environment, but with automatic generation to produce as much of the theorem and proof code as possible.
+
 \subsection{Syntax-Driven Memory Preservation}
 
 \subsection{Hoare-Logic-Based Control Flow Recovery}
 \subsection{Exceptional Interprocedural Control Flow Recovery}
 
 \section{Summary of Related Work}
-\todo\dots
+\todo{should this come before contributions?}
 A full overview can be found in \cref{ch:related}.
 
 In 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
@@ -126,7 +144,7 @@ In contrast, our \ac{eicfg} generator does not.
 \subsection{Control Flow Recovery}
 
 \section{Impact}
-\todo{What are the results? What can these contributions be used for?}
+\todo{What are the results? What can these contributions be used for? Seems kind of redundant with the contributions subsection though.}
 
 \subsection{Memory Preservation}
 
