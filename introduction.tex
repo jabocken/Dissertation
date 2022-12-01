@@ -19,8 +19,6 @@ Even pen-and-paper proofs can provide guarantees that purely informal analysis d
 Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis for the formal verification of software for over fifty years.
 \todo{what more to say here?}
 
-\todo{need another thesis sentence to build up a paragraph for that leads into the challenges?}
-
 % basic challenges
 Despite this, formal verification of software is still a difficult task.
 Many useful properties are \emph{undecidable}\index{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
@@ -28,9 +26,11 @@ There are no single, fully-automated methods that are guaranteed to determine th
 One alternative is to use \ac{itp} \autocite{harrison2014itp,maric2015itp,schopf2018itp}.
 However, that does not scale well due to the amount of intricate user interaction and development involved.
 
-Furthermore, source-code-level formal verification requires a large \emph{\ac{tcb}} \todo{citation?}.
+Furthermore, source-code-level formal verification requires a large \emph{\ac{tcb}}
+% autocites requires manual sorting, darn
+\autocites[270]{lampson1992authentication}{orange-book}[13]{rushby1981dvss}.
 Without a verified compiler \autocite{leroy:compcert}, one must trust the semantics of a binary reflect its original source.
-Even then, one must assume that the \ac{isa} in use has been correctly specified, that all libraries work correctly, and even that there are no hardware flaws in the physical computer being used to execute the program.
+Even then, one must assume that the \ac{isa} in use has been correctly specified, that all libraries work correctly, and even that there are no firmware or hardware flaws in the physical computer being used to execute the program.
 Ultimately, it is not possible to eliminate the \ac{tcb} completely.
 However, it is possible to \emph{reduce} it, and not just via the usage of non-mainstream compilers that can only handle a subset of programs for their given language.
 

@@ -51,7 +51,7 @@
   doi = {10.1145/3359986.3361215},
   venue = {La~Jolla, California},
   pages = {1-5},
-  articleno = 17,
+  eid = 17,
   xdata = {acm}
 }
 
@@ -130,14 +130,53 @@
   doi = {10.1145/3293880.3294102},
 }
 
+
+@incollection{harrison2014itp,
+  title = {History of Interactive Theorem Proving},
+  author = {John Harrison and Josef Urban and Freek Wiedijk},
+  editor = {Jörg H. Siekmann},
+  series = {Handbook of the History of Logic},
+  booktitle = {Computational Logic},
+  publisher = {North-Holland},
+  volume = 9,
+  pages = {135-214},
+  date = 2014,
+  issn = {1874-5857},
+  doi = {https://doi.org/10.1016/B978-0-444-51624-4.50004-6}
+}
+
+@article{maric2015itp,
+  title = {A Survey of Interactive Theorem Proving},
+  author = {Filip Marić},
+  editor = {Silvia Ghilezan},
+  number = 26,
+  volume = 18,
+  date = 2015,
+  journaltitle = {Zbornik Radova},
+  publisher = {Mathematical Institute of the Serbian Academy of Sciences and Arts},
+  address = {Belgrade, Serbia},
+  issn = {0351-9406},
+  pages = {173-223},
+  url = {http://elib.mi.sanu.ac.rs/files/journals/zr/26/zrn26p173-223.pdf}
+}
+
+@report{schopf2018itp,
+  title = {History of Interactive Theorem Proving},
+  author = {Sch\"opf, Jonas and Widauer, Stephanie},
+  date = {2018-02-26},
+  institution = {Universit\"at Inssbruck},
+  type = {resreport},
+  url = {http://cl-informatik.uibk.ac.at/teaching/ws17/vs/reports/SWreport.pdf}
+}
+
 @periodical{pacmpl2019popl,
   title = {Proceedings of the ACM on Programming Languages},
   shorttitle = {PACMPL},
   volume = 3,
   number = {POPL},
-  date = {2019-01},
+  date = {2019-01-02},
   issn = {2475-1421},
-  xdata = {acm},
+  xdata = {acm}
 }
 
 @article{rice1953classes,
@@ -238,7 +277,7 @@
   eventdate = {2016-06-01},
   pages = {4:1-4:8},
   doi={10.1145/2931088.2931093},
-  articleno = 4,
+  eid = 4,
   numpages = 8,
   acmid = 2931093,
   xdata = {acm}
@@ -946,7 +985,7 @@
   volume           = 32,
   date             = {2014-02},
   pages            = {2:1-2:70},
-  articleno        = 2,
+  eid              = 2,
   xdata = {acm}
 }
 
@@ -1013,10 +1052,9 @@
   booktitle = {Operating Systems Principles},
   booktitleaddon = {Proceedings of the Eighth ACM Symposium},
   series = {SOSP '81},
-  year = 1981,
+  date = {1981-12-01},
   isbn = {0-89791-062-1},
   pages = {12-21},
-  numpages = 10,
   doi = {10.1145/800216.806586},
   acmid = 806586,
   venue = {Pacific Grove, CA, USA},
@@ -1024,10 +1062,21 @@
   xdata = {acm}
 }
 
+@standard{orange-book,
+  title = {Department of Defense Trusted Computer System Evaluation Criteria},
+  titleaddon = {DoDD 5200.28-STD},
+  subtitle = {Department of Defense Standard},
+  author = {Donald C. Latham},
+  date = {1985-12-26},
+  institution = {United States Department of Defense},
+  series = {Department of Defense Standard},
+  url = {https://csrc.nist.gov/CSRC/media/Publications/white-paper/1985/12/26/dod-rainbow-series/final/documents/std001.txt}
+}
+
 @techreport{rushby1992noninterference,
   title = {Noninterference, Transitivity, and Channel-Control Security Policies},
   author = {Rushby, John M.},
-  year = 1992,
+  date = 1992,
   institution = {Computer Science Laboratory at SRI International}
 }
 
@@ -1111,7 +1160,7 @@
   title = "A Trustworthy Monadic Formalization of the {ARMv7} Instruction Set Architecture",
   author = "Fox, Anthony and Myreen, Magnus O.",
   editor = "Kaufmann, Matt and Paulson, Lawrence C.",
-  booktitle = "Interactive Theorem Proving",
+  booktitle = {Interactive Theorem Proving},
   booktitleaddon = "Proceedings of the First International Conference",
   shorttitle = "ITP 2010",
   number = 6172,
@@ -1124,21 +1173,33 @@
   xdata = {lncs}
 }
 
+@proceedings{itp2015,
+  title = {Interactive Theorem Proving},
+  titleaddon = {Proceedings of the 6th International Conference},
+  shorttitle={ITP 2015},
+  editor = {Urban, Christian and Zhang, Xingyuan},
+  xdata = {lncs},
+  location = {Cham},
+  number = 9236,
+  date = {2015-08-19},
+  venue = {Nanjing, China},
+  eventdate = {2015-08-24/2015-08-27},
+  isbn = {978-3-319-22102-1}
+}
+
 @inproceedings{fox2015improved,
   title={Improved Tool Support for Machine-Code Decompilation in {HOL4}},
   author={Fox, Anthony},
-  editor={Urban, Christian and Zhang, Xingyuan},
-  booktitle={Interactive Theorem Proving},
-  booktitleaddon={Proceedings of the 6th International Conference},
-  shorttitle={ITP 2015},
-  number=9236,
   pages={187-202},
-  date={2015-08-19},
-  venue={Nanjing, China},
-  eventdate={2015-08-24/2015-08-27},
   doi={10.1007/978-3-319-22102-1_12},
-  organization=Springer,
-  location={Cham}
+  crossref={itp2015}
+}
+
+@InProceedings{arthur2015union,
+  title={Machine-Checked Verification of the Correctness and Amortized Complexity of an Efficient Union-Find Implementation},
+  author={Chargu\'eraud, Arthur and Pottier, Fran\c{c}ois},
+  pages={137-153},
+  crossref={itp2015}
 }
 
 @proceedings{cav2007,
@@ -1379,7 +1440,7 @@
   date = {2009-10},
   issn = {1094-9224},
   pages = {4:1-4:40},
-  articleno = 4,
+  eid = 4,
   numpages = 40,
   doi = {10.1145/1609956.1609960},
   acmid = 1609960,
@@ -1484,7 +1545,7 @@
   xdata = {ieee}
 }
 
-@techreport{ieee:psl,
+@standard{ieee:psl,
   title={{IEEE} Standard for Property Specification Language {(PSL)}},
   version={IEEE Std 1850-2010 (Revision of IEEE Std 1850-2005)},
   author=IEEE,
@@ -1498,7 +1559,7 @@
   title = {A Verified, Efficient Embedding of a Verifiable Assembly Language},
   author = {Fromherz, Aymeric and Giannarakis, Nick and Hawblitzel, Chris and Parno, Bryan and Rastogi, Aseem and Swamy, Nikhil},
   pages = {63:1-63:30},
-  articleno = 63,
+  eid = 63,
   numpages = 30,
   doi = {10.1145/3290376},
   acmid = 3290376,
@@ -1598,7 +1659,7 @@
   venue = {Grenoble, France},
   eventdate = {2009-10-15},
   pages = {5:1--5:9},
-  articleno = 5,
+  eid = 5,
   numpages = 9,
   doi = {10.1145/1631716.1631721},
   acmid = 1631721,
@@ -1758,23 +1819,6 @@
   location={Amsterdam, The Netherlands}
 }
 
-@InProceedings{arthur2015union,
-  title="Machine-Checked Verification of the Correctness and Amortized Complexity of an Efficient Union-Find Implementation",
-  author="Chargu\'eraud, Arthur and Pottier, Fran\c{c}ois",
-  editor="Urban, Christian and Zhang, Xingyuan",
-  booktitle="Interactive Theorem Proving",
-  booktitleaddon="Proceedings of the 6th International Conference",
-  shorttitle="ITP 2015",
-  date="2015-08-19",
-  pages="137-153",
-  isbn="978-3-319-22102-1",
-  publisher="Springer International Publishing",
-  address="Cham",
-  number=9236,
-  venue="Nanjing, China",
-  eventdate="2015-08-24/2015-08-27"
-}
-
 @inproceedings{chargueraud2011cfv,
   title = {Characteristic Formulae for the Verification of Imperative Programs},
   author = {Chargu\'eraud, Arthur},
@@ -1806,7 +1850,7 @@
   title = {{ISA} Semantics for {ARMv8-A}, {RISC-V}, and {CHERI-MIPS}},
   author = {Armstrong, Alasdair and Bauereiss, Thomas and Campbell, Brian and Reid, Alastair and Gray, Kathryn E. and Norton, Robert M. and Mundkur, Prashanth and Wassell, Mark and French, Jon and Pulte, Christopher and Flur, Shaked and Stark, Ian and Krishnaswami, Neel and Sewell, Peter},
   pages = {71:1-71:31},
-  articleno = 71,
+  eid = 71,
   numpages = 31,
   acmid = 3290384,
   doi = {10.1145/3290384},
@@ -2257,7 +2301,7 @@
   eventdate = {2016-10-01/2016-10-07},
   venue = {Pittsburgh, Pennsylvania},
   pages = {1-10},
-  articleno = 16,
+  eid = 16,
   isbn = {9781450344821},
   doi = {10.1145/2968455.2968505},
   xdata = {acm}
@@ -2587,7 +2631,7 @@
   doi = {10.1145/3360572},
   journal = {Proc. ACM Program. Lang.},
   month = oct,
-  articleno = 146,
+  eid = 146,
   numpages = 24,
   keywords = {stack unwinding, DWARF, debugging}
 }
@@ -2732,7 +2776,7 @@
   doi = {10.1145/3360563},
   journal = {Proc. ACM Program. Lang.},
   month = oct,
-  articleno = {137},
+  eid = 137,
   numpages = {31},
   keywords = {Binary Analysis, Abstract Interpretation, Path Sampling, Data Dependence}
 }
@@ -2851,40 +2895,19 @@
   xdata = {acm}
 }
 
-@incollection{harrison2014itp,
-  title = {History of Interactive Theorem Proving},
-  author = {John Harrison and Josef Urban and Freek Wiedijk},
-  editor = {Jörg H. Siekmann},
-  series = {Handbook of the History of Logic},
-  booktitle = {Computational Logic},
-  publisher = {North-Holland},
-  volume = 9,
-  pages = {135-214},
-  year = 2014,
-  issn = {1874-5857},
-  doi = {https://doi.org/10.1016/B978-0-444-51624-4.50004-6}
-}
-
-@article{maric2015itp,
-  title = {A Survey of Interactive Theorem Proving},
-  author = {Filip Marić},
-  editor = {Silvia Ghilezan},
-  number = 26,
-  volume = 18,
-  date = 2015,
-  journaltitle = {Zbornik Radova},
-  publisher = {Mathematical Institute of the Serbian Academy of Sciences and Arts},
-  address = {Belgrade, Serbia},
-  issn = {0351-9406},
-  pages = {173-223},
-  url = {http://elib.mi.sanu.ac.rs/files/journals/zr/26/zrn26p173-223.pdf}
-}
-
-@report{schopf2018itp,
-  title = {History of Interactive Theorem Proving},
-  author = {Sch\"opf, Jonas and Widauer, Stephanie},
-  date = {2018-02-26},
-  institution = {Universit\"at Inssbruck},
-  type = resreport,
-  url = {http://cl-informatik.uibk.ac.at/teaching/ws17/vs/reports/SWreport.pdf}
+@article{lampson1992authentication,
+  author = {Lampson, Butler and Abadi, Mart\'in and Burrows, Michael and Wobber, Edward},
+  title = {Authentication in Distributed Systems: Theory and Practice},
+  year = {1992},
+  issue_date = {Nov. 1992},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {10},
+  number = {4},
+  issn = {0734-2071},
+  doi = {10.1145/138873.138874},
+  journal = {ACM Trans. Comput. Syst.},
+  month = {nov},
+  pages = {265–310},
+  numpages = {46}
 }

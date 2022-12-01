@@ -15,5 +15,5 @@ cleanext:
 	# Due to how latexmk works, even when certain extensions are listed for
 	# removal, not all actually are (for glstex it's the ones that don't fit the
 	# tex file being built, for bbl I don't know why).
-	rm *.glstex
-	rm *.bbl
+	rm -f *.glstex
+	rm -f *.bbl
