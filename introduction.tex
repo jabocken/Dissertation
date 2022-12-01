@@ -53,6 +53,19 @@ It can even depend on what compiler options are in use, including the level of o
 \end{example}
 On the flip side, this also means that such low-level properties can be precisely stated even if they are not evident on the source level.
 
+One such property is \emph{memory preservation}.
+This property indicates that the memory a program writes to is bounded by prespecified regions.
+To the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify that property.
+
+Another property is \emph{actual control flow of the binary}.
+The control flow one can identify from source code is not necessarily the actual control flow a program will take due to the binary-source semantic gap.
+When a program does something not intended by the programmer due to the lack of abstraction enforcements on a low level, it exhibits ``weird'' behavior \autocite{shapiro2013weird,dullien2017weird}.
+In order to have a sound and thus \emph{overapproximative}
+-+
+While there are many tools that perform this sort of control flow recovery, they all have some limitations.
+They may operate in an unsound fashion are not overapproximative.
+Alternatively, they may only cover certain types of control flow in a binary.
+
 \section{Motivation}
 \todo{further paragraph on memory preservation?}
 
@@ -64,7 +77,7 @@ These potential applications are described in more detail below.
 
 \subsubsection{Security}
 Unbounded memory usage can lead to vulnerabilities such as buffer overflows and data leakage.
-One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}.
+One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}\index{heartbleed}.
 Heartbleed was caused by a lack of bounds checking on a string array requested as output as part of a ``heartbeat'' message.
 This, combined with a custom memory manager that also had no security protections against out-of-bounds memory accesses, lead to potential leakage of sensitive data such as passwords and encryption keys.
 Memory preservation could serve as a foundation for formal security analyses that could be used to expose vulnerabilities involving malicious writes.
@@ -104,14 +117,78 @@ Usage of shared memory can result in \emph{unintended} interactions between thre
 Memory preservation could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
 
 \subsection{Control Flow Recovery}
+Every analysis or transformation technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
+That is, raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
+Typically, binary lifting requires answering \emph{at least} the following base questions:
+\begin{description}
+  \item[Disassembly] \emph{What} instructions are potentially executed within the binary?
+  \item[Control Flow Recovery] \emph{In what order} can these instructions be executed?
+\end{description}
+Those two questions are mutually recursive; they cannot be isolated from each other.
+Once analyzing more than one instruction, disassembly\footnote{%
+  Specifically for our case, recursive descent disassembly.%
+}
+requires knowledge of which instructions are to be executed next.
+Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
+Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \ac{rop}.}
 
-\section{Challenges}
-The properties described above both suffer from the problem of undecidability\index{undecidable}.
+\todo{flesh out the uses mentioned above and move the discussion of difficulty down into challenges}
 
-\subsection{Memory Preservation}
-\todo{anything more here?}
+\section{Challenges}\label{challenges}
+As mentioned, the biggest challenge in assembly-level verification specifically is the semantic gap between compiled and source code.
+Higher-level languages hide details of their implementation behind layers of abstraction, which makes it easier to reason about them on that level but makes it harder to formally show equivalence with the semantics of lower abstraction levels.
+Meanwhile, assembly languages are close to direct interfaces with their corresponding \acp{isa}, having minimal differences in semantics but not being easy to reason about directly.
 
-\subsection{Control Flow Recovery}
+As an example of the semantic gap, assembly code generally lacks the structured control flow found in languages on a higher level of abstraction.
+Instead, all control flow on the assembly level is performed using conditional or unconditional branches (jumps and calls), either to a predetermined location or to a calculated label.
+Some lower-level languages such as C\index{C} do allow for direct jumps to explicit labels via statements such as \lstinline|goto|, or even indirect versions with stored labels via compiler extensions.
+However, modern best practices discourage the usage of those constructs as they do indeed complicate control flow analysis and can often be transformed into a more structured style without significant code growth.
+
+A further example would be source code containing division operations being compiled to run on a processor that does not provide hardware division.
+Many \acp{cpu} for embedded systems lack support for hardware division as efficient division algorithms require a lot of logic gates.
+For such processors, runtime division must be calculated using an algorithm implemented in assembly rather than via a specific instruction.
+
+\subsection{Types and Memory}
+Even the basic concept of numeric types is minimal on the assembly level, much less more abstract data types like lists or trees.
+While most \acp{isa} do have different instructions for signed versus unsigned integer arithmetic, as well as distinct instructions for floating-point operations, individual values in memory have no type.
+They are merely lists of bytes starting at some address, and even the number of bytes and the address to read from or write to can be variable.
+A user could go as far as supplying the result of a floating-point computation as the address operand of an instruction that loads or stores memory.
+Historically, there have been computers that associated type information with memory locations in hardware \autocite{feustel1972rice,feustel1973advantages,thornton2008rice}, but we do not have that luxury on typical modern systems.
+Tagged memory could also serve that purpose \todo{citations?}, but it is not yet widely in use.
+
+An additional issue with assembly, and the one most significant for the memory-related properties in this dissertation, lies in the simplicity of the user-exposed memory model.
+The vast majority of high-level, structured languages with scoping, including C\index{C}, prevent functions from accessing the local variables of other functions without significant effort or explicit notation or argument passing, but the same is not true for assembly.
+An assembly instruction that operates on memory can refer to any address within range of its address operands even if it is not supposed to.
+Most modern runtime libraries and \acp{os} do provide some form of memory protection, but those generally rely on runtime detection of invalid accesses for unallocated memory and are often not fine-grained enough for reasoning about individual stack frames or local variables.
+They also do not work if the program manually manages its memory in large chunks, as happened with Heartbleed\index{heartbleed}.
+Any verification effort that wishes to reason about low-level memory properties therefore must provide its own abstractions and assumptions on layout.
+
+\subsection{Disassembly}\label{challenges-disassembly}
+Moving to an approach that integrates disassembly into the process further requires gaining insight into program control flow.
+As mentioned, because of its potentially dynamic nature, determining what instruction(s) to disassemble next requires knowing how the program reached the instruction it just disassembled.
+This results in the so-called ``chicken-and-egg'' problem of disassembly \autocite{schwartz2002disassembly}.
+At a minimum, a disassembler that supports calls and indirect jump traversals needs to ensure the following properties:
+\begin{description}
+  \item[Return Address Integrity] Functions cannot overwrite their own return addresses.\footnote{assuming a standard structured programming methodology} This requires the absence of stack overflows or similar inappropriate stack manipulation.
+  \item[Bounded Control Flow] All indirect, or non-immediate, branches transfer control flow to fixed, statically-calculated, bounded sets of addresses. This requires the ability to determine upper bounds on array indices.
+  \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \ac{abi} considers non-volatile.
+\end{description}
+
+% CHALLENGE: EXCEPTIONAL CONTROL FLOW
+This problem is exacerbated when dealing with \emph{exceptional control flow}, such as that induced by the \Cpp{} \lstinline|throw| and \lstinline|try|\dots\lstinline|catch| statements.
+Such control flow does not respect traditional structured programming paradigms.
+Modern methods also require a significant amount of auxiliary knowledge that may not be directly present in the compiled code itself.
+Debugging builds have it to provide support for stack unwinding during debugging.
+Programs with structured exception handling require it even when debugging information is excluded.
+
+Furthermore, that control flow is \emph{dynamic}.
+The target of a throw, which instruction address the process of unwinding ends up at, is decided at runtime by standard library functions \autocite{cxxEhAbi}.
+These include \inlineasm{__cxa_throw}, \inlineasm{__cxa_begin_catch},
+and \inlineasm{__cxa_end_catch}.
+Determining that target requires knowing the current function call stack, the current caught exception stack, and various other details stored within the exception objects themselves.
+It also requires modeling the semantics of those library functions.
+Notably, that need for the current call stack means control flow recovery with exceptions is inherently \emph{interprocedural}.
+Interprocedural analysis is challenging, as one cannot simply isolate individual functions or blocks of machine code but must instead consider the binary as a whole.
 
 \section{Contributions}
 This dissertation consists of four main contributions.
@@ -131,9 +208,15 @@ Meanwhile, the second approach, syntax-driven verification, has a significantly 
 Symbolic execution is also more efficient in the control-flow-driven approach as it more closely follows the structure of the function's \ac{cfg}.
 In contrast, the syntax-driven approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
-We also provide two approaches to control flow recovery: \ac{hg} generation and \ac{eicfg} generation.
+We also provide two trustworthy approaches to sound control flow recovery: \ac{hg} generation and \ac{eicfg} generation.
 Both approaches target binaries specifically rather than relying on external tools for assembly extraction.
+They also both provide \emph{assurance} that \emph{if} unannotated output is produced, that output is a sound representation of the binary.
+To the best of our knowledge, at the time of writing,
+\emph{no existing works could provide scalable, formally overapproximative
+  assurance between a binary and its lifted representation}.
+
 However, they differ in their degree of scalability, their degree of context-sensitivity, and the sort of information lifted for their individual \acp{cfg}.
+For example, the \ac{hg} work generates proofs of output assurance while the \ac{eicfg} work uses informal proofs combined with concrete validation of its \ac{eh}-related abstract transition rules.
 
 \subsection{Control-Flow-Driven Memory Preservation}
 This methodology for verification of memory preservation relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
@@ -214,11 +297,8 @@ Every vertex/state contains enough information to prove that its outgoing edges 
 even in the case of non-trivial control flow.
 This includes indirect branches, jump tables, and function calls/returns.
 
-Importantly, an overapproximative relation will model not just the ``normal'' behavior, but also any ``weird'' behavior \autocite{shapiro2013weird,dullien2017weird}.
-Normal behavior consists of the intended and expected control flow of the program.
-``Weird'' behavior is a term of art indicating control-flow transfers not intended by the program designers.
-In particular, it is behavior that results because of lower-level semantics providing more functionality than more restricted higher-level abstractions.
-\Cref{hg-example} below contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
+% todo: this can probably just go in the HG part
+Moving on, \cref{hg-example} contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
 That example exhibits a \iac{rop} gadget that depends on whether two pointers alias or not, with the aliasing case resulting in an unexpected \inlineasm{ret} being executed. That aspect of the example is discussed further in \cref{weird}.
 
 The soundness of this overapproximation is shown with pen-and-paper proofs in \cref{ch:hg-formulation}.
@@ -319,6 +399,9 @@ We have scoped it out due to its complicated nature.
 
 \todo{targeting \gls{arch} assembly in all cases; targeting the System~V \ac{abi} and \ac{elf} binaries for the second half of the contributions}
 
+Due to the aforementioned undecidability, none of these approaches are universal.
+They may fail on certain functions/binaries or need to annotate certain instructions with unsoundness warnings.
+
 \subsection{Memory Preservation}
 
 \subsection{Control Flow Recovery}
@@ -342,152 +425,17 @@ We also do not model \lstinline{setjmp}/\lstinline{longjmp}, as they do not inte
 
 \chapter{Introduction (old)}
 
-To fill the former gap, we introduce the property of \emph{memory preservation}.
-This property indicates that the memory a program writes to is bounded by prespecified regions.
-To the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify that property.
-
-\todo\dots
+% memory preservation result summary
 For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
 
+% cf recovery result summary
 To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
 First, a more general \emph{\ac{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\acp{eicfg}}.
 We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
 \Ac{hg} lifting does have a similar work, Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it is targeted at a different set of applications from our work and we found it to be rather limited practically.
 Both methods are fully automated and scalable, with the \ac{hg} work lifting \glssymbol{inst-total-lifted} instructions and the \ac{eicfg} work \glssymbol{eicfg-inst-total}.
 
-\section{Motivation for Trustworthy Control Flow Lifting}
-Every analysis or transformation technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
-That is, raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
-Typically, binary lifting requires answering \emph{at least} the following base questions:
-\begin{description}
-  \item[Disassembly] \emph{What} instructions are potentially executed within the binary?
-  \item[Control Flow Recovery] \emph{In what order} can these instructions be executed?
-\end{description}
-Those two questions are mutually recursive; they cannot be isolated from each other.
-Once analyzing more than one instruction, disassembly\footnote{%
-  Specifically for our case, recursive descent disassembly.%
-}
-requires knowledge of which instructions are to be executed next.
-Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
-Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \ac{rop}.}
-
-Overapproximativity is necessary in order to provide complete coverage.
-Alternate methods of uncovering exceptional state generally rely on unsound heuristics
-
-Interprocedural analysis is necessary as exception handling is inherently interprocedural. While
-
-\todo{needs more work}
-
-The information necessary for stack unwinding can be embedded within a program.
-Debugging builds have it to provide support for unwinding during debugging.
-Programs with structured exception handling require it even when debugging information is excluded.
-However, even when such information exists, its support for interprocedural
-analysis applies solely to the act of stack unwinding.
-Investigating the behavior of exception handling in such scenarios requires the implementation of handling for multiple runtime library functions.
-These include \inlineasm{__cxa_throw}, \inlineasm{__cxa_begin_catch},
-and \inlineasm{__cxa_end_catch}.
-
-\section{Challenges}
-Here are some basic challenges for the concepts presented by my dissertation.
-
-\subsection{Control Flow Lifting}\label{challenges-cfg}
-Because of the potentially dynamic nature of a program's control flow, determining where to go next requires knowing how the program got there.
-This produces the ``chicken-and-egg'' problem of disassembly \autocite{schwartz2002disassembly}.
-At a minimum, a disassembler that supports call and indirect jump traversal needs to ensure the following properties:
-\begin{description}
-  \item[Return Address Integrity] Functions cannot overwrite their own return addresses.\footnote{assuming a standard structured programming methodology} This requires the absence of stack overflows or similar inappropriate stack manipulation.
-  \item[Bounded Control Flow] All indirect, or non-immediate, branches transfer control flow to fixed, statically-calculated, bounded sets of addresses. This requires the ability to determine upper bounds on array indices.
-  \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \ac{abi} considers non-volatile.
-\end{description}
-
-% CHALLENGE: EXCEPTIONAL CONTROL FLOW
-This problem is exacerbated when dealing with \emph{exceptional control flow}, induced mainly by the \Cpp{} \lstinline{throw} and \lstinline{catch} statements.
-The target of a throw, i.e., to which instruction address the control flow is transferred after execution of a throw statement, is decided dynamically at runtime.
-It is based on, among other things, the current call/return stack, the current caught exception stack, and low-level information pertaining to rethrows and catch statements.
-Moreover, it inherently requires \emph{interprocedural} analysis, as the function call history is relevant for assessing the throws’ targets.
-Interprocedural analysis is challenging, as one cannot simply isolate a function and do analysis, but most consider the binary as a whole.
-
---------------------------------
-
-Static program analysis is a difficult task, made even harder when the well-established
-stack-based function call paradigm is not respected. In particular,
-exception handling often includes violations of program control flow not visible
-from within the source code or binary of the program.
-Even structured exception handling, such as that provided by \Cpp,
-requires information external to the binary in order to properly analyze it.
-Modeling this information requires, at a minimum,
-semantics for the library functions that perform the exception handling process.
-
-\section{Assembly-Level Verification}
-
-\subsection{Challenges}\label{asm_challenges}
-The biggest challenge in assembly-level verification is
-the semantic gap between compiled and source code.
-Higher-level languages hide details of their implementation
-behind layers of abstraction, which makes it easier to reason about them on that level
-but makes it harder to formally show equivalence with the semantics of
-to lower abstraction levels.
-Meanwhile, assembly languages are close to direct interfaces
-with their corresponding \acp{isa},
-having minimal differences in semantics but not being easy to reason about directly.
-
-As an example of the semantic gap,
-assembly code generally lacks the structured control flow
-found in languages on a higher level of extraction.
-Instead, all control flow on the assembly level is performed using conditional
-or unconditional branches, either to a predetermined location or to a calculated label.
-
-A further example would be source code containing division operations
-being compiled to run on a processor that does not provide hardware division.
-Many \acp{cpu} for embedded systems lack support for hardware division
-as efficient division algorithms require a lot of circuitry.
-For such processors, runtime division must be calculated using an algorithm
-implemented in assembly rather than via a specific instruction.
-
-Even the basic concept of numeric types is minimal on the assembly level,
-much less more abstract data types like lists or trees.
-While most \acp{isa} do have different instructions
-for signed versus unsigned integer arithmetic,
-as well as distinct instructions for floating-point operations,
-individual values in memory have no type.
-They are merely lists of bytes starting at some address,
-and even the number of bytes and the address to read from or write to can be variable.
-A user could go as far as supplying the result of a floating-point computation
-as the address operand of an instruction that loads or stores memory.
-Historically, there have been computers that associated type information
-with memory locations in hardware
-\autocite{feustel1972rice,feustel1973advantages,thornton2008rice},
-but we do not have that luxury on typical modern systems.
-
-An additional issue with assembly,
-and the one most significant for this dissertation,
-lies in the simplicity of the user-exposed memory model.
-The vast majority of high-level, structured languages with scoping
-prevent function calls from accessing the local variables of other calls
-without significant effort or explicit notation, but the same is not true for assembly.
-An assembly instruction that operates on memory can refer to any
-address within range of its address operands even if it is not supposed to.
-Most modern \acp{isa} do provide some form of memory protection,
-but those generally rely on runtime detection of invalid accesses
-and are often not fine-grained enough for reasoning about individual stack frames
-or local variables.
-Any verification effort that wishes to reason about low-level memory properties
-must provide its own abstractions and assumptions on layout.
-
 \section{Control Flow Recovery}
-To account for some of those issues\todo{rewording!}, we here provide an approach to \emph{trustworthy binary lifting} that simultaneously performs
-\begin{enumerate}
-  \item disassembly,
-  \item control-flow recovery, and
-  \item generation of proofs that are required to provide \emph{assurance} of the output.
-\end{enumerate}
-Due to the aforementioned undecidability, our approach is not universal.
-It may fail on certain binaries or need to annotate certain instructions
-with unsoundness warnings.
-However, our approach provides \emph{assurance} that \emph{if} unannotated output is produced, that output is a sound representation of the binary.
-To the best of our knowledge, at the time of writing,
-\emph{no existing work could provide scalable, formally overapproximative
-  assurance between a binary and its lifted representation.}
 
 \subsection{Assumptions and Scope}\label{hg-assumptions}
 In order to reduce state space complexity and provide scalability, we did reduce our complexity.

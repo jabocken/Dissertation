@@ -87,9 +87,9 @@ To deal with that issue, we have provided \acp{eicfg} and a tool for generating 
 They do this by including nodes and edges for exceptional control flow while limiting the abstract state to only that domain required for exceptional info.
 
 Our abstract transition relation for exceptional control flow has been informally shown to overapproximate the concrete versions of those edges.
-This was achieved by fuzzing many of the individual functions of the \Cpp\ exception handling \ac{abi}.
+This was achieved by fuzzing many of the individual functions of the \Cpp\ \ac{eh} \ac{abi}.
 The functions tested were each executed with \gls{fuzz-count} test cases generated with arbitrary exceptional state.
-This approach also helped identify edge cases that were not specified in the \Cpp\ exception handling \ac{abi} \cite{cxxEhAbi}.
+This approach also helped identify edge cases that were not specified in the \Cpp\ \ac{eh} \ac{abi} \cite{cxxEhAbi}.
 
 Furthermore, we have applied our \ac{eicfg} generator to \totalbins\ real-world programs and libraries.
 We identified \uniquethrows\ unique throws and were able to trace each one's exceptional control flow: \caughtthrows\ were potentially caught while \uncaughtthrows\ had no identified potential for being caught.

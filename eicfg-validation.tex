@@ -62,14 +62,14 @@ The test harness then verifies that the abstracted end state parts match the exp
 \section{Results}\label{eicfg-results}
 Here we present the results of generating \acp{eicfg} for \totalbins\ real-world programs and libraries.
 These programs and libraries have a variety of sizes and use cases and were sourced from places like GitHub and the \ac{apt} repositories.
-\exceptbins\ of these programs utilize \Cpp\ exception handling (several despite the lack of exception handling tables) while all have been compiled for the \gls{arch} \ac{isa} and the System~V \ac{abi}.
+\exceptbins\ of these programs utilize \Cpp\ \ac{eh} (several despite the lack of \ac{eh} tables) while all have been compiled for the \gls{arch} \ac{isa} and the System~V \ac{abi}.
 %\strippedbins\ of the binaries were stripped of symbols.
 The \ac{eicfg} generation for each binary was executed on a server with four Intel\textregistered\ Xeon\textregistered\ E7-8890v4 \acp{cpu} (for a total of 96 cores) running at \SI{2.20}{\giga\hertz} with \SI{252}{\gibi\byte} of \ac{ram}.
 The server's \ac{os} was Ubuntu 18.04.5 \ac{lts}.
 Execution timeout was set to eight hours. % for openmw thing but also some of the Xen
 Some of the numbers were collected with the assistance of GNU\index{GNU} parallel \autocite{Tange2011a}.
 
-A summary of the results comparing \ac{eicfg} generation to our tool with exception handling disabled can be found in \cref{tbl:binaries}.
+A summary of the results comparing \ac{eicfg} generation to our tool with \ac{eh} disabled can be found in \cref{tbl:binaries}.
 That baseline version functions as our regular tool but without the unwinding-related abstract transition rules from \cref{fig:unwind,fig:step-rules1,fig:step-rules2}. Specifically, the throw-related functions (such as \inlineasm{__cxa_throw}) were treated as terminating functions while the catch-related functions (such as \inlineasm{__cxa_begin_catch}) were treated as no-ops.
 25 of the binaries we analyzed are not included in the table as the tool ran out of of memory or timed out due to state space explosion, in one case just in the baseline version.
 

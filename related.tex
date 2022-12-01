@@ -742,8 +742,8 @@ Even works that hijack runtime control flow to force specific path execution mus
   \end{threeparttable}
 \end{table}
 
-While Binary Ninja \autocite{binary-ninja}, IDA Pro \autocite{ida}, and Ghidra \autocite{ghidra} all support some form of intraprocedural exception handling analysis, they can only perform interprocedural exception handling analysis dynamically via debugging.
-For example, Ghidra provides default, platform-dependent analyses that extract try-catch block information and other landing pad information for exception handling.
+While Binary Ninja \autocite{binary-ninja}, IDA Pro \autocite{ida}, and Ghidra \autocite{ghidra} all support some form of intraprocedural \ac{eh} analysis, they can only perform interprocedural \ac{eh} analysis dynamically via debugging.
+For example, Ghidra provides default, platform-dependent analyses that extract try-catch block information and other landing pad information for \ac{eh}.
 However, it does not provide unwinding control flow in the generated block/call graphs, only cross-references for the $\landingpadtable$.
 This means that it can identify landing pads and analyze the code following them, but it cannot identify the exceptions that will reach them.
 Its built-in debugger that can perform unwinding is also ultimately just an interface to external, dynamic debugging tools such as \ac{gdb} or \href{https://lldb.llvm.org/}{LLDB},
@@ -755,7 +755,7 @@ This allows providing intraprocedural exception analysis by generating the LLVM 
 However, it does not perform interprocedural analysis as it merely lifts to LLVM bitcode rather than tracing the execution of exceptions from throw site to landing pad.
 
 RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-LLVM, though it also supports C output.
-However, we could not find information about its ability, or lack thereof, to deal with exception handling. We also were unable to successfully apply it to programs using \Cpp\ exceptions.
+However, we could not find information about its ability, or lack thereof, to deal with \ac{eh}. We also were unable to successfully apply it to programs using \Cpp\ exceptions.
 Furthermore, even when it does work it suffers from accuracy issues and produces non-semantically-equivalent results, many of which do not even run \autocite{foudree2019regsym}.
 As with McSema, it does not perfom interprocedural exception analysis.
 
