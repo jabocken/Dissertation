@@ -292,12 +292,13 @@ each edge forms a \emph{Hoare triple}\index{Hoare!triple}
 Every vertex/state contains enough information to prove that its outgoing edges are overapproximative,
 even in the case of non-trivial control flow.
 This includes indirect branches, jump tables, and function calls/returns.
+The soundness of this overapproximation is ultimately shown with pen-and-paper proofs in \cref{ch:hg-formulation}.
 
-% todo: this can probably just go in the HG part
-Moving on, \cref{hg-example} contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
+Additionally, \cref{hg-example} contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
 That example exhibits a \iac{rop} gadget that depends on whether two pointers alias or not, with the aliasing case resulting in an unexpected \inlineasm{ret} being executed. That aspect of the example is discussed further in \cref{weird}.
 
-The soundness of this overapproximation is shown with pen-and-paper proofs in \cref{ch:hg-formulation}.
+\Ac{hg} lifting does have a similar work, Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it is targeted at a different set of applications from our work and we found it to be rather limited practically.
+Our work is also much more scalable, with the \ac{hg} work lifting \glssymbol{inst-total-lifted} instructions.
 
 \subsection{Exceptional Interprocedural Control Flow Recovery}
 The final contribution of this dissertation is a tool for static, interprocedural, automated \Cpp-exception-aware%
@@ -428,8 +429,6 @@ For example, we have shown that we can formally verify approximately \num{12000}
 To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
 First, a more general \emph{\ac{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\acp{eicfg}}.
 We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
-\Ac{hg} lifting does have a similar work, Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it is targeted at a different set of applications from our work and we found it to be rather limited practically.
-Both methods are fully automated and scalable, with the \ac{hg} work lifting \glssymbol{inst-total-lifted} instructions and the \ac{eicfg} work \glssymbol{eicfg-inst-total}.
 
 \section{Control Flow Recovery}
 
