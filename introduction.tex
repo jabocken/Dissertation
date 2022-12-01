@@ -60,16 +60,12 @@ To the best of our knowledge, there are currently no state-of-the-art methods th
 Another property is \emph{actual control flow of the binary}.
 The control flow one can identify from source code is not necessarily the actual control flow a program will take due to the binary-source semantic gap.
 When a program does something not intended by the programmer due to the lack of abstraction enforcements on a low level, it exhibits ``weird'' behavior \autocite{shapiro2013weird,dullien2017weird}.
-In order to have a sound and thus \emph{overapproximative}
--+
+In order to have a sound and thus \emph{overapproximative} approach, both ``normal'' and weird edges must be covered.
 While there are many tools that perform this sort of control flow recovery, they all have some limitations.
 They may operate in an unsound fashion are not overapproximative.
 Alternatively, they may only cover certain types of control flow in a binary.
 
 \section{Motivation}
-\todo{further paragraph on memory preservation?}
-
-\todo{paragraph(?) on control flow recovery?}
 
 \subsection{Memory Preservation}
 As a basic property, memory preservation has potential applications to security analyses, compositional reasoning, and even concurrency.
