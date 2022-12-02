@@ -113,8 +113,29 @@ Usage of shared memory can result in \emph{unintended} interactions between thre
 Memory preservation could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
 
 \subsection{Control Flow Recovery}
-Every analysis or transformation technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
-That is, raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
+The process of control flow recovery is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
+This is because all of those applications, discussed below, require \emph{lifting} raw unstructured data to a form that allows reasoning over behavior and semantics.
+
+\subsubsection{Decompilation}
+The process of \emph{decompilation} is the reverse of compilation \todo{citation?}.
+It attempts to \emph{lift} low-level code, possibly even machine code, to a higher-level representation.
+That representation can be something like LLVM\index{LLVM} \ac{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \Cpp\ \autocite{fokin2011smartdec}.
+\Ac{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well.
+Those decompilers generally target a source language such as \gls{c}.
+
+Decompilation is most important to the field of \emph{reverse engineering}.
+This often occurs when source code is not available, either because of legacy programs where the source has been lost or because of proprietary restrictions.
+Under ideal circumstances, it produces human- or machine-readable source code that can be used to intuit the behavior and semantics of the program being reverse engineered.
+It also allows for easier reconstruction or modification of the program, if that is the intent.
+
+\subsubsection{Verification}
+binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}
+
+\subsubsection{Patching}
+binary patching \autocite{wartell2012binary,kim2017revarm}
+
+\subsubsection{Security}
+\autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}
 
 \section{Challenges}\label{challenges}
 As mentioned, the biggest challenge in assembly-level verification specifically is the semantic gap between compiled and source code.
@@ -123,7 +144,7 @@ Meanwhile, assembly languages are close to direct interfaces with their correspo
 
 As an example of the semantic gap, assembly code generally lacks the structured control flow found in languages on a higher level of abstraction.
 Instead, all control flow on the assembly level is performed using conditional or unconditional branches (jumps and calls), either to a predetermined location or to a calculated label.
-Some lower-level languages such as C\index{C} do allow for direct jumps to explicit labels via statements such as \lstinline|goto|, or even indirect versions with stored labels via compiler extensions.
+Some lower-level languages such as \gls{c} do allow for direct jumps to explicit labels via statements such as \lstinline|goto|, or even indirect versions with stored labels via compiler extensions.
 However, modern best practices discourage the usage of those constructs as they do indeed complicate control flow analysis and can often be transformed into a more structured style without significant code growth.
 
 A further example would be source code containing division operations being compiled to run on a processor that does not provide hardware division.
@@ -139,7 +160,7 @@ Historically, there have been computers that associated type information with me
 Tagged memory could also serve that purpose \todo{citations?}, but it is not yet widely in use.
 
 An additional issue with assembly, and the one most significant for the memory-related properties in this dissertation, lies in the simplicity of the user-exposed memory model.
-The vast majority of high-level, structured languages with scoping, including C\index{C}, prevent functions from accessing the local variables of other functions without significant effort or explicit notation or argument passing, but the same is not true for assembly.
+The vast majority of high-level, structured languages with scoping, including \gls{c}, prevent functions from accessing the local variables of other functions without significant effort or explicit notation or argument passing, but the same is not true for assembly.
 An assembly instruction that operates on memory can refer to any address within range of its address operands even if it is not supposed to.
 Most modern runtime libraries and \acp{os} do provide some form of memory protection, but those generally rely on runtime detection of invalid accesses for unallocated memory and are often not fine-grained enough for reasoning about individual stack frames or local variables.
 They also do not work if the program manually manages its memory in large chunks, as happened with Heartbleed\index{heartbleed}.

@@ -618,7 +618,9 @@ The key differences between our lifting work and existing disassemblers are that
 The cost of our approach is that it may fail, whereas other approaches are able to guess or use heuristics to continue.
 
 \subsection{Binary Decompilation}\label{related-decompilation}
-A decompiler takes a binary as input and lifts to a higher-level representation.
+\todo{some more!: 10.1002/spe.4380250706, 10.1109/SANER.2018.8330222}
+
+As mentioned in the introduction to this dissertation, a decompiler takes a binary or other low-level source as input and lifts it to a higher-level representation.
 RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to C code.
 SmartDec \autocite{fokin2011smartdec} lifts to \Cpp{} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
 Ramblr \autocite{wang2017ramblr} lifts a binary to \emph{symbolized} assembly, where concrete addresses are replaced with symbolic labels.
