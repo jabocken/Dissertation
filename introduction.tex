@@ -254,6 +254,16 @@ They also both provide \emph{assurance} that \emph{if} unannotated output is pro
 However, they differ in their degree of scalability, their degree of context-sensitivity, and the sort of information lifted for their individual \acp{cfg}.
 For example, the \ac{hg} work generates proofs of output assurance while the \ac{eicfg} work uses informal proofs combined with concrete validation of its \ac{eh}-related abstract transition rules.
 
+\begin{comment}
+  % memory preservation result summary
+  For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
+
+  % cf recovery result summary
+  To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
+  First, a more general \emph{\ac{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\acp{eicfg}}.
+  We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
+\end{comment}
+
 \subsection{Control-Flow-Driven Memory Preservation}
 This methodology for verification of memory preservation relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
 In order to reason about the \acp{cfg}, they are annotated with predicates on state at specific locations, between which the program will be symbolically executed.
@@ -444,17 +454,3 @@ After that, the control-flow-driven approach to verification of memory preservat
 I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
 followed by the interprocedural, exception-aware \ac{cfg} extractor in \cref{eicfg}.
 Finally, this dissertation wraps up in \cref{ch:conclusions}.
-
-
-
-
-
-\chapter{Introduction (old)}
-
-% memory preservation result summary
-For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
-
-% cf recovery result summary
-To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
-First, a more general \emph{\ac{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\acp{eicfg}}.
-We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
