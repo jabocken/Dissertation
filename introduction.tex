@@ -115,21 +115,6 @@ Memory preservation could be adapted to show the absence of such interactions by
 \subsection{Control Flow Recovery}
 Every analysis or transformation technique applicable to binaries, whether it be decompilation \autocite{brumley2013native,dinaburg2014mcsema}, binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}, binary patching \autocite{wartell2012binary,kim2017revarm}, or security analysis \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}, needs to start with some form of binary \emph{lifting}.
 That is, raw unstructured data needs to be lifted to a form where one can reason over behavior and semantics.
-Typically, binary lifting requires answering \emph{at least} the following base questions:
-\begin{description}
-  \item[Disassembly] \emph{What} instructions are potentially executed within the binary?
-  \item[Control Flow Recovery] \emph{In what order} can these instructions be executed?
-\end{description}
-Those two questions are mutually recursive; they cannot be isolated from each other.
-Once analyzing more than one instruction, disassembly\footnote{%
-  Specifically for our case, recursive descent disassembly.%
-}
-requires knowledge of which instructions are to be executed next.
-Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
-Thrown exceptions and callbacks supplied to external functions are also non-obvious sources of control flow.
-Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \ac{rop}.}
-
-\todo{flesh out the uses mentioned above and move the discussion of difficulty down into challenges}
 
 \section{Challenges}\label{challenges}
 As mentioned, the biggest challenge in assembly-level verification specifically is the semantic gap between compiled and source code.
@@ -160,13 +145,30 @@ Most modern runtime libraries and \acp{os} do provide some form of memory protec
 They also do not work if the program manually manages its memory in large chunks, as happened with Heartbleed\index{heartbleed}.
 Any verification effort that wishes to reason about low-level memory properties therefore must provide its own abstractions and assumptions on layout.
 
-\subsection{Disassembly}\label{challenges-disassembly}
-Moving to an approach that integrates disassembly into the process further requires gaining insight into program control flow.
-As mentioned, because of its potentially dynamic nature, determining what instruction(s) to disassemble next requires knowing how the program reached the instruction it just disassembled.
-This results in the so-called ``chicken-and-egg'' problem of disassembly \autocite{schwartz2002disassembly}.
-At a minimum, a disassembler that supports calls and indirect jump traversals needs to ensure the following properties:
+\subsection{Disassembly and Binary Lifting}\label{challenges-disassembly}
+Moving to an approach that integrates disassembly into the process of extracting information from a low-level program further requires gaining insight into program control flow.
+Typically, such binary lifting requires answering \emph{at least} the following base questions:
+\begin{itemize}
+  \item \emph{Which} instructions are potentially executed within the binary?
+  \item \emph{In what order} can those instructions be executed?
+\end{itemize}
+Those two questions are mutually recursive; they cannot be isolated from each other.
+This is the ``chicken-and-egg'' problem of disassembly \autocite{schwartz2002disassembly}.
+
+Put another way, once disassembling more than one instruction, disassembly%
+\footnote{Specifically for our case, recursive descent disassembly.}
+requires knowledge of which instructions are to be disassembled next.
+However, in order to determine those instructions, you have to know how the one that was just disassembled was reached!
+In other words, you need the \emph{control flow} of the program.
+Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
+Thrown exceptions and callbacks supplied to external functions are also non-obvious sources of control flow.
+Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \ac{rop}.}
+
+At a minimum, a disassembler that supports calls and indirect jump traversals in a structured setting needs to ensure the following properties:
 \begin{description}
-  \item[Return Address Integrity] Functions cannot overwrite their own return addresses.\footnote{assuming a standard structured programming methodology} This requires the absence of stack overflows or similar inappropriate stack manipulation.
+  \item[Return Address Integrity] Functions cannot overwrite their own return addresses, or if they do the target must be known.%
+  \footnote{assuming a standard structured programming methodology}
+  This requires the absence of stack overflows or similar inappropriate stack manipulation.
   \item[Bounded Control Flow] All indirect, or non-immediate, branches transfer control flow to fixed, statically-calculated, bounded sets of addresses. This requires the ability to determine upper bounds on array indices.
   \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \ac{abi} considers non-volatile.
 \end{description}
