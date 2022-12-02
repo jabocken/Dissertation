@@ -19,19 +19,18 @@ Moving to a more categorical representation for the second half of my dissertati
 First, a set of works covering the lifting or extraction of control flow and state machines in \cref{related-lifting}, followed by a coverage of tools that perform exception analysis in \cref{related-exceptions} (with bottom-up approaches summarized in \cref{tab:eicfg-comparisons}).
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
-\Textcite{clutterbuck1988verification} performed formal verification
-of assembly programs using SPACE-8080, a verifiable,
-analyzable subset of the Intel 8080 \ac{isa}.
-Their work used \ac{spade}, a set of software tools for ``the efficient development,
-analysis, and formal verification of high-integrity software''.
+\Textcite{clutterbuck1986validation,clutterbuck1988verification} performed formal verification
+of assembly programs using SPACE-8080\index{SPACE-8080}, a verifiable,
+analyzable subset of the Intel 8080\index{Intel!8080} \ac{isa}.
+Their work used \ac{spade} \autocite{carre1986spade}, a set of software tools for ``the efficient development, analysis, and formal verification of high-integrity software''.
 \Ac{spade} provides \iac{fdl} for modeling programs
 in order to analyze and formally verify them
 using \iac{vcg}, proof checker, and symbolic interpreter.
-They used automatic translation to model their SPACE-8080 program
+They used automatic translation to model their SPACE-8080\index{SPACE-8080} program
 in \ac{fdl}, and their verification methodology used the same kind of
 annotated control-flow analysis as our control-flow-driven approach
 presented in \cref{ch:cfg} does, with additional assertions on state to avoid errors
-and stronger conditions in order to prove functinoa correctness.
+and stronger conditions in order to prove functional correctness.
 They also provided \emph{rewrite rules} that described the semantics
 of the formal models in \ac{spade}. Unlike the work detailed in \cref{ch:cfg}, however,
 they only covered a single 33-instruction function
@@ -398,9 +397,7 @@ more difficulty if they had started with a kernel
 not explicitly designed to be verified.
 
 \section{Non-Formal Static Analysis}\label{se:static_analysis}
-Non-formal static analysis of binary code for the detection of bugs
-has also been an active research field for decades
-\autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+As a reminder, non-formal static analysis of binary code for the detection of bugs has also been an active research field for decades \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
 This section covers some of the projects in that field from the past twenty years.
 
 The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}

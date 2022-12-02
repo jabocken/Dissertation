@@ -148,12 +148,12 @@ For loops that have multiple exit points,
 based on which exit was taken as indicated by the \texttt{Break} identifier.
 
 Notably, the above data structure does not explicitly contain
-control flow statements such as \texttt{goto} or \texttt{throw/catch}.
-Unconditional jumps like \texttt{goto}s make code harder to reason about
+control flow statements such as \inlineasm|goto| or \inlineasm|throw|/\inlineasm|catch|.
+Unconditional jumps like \inlineasm|goto|s make code harder to reason about
 in a structured way and can be modeled by the existing syntactic constructs,
 while structured \ac{eh} as used in \Cpp\ is generally provided
 by external function calls%
-\index{exception handling!functions}
+\index{exception handling!function}
 (\cref{se:structured_exceptions}).
 \begin{example}
   \Cref{fig:ex_cf} provides an example of \ac{scf} extracted from \iac{cfg}.
@@ -1375,8 +1375,6 @@ but instead writes its result to a flag.
 Various other string-related instructions with the \texttt{rep} prefix are supported,
 however.
 
-Functions with \emph{recursion}, a minority in systems code, are also not supported
-as they are not well-suited to automation in this framework.
 The two recursive functions encountered in the analyzed Xen binaries
 both perform file-system-like tasks.
 Functions \lstinline|do_chmod| and \lstinline|do_ls|
@@ -1384,8 +1382,7 @@ are similar to the permission-setting \lstinline|chmod| utility
 and the directory-displaying \lstinline|ls|, respectively.
 
 The final category is functions whose \ac{scf} explodes.
-The issue can occur when the pattern in \cref{fig:ex_nonopt} shows up extensively
-or when while loops have multiple entry points.
+The issue can occur when the pattern in \cref{fig:ex_nonopt} shows up extensively or when while loops have multiple entry points.
 
 \Cref{func-counts} provides an overview of the verification effort.
 The table shows the absolute counts of functions verified
