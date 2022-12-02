@@ -149,9 +149,17 @@ It is also restricted specifically to insertion of code trampolines \todo{citati
 That is useful if program size and usage of additional functions is not a concern but may not help for more restrictive tasks.
 
 \subsubsection{Security}
-General security analysis also benefits from control flow information.
+General, non-formal security analysis also benefits from control flow information.
+Sometimes this is due to the tool targeting control flow itself \autocite{kruegel2005automating,davi2009dynamic}.
+At other times, it is because that information about control flow is necessary to reason over program behavior and semantics.
+For example, dead code removal, the elimination of code that is never executed, is sometimes used to lessen the attack surface of a program.
+However, knowing what code is dead requires reachability analysis, which inherently requires control flow.
 
-\autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}
+In fact, platforms for binary analysis often provide control flow recovery themselves \autocite{song2008bitblaze,wang2017angr}.
+Some even implement their own decompilation or use existing tools in order to simplify those analyses.
+This allows developers to focus on the actual analyses and not deal with all of the low-level details.
+However, that does require a deep understanding of what information can be abstracted away and what cannot.
+The choice of model for analysis, whether formal or informal, affects what properties of the concrete item can be analyzed.
 
 \section{Challenges}\label{challenges}
 As mentioned, the biggest challenge in assembly-level verification specifically is the semantic gap between compiled and source code.
