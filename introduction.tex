@@ -34,7 +34,7 @@ Even then, one must assume that the \ac{isa} in use has been correctly specified
 Ultimately, it is not possible to eliminate the \ac{tcb} completely.
 However, it is possible to \emph{reduce} it, and not just via the usage of non-mainstream compilers that can only handle a subset of programs for their given language.
 
-\section{Static Assembly and Binary Analysis}
+\section{Static Assembly and Binary Analysis}\label{static-analysis}
 As an alternative to top-down software analysis, the field of \emph{low-level analysis} has taken root in the research community.
 We focus here on \emph{static} assembly and binary analysis specifically.
 That is, analyzing programs ``offline'' with the usage of external tools rather than instrumenting or hooking into a running program.
@@ -120,7 +120,7 @@ This is because all of those applications, discussed below, require \emph{liftin
 The process of \emph{decompilation} is the reverse of compilation \todo{citation?}.
 It attempts to \emph{lift} low-level code, possibly even machine code, to a higher-level representation.
 That representation can be something like LLVM\index{LLVM} \ac{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \Cpp\ \autocite{fokin2011smartdec}.
-\Ac{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well.
+\Ac{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well, or are used to provide the control flow for one \autocite{mcsema}.
 Those decompilers generally target a source language such as \gls{c}.
 
 Decompilation is most important to the field of \emph{reverse engineering}.
@@ -129,12 +129,28 @@ Under ideal circumstances, it produces human- or machine-readable source code th
 It also allows for easier reconstruction or modification of the program, if that is the intent.
 
 \subsubsection{Verification}
-binary verification \autocite{goelphd,brumley2011bap,tan2015auspice}
+As seen later on in \cref{ch:cfg,ch:syntax}, control flow recovery is also very important for the process of verification.
+Many, if not all, binary verification efforts require an understanding of program control flow.
+Without in-depth control flow recovery, you end up with tools that cannot handle complex control flow such compiled \lstinline|switch| statements \autocite{myreen2008dil,tan2015auspice}.
+This is also evident in the aforementioned \namecrefs{ch:cfg}.
+
+Multiple verification efforts utilize the above-mentioned decompilation approach as well rather than directly validating or verifying assembly semantics.
+Generally they lift to \iac{ir} that is then verified \autocite{myreen2007hoare,myreen2012dil,brumley2011bap}.
+This allows for more abstraction, but does require a lot of groundwork.
 
 \subsubsection{Patching}
-binary patching \autocite{wartell2012binary,kim2017revarm}
+Non-trivial, smart binary patching or rewriting requires control flow information as well.
+If you are instrumenting binaries to dynamically randomize their own basic blocks, you cannot do so without knowing the bounds those blocks must abide by \autocite{wartell2012binary}.
+\autocite{,kim2017revarm}
+
+\Textcite{duck2020binary} did recently provide a way to patch binaries without control flow information.
+However, that work requires potentially inefficient program modification such as extra instruction padding to accomplish that task.
+It is also restricted specifically to insertion of code trampolines \todo{citation or glossary entry}.
+That is useful if program size and usage of additional functions is not a concern but may not help for more restrictive tasks.
 
 \subsubsection{Security}
+General security analysis also benefits from control flow information.
+
 \autocite{kruegel2005automating,song2008bitblaze,davi2009dynamic,wang2017angr}
 
 \section{Challenges}\label{challenges}

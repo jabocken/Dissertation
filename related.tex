@@ -292,7 +292,7 @@ PROSPER, at the assembly level.
 Separation kernels are similar to hypervisors,
 providing isolation for individual components of a system and ensuring
 only those components that are allowed to communicate do \autocite{rushby1981dvss}.
-Their methodology integrated HOL4 with \ac{bap}.
+Their methodology integrated HOL4 with \ac{bap} \autocite{brumley2011bap}.
 \Ac{bap} utilizes a custom intermediate language
 that provides an architecture-agnostic representation of machine instructions
 and their side effects.
@@ -397,7 +397,7 @@ more difficulty if they had started with a kernel
 not explicitly designed to be verified.
 
 \section{Non-Formal Static Analysis}\label{se:static_analysis}
-As a reminder, non-formal static analysis of binary code for the detection of bugs has also been an active research field for decades \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+As a reminder, non-formal static analysis of binary code for the detection of bugs has also been an active research field for decades \autocite{kruegel2005automating,wang2017angr}.
 This section covers some of the projects in that field from the past twenty years.
 
 The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
@@ -633,9 +633,9 @@ A key factor in decompilation approaches, and also in other approaches that aim 
 Our algorithm thus \emph{complements} these works.
 For example, McSema requires an external source of control flow information, which could be generated from our solution.
 
-For a more formal approach, we return to \ac{dil} \autocite{myreen2007hoare,myreen2012decompilation}.
+For a more formal approach, we return to \ac{dil} \autocite{myreen2007hoare,myreen2012dil}.
 However, \ac{dil} does not deal with indirect branching and \emph{assumes} that return addresses are not overwritten.
-In their own words, ``[its] heuristic is easily confused by computed branches'' \autocite{myreen2008decompilation}.
+In their own words, ``[its] heuristic is easily confused by computed branches'' \autocite{myreen2008dil}.
 In contrast, our \ac{hg} lifting approach supports various forms of indirect branches and can detect potentially-overwritten return addresses.
 
 \subsection{Relation to Binary Verification}\label{related-hg-verification}
