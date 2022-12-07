@@ -56,7 +56,7 @@ for approximately \SI{80}\percent\ of the instructions of the MC68020 microproce
 They implemented those semantics and mechanized their approach
 in \ac{nqthm}, a precursor to the theorem prover ACL2 \autocite{ACL2}.
 They then applied their mechanized reasoning to check functional correctness
-for a binary search, quicksort, a standard C string library, and others.
+for a binary search, quicksort, a standard \gls{c} string library, and others.
 These early efforts required significant interaction,
 as Yu and Boyer required over \num{19000}
 lines of manually written proof to verify approximately \num{900} assembly instructions.
@@ -167,7 +167,7 @@ They did what they could to remove sends over the \ac{can} bus
 and tried to focus on the speed signal from just one wheel rather than all four.
 Ultimately, they were able to reason about all three programs
 and prove both functional and non-functional properties of those programs.
-On average they covered around \num{700} lines of C or \num{2666} assembly instructions.
+On average they covered around \num{700} lines of \gls{c} or \num{2666} assembly instructions.
 \begin{remark}[Function Isolation in Our Works]
   The case study on HermitCore in \cref{se:cfg_application} did involve isolating the functions under test before compiling them and covered less instructions.
   By contrast, the analyzed Xen functions in \cref{se:xen} were handled without any modification whatsoever to the Xen build process and covered even more instructions.
@@ -190,7 +190,7 @@ Several years ago, \textcite{fromherz2019verified} embedded a subset
 of the \gls{arch} \ac{isa} in the functional, verification-oriented language
 F$^*$ \autocite{fstar}.
 This was done in order to prove commonly-used crytographic routines
-that mix C with assembly for performance reasons are secure from information leakage.
+that mix \gls{c} with assembly for performance reasons are secure from information leakage.
 The cryptographic routines they applied their work to were
 Poly1305-\ac{aes} \autocite{bernstein2005poly1305} and
 \ac{aes}-\ac{gcm} \autocite{dworkin2007recommendation}.
@@ -207,7 +207,7 @@ of their \ac{vcg}, and found that optimizing the \ac{smt} queries did improve pe
 significantly.
 
 Unlike our works in \cref{ch:cfg,ch:syntax}, the authors of this paper
-had to do extra reasoning to ensure the C and assembly code models were interoperable.
+had to do extra reasoning to ensure the \gls{c} and assembly code models were interoperable.
 As we operated directly on full assembly, we did not have to worry about
 that kind of interfacing. Both this work and the work presented in \cref{ch:syntax} used an explicit \ac{vcg},
 but ours was proven correct by its Isabelle/HOL definitions;
@@ -255,9 +255,9 @@ It was also used to produce a proof of correctness for a model of
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
 was the verification of the seL4 kernel \autocite{klein2009sel4,Klein_AEMSKH_14}.
-The seL4 project provides a microkernel written in formally proven correct C code.
-The tool AutoCorres is used for C code verification \autocite{greenaway2012bridging}.
-\Textcite{sewell2013tvv} verified a \emph{refinement relation} between the C source code
+The seL4 project provides a microkernel written in formally proven correct \gls{c} code.
+The tool AutoCorres is used for \gls{c} code verification \autocite{greenaway2012bridging}.
+\Textcite{sewell2013tvv} verified a \emph{refinement relation} between the \gls{c} source code
 and corresponding non-optimized and \lstinline|O2|-optimized \gls{arm} binaries.
 The major differences with respect to our work
 is that our methodology targets existing production code,
@@ -281,7 +281,7 @@ A similarity with our work was the usage of \gls{hoare-logic},
 while the difference is that we performed verification solely on the assembly level
 and with a more complex \ac{isa}.
 We ultimately handled over \num{14631} \gls{arch} instructions compared to their \num{60}.
-While they did handle \num{8000} lines of C as well,
+While they did handle \num{8000} lines of \gls{c} as well,
 that is still a higher-level language than \gls{arch} assembly.
 
 Targeting a similar case study as \cref{ch:syntax},
@@ -343,7 +343,7 @@ used by the seL4 project to reduce its \ac{tcb} \autocite{Klein_AEMSKH_14}.
 It is written in a subset of C
 called Clight \autocite{leroy:compcert,blazy2009clight},
 though it itself is able to handle most components of the C99 standard.
-The main difference between C and Clight is that Clight is \emph{pure};
+The main difference between \gls{c} and Clight is that Clight is \emph{pure};
 none of its operations have side effects. It also provides only one loop structure,
 an infinite loop that must be broken out of to exit.
 Clight has been mechanized in the Coq theorem prover with established
@@ -443,7 +443,7 @@ It even provides a bug database that can be used to keep track of its warnings
 throughout multiple iterations of development.
 
 A somewhat older tool, Splint \autocite{evans2002static} detects buffer overflows
-and similar potential security flaws in C code.
+and similar potential security flaws in \gls{c} code.
 Splint relies on annotated preconditions to derive postconditions
 based on the syntactic structure of the code.
 While their methodology is very similar to the formal technique of \gls{hoare-logic},
@@ -480,13 +480,13 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
       \makecell[l]{\num{2630} \acs{sloc}\\
         \num{935} \acs{sloc}} \\
-    Fromherz et al. & C/\gls{arch} & ATP+\acs*{vcg} & \acs{aes} funcs & \\
+    Fromherz et al. & \gls{c}/\gls{arch} & ATP+\acs*{vcg} & \acs{aes} funcs & \\
     \textbf{\Cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
     \textbf{\Cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
     Reid et al. & \acs*{asl} & MC+others & \gls{arm} \acp{isa} & \num{2209191}+ \acs{sloc} \\
-    Sewell et al. & C & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
-    Shi et al. & C/\gls{arm}[9] & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
+    Sewell et al. & \gls{c} & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
+    Shi et al. & \gls{c}/\gls{arm}[9] & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
     Dam et al. & \gls{arm}[v7] & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
     Baumann et al. & \gls{arm}[v8-A] & \acs*{atp}+UC & HAPSOC & \num{8000} \acs{sloc} \\
     Bevier et al. & PDP-11-like & \acs*{itp}+\acs*{tv} & Full system & 3k+ \acs{sloc}/insts \\
@@ -621,8 +621,8 @@ The cost of our approach is that it may fail, whereas other approaches are able 
 \todo{some more!: 10.1002/spe.4380250706, 10.1109/SANER.2018.8330222}
 
 As mentioned in the introduction to this dissertation, a decompiler takes a binary or other low-level source as input and lifts it to a higher-level representation.
-RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to C code.
-SmartDec \autocite{fokin2011smartdec} lifts to \Cpp{} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
+RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to \gls{c} code.
+SmartDec \autocite{fokin2011smartdec} lifts to \gls{cpp} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
 Ramblr \autocite{wang2017ramblr} lifts a binary to \emph{symbolized} assembly, where concrete addresses are replaced with symbolic labels.
 CodeSurfer/\gls{x86} \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}
 provides a graphical interface for lifting binaries to an intermediate representation and interactively analyzing them.
@@ -705,7 +705,7 @@ Its implementation has a severe impact on the validity of the inferred state mac
 In contrast, our disassembly approach does not require such manual effort.
 
 \section{Exception Handling Analysis}\label{related-exceptions}
-The two main approaches to analyzing exceptional behavior for \Cpp\ programs, and behavioral program analysis in general, are bottom-up and top-down.
+The two main approaches to analyzing exceptional behavior for \gls{cpp} programs, and behavioral program analysis in general, are bottom-up and top-down.
 Bottom-up tools include decompilers and disassemblers, as well as this work.
 Top-down tools focus on analysis of source code or other higher-level representations.
 
@@ -753,8 +753,8 @@ McSema \autocite{mcsema} is back too! It is relevant because its decompilation p
 This allows providing intraprocedural exception analysis by generating the LLVM representation for exception landing pads \autocite{mcsema-exceptions}.
 However, it does not perform interprocedural analysis as it merely lifts to LLVM bitcode rather than tracing the execution of exceptions from throw site to landing pad.
 
-RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-LLVM, though it also supports C output.
-However, we could not find information about its ability, or lack thereof, to deal with \ac{eh}. We also were unable to successfully apply it to programs using \Cpp\ exceptions.
+RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-LLVM, though it also supports \gls{c} output.
+However, we could not find information about its ability, or lack thereof, to deal with \ac{eh}. We also were unable to successfully apply it to programs using \gls{cpp} exceptions.
 Furthermore, even when it does work it suffers from accuracy issues and produces non-semantically-equivalent results, many of which do not even run \autocite{foudree2019regsym}.
 As with McSema, it does not perfom interprocedural exception analysis.
 
@@ -762,11 +762,11 @@ As with McSema, it does not perfom interprocedural exception analysis.
 By contrast, there are tools that analyze exceptions from the source-code side.
 This prevents the analysis of legacy code without source but allows for better static analysis during development, or even formal proofs of correctness of the exceptional semantics.
 
-\Textcite{hutton2004compiling} provided basic formal semantics for source-level \Cpp-like exceptions.
+\Textcite{hutton2004compiling} provided basic formal semantics for source-level \gls{cpp}-like exceptions.
 They accompanied this with a compiler for a small language with exceptions and a proof of correctness of that compilation.
 This is different from our approach as we do not aim to verify the correctness of exceptional behavior due to our lack of ground truth (source code or some program specification).
 
-\Textcite{prabhu2011interprocedural} provide source-level generation of \acp{iecfg} for \Cpp\ exceptions.
+\Textcite{prabhu2011interprocedural} provide source-level generation of \acp{iecfg} for \gls{cpp} exceptions.
 These \acp{iecfg} are much like our \acp{eicfg}, but for source code.
 Unlike our work, however, \acp{iecfg} are used to \emph{eliminate} exceptions when compiling to a binary to make static analysis easier.
 They cannot be used to analyze already-compiled programs with exceptions.

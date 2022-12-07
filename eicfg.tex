@@ -22,7 +22,7 @@ More complex predicates can consist of logical expressions such as $\mathasm{CF}
 Higher-level predicates can have clauses such as $\mathasm{rax}=0$ or $\mathasm{DWORD PTR [rdi]}<5$.
 
 However, traditional \acp{cfg} produced by existing static analysis tools lack information on interprocedural indirect control flow.
-This includes stack unwinding due to exception throwing, try-catch handling, and \Cpp-style object cleanup.
+This includes stack unwinding due to exception throwing, try-catch handling, and \gls{cpp}-style object cleanup.
 This information is not present because their analyses do not model the semantics of throw operations, even when static try-catch information is available.
 
 A summarized reproduction of the interprocedural control flow graph
@@ -71,7 +71,7 @@ We have verified that this holds for more complicated programs as well (some of 
 
 \section{\acsp*{eicfg}}\label{sec:eicfg}
 Therefore, we produce \iac{eicfg}, which augments a normal \ac{cfg} with edges produced by \lstinline|try|, \lstinline|catch|, and \lstinline|throw| behavior.
-Specifically, it contains the edges for control flow produced by the execution of the compiled form of the \Cpp{} \lstinline|throw| command.
+Specifically, it contains the edges for control flow produced by the execution of the compiled form of the \gls{cpp} \lstinline|throw| command.
 These additional edges are the dotted blue ones in \cref{fig:ghidra-example}.
 We also illustrate the edges for standard interprocedural control flow as dashed red ones.
 

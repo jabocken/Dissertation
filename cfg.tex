@@ -450,7 +450,7 @@ and shows why those are difficult to reason about.
 \subsection{Non-recursive Loop Example: \texttt{pow2}}\label{sse:pow2_example}
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
-The assembly code was obtained by compiling a C program containing the function
+The assembly code was obtained by compiling a \gls{c} program containing the function
 with \ac{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
 mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
@@ -571,7 +571,7 @@ Expressed in recursive form, that definition is:
     1 & \text{if }n = 0
   \end{cases}
 \end{equation}
-The C equivalent of that function is shown in \cref{factorial-c}.
+The \gls{c} equivalent of that function is shown in \cref{factorial-c}.
 \begin{lstlisting}[
   language=C,
   gobble=2,

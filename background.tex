@@ -638,12 +638,12 @@ and must not contain any other control flow instructions
 \subsection{Tail Call Optimization}
 Tail call%
 \index{tail call optimization}
-optimization, implemented in most major C and \Cpp\ compilers, is a technique
+optimization, implemented in most major \gls{c} and \gls{cpp} compilers, is a technique
 for converting recursive functions into loop-based ones that only use
 a set number of stack frames.
 Unfortunately, that can only be applied to functions that fit the requirements
 for proper tail calls \autocite{probst2001proper},
-as imperative languages like C were not designed with such features in mind.
+as imperative languages like \gls{c} were not designed with such features in mind.
 The technique also supports optimizing non-recursive tail calls, however,
 and that has a lower bar.
 
@@ -655,7 +655,7 @@ and that has a lower bar.
 \subsection{Stack Unwinding}
 
 % While the \acs* looks nice in place it actually produces the acronym link in the table of contents as part of the main section link, which is not ideal. That wouldn't even be an issue if the links were colored differently though, can I adjust those to be purple somehow?
-\subsection{The \texorpdfstring\Cpp{C++} \acs*{abi}}
+\subsection{The \texorpdfstring\gls{cpp}{C++} \acs*{abi}}
 
 \subsubsection{Concrete Structures}
 
@@ -677,4 +677,4 @@ AMD64\index{ABI!AMD64} \ac{abi}
 as well as some general details on assembly.
 Finally, it covered the process of structured \ac{eh}%
 \index{structured!exception handling}.
-Specifically, structured \ac{eh} as utilized by the \Cpp\ \ac{abi}.
+Specifically, structured \ac{eh} as utilized by the \gls{cpp} \ac{abi}.

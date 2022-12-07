@@ -17,7 +17,7 @@ While type pointers and exception specifications exist within the \acp{lsda} as 
 % I did try to get things working but the implementation was buggy in some edge cases and properly doing type matching requires some other work.
 % Plus there's a combination with the typeinfo indices that needs work.
 
-Thrown exceptions in \Cpp\ can be caught by catch blocks.
+Thrown exceptions in \gls{cpp} can be caught by catch blocks.
 Individual stack frames may require cleanup during the process of unwinding as well.
 The addresses of those catch blocks and cleanup routines are called landing pads.
 To accomplish reaching those addresses during unwinding, we require a \emph{landing pad table}.

@@ -151,7 +151,7 @@ Notably, the above data structure does not explicitly contain
 control flow statements such as \inlineasm|goto| or \inlineasm|throw|/\inlineasm|catch|.
 Unconditional jumps like \inlineasm|goto|s make code harder to reason about
 in a structured way and can be modeled by the existing syntactic constructs,
-while structured \ac{eh} as used in \Cpp\ is generally provided
+while structured \ac{eh} as used in \gls{cpp} is generally provided
 by external function calls%
 \index{exception handling!function}
 (\cref{se:structured_exceptions}).
@@ -252,7 +252,7 @@ There are two situations where basic block duplication occurs,
 one less common than the other.
 The less common situation is when loop having multiple entry points,
 which can occur in situations that involve less-structured control flow,
-such as a C program that jumps into a loop using \texttt{goto}.
+such as a \gls{c} program that jumps into a loop using \texttt{goto}.
 Such situations are relatively uncommon, even in optimized code.
 If it does happen, the entire loop must be duplicated.
 The more common situation, by contrast, involves complex conditional branching
