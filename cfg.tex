@@ -1,4 +1,4 @@
-\chapter{Control-Flow-Driven Verification}\label{ch:cfg}
+\chapter{Floyd-Style Verification}\label{ch:cfg}
 The memory usage analysis approach presented in this chapter
 provides a Floyd-style methodology featuring annotations on specific instructions.
 It is designed for the proving of memory preservation%
@@ -8,7 +8,7 @@ That property ensures that only documented regions of memory are modified;%
 \index{memory!region}
 anything outside of those regions remains unchanged.
 
-This control-flow-driven verification
+This Floyd-style verification
 can be applied to functions with loops and subcalls,
 including directly-recursive calls.
 It can be used to prove the absence of common memory-related issues,
@@ -108,7 +108,7 @@ The work is still not trivial, however.
     \draw[transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
     \draw[transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
-  \caption{Overview of control-flow-driven memory preservation verification}\label{fig:cfg_overview}
+  \caption{Overview of Floyd-style memory usage verification}\label{fig:cfg_overview}
 \end{figure}
 
 \section{Formal Definitions}\label{se:cfg_defs}
@@ -188,8 +188,8 @@ Breaking up symbolic execution of loops is one method of resolving those issues.
 With the right annotations,
 it is possible to only need to symbolically execute one iteration per loop.
 This eliminates the above-mentioned loop issues.
-That breaking up of loops can be accomplished using a control-flow-based approach
-akin to Floyd verification \autocite{floyd1967assigning}.%
+That breaking up of loops can be accomplished using our control-flow-based approach
+akin to the aforementioned Floyd verification \autocite{floyd1967assigning}.%
 \index{Floyd!verification}
 A state predicate that can be shown to hold for every iteration of a loop
 at some instruction within that loop will function as a \emph{loop invariant},%

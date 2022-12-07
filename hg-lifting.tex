@@ -1,7 +1,7 @@
 \chapter{Lattice-Based Formal Lifting and Hoare Graphs}\label{ch:hg-lifting}
 \acreset{hg} % for now
 \todo{gls entry for (binary) lifting?}
-The previous works in this dissertation provided ways of lifting binaries to some abstract representation using \ac{cfg}-based and syntax-based methodologies.
+The previous works in this dissertation provided ways of lifting binaries to some abstract representation using Floyd-style and Hoare-style methodologies.
 While the second method was an improvement on the first in terms of efficiency, automation, and coverage, there was plenty of room for improvement.
 Loops still required manual effort to deal with, memory regions that potentially aliased were not supported, and both recursion and indirect branches were scoped out.
 Furthermore, our \acp{scf} were susceptible to explosion, resulting in significant overheads for certain functions.
@@ -10,7 +10,7 @@ Finally, that work still relied on assembly dumps and assumed programs could not
 
 To deal with those issues, we introduce the concept of \emph{\acp{hg}}.
 These \acp{hg} return to \iac{cfg}-style analysis, but with significant improvements.
-First, the analysis itself is fully automated, much like the syntax-guided approach.
+First, the analysis itself is fully automated, much like the Hoare-style approach.
 Furthermore, \acp{hg} provide structured, nondeterministic memory models to deal with the memory aliasing problem. \todo{want a citation?}
 Loops and similar control flow structures requiring fixed points utilize an improved stabilization process involving a \emph{join-semilattice}, which also assists in reducing state space explosion.
 Support for some indirect calls and jumps was added in the form of overapproximative jump table calculations.

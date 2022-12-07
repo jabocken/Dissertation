@@ -1,4 +1,4 @@
-\chapter{Introduction}
+\chapter{Introduction}\label{introduction}
 % topic/basic motivation
 Proving that a non-trivial program has no bugs is not an easy task.
 As technology continues to improve, software will continue to increase in complexity.
@@ -26,7 +26,9 @@ There are no single, fully-automated methods that are guaranteed to determine th
 One alternative is to use \ac{itp} \autocite{harrison2014itp,maric2015itp,schopf2018itp}.
 However, that does not scale well due to the amount of intricate user interaction and development involved.
 
-Furthermore, source-code-level formal verification requires a large \emph{\ac{tcb}}
+\section{Assembly and Binary Analysis}\label{intro-analysis}
+Source-code-level formal verification has another issue.
+It requires a large \emph{\ac{tcb}}
 % autocites requires manual sorting, darn
 \autocites[270]{lampson1992authentication}{orange-book}[13]{rushby1981dvss}.
 Without a verified compiler \autocite{leroy:compcert}, one must trust the semantics of a binary reflect its original source.
@@ -34,12 +36,15 @@ Even then, one must assume that the \ac{isa} in use has been correctly specified
 Ultimately, it is not possible to eliminate the \ac{tcb} completely.
 However, it is possible to \emph{reduce} it, and not just via the usage of non-mainstream compilers that can only handle a subset of programs for their given language.
 
-\section{Static Assembly and Binary Analysis}\label{static-analysis}
-As an alternative to top-down software analysis, the field of \emph{low-level analysis} has taken root in the research community.
-We focus here on \emph{static} assembly and binary analysis specifically.
+This is where the field of \emph{low-level analysis} comes into play.
+We focus here on assembly and binary analysis done \emph{statically}.
 That is, analyzing programs ``offline'' with the usage of external tools rather than instrumenting or hooking into a running program.
 This automatically eliminates the compiler and any optimizations it may do from the \ac{tcb}.
-It also allows for the analysis of legacy software and other programs where the source code is not available.
+
+An additional benefit is that it allows for the analysis of programs when source code is not available.
+This is useful for reverse engineers and legacy code maintainers.
+For example, when a contractor is hired to develop a program, it can often cost a lot more money to get the source code than just a compiled version of the program.
+In such cases it may be more cost-efficient to just get the compiled version and figure out how to patch it for updates locally.
 
 % basic context
 One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}, quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
@@ -55,20 +60,37 @@ It can even depend on what compiler options are in use, including the level of o
   As a further illustration, consider formulating a property that a function cannot overwrite its own return address (something done in this dissertation).
   Doing so requires knowledge of the layout of the stack, including the values of the stack and frame pointers, thus making it an \emph{assembly-level} or lower property.
 \end{example}
-On the flip side, this also means that such low-level properties can be precisely stated even if they are not evident on the source level.
-One such property is \emph{memory preservation}.
-This property indicates that the memory a program writes to is bounded by prespecified regions.
+On the flip side, this also means that \emph{such low-level properties can be precisely stated even if they are not evident on the source level}.
+One such property is \emph{memory usage}.
+This property indicates that the memory a program writes and reads (in other words, \emph{uses}) is bounded by prespecified regions.
 
-Another property is \emph{actual control flow of the binary}.
+Another property is \emph{actual control flow recovered from the binary}.
 The control flow one can identify from source code is not necessarily the actual control flow a program will take due to the binary-source semantic gap.
 When a program does something not intended by the programmer due to the lack of abstraction enforcements on a low level, it exhibits ``weird'' behavior \autocite{shapiro2013weird,dullien2017weird}.
-In order to have a sound and thus \emph{overapproximative} approach, both ``normal'' and weird edges must be covered.
+In order to have a sound and thus \emph{overapproximative} approach, both ``normal'' and weird edges must be recovered.
+
+The above two properties are the ones targeted in this dissertation.
+We provide two contributions for each, summarized here and expanded on later in this \namecref{introduction}.
+% Tried description environment but it didn't work right
+\paragraph{Memory Usage of Assembly Programs via Formal Verification}
+\begin{itemize}
+  \item A methodology based on Floyd-style verification \autocite{floyd1967assigning}.
+  It requires manual interaction during specification of the used memory regions as well as during proof completion.
+  \item A methodology based on Hoare-style verification \autocite{hoare1969axiomatic} that adds verification of \emph{return address integrity}.
+  The generation of assumptions made during verification as well as the proofs themselves are mostly automated.
+\end{itemize}
+
+\paragraph{Control Flow Recovery}
+\begin{itemize}
+  \item A methodology for formally verified disassembly and control flow recovery for binaries compiled from \gls{c} binaries.
+  \item A methodology or recovering \emph{exceptional}, \emph{interprocedural} control flow from \gls{cpp} binaries.
+\end{itemize}
 
 \section{Motivation}
-Now that we have introduced the concepts of memory preservation and control flow recovery, we here provide some motivation for their usage.
+Now that we have introduced the concepts of memory usage and control flow recovery, we here provide some motivation for their usage.
 
-\subsection{Memory Preservation}
-As a basic property, memory preservation has potential applications to security analyses, compositional reasoning, and even concurrency.
+\subsection{Memory Usage}
+As a basic property, memory usage has potential applications to security analyses, compositional reasoning, and even concurrency.
 These potential applications are described in more detail below.
 
 \subsubsection{Security}
@@ -76,19 +98,19 @@ Unbounded memory usage can lead to vulnerabilities such as buffer overflows and 
 One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}\index{heartbleed}.
 Heartbleed was caused by a lack of bounds checking on a string array requested as output as part of a ``heartbeat'' message.
 This, combined with a custom memory manager that also had no security protections against out-of-bounds memory accesses, lead to potential leakage of sensitive data such as passwords and encryption keys.
-Memory preservation could serve as a foundation for formal security analyses that could be used to expose vulnerabilities involving malicious writes.
+Memory usage analysis could serve as a foundation for formal security analyses that could be used to expose vulnerabilities involving malicious writes.
 
-Another important property that memory preservation could help with is \ac{cfi}.
+Another important property that memory usage could help with is \ac{cfi}.
 \Ac{cfi} ensures that software execution follows a predetermined \ac{cfg} using static analysis and runtime checks.
 At a minimum, this requires proving that a program cannot overwrite its stack pointer or that a called function does not overwrite local variables of its caller.
-In other words, it must be proven that the memory writes of a program are confined to prespecified regions, which is exactly what memory preservation states.
+In other words, it must be proven that the memory writes of a program are confined to prespecified regions, which is part of what the property of memory usage states.
 This can aid in avoiding \ac{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
 On a high level, it states that a group of users using a certain set of commands \emph{does not interfere} with another group of users if the first group's actions have no effect on what the second group of users can see
 \autocite{goguen1982security,rushby1992noninterference}.
 On a functional level, that could be interpreted as a statement that a non-interfering function does not modify any memory that is accessed by the function not being interfered with.
-Remember that memory preservation is specifically about showing that all memory outside of specific regions is not modified by the function or functions associated with those regions.
+Remember that memory usage is specifically about showing that all memory outside of specific regions is not modified or read by the function or functions associated with those regions.
 This means that proving the region sets for two functions are disjoint would essentially prove noninterference for those two functions.\footnote{%
   A weaker property would be showing that one of the functions does not write
   to any of the memory regions read by the other, but that would actually be harder to prove as we do not currently differentiate between regions that are read and written.%
@@ -101,8 +123,8 @@ Separation logic provides a \emph{frame rule} that supports such%
 decomposition \autocite{o2001local,reynolds2002separation,krebbers2017essence}.
 Put into words, the frame rule states that,
 if a program or program fragment can be confined to a certain part of a state, properties of that program or program fragment carry over when used as part of a larger system involving that state.
-Memory preservation allows for discharging the most involved part of the frame rule, at least in terms of individual assembly functions.
-That is, it shows that the memory preservation of those functions is constrained to specific regions in memory.
+Memory usage allows discharging the most involved part of the frame rule, at least in terms of individual assembly functions.
+That is, it shows that the operations on memory in those functions are constrained to specific regions.
 This could then serve as a basis for a larger proof effort over multi-function assembly programs.
 
 \subsubsection{Concurrency}
@@ -110,7 +132,7 @@ Reasoning over concurrent programs is complicated due to the potential interacti
 While there are ways of handling such interactions in a structured manner via kernel- or library-provided \ac{ipc}, one method commonly used for the sake of efficiency is \emph{shared memory}.
 Shared memory, in the context of this work, refers to threads or processes sharing either a full memory space or portions of one (via memory mapping) that can be written to and read from freely by any thread or process with access to it.
 Usage of shared memory can result in \emph{unintended} interactions between threads.
-Memory preservation could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
+Memory usage could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
 
 \subsection{Control Flow Recovery}
 The process of control flow recovery is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
@@ -119,7 +141,7 @@ This is because all of those applications, discussed below, require \emph{liftin
 \subsubsection{Decompilation}
 The process of \emph{decompilation} is the reverse of compilation \todo{citation?}.
 It attempts to \emph{lift} low-level code, possibly even machine code, to a higher-level representation.
-That representation can be something like LLVM\index{LLVM} \ac{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \Cpp\ \autocite{fokin2011smartdec}.
+That representation can be something like LLVM\index{LLVM} \ac{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \gls{cpp} \autocite{fokin2011smartdec}.
 \Ac{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well, or are used to provide the control flow for one \autocite{mcsema}.
 Those decompilers generally target a source language such as \gls{c}.
 
@@ -203,7 +225,7 @@ This is the ``chicken-and-egg'' problem of disassembly \autocite{schwartz2002dis
 Put another way, once disassembling more than one instruction, disassembly%
 \footnote{Specifically for our case, recursive descent disassembly.}
 requires knowledge of which instructions are to be disassembled next.
-However, in order to determine those instructions, you have to know how the one that was just disassembled was reached!
+However, in order to determine those instructions, you have to know how the one that was just disassembled was reached.
 In other words, you need the \emph{control flow} of the program.
 Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
 Thrown exceptions and callbacks supplied to external functions are also non-obvious sources of control flow.
@@ -219,7 +241,7 @@ At a minimum, a disassembler that supports calls and indirect jump traversals in
 \end{description}
 
 % CHALLENGE: EXCEPTIONAL CONTROL FLOW
-This problem is exacerbated when dealing with \emph{exceptional control flow}, such as that induced by the \Cpp{} \lstinline|throw| and \lstinline|try|\dots\lstinline|catch| statements.
+This problem is exacerbated when dealing with \emph{exceptional control flow}, such as that induced by the \gls{cpp} \lstinline|throw| and \lstinline|try|\dots\lstinline|catch| statements.
 Such control flow does not respect traditional structured programming paradigms.
 Modern methods also require a significant amount of auxiliary knowledge that may not be directly present in the compiled code itself.
 Debugging builds have it to provide support for stack unwinding during debugging.
@@ -235,11 +257,16 @@ Notably, that need for the current call stack means control flow recovery with e
 Interprocedural analysis is challenging, as one cannot simply isolate individual functions or blocks of machine code but must instead consider the binary as a whole.
 
 \section{State of the Art}
-To the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory preservation.
+To the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory usage as described here.
 Thus, the focus on the state of the art here involves general assembly verification as well as control flow recovery.
 
 \subsection{Assembly Verification}
-In 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
+% add back in citations if you lose the ability to use them in the acronym first use when switching to \gls
+An initial approach to formal binary lifting was provided by Myreen et.\ al.
+Known as \emph{\ac{dil}}, it converts machine code into \iac{hol} representation.
+This representation can then be used for verification efforts in a theorem prover.
+
+Then, in 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
 for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
 That work allows mechanized reasoning over compiled programs in the ACL2 theorem prover \autocite{ACL2}.
 
@@ -278,21 +305,21 @@ In contrast, our \ac{eicfg} generator does not.
 
 \section{Contributions}
 This dissertation consists of four main contributions.
-Two of them are formal approaches to per-function verification of the assembly-level property we call memory preservation.
+Two of them are formal approaches to per-function verification of the assembly-level property we call memory usage.
 The other two are methods for control flow recovery from binaries.
 
-The first two contributions are the memory preservation approaches: \emph{control-flow-driven} verification and \emph{syntax-driven} verification.
-Both approaches use some form of control-flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
+The first two contributions are the memory usage approaches: \emph{Floyd-style} verification and \emph{Hoare-style} verification.
+Both approaches use some form of control flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
 Those proofs are then loaded into the interactive theorem prover Isabelle/HOL%
 \index{Isabelle/HOL}
 and completed there.
 The proof strategies for both approaches involve \emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic}, albeit in different ways.
 
 The main differences between the two approaches lie in their degrees of automation, the strengths of their invariants, and how they perform symbolic execution.
-The first approach, control-flow-driven verification, requires significantly more user user input but has the potential for much stronger invariants.
-Meanwhile, the second approach, syntax-driven verification, has a significantly higher level of proof automation via the generation of \acp{fmuc} but is not as suited for stronger invariant production.
-Symbolic execution is also more efficient in the control-flow-driven approach as it more closely follows the structure of the function's \ac{cfg}.
-In contrast, the syntax-driven approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
+The first approach, Floyd-style verification, requires significantly more user user input but has the potential for much stronger invariants.
+Meanwhile, the second approach, Floyd-style verification, has a significantly higher level of proof automation via the generation of \acp{fmuc} but is not as suited for stronger invariant production.
+Symbolic execution is also more efficient in the Floyd-style approach as it more closely follows the structure of the function's \ac{cfg}.
+In contrast, the Hoare-style approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
 We also provide two trustworthy approaches to sound control flow recovery: \ac{hg} generation and \ac{eicfg} generation.
 Both approaches target binaries specifically rather than relying on external tools for assembly extraction.
@@ -302,7 +329,7 @@ However, they differ in their degree of scalability, their degree of context-sen
 For example, the \ac{hg} work generates proofs of output assurance while the \ac{eicfg} work uses informal proofs combined with concrete validation of its \ac{eh}-related abstract transition rules.
 
 \begin{comment}
-  % memory preservation result summary
+  % memory usage result summary
   For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
 
   % cf recovery result summary
@@ -311,19 +338,19 @@ For example, the \ac{hg} work generates proofs of output assurance while the \ac
   We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
 \end{comment}
 
-\subsection{Control-Flow-Driven Memory Preservation}
-This methodology for verification of memory preservation relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
+\subsection{Floyd-Style Memory Usage}
+This methodology for verification of memory usage relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
 In order to reason about the \acp{cfg}, they are annotated with predicates on state at specific locations, between which the program will be symbolically executed.
 While it is possible to reason about full functional correctness with this methodology, doing so takes a significant amount of effort due to the very low level of abstraction assembly provides, even with proven-correct formal simplification rules in Isabelle.
-This is why we focused on the aforementioned property of memory preservation.
+This is why we focused on the aforementioned property of memory usage.
 
-%Formal Definition of Memory Preservation
+%Formal Definition of Memory Usage
 In our model, memory usage is formulated as a set of \emph{regions} that start at some address and have a specific size in bytes.
 We do not currently differentiate between regions for writes and regions for reads, though doing so is a possibility in the future.
-Proving memory preservation requires performing symbolic execution on the underlying assembly instructions and showing that no regions beyond those needed to complete the proof are modified.
+Proving memory usage requires performing symbolic execution on the underlying assembly instructions and showing that no regions beyond those needed to complete the proof are modified.
 
-%Semi-Automated Formal Verification for Memory Preservation
-In order to reason about that memory usage so we can prove memory preservation in a theorem prover, the structure of the proof must be extracted from the assembly programs.
+%Semi-Automated Formal Verification for Memory Usage
+In order to reason about and complete proofs for memory usage in a theorem prover, the structure of the proof must be extracted from the assembly programs.
 For that purpose, our code generation tool for this work produces the skeleton of a proof based on the control flow of the analyzed functions.
 This is achieved using off-the-shelf tools.
 
@@ -333,7 +360,7 @@ The two steps remaining, however, are up to the user.
 Those steps are formulating any remaining memory regions necessary for successfully completing symbolic execution and fleshing out the annotations on state so that the symbolic execution of later blocks can continue from that of earlier ones.
 
 %Analysis of HermitCore Functions
-The control-flow-driven methodology was applied to \num{63} functions extracted from the HermitCore \autocite{lankes2016hermitcore} unikernel library \autocite{madhavapeddy2014unikernels}, covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
+This methodology was applied to \num{63} functions extracted from the HermitCore \autocite{lankes2016hermitcore} unikernel library \autocite{madhavapeddy2014unikernels}, covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
 Of those functions,~\num{18} had loops and~\num{33} had subcalls.
 Optimized variants were also verified for~\num{12} of the functions involved, resulting in \num{75} functions verified.
 There was even one function that featured recursion, which turned out to be the most challenging function to handle.
@@ -343,18 +370,18 @@ Formulating annotations that must hold for all loop iterations is not easy when 
 The closest related work to this, that of \textcite{matthews2006verification}, resulted in the verification of only \num{20} functions, with \num{631} assembly-level instructions in total.
 That is only \SI{26.67}{\percent} of the functions, or under \SI{26.5}{\percent} of the instructions, that we verified here.
 On top of that, the \acp{isa} they worked with are not as low-level as the \gls{arch} \ac{isa}.
-While they verified functional correctness instead of a weaker property like memory preservation, they also specifically reduced the complexity of the most complicated set of functions they verified by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
+While they verified functional correctness instead of a weaker property like memory usage, they also specifically reduced the complexity of the most complicated set of functions they verified by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
 
-\subsection{Syntax-Driven Memory Preservation}
-Taking our experiences from the control-flow-driven verification work into account, we chose a slightly different path for the other memory preservation work presented in this dissertation.
+\subsection{Hoare-Style Memory Usage}
+Taking our experiences from the Floyd-style verification work into account, we chose a slightly different path for the other memory usage work presented in this dissertation.
 This approach focuses on relating symbolically-executed basic blocks with a syntactic representation of program control flow.
 It also involves significantly more information generation than the previously-discussed approach.
 
-%Mostly-Automated Formal Verification for Memory Preservation
+%Mostly-Automated Formal Verification for Memory Usage
 Abstracting away from the concrete control flow to a more structured syntax increases the capacity for automation as it allows for the development of a set of \emph{Hoare rules}\index{Hoare!rule}
 over the syntactic control flow \autocite{hoare1969axiomatic}.
 By developing and using a set of such formal rules, we were able to restrict symbolic execution to the level of individual basic blocks and then use those rules to do the rest of the work.
-This greatly simplified our proof strategies for proving memory preservation.
+This greatly simplified our proof strategies for proving memory usage.
 
 The change in methodology alone would not have been enough, however.
 As stated, we also generate much more information.
@@ -398,7 +425,7 @@ That example exhibits a \iac{rop} gadget that depends on whether two pointers al
 Our work is also much more scalable, recovering the control flow for \glssymbol{inst-total-lifted} instructions.
 
 \subsection{Exceptional Interprocedural Control Flow Recovery}
-The final contribution of this dissertation is a tool for static, interprocedural, automated \Cpp-exception-aware%
+The final contribution of this dissertation is a tool for static, interprocedural, automated \gls{cpp}-exception-aware%
 \fturl{https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html} \todo{use citation instead}
 binary-level control flow analysis.
 That tool produces \emph{\acp{eicfg}} using an abstract interpretation-inspired \todo{citation}, recursive-descent methodology \todo{citation?}.
@@ -408,7 +435,7 @@ This includes exception objects currently allocated, number of uncaught exceptio
 
 % LIMITATIONS
 Symbol-stripped binaries are supported, but may not perform well if they contain unresolvable indirections or unmodeled callbacks.
-Non-\Cpp\ binaries, or \Cpp\ ones that do not use exception handling, are supported as well for flexibility.
+Non-\gls{cpp} binaries, or \gls{cpp} ones that do not use exception handling, are supported as well for flexibility.
 
 % VALIDATION
 As with the other contributions in this dissertation, the produced \acp{eicfg} are \emph{overapproximative}.
@@ -422,7 +449,7 @@ The only case where overapproximation is not guaranteed is when an indirection c
 Such cases are clearly marked in the \ac{eicfg}.
 
 % RESULTS
-We applied the tool to \totalbins\ off-the-shelf binaries compiled from \Cpp, C, and Fortran source code.
+We applied the tool to \totalbins\ off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and Fortran source code.
 %The implemented tool was able to reach an average of \coveredpercent\ of the instructions from the \satisfactorybins\ binaries we examined that had satisfactory analyses (for our purposes, \cutoffpercent).
 The implemented tool was able to identify \uniquethrows\ unique throws and successfully trace the exceptional control flow for every one of them.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
@@ -440,18 +467,18 @@ Completely eliminating semantics from the \ac{tcb} would require testing against
 Additionally, due to the aforementioned undecidability, none of these approaches are universal.
 They may fail on certain functions/binaries or need to annotate certain instructions with unsoundness warnings.
 
-\subsection{Memory Preservation}
-Due to the amount of user effort required, the memory-preservation-focused contributions in this dissertation only target individual functions or small collections of functions.
+\subsection{Memory Usage}
+Due to the amount of user effort required, the memory-usage-focused contributions in this dissertation only target individual functions or small collections of functions.
 They also require an external tool to generate the disassembly under test.
 This disassembly must be loaded into the theorem prover from an external file or manually copied for the \ac{cfg}-driven work.
-In the case of the syntax-driven work, it is directly copied into the generated theory files.
+In the case of the Hoare-style work, it is directly copied into the generated theory files.
 Neither approach has support for \ac{eh} either, though the relevant library functions can be modeled as no-ops or terminators as needed.
 For modeled functions, we assume
 
-Additionally, for the syntax-driven work specifically, we had to rule out \emph{recursion} as it was not a feature well-suited to automation in that framework.
+Additionally, for the Hoare-style work specifically, we had to rule out \emph{recursion} as it was not a feature well-suited to automation in that framework.
 Usage of \inlineasm|goto| is also not supported due to not easily fitting into \ac{scf} structure.
 On the plus side, recursion seems to be uncommon in systems code, as we encountered only one function with it in the case study for that contribution.
-Further limitations of the syntax-driven approach can be found in \cref{se:xen}.
+Further limitations of the Hoare-style approach can be found in \cref{se:xen}.
 
 \subsection{Control Flow Recovery}\label{cfr-assumptions}
 In order to reduce state space complexity, provide focus, and provide scalability when recovering control flow, we also:
@@ -482,22 +509,22 @@ We also do not model \lstinline|setjmp|/\lstinline|longjmp|, as they do not inte
 Of course, the \ac{hg} work does not support \ac{eh}, though it can still analyze binaries containing the corresponding library calls.
 
 \begin{comment}
-  Hiding for now as Dr.~Ravindran agreed this is kind of redundant with the contributions. Will discuss more with Freek.
+  Hiding for now as Dr.~Ravindran agreed this is kind of redundant with the contributions. Freek seems fine without it too.
   \section{Impact}
   \todo{What are the results? What can these contributions be used for? Seems kind of redundant with the contributions subsection though.}
 
-  \subsection{Memory Preservation}
+  \subsection{Memory Usage}
 
   \subsection{Control Flow Recovery}
 \end{comment}
 
 \section{Organization of Dissertation}
-Following this introduction in \cref{ch:related} is a review of tools and work related to the field of assembly-level verification, control-flow lifting, and software correctness in general.
+Following this introduction in \cref{ch:related} is a review of tools and work related to the field of assembly-level verification, control flow lifting, and software correctness in general.
 Domain-specific information necessary to understand the work and terminology can then be found in \cref{ch:background}.
 For an in-depth exploration of the basis for the symbolic execution engines and formal memory reasoning used by the contributions of this work,
 see \cref{ch:symbolic_execution}.
 
-After that, the control-flow-driven approach to verification of memory preservation mentioned above is presented in \cref{ch:cfg} while the syntax-driven approach is presented in \cref{ch:syntax}.
+After that, the Floyd-style approach to verification of memory usage mentioned above is presented in \cref{ch:cfg} while the Hoare-style approach is presented in \cref{ch:syntax}.
 I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
 followed by the interprocedural, exception-aware \ac{cfg} extractor in \cref{eicfg}.
 Finally, this dissertation wraps up in \cref{ch:conclusions}.

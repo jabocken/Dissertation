@@ -44,12 +44,6 @@
 % foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I don't know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I don't know if it has issues with XeLaTeX like the old version
 \acsetup{index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it's not. It also looks silly with single so just leaving out.
 
-%% C++ formatting similar to https://isocpp.org/wiki/faq/misc-environmental-issues#latex-macros but nicer and with the plus signs slightly more defined than \cpluspluslogo from the texlogos package
-\newcommand\Cppx{C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-1}{\textbf{++}}}}
-\newcommand\Cpp{\Cppx\index\Cppx} % wanted to use \WithSuffix for the first one (so \Cpp*) but I couldn't get it to work.
-%\usepackage{texlogos}
-%\newcommand\Cpp\cpluspluslogo
-
 \input{preamble/acronyms}
 \input{preamble/listingsetup}
 \input{preamble/numbers}
@@ -254,7 +248,7 @@
   \include{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
-  \acresetall % Any acronyms used inside the glossaries should start over here.
+  \acresetall % Any acronyms used inside the glossaries should start over here. Will replace with \gls version when switching acronyms over
 
   \part{Introductory Elements}
   \include{introduction}
@@ -262,7 +256,7 @@
   \include{background}
   \include{symbolic_execution}
 
-  \part{Memory Preservation}\label{memory-preservation}
+  \part{Methods of Analyzing Memory Usage}\label{memory-preservation}
   \include{cfg}
   \include{syntax}
 

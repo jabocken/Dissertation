@@ -19,7 +19,7 @@ Those methodologies are briefly revisited below.
 
 \section{Contributions Revisited}
 This dissertation presented two methods for proving memory preservation,
-control-flow-driven verification and syntax-driven verification.
+Floyd-style verification and Hoare-style verification.
 Both approaches rely on the same symbolic execution model and memory-related rewrite rules documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
 \begin{remark}[Hoare triple usage]
   Technically they also both use Hoare triples, but only \cref{ch:syntax} uses proper Hoare rules.
@@ -30,7 +30,7 @@ Both approaches rely on the same symbolic execution model and memory-related rew
 The former aims for general control flow in the absence of structured exceptions, while the latter is focused specifically on exception-related control flow.
 Neither can resolve all indirect branches, however.
 
-\subsection{Control-Flow-Driven Verification}
+\subsection{Floyd-Style Verification}
 This methodology uses a Floyd-style approach \autocite{floyd1967assigning}
 with automatically-selected cutpoints.
 It is very similar to the work of \textcite{matthews2006verification},
@@ -44,7 +44,7 @@ As a case study, we applied the methodology to \num{63} functions extracted from
 Each function was compiled without optimizations, but for \num{12} we also targeted the optimized versions.
 In total, more than \num{2379} assembly instructions were verified in this way.
 
-\subsection{Syntax-Driven Verification}
+\subsection{Hoare-Style Verification}
 Rather than using a more general \ac{cfg} to guide the verification,
 this methodology extracts more structured \acp{scf} from the function(s) under test.
 Such \iac{scf} is used as one of the proof ingredients for a generated \ac{fmuc}.

@@ -1,4 +1,4 @@
-\chapter{Syntax-Driven Verification}\label{ch:syntax}
+\chapter{Hoare-Style Verification}\label{ch:syntax}
 \acreset{fmuc} % just in case
 While the methodology presented in the previous chapter
 for verifying memory preservation works well, it is not ideal.
@@ -599,7 +599,7 @@ with its first argument being an instruction, its second being the size of the i
 and its third being the current state.
 The function returns the state after instruction execution,
 incrementing \inlineasm{rip} by the supplied size
-if it was not changed by a control-flow instruction instead.
+if it was not changed by a control flow instruction instead.
 
 % TODO: provide the detail of the $\exec$ function if time permits
 The $\execblock$ function is used internally by another transition relation,
@@ -676,7 +676,7 @@ it takes a syntactic representation of the program, an \ac{scf}.
 Unlike traditional Hoare triples, however,
 it also explicitly contains the set of memory regions,~$M$,
 that contain the areas of memory read and written by the program the \ac{scf} encodes.
-Syntactic structure is required because \gls{hoare-logic} is a syntax-guided approach.
+Syntactic structure is required because \gls{hoare-logic} is a Hoare-style approach.
 \begin{definition}[Hoare triple for \ac{scf}]\label{def:preserve}
   \begin{equation}
     \htriple*{P}f{Q}{M}\equiv
