@@ -1,4 +1,4 @@
-\title{Static Binary Analysis for Memory Properties and Lifting of Control Flow}
+\title{Low-Level Static Analysis for Memory Usage and Control Flow Recovery}
 \keywords{%
   Formal Verification,
   \glsentryname{arch} Assembly,
@@ -18,7 +18,7 @@
 \firstreader{Freek Verbeek}
 \secondreader{Patrick R.\ Schaumont}
 \thirdreader{Michael S.\ Hsiao}
-\fourthreader{\todo{Changhee Jung}}
+\fourthreader{Changhee Jung}
 
 \dedication{%
   This work is dedicated to \todo{family, friends/coworkers?}
@@ -39,37 +39,50 @@
 % The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
 \abstract{%
   % Motivation
-  Formal characterization of the memory used by a program is an important basis for security analyses and compositional verification.
-  Proving that that program only modifies memory within specified regions, the property of \emph{memory preservation}, is an important aspect of that.
-  However, accurately proving memory preservation requires operating on the assembly level due to the semantic gap between high-level languages and the code that processors actually execute.
-  Automated methods, such as model checking, would not be able to handle many interesting functions due to the undecidability of memory preservation.
+  Formal characterization of \emph{the memory used by a program} is an important basis for security analyses, compositional verification, and identification of noninterference.
+  However, soundly proving memory usage requires operating on the assembly level due to the semantic gap between high-level languages and the code that processors actually execute.
+  Automated methods, such as model checking, would not be able to handle many interesting functions due to the undecidability of memory usage.
   Fully-interactive methods do not scale well either.
-  The solution is to combine proof generation with interactive theorem proving in a \emph{semi-automated manner}: let some untrusted tool extract as much information as it can from the functions under test and then generate all the necessary proofs to be completed in a theorem prover.
-  Pivoting to a nondeterministic, structured approach to memory representation and pen-and-paper proofs enables full automation and efficiency.
-  Narrowing focus to a modeling of exception handling specifically then allows following previously-unknown paths.
 
+  Sound \emph{control flow recovery} is also important for binary decompilation, verification, patching, and security analysis.
+  It lifts raw unstructured data into a form that allows reasoning over behavior and semantics.
+  However, doing so requires interpreting the behavior of the program when indirect or dynamic control flow exists, creating a recursive dependency.
+
+  This dissertation tackles the first property with two contributions that perform proof generation combined with interactive theorem proving in a \emph{semi-automated manner}:
+  an untrusted tool extracts as much information as it can from the functions under test and then generates all the necessary proofs to be completed in a theorem prover.
+  The first, Floyd-style approach still requires significant manual effort but provides good flexibility and ensures no paths are analyzed more than once.
+  In contrast, the second, Hoare-style approach sacrifices some flexibility and path efficiency in order to achieve much greater automation.
+
+  The second property is handled by the second set of contributions of this dissertation.
+  These two contributions provide \emph{fully-automated} methods of recovering control flow from binaries even in the presence of indirection.
+  Indirect control flow that cannot be overapproximatively resolved is noted clearly in the resultant output.
+  In the first approach to control flow recovery, a nondeterministic, structured memory representation allows for general analysis of control flow in the presence of indirection, gaining scalability by utilizing context-free function analysis.
+  The second approach adds function context and abstract interpretation-inspired modeling of the \gls{cpp} \ac{eh} \ac{abi}, allowing for the discovery of previously-unknown paths while maintaining or increasing automation.%
+}
+\begin{comment}
   % First contribution
-  The first contribution of this dissertation is a control-flow-driven verification approach with mostly manual invariant specification at automatically-selected cutpoints.
+  The first memory usage contribution of this dissertation is a Floyd-style verification approach with mostly manual invariant specification at automatically-selected cutpoints.
   The memory regions and any additional preconditions must also be determined manually.
   This methodology was applied to \num{63} functions from the HermitCore unikernel library, including one recursive one, covering \num{2379} assembly instructions.
 
   % Second contribution
-  The second contribution of this dissertation is a syntax-driven verification approach with fully-automated invariant and memory region generation.
+  The second memory usage contribution is a Hoare-style verification approach with fully-automated invariant and memory region generation.
   It produces \acp{fmuc} that can be verified in Isabelle/HOL
   with minimal effort, the main manual work being weakening any loop invariants and composing functions.
   This was successfully applied to \num{251} functions from the Xen hypervisor project, covering a total of \num{12252} assembly instructions.
 
   % Third contribution
-  The third contribution of this dissertation is a fully-automated formal method for lifting \acp{cfg} from binaries even in the presence of indirection.
+  The first control flow recovery contribution is a fully-automated formal method for lifting \acp{cfg} from binaries even in the presence of indirection.
   It operates directly on the machine code level, producing \acp{hg} that can also be verified in Isabelle/HOL.
   The tool was successfully applied to \glssymbol{bin-success} programs and \glssymbol{lib-func-success} library functions from Xen, lifting a total of \glssymbol{inst-total-lifted} instructions.
 
   % Fourth contribution
-  The fourth and final contribution of this dissertation is a fully-automated tool for the extraction of \acp{eicfg} from binaries.
-  It narrows the scope of modeling to the \gls{cpp} exception handling \ac{abi} and validated that modeling against some of the real-world implementation of that \ac{api} via fuzzing.
+  The second control flow recovery contribution is a fully-automated tool for the extraction of \acp{eicfg} from binaries.
+  It narrows the scope of modeling to the \gls{cpp} exception handling \ac{abi} and validated that modeling against some of the real-world library functions from that \ac{api} via fuzzing.
   It also provides an improved overapproximative approach to indirect branches.
   The tool was successfully applied to \glssymbol{eicfg-bin-success} binaries, covering a total of \glssymbol{eicfg-inst-total} instructions.%
 }
+\end{comment}
 
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{%
