@@ -1,11 +1,11 @@
 \title{Low-Level Static Analysis for Memory Usage and Control Flow Recovery}
 \keywords{%
   Formal Verification,
-  \glsentryname{arch} Assembly,
+  x86-64 Assembly, % using \glsentryname{arch} didn't work
   Interactive Theorem Proving,
-  Static Analysis,
-  %  Proof Generation,
-  %  Memory Preservation%
+  Static Binary Analysis,
+  Memory Usage,
+  Control Flow Recovery,
   Exception Handling%
 }
 \author{Joshua Alexander Bockenek}
@@ -37,6 +37,7 @@
 }
 
 % The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
+% Currently at just over 350 when factoring in acronyms, it looks like.
 \abstract{%
   % Motivation
   Formal characterization of \emph{the memory used by a program} is an important basis for security analyses, compositional verification, and identification of noninterference.
@@ -52,10 +53,11 @@
   an untrusted tool extracts as much information as it can from the functions under test and then generates all the necessary proofs to be completed in a theorem prover.
   The first, Floyd-style approach still requires significant manual effort but provides good flexibility and ensures no paths are analyzed more than once.
   In contrast, the second, Hoare-style approach sacrifices some flexibility and path efficiency in order to achieve much greater automation.
+  However, neither approach can handle dynamic control flow.
 
   The second property is handled by the second set of contributions of this dissertation.
-  These two contributions provide \emph{fully-automated} methods of recovering control flow from binaries even in the presence of indirection.
-  Indirect control flow that cannot be overapproximatively resolved is noted clearly in the resultant output.
+  These two contributions provide \emph{fully-automated} methods of recovering control flow from binaries even in the presence of indirect branching.
+  Dynamic control flow that cannot be overapproximatively resolved is noted clearly in the resultant output.
   In the first approach to control flow recovery, a nondeterministic, structured memory representation allows for general analysis of control flow in the presence of indirection, gaining scalability by utilizing context-free function analysis.
   The second approach adds function context and abstract interpretation-inspired modeling of the \gls{cpp} \ac{eh} \ac{abi}, allowing for the discovery of previously-unknown paths while maintaining or increasing automation.%
 }
@@ -86,61 +88,84 @@
 
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{%
-  Modern computer programs are so complicated that individual humans cannot manually check them to make sure they are correct and secure.
-  This is even worse if you want to reduce the \ac{tcb}, the stuff that you have to assume is correct in order to say a program is correct.
+  Modern computer programs are so complicated that individual humans cannot manually check all but the smallest programs to make sure they are correct and secure.
+  This is even worse if you want to reduce the \ac{tcb}, the stuff that you have to assume is working right in order to say a program will execute correctly.
   The \ac{tcb} includes your computer itself, but also whatever tools were used to take the programs written by programmers and transform them into a form suitable for running on a computer. Such tools are often called \emph{compilers}.
 
   To minimize the \ac{tcb}, you have to examine the lowest-level representation of that program, the assembly or even machine code that is actually run by your computer.
   This poses unique challenges, because operating on such a low level means you do not have a lot of the structure that a more abstract, higher-level representation provides.
-  Also, sometimes you want to \emph{formally} state things about program's behavior; that is, say things about what it does with a high degree of confidence based on mathematical principles.
+  Also, sometimes you want to \emph{formally} state things about a program's behavior; that is, say things about what it does with a high degree of confidence based on mathematical principles.
+  You may also want to \emph{verify} that one or more of those statements are true.
   If you want to be detailed about that behavior, you may need to know all of the chunks, or \emph{regions}, in \ac{ram} that are used by that program.
   \Ac{ram}, henceforth referred to as just ``memory'', is your computer's first place of storage for the information used by running programs.
   This is distinct from long-term storage devices like \acp{hdd} or \acp{ssd}, which programs do not normally have direct access to.
 
-  Unfortunately, determining with absolute certainty the exact regions of memory that are read or written is impossible in many cases.
-  This is called \emph{undecidability}, and means that you need to \emph{approximate} those memory regions a lot of the time.
-  An \emph{underapproximation}, an approach that only gives you some of the regions, is not useful for formal statements as it might miss out on some behavior.
+  Unfortunately, there is no one single approach that can automatically determine with absolute certainty for all cases the exact regions of memory that are read or written.
+  This is called \emph{undecidability}, and means that you need to \emph{approximate} those memory regions a lot of the time if you want to have a significant degree of automation.
+  An \emph{underapproximation}, an approach that only gives you some of the regions, is not useful for formal statements as it might miss out on some behavior; it is \emph{unsound}.
   This means that you need an \emph{overapproximation}, an approach that is guaranteed to give you \emph{at least} the regions read or written.
 
-  The first contribution of this dissertation is a preliminary approach to such an overapproximation.
-  It requires a lot of user effort, including having to manually specify the regions in memory that were possibly used and do a lot of work to prove that those regions are (overapproximatively) correct, so our tests were limited in scope.
+  Therefore, the first contribution of this dissertation is a preliminary approach to such an overapproximation.
+  This approach is based on the work of Robert L.\ Floyd, focusing on the direct \emph{control flow}%
+  \footnote{where the steps of a program go}
+  in an individual \emph{function}.\footnote{structured program component}
+  It still requires a lot of user effort, including having to manually specify the regions in memory that were possibly used and do a lot of work to prove that those regions are (overapproximatively) correct, so our tests were limited in scope.
 
   The second contribution automated a lot of the manual work done for the first approach.
-  This one produces what we call \emph{\acfp{fmuc}}, which are formal statements that the regions of memory they describe are the only ones possibly affected by the \emph{functions} (structured program components) under test.
+  It is based on the work of Charles Antony Richard Hoare, who developed a verification approach focusing on the \emph{syntax}\footnote{the textual form} of programs.
+  This one produces what we call \emph{\acp{fmuc}}, which are formal statements that the regions of memory they describe are the only ones possibly affected by the functions under test.
   These statements also come with \emph{proofs}, which for our work are like scripts used to verify that the things the \acp{fmuc} assert about the corresponding functions can be shown to be true given the assumptions our \acp{fmuc} have.
-  Sometimes those proofs are incomplete, though, such as when there is a \emph{loop} (repeated bit of code) in a function under test or one function calls another.
-  In those cases, a user has to finish the proof, in the first case by \emph{weakening} (removing information from) the \ac{fmuc}'s statements about the loop and in the second by \emph{composing}, or combining, the \acp{fmuc} of the two functions.
-  This tool also cannot handle \emph{indirect branching}.
-  Such branching happens when the low-level instructions a program uses to move to another place in that program are supplied a place to go to as the program is running.
-  This is opposed to \emph{direct branching}, where the place to go to is hardcoded into the program when it is compiled.
-  It also cannot not deal with \emph{aliasing}, which is when different \emph{state parts} (value-holding components) of a program contain the same value and that value is a location in memory.
+  Sometimes those proofs are incomplete, though, such as when there is a \emph{loop}\footnote{repeated bit of code} in a function under test or one function \emph{calls}\footnote{executes} another.
+  In those cases, a user has to finish the proof, in the first case by \emph{weakening}%
+  \footnote{removing information from}
+  the \ac{fmuc}'s statements about the loop and in the second by \emph{composing}, or combining, the \acp{fmuc} of the two functions.
+  Additionally, this tool cannot handle \emph{dynamic control flow}.
+  Such control flow occurs when the low-level instructions a program uses to move to another place in that program are supplied a place to go to as the program is running.
+  This is opposed to \emph{direct control flow}, where the place to go to is hard-coded into the program when it is compiled.
+  The tool also cannot not deal with \emph{aliasing}, which is when different \emph{state parts}%
+  \footnote{value-holding components}
+  of a program contain the same value and that value is a location in memory.
   Specifically, it cannot deal with \emph{potential} aliasing, when there is not enough information available to determine if the state parts alias or not.
   Because of that, we had to add extra assumptions to the \acp{fmuc} that limited them to those cases where ambiguous memory-referencing state parts referred to \emph{separate} memory locations.
-  Finally, it requires specifically assembly as input; you cannot directly supply a binary to it.
+  Finally, it specifically requires assembly as input; you cannot directly supply a binary to it.
   This is also true of the first contribution.
   Because of this, we were able to test on more functions than before, but not a lot more.
+  
+  Not being able to deal with dynamic control flow is a big problem, as almost all programs use it.
+  For example, when a function reaches its end, it has to figure out where to return to based on the current state of the program (in the previous contribution, this was done manually).
+  This means that \emph{control flow recovery} is very important for many applications, including \emph{decompilation},%
+  \footnote{converting a program back into a higher-level form}
+  \emph{patching},\footnote{updating a program in place without modifying the original code and recompiling it}
+  and low-level analysis or verification in general.
+  However, as you may have noticed from earlier in this paragraph, in order to deal with such dynamic control flow you need to figure out what the possible destinations are for the individual control flow transfers.
+  That can require knowing where you came from in the program, which means that analysis of dynamic control flow requires \emph{context}\footnote{in this context, information previously obtained in the program}.
+  Even worse, it is another undecidable problem that requires overapproximation.
 
-  To deal with the main drawbacks of \acp{fmuc} mentioned above, we developed \emph{\acfp{hg}}, the third contribution of this dissertation.
-  These \acp{hg} focus specifically on \emph{control flow reconstruction} (figuring out where in a program execution will go), meaning we do not need to prove specific properties that are not related to control flow.
-  Additionally, \acp{hg} use \emph{memory models} that take the form of \emph{forests}, or collections of tree data structures.
+  To soundly recover control flow, we developed \emph{\acp{hg}}, the third contribution of this dissertation.
+  \Acp{hg} use \emph{memory models} that take the form of \emph{forests}, or collections of tree data structures.
   A single tree represents a region in memory that may have multiple \emph{symbolic} references, or abstract representations of a value.
   The children of the tree represent regions used in the program that are \emph{enclosed} within their parent tree elements.
   Now, instead of assuming that all ambiguous memory regions are separate, we can use them under various aliasing conditions.
-  We also have implemented support for some forms of indirect branching.
-  Additionally, no extra user interaction is needed even when loops are present thanks to a methodology that automatically reduces the amount of information present at a re-executed instruction until the information stabilizes.
-  Function composition is also automatic now thanks to a method that treats each function as its own \emph{context} in a safe and automated way, reducing memory consumption of our tool and allowing larger programs to be examined.
-  In the process we did lose the ability to deal with \emph{recursion}, or functions that call themselves or call other functions that call back to them, though.
-  Lastly, we provided the ability to directly load binaries into the tool, no external \emph{disassembly} (converting machine code into human-readable instructions) needed.
+  We have also implemented support for some forms of dynamic control flow.
+  Those that are not supported are clearly marked in the resultant \ac{hg}.
+  No user interaction is required even when loops are present thanks to a methodology that automatically reduces the amount of information present at a re-executed instruction until the information stabilizes.
+  Function composition is also automatic now thanks to a method that treats each function as its own context in a safe and automated way, reducing memory consumption of our tool and allowing larger programs to be examined.
+  In the process we did lose the ability to deal with \emph{recursion},%
+  \footnote{functions that call themselves or call other functions that call back to the original}
+  though.
+  Lastly, we provided the ability to directly load binaries into the tool, no external \emph{disassembly}%
+  \footnote{converting machine code into human-readable instructions}
+  needed.
   This all allowed much greater testing than before, with applications to multiple programs and program libraries.
 
-  The fourth and final contribution of my dissertation iterates on the \ac{hg} work by narrowing focus to the concept of \emph{exceptional control flow}.
+  The fourth and final contribution of this dissertation iterates on the \ac{hg} work by narrowing focus to the concept of \emph{exceptional control flow}.
   Specifically, it models the kind of exception handling used by \gls{cpp} programs.
   This is important as, if you want to explore a program's behavior, you need to know all the places it goes to.
   If you use a tool that does not model exception handling, you may end up missing paths of execution caused by \emph{unwinding}.
   This is when an exception is thrown and propagates up through the program's current \emph{stack} of function calls, potentially reaching programmer-supplied handling for that exception.
   Despite this, commonplace tools for static, low-level program analysis do not model such unwinding.
-  The \acp{cfg} produced by our exception-aware tool are called \emph{\acfp{eicfg}}.
+  The \acp{cfg} produced by our exception-aware tool are called \emph{\acp{eicfg}}.
   These provide information about the exceptions being thrown and what paths they take in the program when they are thrown.
-  Additional improvements are a better methodology for handling indirect branches as well adding back in support for recursion.
-  All told, this allowed us to explore even more programs than ever before.
+  Additional improvements are a better methodology for handling dynamic control flow as well adding back in support for recursion.
+  All told, this allowed us to explore even more programs than ever before.%
 }
