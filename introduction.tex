@@ -15,12 +15,8 @@ Formal verification allows reasoning over programs with a high degree of assuran
 This assurance is provided by sound mathematical representations and logical reasoning.
 Even pen-and-paper proofs can provide guarantees that purely informal analysis does not.
 
-% work context
-Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis for the formal verification of software for over fifty years.
-Many works have built on those core structures over the years to model additional program features, such as \emph{separation logic} \autocite{reynolds2002separation} for composability and various ways of representing concurrent code \autocite{owicki1976gries,xu1997rely-guarantee}.
-
 % basic challenges
-Despite this, formal verification of software is still a difficult task.
+Unfortunately, formal verification of software is still a difficult task.
 Many useful properties are \emph{undecidable}\index{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
 There are no single, fully-automated methods that are guaranteed to determine them for all possible programs \autocite{bonacina2010theoremproving}.
 One alternative is to use \ac{itp} \autocite{harrison2014itp,maric2015itp,schopf2018itp}.
@@ -45,10 +41,6 @@ An additional benefit is that it allows for the analysis of programs when source
 This is useful for reverse engineers and legacy code maintainers.
 For example, when a contractor is hired to develop a program, it can often cost a lot more money to get the source code than just a compiled version of the program.
 In such cases it may be more cost-efficient to just get the compiled version and figure out how to patch it for updates locally.
-
-% basic context
-One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}, quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
-Non-formal assembly and binary analysis has also been a rich field of study for years \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
 
 % basic challenges
 However, there is no such thing as a free lunch.
@@ -257,12 +249,18 @@ Notably, that need for the current call stack means control flow recovery with e
 Interprocedural analysis is challenging, as one cannot simply isolate individual functions or blocks of machine code but must instead consider the binary as a whole.
 
 \section{State of the Art}
-To the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory usage as described here.
+Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis for the formal verification of software for over fifty years.
+Many works have built on those core structures over the years to model additional program features, such as \emph{separation logic} \autocite{reynolds2002separation} for composability and various ways of representing concurrent code \autocite{owicki1976gries,xu1997rely-guarantee}.
+
+Despite this, to the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory usage as described here.
 Thus, the focus on the state of the art here involves general assembly verification as well as control flow recovery.
 
 \subsection{Assembly Verification}
+% basic context
+One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}, quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
+
 % add back in citations if you lose the ability to use them in the acronym first use when switching to \gls
-An initial approach to formal binary lifting was provided by Myreen et.\ al.
+Later, Myreen et.\ al provided an initial approach to formal binary lifting.
 Known as \emph{\ac{dil}}, it converts machine code into \iac{hol} representation.
 This representation can then be used for verification efforts in a theorem prover.
 
@@ -282,9 +280,11 @@ Additionally, a few years ago, \textcite{fromherz2019verified} embedded a subset
 This was done in order to perform a proof of correctness over the commonly-used cryptographic routine AES-GCM.\index{AES-GCM}
 Their usage of \iac{vcg} is similar to ours in \cref{ch:syntax}, but ours did not need to be separately formally verified as we implemented it with proven-true Hoare rules.\index{Hoare!rule}
 
+Non-formal assembly and binary analysis has also been a rich field of study for years \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+
 \subsection{Control Flow Recovery}
 To the best of our knowledge, at the time this dissertation was written, no other tool operating on binaries could provide scalable, formally overapproximative assurance between a binary and its lifted representation.
-The bulk of existing methods are either known to be unsound (they either  misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative}.
+The bulk of existing methods are either known to be unsound (they either misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative}.
 The strength of those tools is their universality: they typically provide output for any binary, even in cases where guesses and non-validated assumptions have to be made.
 Their weakness is that their outputs are untrustworthy; thus, any analyses built on top of them are untrustworthy as well.
 
@@ -317,7 +317,7 @@ The proof strategies for both approaches involve \emph{symbolic execution} of th
 
 The main differences between the two approaches lie in their degrees of automation, the strengths of their invariants, and how they perform symbolic execution.
 The first approach, Floyd-style verification, requires significantly more user user input but has the potential for much stronger invariants.
-Meanwhile, the second approach, Floyd-style verification, has a significantly higher level of proof automation via the generation of \acp{fmuc} but is not as suited for stronger invariant production.
+Meanwhile, the second approach, Hoare-style verification, has a significantly higher level of proof automation via the generation of \acp{fmuc} but is not as suited for stronger invariant production.
 Symbolic execution is also more efficient in the Floyd-style approach as it more closely follows the structure of the function's \ac{cfg}.
 In contrast, the Hoare-style approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
@@ -378,8 +378,7 @@ This approach focuses on relating symbolically-executed basic blocks with a synt
 It also involves significantly more information generation than the previously-discussed approach.
 
 %Mostly-Automated Formal Verification for Memory Usage
-Abstracting away from the concrete control flow to a more structured syntax increases the capacity for automation as it allows for the development of a set of \emph{Hoare rules}\index{Hoare!rule}
-over the syntactic control flow \autocite{hoare1969axiomatic}.
+Abstracting away from the concrete control flow to a more structured syntax increases the capacity for automation as it allows for the development of a set of \emph{Hoare rules}\index{Hoare!rule} \autocite{hoare1969axiomatic} over the syntactic control flow.
 By developing and using a set of such formal rules, we were able to restrict symbolic execution to the level of individual basic blocks and then use those rules to do the rest of the work.
 This greatly simplified our proof strategies for proving memory usage.
 
@@ -508,15 +507,7 @@ For \acp{eicfg} specifically, we assume that no external calls throw exceptions 
 We also do not model \lstinline|setjmp|/\lstinline|longjmp|, as they do not interact well with structured exception handling \autocite{using-setjmp-and-longjmp}.
 Of course, the \ac{hg} work does not support \ac{eh}, though it can still analyze binaries containing the corresponding library calls.
 
-\begin{comment}
-  Hiding for now as Dr.~Ravindran agreed this is kind of redundant with the contributions. Freek seems fine without it too.
-  \section{Impact}
-  \todo{What are the results? What can these contributions be used for? Seems kind of redundant with the contributions subsection though.}
-
-  \subsection{Memory Usage}
-
-  \subsection{Control Flow Recovery}
-\end{comment}
+% no need for an Impact section
 
 \section{Organization of Dissertation}
 Following this introduction in \cref{ch:related} is a review of tools and work related to the field of assembly-level verification, control flow lifting, and software correctness in general.
