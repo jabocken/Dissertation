@@ -11,7 +11,6 @@ In particular, he was a significant contributor to the initial algorithmic setup
 \section{Starting Concepts}\label{hg-concepts}
 \todo{maybe move some of this to an earlier/communal chapter?}
 For this \namecref{hg}, we have the following types:
-\todo{how to align these again?}
 \begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries \glsentryname{mem}}]
   \item[\gls{inst2}] a structured representation of assembly instructions
   \item[\gls{predicate}] state predicates (\cref{sec:predicates})
@@ -96,7 +95,7 @@ $P$ holds in state~\gls{concrete-state}%
 \nomenclature{\gls{concrete-state}}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs; gets introduced earlier though so maybe not?}}
 ($\gls{concrete-state}\gls{holds}P$) if and only if all clauses hold.
 
-\todo{maybe put more here? Connect to logical predicates}
+% TODO: maybe put more here? Connect to logical predicates
 
 Breaking it down further, a clause consists of two symbolic expressions\index{symbolic!expression}
 and their relation.
@@ -154,7 +153,7 @@ Those special predicates respectively indicate always true (holds for any state)
   \index{state!predicate}
   notation $P\gls{join}Q$,
   is performed by doing a form of range abstraction for symbolic bit-vector values \autocite{rugina2000symbolic}.\index{symbolic!bit vector}
-  This is defined as:
+  This is implemented as:
   \begin{align*} % \gls{defeq} doesn't seem right here since we already have \gls{equiv}; also don't we have \coloneqq already anyway? Good to be consistent though.
     P\gls{join}Q &\gls{defeq} \bigcup\{\merge(p,q) \mid \langle p,q\rangle\in P\times Q\} \\
     \merge(l=r_1,l=r_2) &\gls{defeq} \{l\ge\min(r_1,r_2),l\le\max(r_1,r_2)\} \\
@@ -189,7 +188,7 @@ contain unrestricted values\index{symbolic!value}.
 In such cases, no clause is produced.
 %The supremum, repeated join over a set of predicates, is denoted by $\bigsqcup\square$. % do we even have a supremum here anymore?
 
-\begin{example}
+\begin{example}[Predicate Join]
   Let $P=\{a=3,a<\rdio\}$ and $Q=\{a=4,a<\rsio\}$.
   As both predicates\index{state!predicate}
   have equality clauses\index{state!predicate!clause}
@@ -209,8 +208,8 @@ and minimum/maximum%
 \index{maximum}
 are associative operations.
 The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following for any state~\gls{concrete-state}\index{state}:
-\begin{lemma}\label{lem:pred_soundness}
-  $\gls{concrete-state}\gls{holds}P\lor Q\implies s\gls{holds}P\gls{join}Q$
+\begin{lemma}[Soundness of the Join]\label{lem:pred_soundness}
+  $\gls{concrete-state}\gls{holds}P\lor Q\implies s\gls{holds}P\gls{join}Q$.
 \end{lemma}
 \begin{proof}
   The proof of this lemma consists of two cases:
@@ -224,13 +223,10 @@ The join is commutative and idempotent due to the commutativity and idempotency 
   For $\gls{concrete-state}\gls{holds}P\gls{join}Q$ to be true, all of its clauses%
   \index{state!predicate!clause}
   must hold.
-  Let~$c$ be one of the clauses resulting from the join.
-  It is the result of one of the merge rules.
-  Consider the first case, for equality.
-  Since $l=r_1$ is a clause in~$P$, we have $l\ge\min(r_1,r_2)$ and $l\le\max(r_1,r_2)$.
+  Consider the first case, for equality.0
+  Since $c\gls{defeq}l=r_1$ is a clause in~$P$ and $l=r_2$ is a clause in~$Q$, we have $c'_1\gls{defeq}l\ge\min(r_1,r_2)$ and $c'_2\gls{defeq}l\le\max(r_1,r_2)$.
+  $c$~implies both of those, and thus $s\gls{holds}c\implies s\gls{holds}c'_1\land c'_2$.
   The other cases are similar.
-
-  \todo{double-check this}
 \end{proof}
 
 \section{Memory Models}\label{sec:memory-models}
@@ -943,7 +939,7 @@ Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the
 }\\
 \\
 \todo{SEcondly to what?}
-Secondly, we treat internal function calls as \emph{context free}.
+As stated, we treat internal function calls as \emph{context free}.
 In the example above, exploration of address \texttt{0x400} is done in a fresh empty symbolic state.
 In that state, instead of pushing the concrete return address \texttt{0x105}, a symbol $\mathcal{S}_\mathtt{0x400}$ is pushed.
 \todo{glossary entry}
@@ -953,14 +949,11 @@ A global mapping is maintained that remembers that symbol $\mathcal{S}_\mathtt{0
 It may be the case that the internal function is called from different call sites, in which case the mapping is updated accordingly: one symbol may be mapped to multiple return addresses.
 As soon as the instruction pointer is set to symbol $\mathcal{S}_\mathtt{0x400}$ (for example, by a \inlineasm{ret} instruction), all mapped return addresses are set to reachable.
 
-\todo{put back summary?}
-\begin{comment}
-  To summarize, for the internal function call above, the following actions are undertaken:
-  \begin{enumerate}
-    \item Clean the current symbolic state and add it---with \texttt{rip} set to \texttt{0x105}---to the bag.
-    However, it is marked as \emph{unreachable}.
-    \item Add an empty state to the bag, with a return symbol $\mathcal{S}_\mathtt{0x400}$ pushed to the top of the stack.
-    \item Add return address \texttt{0x105} to the set of addresses mapped to symbol $\mathcal{S}_\mathtt{0x400}$.
-    \item As soon as an instruction sets \texttt{rip} to the symbol $\mathcal{S}_\mathtt{0x400}$, any symbolic state whose \texttt{rip} is in the set of return addresses mapped to this symbol is set to reachable.
-  \end{enumerate}
-\end{comment}
+To summarize, for the internal function call above, the following actions are undertaken:
+\begin{enumerate}
+  \item Clean the current symbolic state and add it---with \rip\ set to \texttt{0x105}---to the bag.
+  At this point, it is marked as \emph{unreachable}.
+  \item Add an empty state to the bag, with a symbolic return address $\mathcal{S}_\mathtt{0x400}$ pushed to the top of the stack.
+  \item Add return address \texttt{0x105} to the set of addresses mapped to symbol $\mathcal{S}_\mathtt{0x400}$.
+  \item As soon as an instruction sets \rip\ to the symbol $\mathcal{S}_\mathtt{0x400}$, any symbolic state whose \rip\ is in the set of return addresses mapped to that symbol is set to \emph{reachable}.
+\end{enumerate}

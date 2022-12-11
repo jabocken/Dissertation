@@ -82,7 +82,7 @@ A form of \emph{axiomatic semantics},
 \index{semantics!axiomatic}
 \gls{hoare-logic} \autocite{hoare1969axiomatic,myreen2007hoare}
 describes the behavior of a program with a \emph{Hoare triple}.\index{Hoare!triple}
-\begin{definition}[Basic Hoare triple]
+\begin{definition}[Basic Hoare triple]\label{hoare-triple}
   Given predicates on state~$P$ and~$Q$ and a program~$C$,
   $\htriple{P}dC{Q}$ asserts that executing~$C$ on a state where~$P$ holds
   will result in a state where~$Q$ holds (as long as~$C$ terminates, that is).

@@ -13,7 +13,7 @@ We applied \ac{hg} extraction to:
 \begin{enumerate}
   \item several stripped binaries of CoreUtils as found in a standard Ubuntu distribution;
   \item a binary with a manually induced buffer overflow, confirming that no \ac{hg} is extracted; and
-  \item all \gls{bin-total} \gls{arch} binaries and all \gls{lib-func-total} functions from the 25 shared objects we identified in the Xen hypervisor.
+  \item all \glssymbol{bin-total} \gls{arch} binaries and all \glssymbol{lib-func-total} functions from the 25 shared objects we identified in the Xen hypervisor.
   \todo{gls entry for hypervisor?}
 \end{enumerate}
 This \namecref{hg-extraction} % make lnamecref if switching to capitalize
@@ -95,7 +95,7 @@ must be strong enough to prove that the return address at the top of the current
 Furthermore, that precondition must also be strong enough to show that the value of the stack pointer has been restored to the initial value it held on function entry.
 If the current precondition is not strong enough to satisfy those conditions, the algorithm does not produce \iac{hg}.
 This is because it cannot prove return address integrity.
-\todo{This should have been mentioned earlier, double check. also add glossary entry?}
+\todo{add glossary entry?}
 A breakdown of these cases occurs later in \cref{hg-results-summary}.
 
 \subsubsection{Concurrency}
