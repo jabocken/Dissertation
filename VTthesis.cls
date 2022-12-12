@@ -165,7 +165,8 @@
 % Fix for hyperref with algorithm floats (from http://tex.stackexchange.com/a/156404/87320)
 \renewcommand\theHALG@line{\thealgorithm.\arabic{ALG@line}}
 
-\RequirePackage{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings); trying without [capitalize] to see how I like it
+% With capitalize, need to use \lcnamecref to get lowercase names. \nameCref should still be used at the start of sentences though.
+\RequirePackage[capitalize]{cleveref} % Better auto-reference-typing than \autoref{} (needs to go before \newtheorem environments but after listings); Freek still prefers the capitalize style.
 
 % Misc Packages
 \RequirePackage{booktabs} % For nicer-looking tables

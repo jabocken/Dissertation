@@ -1,11 +1,11 @@
 \chapter{Experimental Results}\label{ch:hg-results}
-This \namecref{ch:hg-results} covers our real-world exploration of the \ac{hg} generation algorithm.
+This \lcnamecref{ch:hg-results} covers our real-world exploration of the \ac{hg} generation algorithm.
 It also includes a verification methodology for the generated \acp{hg}.
 Finally, it discusses some of the potential error cases that would prevent successful verification.
 
 As a recap, I performed the real-world analysis on the Xen case study in \cref{hg-extraction}.
 However, I did not contribute to the work on formal verification of our \acp{hg} or the development of examples of failures in \cref{sec:not-me-proofs,sec:not-me-failures}.
-Those \namecrefs{sec:not-me-proofs} are credited primarily to Dr.~Freek Verbeek.
+Those \lcnamecrefs{sec:not-me-proofs} are credited primarily to Dr.~Freek Verbeek.
 I have included them in my dissertation for completeness and consistency, as well as to have a space where they can be seen without the restrictions of a limited-page paper format.
 
 \section{Hoare Graph Extraction}\label{hg-extraction}
@@ -16,8 +16,7 @@ We applied \ac{hg} extraction to:
   \item all \glssymbol{bin-total} \gls{arch} binaries and all \glssymbol{lib-func-total} functions from the 25 shared objects we identified in the Xen hypervisor.
   \todo{gls entry for hypervisor?}
 \end{enumerate}
-This \namecref{hg-extraction} % make lnamecref if switching to capitalize
-focuses on the Xen case study specifically.
+This \lcnamecref{hg-extraction} focuses on the Xen case study specifically.
 The Xen Project is a mature, industrial-strength hypervisor used in many production systems, including Amazon's cloud platforms \autocite{chisnall2008definitive}.
 Hypervisors provide a method for managing multiple virtual instances of operating systems (guests) on a physical host.
 \todo{glossary entry for hypervisor?}
@@ -229,7 +228,7 @@ A formal proof must explicitly assume that.
 Effectively, each and any implicit assumption made during \ac{hg} generation is formalized and exported to Isabelle/HOL.
 
 \section{Examples of Failures}\label{sec:not-me-failures}
-This \namecref{sec:not-me-failures} covers some specific failure cases for our verification tool.
+This \lcnamecref{sec:not-me-failures} covers some specific failure cases for our verification tool.
 
 \subsection{Stack Overflow}
 ROP emporium\fturl{https://ropemporium.com} provides pedagogical examples that contain an exploitable stack overflow.

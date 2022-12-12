@@ -177,7 +177,7 @@ While in principle simpler than modeling concurrency, this would still add addit
 Interrupts can be in both enabled and disabled states, and handlers can be changed.
 Both active interrupt handlers and signal handlers can be triggered at any point in a program when set.
 Neither of our \ac{cfg}-lifting approaches would be able to support state spaces of such sizes.
-They would require further enhancement of their state space reduction techniques, which leads into the next \namecref{conclusion-state-space}.
+They would require further enhancement of their state space reduction techniques, which leads into the next \lcnamecref{conclusion-state-space}.
 
 \subsection{State Space Reduction}\label{conclusion-state-space}
 Additionally, it is, in theory, possible to craft a program that would result in state explosion via sufficiently complex indirect control flow.

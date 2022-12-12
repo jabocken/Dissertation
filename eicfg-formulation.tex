@@ -95,7 +95,7 @@ For our purposes, usage of $\peek$ assumes a non-empty list. % would prefer this
   Thus, after execution of the call, we have a stack $[\mathtt{0x116e}]$.
   %
   %below hidden to reduce space.
-  Instruction \instref{lst:example-libc}{1168} of that \namecref{lst:example-start} calls \inlineasm{__libc_start_main}.
+  Instruction \instref{lst:example-libc}{1168} of that \lcnamecref{lst:example-start} calls \inlineasm{__libc_start_main}.
   We model that call simply as a call to the function pointer in the \inlineasm{rdi} register, the program's \inlineasm{main} function.
   For our purposes, that means pushing the instruction following the call onto the stack as a return address.
   Thus, for some state after the result of transitioning from \instref{lst:example-libc}{1168}, the stack is $[\mathtt{0x116e}]$.

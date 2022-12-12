@@ -1,16 +1,16 @@
 \chapter{Technical Formulation}\label{ch:hg-formulation}
-In this \namecref{ch:hg-formulation}, you will learn about the details of \ac{hg} lifting and the \emph{symbolic states} contained within.
+In this \lcnamecref{ch:hg-formulation}, you will learn about the details of \ac{hg} lifting and the \emph{symbolic states} contained within.
 First with some introductory concepts for our symbolic states in \cref{hg-concepts},
 then detailed coverage of our state predicates and memory models in \cref{sec:predicates,sec:memory-models},
 and finally the lifting algorithm itself in \cref{sec:algorithm}.
 These concepts are accompanied by explanations and proofs.
 
 The concepts and definitions presented here were developed in concert with Dr.~Freek Verbeek.
-In particular, he was a significant contributor to the initial algorithmic setup and the proofs in this \namecref{ch:hg-formulation}.
+In particular, he was a significant contributor to the initial algorithmic setup and the proofs in this \lcnamecref{ch:hg-formulation}.
 
 \section{Starting Concepts}\label{hg-concepts}
 \todo{maybe move some of this to an earlier/communal chapter?}
-For this \namecref{hg}, we have the following types:
+For this \lcnamecref{hg}, we have the following types:
 \begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries \glsentryname{mem}}]
   \item[\gls{inst2}] a structured representation of assembly instructions
   \item[\gls{predicate}] state predicates (\cref{sec:predicates})
@@ -490,7 +490,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
     Therefore any $t'$ in the produced set is recursively inserted into $M$.
     Again, the \ac{ih} then finishes the proof.
     \item As an extra case, consider when no relation can necessarily be established. In that case, all of the above proofs apply, as memory models are generated for each possible case within this set.\footnote{%
-      This does \emph{not} include partially overlapping cases, as described in the previous \namecref{ch:hg-lifting}.%
+      This does \emph{not} include partially overlapping cases, as described in the previous \lcnamecref{ch:hg-lifting}.%
     } \todo{Shouldn't I include this part? Not sure why it was commented out.}\qedhere
   \end{enumerate}
 \end{proof}
