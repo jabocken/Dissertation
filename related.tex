@@ -61,7 +61,7 @@ These early efforts required significant interaction,
 as Yu and Boyer required over \num{19000}
 lines of manually written proof to verify approximately \num{900} assembly instructions.
 Compare this to the \num{1047} lines of manual proof
-required to prove memory preservation over \num{12252} assembly instructions.
+required to prove memory usage over \num{12252} assembly instructions.
 Admittedly, they were verifying stronger properties,
 which would greatly increase the amount of work required for verification,
 but even then it's a significant difference.
@@ -182,7 +182,7 @@ The functions compiled for the ATmega16 \ac{isa}
 had previously been used to evaluate the effectiveness of \mcsquare.
 They then embedded their static analysis in \mcsquare\ as a means to
 improve the accuracy of \ac{dvr}, which \mcsquare\ uses for state space reduction.
-While this stack safety approach is similar in focus to the memory preservation works
+While this stack safety approach is similar in focus to the memory usage works
 I present here, the scope is much smaller.
 Their focus was specifically on stack memory rather than memory in general.
 
@@ -650,7 +650,7 @@ This does require some additional functionality, with both the compiler and the 
 
 In contrast, our \ac{hg} lifting approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
 In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019refinement}.
-Even our Hoare-style work presented in \cref{ch:syntax}, tailored to memory preservation properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \cite{verbeek2020automated}.
+Even our Hoare-style work presented in \cref{ch:syntax}, tailored to memory usage properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \cite{verbeek2020automated}.
 \Textcite{tan2015auspice} provided a fully automated method, AUSPICE, that takes about \SI6\hour\ for a \num{533}-instruction string search algorithm.
 Our \ac{hg} lifting approach \emph{complements} formal verifiers that generate invariants for proving functional correctness.
 \begin{remark}[Lifting in the \acs*{tcb}]

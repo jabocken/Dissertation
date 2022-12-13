@@ -7,10 +7,10 @@ We then extended those semantics with additional rewrite rules
 to increase efficiency and properly reason about memory.
 Those rules are documented in \cref{se:rewrite}.
 The rules involving reading and writing from memory
-form the basis for the memory preservation methodologies
+form the basis for the memory usage methodologies
 in \cref{ch:cfg,ch:syntax}.
 They essentially generate memory region \acp{vc} that must be discharged
-in order to prove memory preservation.
+in order to prove memory usage.
 
 My main contribution to this chapter was working on additional proven-correct
 simplification rules for word arithmetic as well as more presimplification rules for
