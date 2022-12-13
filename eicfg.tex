@@ -1,14 +1,22 @@
 \chapter{Exceptional Interprocedural Control Flow Graphs}\label{ch:eicfg}
-\acreset{eicfg}
+\acreset{eicfg} % For now
 
-\todo{proper intro (summary of main intro, summary of attribution)}
+\Acp{hg} work well for \gls{c} programs or others that do not use structured \ac{eh}, but they do not provide the full picture for programs that do.
+For this purpose, we provide \emph{\acp{eicfg}}.
+These \acp{eicfg} contain control flow edges for the process of structured \ac{eh}.
+Those edges are obtained by modeling the \gls{cpp} \ac{eh} \ac{abi} \todo{cite}.
+The states used in \acp{eicfg} are specifically targeted to the process of \ac{eh}, focusing on information about the exception objects and global exception info.
+Enough additional information and context are included to support indirect jumps and calls.
 
-We first provide more motivation in \cref{eicfg-motivation}, an abbreviated explanation of \acp{eicfg} in \cref{sec:eicfg}, and explain that contribution with a running example in \cref{eicfg-example} below.
-This is followed by the technical formulation of our tool in \cref{ch:eicfg-formulation}.
+We first provide more motivation for \acp{eicfg} in \cref{eicfg-motivation}.
+This is followed by an abbreviated explanation of \acp{eicfg} in \cref{sec:eicfg}, which is illustrated by a running example in \cref{eicfg-example}.
+After that is the technical formulation of our tool in \cref{ch:eicfg-formulation}.
 \Cref{ch:eicfg-validation} contains single-step validation in \cref{eicfg-validation} and a practical demonstration in \cref{eicfg-results}.
 The goal of that demonstration is to show that \acp{eicfg} provide improved coverage compared to a non-exceptional baseline analysis.
 
+This contribution was primarily my own effort.
 All code produced for this \lcnamecref{eicfg}, to be published as an artifact, is available at \url{https://drive.google.com/file/d/1mFjHT0p-w9YbyRjcBCQ8sPHp3eboUdM2/view?usp=sharing}.
+\todo{make a proper artifact as this will be published in my dissertation anyway}
 
 \section{Extended Motivation}\label{eicfg-motivation}
 A normal \ac{cfg} provides a user with information on control flow transfers induced by \emph{jumps} and \emph{calls}.
@@ -86,7 +94,7 @@ Informally, the information on which exceptional control flow is based is:
   \item a static address (landing pad) table for the unwinding process.
 \end{enumerate}
 Exception type info is used to determine which catch blocks, if any, are applicable to the exception being thrown.
-Rethrown status is necessary when determining behavior when dealing with the binary equivalent of an argumentless \lstinline{throw}.
+Rethrown status is necessary when determining behavior when dealing with the binary equivalent of an argumentless \lstinline|throw|.
 The return address stack is necessary to provide context for unwinding.
 The uncaught exception count keeps track of how many thrown exceptions are currently uncaught.
 This is useful for diagnostic information.
@@ -94,14 +102,14 @@ Next, the caught exception stack provides information to set up implicit rethrow
 Finally, the landing pad table ($\landingpadtable$) maps from potential unwind spots in a binary to locations where unwinding can exit.
 
 \begin{definition}[Exceptional State Predicate]
-  An \emph{exceptional state predicate} is based on an exception object~$E$, a return address stack~$R$, uncaught exception count~$u$, and caught exception stack~$C$.
+  An \emph{exceptional state predicate} is based on an exception object~$E$, a return address stack~$R$, uncaught exception count~$u$, caught exception stack~$C$, and instruction pointer~$I$.
   It is a predicate that, given a state, checks the following things:
   \begin{itemize}
     \item Is the current exception object equal to $E$?
     \item Is the current return address stack equal to $R$?
     \item Is the current uncaught exception count equal to $u$?
     \item Is the current caught exception stack equal to $C$?
-    \item \todo{landing pad table}
+    \item Is the current \rip\ equal to $I$?
   \end{itemize}
 \end{definition}
 

@@ -130,56 +130,58 @@ On average, dealing with exceptional control flow can increase coverage by \avgd
 Those edges are ones tools such as Ghidra do not produce.
 Note the Xen binaries exhibited no change, as none contained any exceptional control flow.
 
-% TODO: Maybe leave out coverage talk for this, I think it might still be useful to discuss though to provide inspiration for future endeavors.
-\subsection{Coverage} % Freek's not a fan of the subsections due to having too few paragraphs each. Personally I like them as you can get a detailed overview from the table of contents though.
-% In total, we achieved an average of \coveredpercent\ coverage of the counted instructions across the \satisfactorybins\ satisfactory (\cutoffpercent\ coverage) binaries.
-% Ideally, this number would be the ratio of reached instructions to actual reachable instructions.
-% However, we do not have a ground truth for the latter number. Therefore, we approximate by comparing the number of reached instructions with the raw line count provided by \inlineasm{objdump}. This ratio gives an \emph{indication} of how much of each binary was covered.
+\subsection{Unsound Heuristics}
+\begin{comment}
+  In total, we achieved an average of \coveredpercent\ coverage of the counted instructions across the \satisfactorybins\ satisfactory (\cutoffpercent\ coverage) binaries.
+  Ideally, this number would be the ratio of reached instructions to actual reachable instructions.
+  However, we do not have a ground truth for the latter number. Therefore, we approximate by comparing the number of reached instructions with the raw line count provided by \inlineasm{objdump}. This ratio gives an \emph{indication} of how much of each binary was covered.
 
-% The coverage was achieved in several steps for each binary.
-% First, we started \ac{eicfg} generation from the address recorded in the \ac{elf} entry field.
-% Then we checked the binary's list of function symbols, if available, and used each one as a further entry point if not already in the graph.
-% This can cause issues for some stripped binaries with unresolved indirect jumps, but not all; 77 stripped binaries were satisfactory, and of those 19 exhibited unresolved jumps.
-% Additional coverage was provided by modeling external functions that were identified as taking direct function pointers as callbacks by treating them as calls to the callbacks.
-% This includes thread-spawning functions such as \inlineasm{pthread_create}, though we do not model their concurrent behavior.
+  The coverage was achieved in several steps for each binary.
+\end{comment}
+For fully sound, overapproximative analysis, \ac{eicfg} generation must start from the address recorded in the \ac{elf} entry field and not consider any other entry points.
+However, this can have some practical limitations if unresolved indirect branches or external functions that take callbacks are present.
+Thus, we provide some additional features that can be activated if so desired.
 
-% Commenting out for TACAS as I removed the corresponding columns anyway
+First, we check the binary's list of function symbols, if available, and use each one as a further entry point if not already in the graph.
+%This can cause issues for some stripped binaries with unresolved indirect jumps, but not all; 77 stripped binaries were satisfactory, and of those 19 exhibited unresolved jumps.
+Note that \emph{we still maintain soundness within those function call subgraphs}.
+While not all contextual information is present, any unwinding originating within such a subgraph will propagate properly up to the point of the function being treated as an entry point.
+
+Additional coverage was provided by modeling those external functions we could identify as taking direct function pointers as callbacks.
+This was done by treating the external functions as calls to those callbacks instead.
+When external functions took multiple callbacks, we used nondeterminism to model each call.
+Thread-spawning functions such as \inlineasm{pthread_create} are included here, though we do not model their concurrent behavior.
+
 \subsection{Indirection}\label{sec:indirection}
-% Concerning unresolved calls and jumps specifically,
-% the count of those in \cref{tbl:binaries} is primarily due to symbolic callbacks and other passed-around jump targets that cannot be concretized after our abstraction.
-% However, many instances of indirection \emph{were} resolvable, though excluded from the results table due to space constraints.
-% Those cases rely on a non-deterministic heuristic for basic jump table calculations,
-% %which is documented in \cref{sec:example}
-% which is documented in \cref{sec:eicfg}
-% for the example \ac{eicfg} and corresponding code snippet in \cref{fig:example-indirect-call,lst:example-indirect-call}.
+Though not shown in \cref{tbl:binaries}, unresolved calls and jumps are primarily due to symbolic callbacks and other passed-around jump targets that cannot be concretized after our abstraction.
+However, many instances of indirection \emph{were} resolvable.%, though excluded from the results table due to space constraints.
+Those cases rely on a non-deterministic heuristic for basic jump table calculations, which is documented in \cref{eicfg-example} for the example \ac{eicfg} and corresponding code snippet in \cref{fig:example-indirect-call,lst:example-indirect-call}.
 
-% Because not all calculations involving a static upper bound are jump table calculations, this heuristic can be tuned in order to control state space expansion.
-% When the \ac{eicfg} generation algorithm is supplied with a specific \ac{jtub},
-% predicted jump table index locations with bounds greater than that \ac{jtub} will fall back to normal state read handling.
-% This does not affect our overapproximation, as it results in annotated \acp{eicfg}, but may reduce coverage.
-% For the specific results displayed in \cref{tbl:binaries}, we utilized \iac{jtub} of 25.
-%Our results showed that using that limit did not significantly reduce reported instruction coverage and did increase binary coverage overall.
+Because not all calculations involving a static upper bound are jump table calculations, this heuristic can be tuned in order to control state space expansion.
+When the \ac{eicfg} generation algorithm is supplied with a specific \ac{jtub}, predicted jump table index locations with bounds greater than that \ac{jtub} will fall back to normal state read handling.
+This does not affect our overapproximation, as it results in annotated \acp{eicfg}, but may reduce coverage.
+For the specific results displayed in \cref{tbl:binaries}, we utilized \iac{jtub} of 25.
+Our results showed that using that limit did not significantly reduce reported instruction coverage and did increase binary coverage overall.
 
-%% Hiding most of it as it does comparisons to numbers we do not actually show. Might have room to show them in my dissertation, though!
+%TODO: show the actual numbers for these
 \subsection{State Space Reduction}
-%As our approach is context-sensitive where possible, this resulted in significantly more \ac{eicfg} nodes than instructions.
+As our approach is context-sensitive where possible, this resulted in significantly more \ac{eicfg} nodes than instructions.
 %Specifically, we generate an average of over thirty graph nodes per instruction.
-%To prevent further state space explosion and reduce performance issues we encountered, we implemented some state space reduction measures.
+To reduce state space explosion and performance issues we encountered, we implemented some state space reduction measures.
 
-%% Freek felt this paragraph muddled the explanation of rules. Would like to do comparative graphs/tables in my dissertation to show the coverage changes, though!
-% For the first such measure, our analysis tool has an option to reduce the exceptional state space by simplifying the rules in \cref{fig:step-rules1,fig:step-rules2}.
-% Specifically, it removes usage of $\emap$, $\caught$, and $\uncaught$, instead assuming the existence of correct behavior regarding those fields.
-% This did not reduce instruction coverage in any of our successful tests and allowed more analyses to complete without timing out or running out of memory.
-% % volk_profile, audiowaveform
-% In fact, for some programs, such as \inlineasm{transmission-edit} and \inlineasm{AntSimulator}, it slightly increased coverage.
-% % transmission-edit had decreased node count but AntSimulator increased.
+% Freek felt this paragraph muddled the explanation of rules. Would like to do comparative graphs/tables in my dissertation to show the coverage changes, though!
+For the first such measure, our analysis tool has an option to reduce the exceptional state space by simplifying the rules in \cref{fig:step-rules1,fig:step-rules2}.
+Specifically, it removes usage of $\emap$, $\caught$, and $\uncaught$, instead assuming the existence of correct behavior regarding those fields.
+This did not reduce instruction coverage in any of our successful tests and allowed more analyses to complete without timing out or running out of memory.
+% volk_profile, audiowaveform
+In fact, for some programs, such as \inlineasm{transmission-edit} and \inlineasm{AntSimulator}, it slightly increased coverage.
+% transmission-edit had decreased node count but AntSimulator increased.
 
-%A further reduction technique was to restrict assumed \acp{JTUB}.
-%Cases with bounds greater than a user-supplied value can be instructed to fall back to normal rather than \ac{JTUB} handling.
-%This is
-%Thus, using an unbounded upper bound can result in a significant number of unnecessarily-generated graph nodes.
+A further reduction technique is to restrict assumed \acp{jtub}.
+Cases with bounds greater than a user-supplied value can be instructed to fall back to normal rather than \ac{jtub} handling.
+This is available as using an unbounded upper bound can result in a significant number of unnecessarily-generated graph nodes.
 
-\subsection{Failures}
+% \subsection{Failures}
 % The 144 binaries that had unsatisfactory analyses can be split up into four categories.
 % 12 ran out of of memory or timed out due to state space explosion.
 % 85 were stripped binaries with no unresolved indirect calls or jumps.
@@ -189,7 +191,8 @@ Note the Xen binaries exhibited no change, as none contained any exceptional con
 % This illustrates that even for non-stripped binaries with function symbols available, full internal coverage requires resolved indirections.
 
 \section{Challenges}
-\todo\dots
+The process of developing \acp{eicfg} was not without difficulty.
+Here are some of the challenges we encountered.
 
 \subsection{For Validation}
 During the process of validation, we uncovered several implementation quirks that were not obvious.
@@ -216,13 +219,24 @@ However, we were still able to validate the other exceptional state components m
 \subsection{For Integration Concerns}
 During comparative analysis, we discovered that termination states provided excess overapproximation.
 Specifically, two of the cups binaries, which both throw exceptions, have slightly more covered instructions in the baseline (\inlineasm{pdftohtml} and \inlineasm{pdftocairo}).
-This appears to be related to the usage of specific C++ functions that wrap exception throwing such as \lstinline{std::__throw_logic_error(char const*)}, which are treated as terminating in the baseline.
+This appears to be related to the usage of specific \gls{cpp} functions that wrap exception throwing such as \lstinline|std::__throw_logic_error(char const*)|, which are treated as terminating in the baseline.
 The ``missing'' instructions are the ones immediately following those calls.
 This indicates that the instruction after a terminating function call is included in the set of covered instructions, a minor flaw of our overapproximation.
-% while in general coverage and control flow graph nodes/edges did increase when using \acp{eicfg}, some programs from the games category exhibited a reduced state space and improved analysis performance. A decrease in state space and even coverage also occurred for some cups (printing/document conversion-related) binaries.
-% The game and cups state space reduction is likely due how our overapproximative technique's join operation and function symbol heuristic interact with deeply nested call trees to reduce contextual state in the presence of long unwinding chains.
+The specific cause is within the implementation, an interaction of when \rip\ is incremented during step function execution with how termination conditions are handled.
 
-\todo{explain fix}
+A simple fix for this issue is to post-process the final \ac{eicfg} and remove from the instruction coverage count the states that have unique \rip\ combined with termination conditions.
 
 \section{Summary}
-\todo{maybe}
+This \lcnamecref{eicfg} covered the generation of \acp{eicfg}.
+These \acp{eicfg} contain nodes and edges for exceptional control flow.
+Such nodes and edges are not produced by \ac{cots} tools such as Ghidra \autocite{ghidra}.
+
+The \ac{eicfg} generation algorithm was formulated using abstract transition rules that model the functions from the \gls{cpp} \ac{eh} \ac{abi} \todo{cite}.
+Those rules are utilized by a step function that performs the process of disassembly, modeling any other relevant instructions as well.
+The algorithm itself was informally proven sound using pen-and-paper proofs.
+
+For increased assurance, a subset of the abstract transition rules were subsequently validated using fuzzing and comparative analysis with \glssymbol{fuzz-count} concrete executions of the corresponding functions.
+We also performed a real-world case study on \totalbins\ off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and Fortran source code.
+Our tool was able to successfully execute on \glssymbol{eicfg-bin-success} of those binaries.
+Furthermore, it was able to identify \uniquethrows\ unique throws and successfully trace the exceptional control flow for every one of them.
+On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.

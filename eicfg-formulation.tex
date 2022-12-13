@@ -531,6 +531,7 @@ The helper function \inlineasm{_Unwind_GetIP} stores the current frame's instruc
 Finally, the other helper function \inlineasm{_Unwind_GetRegionStart} stores the current procedure fragment's starting address in $\sigma'.\rax$.
 
 \section{Symbolic Execution}
+% TODO: maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{hg}.
 We perform symbolic execution by application of the rules making up our abstract transition relation.
 For some initial abstract state $\sigma_0$, $\sigma_0.\rip$ is either manually provided or obtained from the binary's \ac{elf} info.
 Then we iteratively fetch the instruction at that address, increment~$\rip$ appropriately, and apply the applicable abstract transition rule to obtain successor states.
@@ -543,8 +544,6 @@ From \gls{abs-state} it preserves $\emap$, $\uncaught$, and $\caught$. To mainta
 As an implementation detail, it also includes the temporary indices used by our jump table heuristic to ensure proper separation.
 All other state parts are combined, with priority given to the first equivalent state produced.
 For a more aggressive join, $\emap$, $\uncaught$, and $\caught$ can be excluded from the preserved state parts. The abstract transition rules are also simplified to support this exclusion.
-
-\todo{maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{hg}.}
 
 \section{Argument for Overapproximation}
 %Formally, correctness of the produced \ac{eicfg} can be proven by showing that the abstract transition relation overapproximates the concrete one (see \cref{def:simulation}).
@@ -633,6 +632,3 @@ The edge annotations are instructions for edges that follow standard control flo
   \caption{Simple Graph}
   \label{fig:simple-graph}
 \end{figure}
-
-\section{Summary}
-\todo{maybe}

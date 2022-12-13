@@ -237,7 +237,7 @@ This problem is exacerbated when dealing with \emph{exceptional control flow}, s
 Such control flow does not respect traditional structured programming paradigms.
 Modern methods also require a significant amount of auxiliary knowledge that may not be directly present in the compiled code itself.
 Debugging builds have it to provide support for stack unwinding during debugging.
-Programs with structured exception handling require it even when debugging information is excluded.
+Programs with structured \ac{eh} require it even when debugging information is excluded.
 
 Furthermore, that control flow is \emph{dynamic}.
 The target of a throw, which instruction address the process of unwinding ends up at, is decided at runtime by standard library functions \autocite{cxxEhAbi}.
@@ -429,18 +429,18 @@ The final contribution of this dissertation is a tool for static, interprocedura
 binary-level control flow analysis.
 That tool produces \emph{\acp{eicfg}} using an abstract interpretation-inspired \todo{citation}, recursive-descent methodology \todo{citation?}.
 It can do this even in the presence of recursion and some forms of indirect control flow.
-To accomplish this, the \acp{eicfg} document program state in a restricted domain that only concerns itself with the components of program state necessary to perform function calls and exception handling.
+To accomplish this, the \acp{eicfg} document program state in a restricted domain that only concerns itself with the components of program state necessary to perform function calls and \ac{eh}.
 This includes exception objects currently allocated, number of uncaught exceptions, and which exceptions are currently in a caught state.
 
 % LIMITATIONS
 Symbol-stripped binaries are supported, but may not perform well if they contain unresolvable indirections or unmodeled callbacks.
-Non-\gls{cpp} binaries, or \gls{cpp} ones that do not use exception handling, are supported as well for flexibility.
+Non-\gls{cpp} binaries, or \gls{cpp} ones that do not use \ac{eh}, are supported as well for flexibility.
 
 % VALIDATION
 As with the other contributions in this dissertation, the produced \acp{eicfg} are \emph{overapproximative}.
 Every concrete path in a program, every path possible during dynamic execution, is included in its corresponding \ac{eicfg}.
 We informally argue that the abstract semantics that are symbolically executed overapproximate their corresponding concrete semantics \autocite{cousot1996abstract}.
-To strengthen this claim, we validated our abstract transition rules for exception handling against the concrete implementations of the corresponding library functions.
+To strengthen this claim, we validated our abstract transition rules for \ac{eh} against the concrete implementations of the corresponding library functions.
 This was done by \emph{fuzzing} dynamically instrumented test binaries using generated abstract start and end states.
 In this fuzzing process, abstract start states are first concretized to actual \ac{cpu} states, then run against the function under test in an instrumented binary.
 Observation of the resultant \ac{cpu} state allows verifying whether or not the end state from abstract execution corresponds to that of actual concrete execution.
@@ -504,7 +504,7 @@ This ensures that the result of accessing such regions will just be \gls{bot}, a
 From our experiments, this did not result in significant loss of the information necessary to successfully complete our analyses.
 
 For \acp{eicfg} specifically, we assume that no external calls throw exceptions themselves.
-We also do not model \lstinline|setjmp|/\lstinline|longjmp|, as they do not interact well with structured exception handling \autocite{using-setjmp-and-longjmp}.
+We also do not model \lstinline|setjmp|/\lstinline|longjmp|, as they do not interact well with structured \ac{eh} \autocite{using-setjmp-and-longjmp}.
 Of course, the \ac{hg} work does not support \ac{eh}, though it can still analyze binaries containing the corresponding library calls.
 
 % no need for an Impact section
