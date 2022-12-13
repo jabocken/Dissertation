@@ -222,7 +222,7 @@
 
 \addbibresource{bibliography.bib}
 
-\includeonly{eicfg,eicfg-formulation,eicfg-validation}
+\includeonly{introduction,related,symbolic_execution}
 
 % To hide remaining nomnclature for now
 \newcommand\nomenclature[3][]{}
@@ -253,10 +253,10 @@
   \part{Introductory Elements}
   \include{introduction}
   \include{related}
-  \include{background}
+%  \include{background} % Freek thinks this can be left out for now.
   \include{symbolic_execution}
 
-  \part{Methods of Analyzing Memory Usage}\label{memory-preservation}
+  \part{Methods of Analyzing Memory Usage}\label{memory-usage}
   \include{cfg}
   \include{syntax}
 

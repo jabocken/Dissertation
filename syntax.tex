@@ -100,8 +100,9 @@ This is why the methodology relies on Z3 for \ac{mrr} generation;
 using a known-reliable tool greatly reduces the possibility of issues.
 
 \subsection{Control Flow Extraction}\label{sse:cfg_extract}
-As described in \cref{se:hoare},
-in order to apply \iac{vcg} that utilizes Hoare rules to verify a Hoare triple,
+%As described in \cref{se:hoare},
+%in
+In order to apply \iac{vcg} that utilizes Hoare rules to verify a Hoare triple,
 there must be some syntactic structure to apply those rules to.
 This chapter uses a syntactic representation of control flow called \ac{scf}
 in part for that purpose.
@@ -152,9 +153,9 @@ control flow statements such as \inlineasm|goto| or \inlineasm|throw|/\inlineasm
 Unconditional jumps like \inlineasm|goto|s make code harder to reason about
 in a structured way and can be modeled by the existing syntactic constructs,
 while structured \ac{eh} as used in \gls{cpp} is generally provided
-by external function calls%
+by external function calls.%
 \index{exception handling!function}
-(\cref{se:structured_exceptions}).
+%(\cref{se:structured_exceptions}).
 \begin{example}
   \Cref{fig:ex_cf} provides an example of \ac{scf} extracted from \iac{cfg}.
   The \ac{cfg} in \cref{fig:ex_cf_cfg} can be seen to have two branching conditions
@@ -665,7 +666,7 @@ While symbolic execution works well to establish memory preservation on the leve
 the goal of this verification effort is to formally establish memory preservation
 on the function level. This section describes that process,
 which occurs after the individual blocks have had their semantics and memory preservation derived
-and relies on \gls{hoare-logic} (described in \cref{se:hoare}).
+and relies on \gls{hoare-logic}. % (described in \cref{se:hoare}).
 
 \subsubsection{Hoare Rules}\label{scf_hoare}
 The Hoare triple formulation used for this work, $\htriple*{P}f{Q}M$,

@@ -98,7 +98,7 @@ Their work was applied to multiple small case studies,
 including a word count program and two kernel-mode memory copying examples.
 
 Ultimately, the main difference between the above-mentioned existing approaches
-and the methodologies presented in \cref{prelim} of this dissertation lies in the degree of automation.
+and the methodologies presented in \cref{memory-usage} of this dissertation lies in the degree of automation.
 As stated previously, \ac{itp} over semantics of assembly instructions
 does not scale under normal circumstances.
 This is again due to the amount of intricate user interaction required.
@@ -447,7 +447,7 @@ and similar potential security flaws in \gls{c} code.
 Splint relies on annotated preconditions to derive postconditions
 based on the syntactic structure of the code.
 While their methodology is very similar to the formal technique of \gls{hoare-logic},
-described later on in this dissertation (\cref{se:hoare}),
+%described later on in this dissertation (\cref{se:hoare}),
 they used heuristics for loop analysis rather than proper invariants
 and thus could potentially miss bugs.
 The annotations Splint uses are memory-focused, such as allowing users to specify
@@ -662,7 +662,7 @@ Our \ac{hg} lifting approach \emph{complements} formal verifiers that generate i
 \subsection{Abstract Interpretation}\label{related-absint}
 The general problem of lifting binary code from a string of zeroes and ones to a higher-level form is known to be undecidable.
 Thus, approximate solutions have been extensively studied, especially in the framework of \emph{abstract interpretation} \autocite{cousot1976static,cousot1977abstract}.
-Such an approach gives mathematical foundations to reason about approximations and their computations (elaborated on in \cref{background-absint}).
+Such an approach gives mathematical foundations to reason about approximations and their computations.% (elaborated on in \cref{background-absint}).
 
 \Textcite{bardin2011bincoa,daniel2020binsec} provided Binsec, which utilizes abstract interpretation in the process of information flow analysis for cryptographic implementations.
 \Textcite{zhang2019bda} provided a path sampling algorithm and use abstract interpretation to prune infeasible paths.

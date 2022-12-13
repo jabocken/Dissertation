@@ -134,12 +134,12 @@ The utilized jump table heuristic cannot deal with such cases either as it canno
 
 \subsection{Timing}\label{sec:timing}
 \begin{figure}
-%  \centering
-  \begin{tikzpicture}[trim axis left]
+  \centering
+  \begin{tikzpicture}%[trim axis left]
     \begin{axis}[
-      scale only axis,
-      width=\textwidth, % .95 wanted to fit to the full width exactly but the ticks/labels prevent doing that easily and there isn't an easy package/simple one-liner to do the fix in a way that fits my workflow. Trying trim axis left+scale only axis to just have y-ticks in the margin and the plot itself fit to the width perfectly, doesn't look perfect but it does feel better.
-      height=.4\textwidth, % .475
+%      scale only axis,
+      width=.95\textwidth, % wanted to fit to the full width exactly but the ticks/labels prevent doing that easily and there isn't an easy package/simple one-liner to do the fix in a way that fits my workflow. Trying trim axis left+scale only axis to just have y-ticks in the margin and the plot itself fit to the width perfectly, doesn't look perfect but it does feel better. Dr. Ravindran doesn't like that though so going back to old style.
+      height=.4\textwidth,
       date coordinates in=y,
       date ZERO=0-0-0,
       yticklabel=\hour:\minute,
