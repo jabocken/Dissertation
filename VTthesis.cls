@@ -124,8 +124,32 @@
 % Improvements over makeidx; allows multiple indices and doesn't require running makeindex externally for basic index, though it must come before hyperref for usage with it. May not be needed now that glossaries are in use but keeping while I still have indices floating around
 %\RequirePackage{imakeidx}
 
-% links for references
-\RequirePackage[final,colorlinks]{hyperref}
+% links for references; trying pdfa option as university wants PDF/A-2b (archival) format
+% backref and pagebackref are interesting but don't work with biblatex.
+\RequirePackage[final,colorlinks,pdfa]{hyperref}
+
+% More eye-pleasing colors thanks to https://tex.stackexchange.com/questions/525261/better-default-colors-for-hyperref-links/525297#525297
+\RequirePackage{xcolor} % needed to name the colors
+\definecolor{linkcolor}{HTML}{800006}
+\definecolor{citecolor}{HTML}{2E7E2A}
+\definecolor{filecolor}{HTML}{131877}
+\definecolor{urlcolor}{HTML}{8A0087}
+\definecolor{menucolor}{HTML}{727500}
+\definecolor{runcolor}{HTML}{137776}
+\hypersetup{
+  linkcolor=linkcolor,
+  citecolor=citecolor,
+  filecolor=filecolor,
+  urlcolor=urlcolor,
+  menucolor=menucolor,
+  runcolor=runcolor,
+  linkbordercolor=linkcolor,
+  citebordercolor=citecolor,
+  filebordercolor=filecolor,
+  urlbordercolor=urlcolor,
+  menubordercolor=menucolor,
+  runbordercolor=runcolor
+}
 
 % Package for flexible glossaries; I had issues with nomencl and this will allow more centralized configuration anyway. Also supports acronyms, though I am not yet transitioning those yet.
 % configuring glossaries-extra to use bib2gls and also provide accessibility support just in case you want to use it for symbols or whatever that wouldn't screen-read right; treating undefined glossary entries as warnings to match standard missing-reference stuff is automatically integrated into record because of how bib2gls works.
