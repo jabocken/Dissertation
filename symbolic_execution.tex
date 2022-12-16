@@ -2,7 +2,7 @@
 This chapter covers the methodology used in \cref{ch:cfg,ch:syntax}
 to formally determine the state changes caused by individual basic blocks.
 This methodology relies on a formal big-step semantics of the \gls{arch} \ac{isa}
-provided by \textcite{roessle2019}, described in \cref{se:machine_model}.
+provided by \textcite{roessle2019verified}, described in \cref{se:machine_model}.
 We then extended those semantics with additional rewrite rules
 to increase efficiency and properly reason about memory.
 Those rules are documented in \cref{se:rewrite}.
@@ -49,7 +49,7 @@ In order to perform symbolic execution,
 you must first have some sort of \emph{machine model}.%
 \index{symbolic!execution!machine model}
 The machine model used in this dissertation for the work in Isabelle/HOL
-is an extension of the work of \textcite{roessle2019}.
+is an extension of the work of \textcite{roessle2019verified}.
 They embedded in Isabelle/HOL a bitvector-based, big-step semantics
 machine-learned from a modern version of the \gls{arch} \ac{isa}.
 That semantics included instruction set extensions such as the \ac{sse} family
@@ -81,7 +81,7 @@ modifying the state each time.
 The instructions themselves are loaded from the machine model
 by mapping from the deeply-embedded instruction representation
 extracted within or supplied to the step function
-to the bitvector formulas provided by \textcite{roessle2019}.
+to the bitvector formulas provided by \textcite{roessle2019verified}.
 If no such formula exists for the current instruction,
 a manually-implemented variant is used.
 There are several sets of instructions
@@ -173,7 +173,7 @@ must assume that the loaded assembly is never modified.
 \section{Rewrite Rules}\label{se:rewrite}
 The basic rules supplied by the formal machine model are not well-suited to verification;
 they are often very low-level bitvector/bitstring operations.
-While \textcite{roessle2019} provided a large set of simplification rules
+While \textcite{roessle2019verified} provided a large set of simplification rules
 to abstract away from the underlying representation,
 those rules did not cover all situations encountered in this dissertation,
 requiring the additions of more such rules during the process of verification.

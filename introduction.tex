@@ -459,7 +459,7 @@ None of the contributions in this dissertation cover the usage of concurrency or
 We have scoped it out due to its complicated nature.
 Our \ac{isa} coverage is restricted to \gls{arch}, as targeting multiple \ac{isa} would require additional state modeling or further levels of abstraction.
 Our \ac{abi} coverage is restricted to System~V, as that requires assumptions about register invalidation during/after function calls.
-We also assume that the per-instruction semantics in use and the state changes they express are sound (for example, that they are semantics that have been machine-learned from actual hardware \autocite{heule2016stratified,roessle2019formally}).
+We also assume that the per-instruction semantics in use and the state changes they express are sound (for example, that they are semantics that have been machine-learned from actual hardware \autocite{heule2016stratified,roessle2019verified}).
 This addition to the \ac{tcb} is required as for the most part we do not directly validate those semantics ourselves.
 Completely eliminating semantics from the \ac{tcb} would require testing against actual hardware, as done for some library functions in \cref{eicfg-validation}.
 

@@ -1,5 +1,6 @@
 @String{CACM = "Communications of the ACM"}
 @String{JACM = "Journal of the ACM"}
+@String{PACMPL = "Proceedings of the ACM on Programming Languages"}
 @String{ACM = "Association for Computing Machinery"}
 @String{ACMLoc = "New York, NY, USA"}
 @String{IEEE = "IEEE"}
@@ -71,25 +72,33 @@
 @inproceedings{verbeek2020sound,
   title = {Sound {C} Code Decompilation for a subset of x86-64 Binaries},
   author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
-  booktitle = {Proceedings of the 18th International Conference on Software Engineering and Formal Methods},
-  series = {SEFM 2020},
-  year = 2020,
-  month = sep,
-  day = {14--18},
-  location = {Amsterdam, The Netherlands},
-  url = {https://ssrg-vt.github.io/FoxDec/}
+  booktitle = {Software Engineering and Formal Methods},
+  booktitleaddon = {Proceedings of the 18th International Conference},
+  shorttitle = {SEFM 2020},
+  date = {2020-09-08},
+  eventdate = {2020-09-14/2020-09-18},
+  venue = {Amsterdam, The Netherlands},
+  url = {https://ssrg-vt.github.io/FoxDec/},
+  xdata = {lncs},
+  shortseries = {LNTCS},
+  number = 12310,
+  doi = {10.1007/978-3-030-58768-0_14}
 }
 
 @inproceedings{verbeek2020automated,
   title = {Highly Automated Formal Proofs over Memory Usage of Assembly Code},
   author = {Freek Verbeek and Joshua Bockenek and Binoy Ravindran},
-  booktitle = {Proceedings of the 25th International Conference on Tools and Algorithms for the Construction and Analysis of Systems},
-  series = {TACAS 2020},
-  year = 2020,
-  month = jul,
-  day = 2,
-  pages= {98--117},
-  doi={10.1007/978-3-030-45237-7_6}
+  booktitle = {Tools and Algorithms for the Construction and Analysis of Systems},
+  booktitleaddon = {Proceedings of the 26th International Conference},
+  shorttitle = {TACAS 2020},
+  date = {2020-04-17},
+  eventdate = {2020-04-25/2020-04-30},
+  venue = {Dublin, Ireland},
+  pages= {98-117},
+  doi = {10.1007/978-3-030-45237-7_6},
+  xdata = {lncs},
+  shortseries = {LNTCS},
+  number = 12079 
 }
 
 @inproceedings{verbeek2022lifting,
@@ -117,22 +126,22 @@
   doi          = {10.5281/zenodo.6330573}
 }
 
-@inproceedings{roessle2019formally,
+@inproceedings{roessle2019verified,
   title = {Formally Verified Big Step Semantics out of x86-64 Binaries},
   author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
+  editor = {Mahboubi, Assia and Myreen, Magnus O.},
   booktitle = {Certified Programs and Proofs},
   booktitleaddon = {Proceedings of the 8th ACM SIGPLAN International Conference},
-  shorttitle = {CPP 2019},
+  shorttitle = {CPP '19},
   date = {2019-01-14},
+  eventdate = {2019-01-14/2019-01-15},
   isbn = {978-1-4503-6222-1},
   venue = {Cascais, Portugal},
   pages = {181-195},
-  numpages = 15,
   acmid = 3294102,
   xdata = {acm},
-  doi = {10.1145/3293880.3294102},
+  doi = {10.1145/3293880.3294102}
 }
-
 
 @incollection{harrison2014itp,
   title = {History of Interactive Theorem Proving},
@@ -145,7 +154,7 @@
   pages = {135-214},
   date = 2014,
   issn = {1874-5857},
-  doi = {https://doi.org/10.1016/B978-0-444-51624-4.50004-6}
+  doi = {10.1016/B978-0-444-51624-4.50004-6}
 }
 
 @article{maric2015itp,
@@ -173,7 +182,7 @@
 }
 
 @periodical{pacmpl2019popl,
-  title = {Proceedings of the ACM on Programming Languages},
+  title = PACMPL,
   shorttitle = {PACMPL},
   volume = 3,
   number = {POPL},
@@ -201,8 +210,10 @@
 @online{heartbleed,
   title = {Heartbleed Bug},
   url = {http://heartbleed.com/},
-  date = {2014-04-29},
-  urldate = {2019-08-22}
+  origdate = {2014-04-29},
+  date = {2020-06-03},
+  urldate = {2022-12-16},
+  organization = {Synopsys, Inc.}
 }
 
 @article{madhavapeddy2014unikernels,
@@ -212,12 +223,12 @@
   journaltitle = CACM,
   volume = 57,
   number = 1,
-  date = {2014-01},
+  date = {2014-01-01},
   issn = {0001-0782},
   pages = {61-69},
-  numpages = 9,
   acmid = 2541895,
-  xdata = {acm}
+  xdata = {acm},
+  doi = {10.1145/2541883.2541895}
 }
 
 @inproceedings{reynolds2002separation,
@@ -239,17 +250,18 @@
 @inproceedings{saxena2009lese,
   title = {Loop-Extended Symbolic Execution on Binary Programs},
   author = {Saxena, Prateek and Poosankam, Pongsin and McCamant, Stephen and Song, Dawn},
+  editor = {Gregg Rothermel and Laura K. Dillon},
   booktitle = {Software Testing and Analysis},
   booktitleaddon = {Proceedings of the Eighteenth International Symposium},
-  shorttitle = {ISSTA 2009},
-  year = 2009,
+  shorttitle = {ISSTA '09},
+  date = {2009-07-19},
   eventdate = {2009-07-19/2009-07-23},
   isbn = {978-1-60558-338-9},
   venue = {Chicago, IL, USA},
   pages = {225-236},
-  numpages = 12,
   acmid = 1572299,
-  xdata = {acm}
+  xdata = {acm},
+  doi = {10.1145/1572272.1572299}
 }
 
 @inproceedings{obdrzalek2011efficient,
@@ -264,7 +276,7 @@
   pages = {453-462},
   venue = {Taipei, Taiwan},
   eventdate = {2001-10-11/2001-10-14},
-  doi={doi.org/10.1007/978-3-642-24372-1_34},
+  doi={10.1007/978-3-642-24372-1_34},
   xdata = {lncs}
 }
 
@@ -273,15 +285,14 @@
   author = {Lankes, Stefan and Pickartz, Simon and Breitbart, Jens},
   booktitle = {Runtime and Operating Systems for Supercomputers},
   booktitleaddon = {Proceedings of the 6th International Workshop},
-  shorttitle = {ROSS 2016},
-  year = 2016,
+  shorttitle = {ROSS '16},
+  date = 2016,
   isbn = {978-1-4503-4387-9},
   venue = {Kyoto, Japan},
   eventdate = {2016-06-01},
-  pages = {4:1-4:8},
+  pages = {1-8},
   doi={10.1145/2931088.2931093},
   eid = 4,
-  numpages = 8,
   acmid = 2931093,
   xdata = {acm}
 }
@@ -289,34 +300,17 @@
 @inproceedings{heule2016stratified,
   title = {Stratified Synthesis: Automatically Learning the x86-64 Instruction Set},
   author = {Heule, Stefan and Schkufza, Eric and Sharma, Rahul and Aiken, Alex},
+  editor = {Chandra Krintz and Emery Berger},
   booktitle = {Programming Language Design and Implementation},
   booktitleaddon = {Proceedings of the 37th ACM SIGPLAN Conference},
-  shorttitle = {PLDI 2016},
-  year = 2016,
+  shorttitle = {PLDI '16},
+  date = {2016-06-02},
   eventdate = {2016-06-13/2016-06-17},
   isbn = {978-1-4503-4261-2},
   venue = {Santa Barbara, CA, USA},
   pages = {237-250},
-  numpages = 14,
   doi = {10.1145/2908080.2908121},
   acmid = 2908121,
-  xdata = {acm}
-}
-
-@inproceedings{roessle2019,
-  title = {Formally Verified Big Step Semantics out of x86-64 Binaries},
-  author = {Roessle, Ian and Verbeek, Freek and Ravindran, Binoy},
-  booktitle = {Certified Programs and Proofs},
-  booktitleaddon = {Proceedings of the 8th ACM SIGPLAN International Conference},
-  shorttitle = {CPP 2019},
-  year = 2019,
-  isbn = {978-1-4503-6222-1},
-  venue = {Cascais, Portugal},
-  eventdate = {2019-01-14/2019-01-15},
-  pages = {181-195},
-  numpages = 15,
-  acmid = 3294102,
-  doi = {10.1145/3293880.3294102},
   xdata = {acm}
 }
 
@@ -324,10 +318,29 @@
   title = {Assigning Meanings to Programs},
   author = {Floyd, Robert W.},
   journaltitle = {Mathematical Aspects of Computer Science},
+  publisher = {American Mathematical Society},
+  location = {Providence, RI},
   volume = 19,
   pages = {19-32},
   number = 1,
-  year = 1967
+  date = 1967,
+  related = {floyd1993assigning},
+  relatedstring = {Reprinted as}
+}
+
+@inbook{floyd1993assigning,
+  title = {Assigning Meanings to Programs},
+  author = {Floyd, Robert W.},
+  editor = {Timothy R. Colburn and James H. Fetzer and Terry L. Rankin},
+  booktitle = {Program Verification},
+  series = {Studies in Cognitive Systems},
+  shortseries = {COGS},
+  number = 14,
+  date = 1993,
+  publisher = {Springer Science+Business Media Dordrecht},
+  location = {Dordrecht, The Netherlands},
+  pages = {65-81},
+  doi = {10.1007/978-94-011-1793-7_4}
 }
 
 @article{hoare1969axiomatic,
@@ -337,7 +350,7 @@
   journaltitle = CACM,
   volume = 12,
   number = 10,
-  date = {1969-10},
+  date = {1969-10-01},
   issn = {0001-0782},
   pages = {576-580},
   acmid = 363259,
@@ -362,9 +375,11 @@
 
 @article{hoare1980clothes,
   title = {The Emperor's Old Clothes},
+  titleaddon = {The 1980 ACM Turing Award Lecture},
   author = {Hoare, Charles Antony Richard},
   journaltitle = CACM,
   date = {1981-02},
+  origdate = {1980-10-27},
   volume = 24,
   number = 2,
   pages = {75-83},
@@ -377,7 +392,7 @@
   journaltitle = CACM,
   volume = 19,
   number = 7,
-  date = {1976-07},
+  date = {1976-07-01},
   issn = {0001-0782},
   pages = {385-394},
   doi = {10.1145/360248.360252},
@@ -390,7 +405,8 @@
   author = {Shoshitaishvili, Yan and Wang, Ruoyu and Salls, Christopher and
   Stephens, Nick and Polino, Mario and Dutcher, Audrey and Grosen, John and
   Feng, Siji and Hauser, Christophe and Kruegel, Christopher and Vigna, Giovanni},
-  booktitle = {2016 IEEE Symposium on Security and Privacy},
+  booktitle = {Security and Privacy},
+  booktitleaddon = {2016 IEEE Symposium},
   shorttitle = {SP},
   date = {2016-08-18},
   eventdate = {2016-05-22/2016-05-26},
@@ -418,8 +434,12 @@
   author = {Wang, Ruoyu and Shoshitaishvili, Yan and Bianchi, Antonio and Machiry, Aravind and Grosen, John and Grosen, Paul and Kruegel, Christopher and Vigna, Giovanni},
   booktitle = {Network and Distributed System Security},
   booktitleaddon = {Proceedings of the 24th Annual Symposium},
-  shorttitle = {NDSS 2017},
-  year = 2017
+  shorttitle = {NDSS '17},
+  date = {2017-02-27},
+  eventdate = {2017-02-26/2017-03-03},
+  venue = {San Diego, CA, USA},
+  doi = {10.14722/ndss.2017.23225},
+  publisher = {IKnternet Society}
 }
 
 @online{afp,
@@ -427,7 +447,7 @@
   editor = {Manuel Eberl and Gerwin Klein and Tobias Nipkow and Larry Paulson and Ren\'e Thiemann},
   url = {https://www.isa-afp.org/},
   date = {2019-08-19},
-  urldate = {2019-08-22}
+  urldate = {2022-12-16}
 }
 
 % Can't tell if this is Bachelor's or Master's, but it's definitely not PhD
@@ -450,8 +470,9 @@
   title = {Xen {CPUID} masking},
   author = {Hans van~Kranenburg},
   date = {2016-08-18},
-  url = {https://tech.mendix.com/linux/2016/08/18/xen-cpuid-masking/},
-  urldate = {2019-07-03}
+  url = {https://web.archive.org/web/20161124002801/https://tech.mendix.com/linux/2016/08/18/xen-cpuid-masking/},
+  urldate = {2022-12-16},
+  note = {Original website does not appear to be available anymore}
 }
 
 @inproceedings{de2008z3,
@@ -2739,31 +2760,31 @@
   school={University of Twente}
 }
 
-@article{zhang2019bda,
-  title = {BDA: Practical Dependence Analysis for Binary Executables by Unbiased Whole-Program Path Sampling and per-Path Abstract Interpretation},
-  author = {Zhang, Zhuo and You, Wei and Tao, Guanhong and Wei, Guannan and Kwon, Yonghwi and Zhang, Xiangyu},
+@periodical{pacmpl2019oopsla,
+  title = PACMPL,
+  shorttitle = {PACMPL},
   date = {2019-10},
   volume = 3,
   number = {OOPSLA},
+  xdata = {acm}
+}
+
+@article{zhang2019bda,
+  title = {BDA: Practical Dependence Analysis for Binary Executables by Unbiased Whole-Program Path Sampling and per-Path Abstract Interpretation},
+  author = {Zhang, Zhuo and You, Wei and Tao, Guanhong and Wei, Guannan and Kwon, Yonghwi and Zhang, Xiangyu},
   doi = {10.1145/3360563},
-  journal = {Proc. ACM Program. Lang.},
-  month = oct,
   eid = 137,
   numpages = 31,
-  xdata = {acm}
+  crossref = {pacmpl2019oopsla}
 }
 
 @article{bastian2019dwarf,
   title = {Reliable and Fast DWARF-Based Stack Unwinding},
   author = {Bastian, Th\'eophile and Kell, Stephen and Zappa Nardelli, Francesco},
-  date = {2019-10},
-  volume = 3,
-  number = {OOPSLA},
   doi = {10.1145/3360572},
-  journal = {Proc. ACM Program. Lang.},
   eid = 146,
   numpages = 24,
-  xdata = {acm}
+  crossref = {pacmpl2019oopsla}
 }
 
 

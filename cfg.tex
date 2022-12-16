@@ -53,7 +53,7 @@ is disassembly of \pgls{arch} binary containing it.
 This is done using a modified version of the \lstinline|reassembly| analysis
 \autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state,wang2017angr}.%
 \index{\texttt{angr}}
-That modified version was provided by \textcite{roessle2019}
+That modified version was provided by \textcite{roessle2019verified}
 for generating assembly usable with their Isabelle parser.%
 \index{\texttt{angr}!\texttt{reassembly}}
 By building on \texttt{angr},
@@ -78,7 +78,7 @@ The process that selects cutpoints%
 \index{cutpoint}
 also generates skeleton memory usage theories for every function analyzed.
 The theory files can then be opened in the theorem prover Isabelle
-and the assembly loaded using the parser of \textcite{roessle2019}.
+and the assembly loaded using the parser of \textcite{roessle2019verified}.
 Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
 and add the necessary sets of memory regions that the functions write to
 in order to complete the proofs of memory usage.
