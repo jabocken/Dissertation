@@ -13,9 +13,12 @@
   publisher = ACM,
   location = ACMLoc
 }
-@XData{lncs,
+@XData{springer,
   publisher = Springer,
-  location = SpringerLoc,
+  location = SpringerLoc
+}
+@XData{lncs,
+  xdata = {springer},
   series = {Lecture Notes in Computer Science},
   shortseries = {LNCS}
 }
@@ -2332,36 +2335,31 @@
   institution = {Intel Corporation}
 }
 
-
-%% Citations that need updating for biblatex style
 @inproceedings{bao2014byteweight,
   title = {{BYTEWEIGHT}: Learning to Recognize Functions in Binary Code},
   author = {Tiffany Bao and Jonathan Burket and Maverick Woo and Rafael Turner and David Brumley},
-  booktitle = {23rd USENIX Security Symposium (USENIX Security 14)},
-  year = 2014,
-  month = aug,
+  booktitle = {23rd USENIX Security Symposium},
+  shorttitle = {USENIX Security 14},
+  date = {2014-08},
   isbn = {978-1-931971-15-7},
-  address = {San Diego, CA},
-  pages = {845--860},
+  venue = {San Diego, CA},
+  pages = {845-860},
   url = {https://www.usenix.org/conference/usenixsecurity14/technical-sessions/presentation/bao},
-  publisher = {USENIX Association},
+  publisher = {USENIX Association}
 }
 
 @inproceedings{pe2020probabilistic,
   title = {Probabilistic Naming of Functions in Stripped Binaries},
   author = {Patrick-Evans, James and Cavallaro, Lorenzo and Kinder, Johannes},
-  year = 2020,
+  date = 2020,
   isbn = {9781450388580},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/3427228.3427265},
-  url = {https://doi.org/10.1145/3427228.3427265},
   booktitle = {Annual Computer Security Applications Conference},
-  pages = {373--385},
+  shorttitle = {ACSAC '20},
+  pages = {373-385},
   numpages = 13,
-  keywords = {machine learning, function names, binaries},
-  location = {Austin, USA},
-  series = {ACSAC '20}
+  venue = {Austin, USA},
+  xdata = {acm}
 }
 
 @article{cifuentes2001recovery,
@@ -2370,12 +2368,11 @@
   journal = {Science of Computer Programming},
   volume = 40,
   number = 2,
-  pages = {171--188},
-  year = 2001,
+  pages = {171-188},
+  date = 2001,
   note = {Special Issue on Program Comprehension},
   issn = {0167-6423},
   doi = {10.1016/S0167-6423(01)00014-4},
-  url = {https://doi.org/10.1016/S0167-6423(01)00014-4}
 }
 
 @InProceedings{flexeder2010reconstruction,
@@ -2383,79 +2380,59 @@
   author="Flexeder, Andrea and Mihaila, Bogdan and Petter, Michael and Seidl, Helmut",
   editor="Ueda, Kazunori",
   booktitle="Programming Languages and Systems",
-  year=2010,
-  publisher="Springer Berlin Heidelberg",
-  address="Berlin, Heidelberg",
-  pages="188--203",
+  date=2010,
+  pages="188-203",
   isbn="978-3-642-17164-2",
   doi={10.1007/978-3-642-17164-2_14},
-  url={https://doi.org/10.1007/978-3-642-17164-2_14}
+  xdata = {springer}
 }
 
 @inproceedings{gedich2015switch,
   title={Improved Algorithm for Identification of Switch Tables in Executable Code},
   author={Gedich, Andrei and Lazdin, Artur},
-  booktitle={2015 17th Conference of Open Innovations Association (FRUCT)},
+  booktitle={Open Innovations Association},
+  booktitleaddon={17th Conference},
+  shorttitle = {FRUCT},
   year=2015,
-  volume={},
-  number={},
-  pages={44--49},
-  doi={10.1109/FRUCT.2015.7117969},
-  url={https://doi.org/10.1109/FRUCT.2015.7117969}
+  pages={44-49},
+  doi={10.1109/FRUCT.2015.7117969}
 }
 
-% DOI/URL for final version!
-@inproceedings{an2022dsv,
-  title={{DSV}: Disassembly Soundness Validation without Assuming a Ground Truth},
-  author={Xiaoxin An and Freek Verbeek and Binoy Ravindran},
-  booktitle={14th NASA Formal Methods Symposium},
-  series={NFM 2022},
-  year=2022,
-  month=may,
-  day={24--27},
-  location={Pasadena, California, USA}
-}
-
-@misc{using-setjmp-and-longjmp,
+@online{using-setjmp-and-longjmp,
   title = {Using setjmp and longjmp | {Microsoft} Docs},
   author = {corob-msft and v-kents and mikeblome and Mikejo5000 and ghogen and Saisang},
-  year = 2021,
-  month = aug,
-  day = 3,
-  url = {https://docs.microsoft.com/en-us/cpp/cpp/using-setjmp-longjmp?view=msvc-170},
-  note = {Accessed May 21, 2022}
+  date = {2021-08-03},
+  urldate = {2022-05-22},
+  url = {https://docs.microsoft.com/en-us/cpp/cpp/using-setjmp-longjmp?view=msvc-170}
 }
 
 @article{cousot1996abstract,
   title={Abstract Interpretation},
   author={Cousot, Patrick},
-  journal={ACM Computing Surveys (CSUR)},
+  journal={ACM Computing Surveys},
+  shorttitle={CSUR},
   volume=28,
   number=2,
-  pages={324--328},
-  year=1996,
-  publisher={ACM New York, NY, USA},
-  doi={10.1145/234528.234740}
+  pages={324-328},
+  date=1996,
+  doi={10.1145/234528.234740},
+  xdata={acm}
 }
 
-@misc{binary-ninja,
+@online{binary-ninja,
   title={{Binary Ninja}},
   author={{VECTOR 35}},
   url={https://binary.ninja},
-  day=10,
-  month=may,
-  year=2022,
-  note={Accessed May 18, 2022}
+  date={2022-05-10},
+  urldate={2022-05-18}
 }
 
-@misc{binary-ninja-decompiler,
+@online{binary-ninja-decompiler,
   title={Binary Ninja},
   author={Jordan Wiens},
   url={https://binary.ninja/2020/05/11/decompiler-stable-release.html},
-  year=2020,
-  month=may,
-  day=11,
-  note={Accessed 2020-07-06}
+  date={2020-05-11},
+  urldate={2020-07-06}
 }
 
 @online{ida,
@@ -2472,187 +2449,169 @@
   urldate = {2022-11-18}
 }
 
-@misc{ghidra,
-  title={Ghidra},
-  author={NSA},
-  year=2021,
-  month=jun,
-  day=30,
-  url={https://ghidra-sre.org/},
-  note={Accessed May 18, 2022}
-}
-
-@misc{mcsema,
-  title={lifting-bits/mcsema: Framework for lifting x86, amd64, aarch64, sparc32, and sparc64 program binaries to {LLVM} bitcode},
-  author={{Trail of Bits}},
-  url={https://github.com/lifting-bits/mcsema},
-  note={Accessed December 2, 2022}
-}
-
-@misc{mcsema-exceptions,
-  title={How {McSema} Handles {C++} Exceptions | {Trail of Bits} Blog},
-  author={kumarak},
-  year=2019,
-  month=jan,
-  day=21,
-  url={https://blog.trailofbits.com/2019/01/21/how-mcsema-handles-c-exceptions/},
-  note={Accessed May 18, 2022}
-}
-
-@misc{retdec,
-  title={RetDec :: Home},
-  author={{Avast Software}},
-  url={https://retdec.com/},
-  note={Accessed May 18, 2022}
-}
-
 @inproceedings{g2019idapro,
   title = {{IDAPro} for {IoT} Malware Analysis?},
   author = {Sri Shaila G and Ahmad Darki and Michalis Faloutsos and Nael Abu-Ghazaleh and Manu Sridharan},
-  booktitle = {12th USENIX Workshop on Cyber Security Experimentation and Test (CSET 19)},
-  year = 2019,
-  month = aug,
-  address = {Santa Clara, CA},
+  booktitle = {Cyber Security Experimentation and Test},
+  booktitleaddon = {12th USENIX Workshop},
+  shorttitle = {CSET 19},
+  date = {2019-08},
+  venue = {Santa Clara, CA},
   url = {https://www.usenix.org/conference/cset19/presentation/g},
   publisher = {USENIX Association}
+}
+
+@online{ghidra,
+  title={Ghidra},
+  author={NSA},
+  url={https://ghidra-sre.org/},
+  date={2021-06-30},
+  urldate={2022-05-18}
 }
 
 @inproceedings{rohleder2019ghidra,
   title = {Hands-On {Ghidra} -- A Tutorial about the Software Reverse Engineering Framework},
   author = {Rohleder, Roman},
-  year = 2019,
+  date = 2019,
   isbn = {9781450368353},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/3338503.3357725},
-  booktitle = {Proceedings of the 3rd ACM Workshop on Software Protection},
-  pages = {77–78},
-  numpages = 2,
-  keywords = {code lifting, disassembly, decompilation, framework, reverse engineering},
-  location = {London, United Kingdom},
-  series = {SPRO'19}
+  booktitle = {Software Protection},
+  booktitleaddon = {Proceedings of the 3rd ACM Workshop},
+  shorttitle = {SPRO'19},
+  pages = {77-78},
+  venue = {London, United Kingdom},
+  xdata = {acm}
+}
+
+@online{mcsema,
+  title={lifting-bits/mcsema: Framework for lifting x86, amd64, aarch64, sparc32, and sparc64 program binaries to {LLVM} bitcode},
+  author={{Trail of Bits}},
+  url={https://github.com/lifting-bits/mcsema},
+  urldate={2022-12-02}
+}
+
+@online{mcsema-exceptions,
+  title={How {McSema} Handles {C++} Exceptions | {Trail of Bits} Blog},
+  author={kumarak},
+  url={https://blog.trailofbits.com/2019/01/21/how-mcsema-handles-c-exceptions/},
+  date={2019-01-21},
+  urldate={2022-05-18}
+}
+
+@online{retdec,
+  title={RetDec :: Home},
+  author={{Avast Software}},
+  url={https://retdec.com/},
+  urldate={2022-05-18}
 }
 
 @inproceedings{liu2020correctness,
   title = {How Far We Have Come: Testing Decompilation Correctness of {C} Decompilers},
   author = {Liu, Zhibo and Wang, Shuai},
-  year = 2020,
+  date = 2020,
   isbn = {9781450380089},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/3395363.3397370},
-  booktitle = {Proceedings of the 29th ACM SIGSOFT International Symposium on Software Testing and Analysis},
-  pages = {475--487},
-  numpages = 13,
-  keywords = {Reverse Engineering, Decompiler, Software Testing},
-  location = {Virtual Event, USA},
-  series = {ISSTA 2020}
+  booktitle = {Software Testing and Analysis},
+  booktitleaddon = {Proceedings of the 29th ACM SIGSOFT International Symposium},
+  shorttitle = {ISSTA 2020},
+  pages = {475-487},
+  venue = {Virtual Event, USA},
+  xdata = {acm}
 }
 
-% volume={},
-% number={},
-@INPROCEEDINGS{pang2021sok,
+@inproceedings{pang2021sok,
   title={{SoK}: All You Ever Wanted to Know About x86/x64 Binary Disassembly But Were Afraid to Ask},
   author={Pang, Chengbin and Yu, Ruotong and Chen, Yaohui and Koskinen, Eric and Portokalidis, Georgios and Mao, Bing and Xu, Jun},
-  booktitle={2021 IEEE Symposium on Security and Privacy (SP)},
-  year=2021,
-  pages={833--851},
+  booktitle={Security and Privacy},
+  booktitleaddon={2021 IEEE Symposium},
+  shorttitle={SP},
+  date=2021,
+  pages={833-851},
   doi={10.1109/SP40001.2021.00012}
 }
 
 @inproceedings{dasgupta2020scalable,
   title = {Scalable Validation of Binary Lifters},
   author = {Dasgupta, Sandeep and Dinesh, Sushant and Venkatesh, Deepan and Adve, Vikram S. and Fletcher, Christopher W.},
-  booktitle = {Proceedings of the 41st ACM SIGPLAN Conference on Programming Language Design and Implementation},
-  year = 2020,
+  booktitle = {Programming Language Design and Implementation},
+  booktitleaddon = {Proceedings of the 41st ACM SIGPLAN Conference},
+  shorttitle = {PLDI 2020},
+  date = 2020,
   isbn = {9781450376136},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/3385412.3385964},
-  pages = {655--671},
-  numpages = 17,
-  location = {London, UK},
-  series = {PLDI 2020}
+  pages = {655-671},
+  venue = {London, UK},
+  xdata = {acm}
 }
 
 @phdthesis{foudree2019regsym,
   title={``Regsym'': Dataflow Analysis of Linear x86 Code},
   author={Foudree, Grant R.},
-  year=2019,
+  date=2019,
   pages=46,
   school={Iowa State University},
   isbn={9781392741757},
-  language={English},
+  language={English}
 }
 
 @InProceedings{hutton2004compiling,
-  title="Compiling Exceptions Correctly",
-  author="Hutton, Graham and Wright, Joel",
-  editor="Kozen, Dexter",
-  booktitle="Mathematics of Program Construction",
-  year=2004,
-  publisher="Springer Berlin Heidelberg",
-  address="Berlin, Heidelberg",
-  pages="211--227",
-  isbn="978-3-540-27764-4",
+  title={Compiling Exceptions Correctly},
+  author={Hutton, Graham and Wright, Joel},
+  editor={Kozen, Dexter},
+  booktitle={Mathematics of Program Construction},
+  booktitleaddon={Proceedings of the 7th International Conference},
+  shorttitle={MPC 2004},
+  venue={Stirling, Scotland, UK},
+  eventdate={2004-07-12/2004-07-14},
+  date=2004,
+  pages={211-227},
+  isbn={978-3-540-27764-4},
   doi={10.1007/978-3-540-27764-4_12},
-  url={https://doi.org/10.1007/978-3-540-27764-4_12}
+  xdata={lncs},
+  number=3125
 }
 
 @InProceedings{prabhu2011interprocedural,
-  title="Interprocedural Exception Analysis for {C++}",
-  author="Prabhu, Prakas and Maeda, Naoto and Balakrishnan, Gogul and Ivan\v{c}i\'c, Franjo and Gupta, Aarti",
-  editor="Mezini, Mira",
-  booktitle="ECOOP 2011 -- Object-Oriented Programming",
-  year=2011,
-  publisher="Springer Berlin Heidelberg",
-  address="Berlin, Heidelberg",
-  pages="583--608",
-  isbn="978-3-642-22655-7",
+  title={Interprocedural Exception Analysis for {C++}},
+  author={Prabhu, Prakas and Maeda, Naoto and Balakrishnan, Gogul and Ivan\v{c}i\'c, Franjo and Gupta, Aarti},
+  editor={Mezini, Mira},
+  booktitle={Object-Oriented Programming},
+  booktitleaddon={Proceedings of the 25th European Conference},
+  shorttitle={ECOOP 2011},
+  date=2011,
+  venue={Lancaster, UK},
+  eventdate={2011-07-25/2011-07-29},
+  pages={583-608},
+  isbn={978-3-642-22655-7},
   doi={10.1007/978-3-642-22655-7_27},
-  url={https://doi.org/10.1007/978-3-642-22655-7_27}
+  xdata={lncs},
+  shortseries={LNPSE},
+  number=6813
 }
 
-@inbook{kechagia2019misuse,
-  author = {Kechagia, Maria and Devroey, Xavier and Panichella, Annibale and Gousios, Georgios and van~Deursen, Arie},
+@inproceedings{kechagia2019misuse,
   title = {Effective and Efficient {API} Misuse Detection via Exception Propagation and Search-Based Testing},
-  year = 2019,
+  author = {Kechagia, Maria and Devroey, Xavier and Panichella, Annibale and Gousios, Georgios and van~Deursen, Arie},
+  booktitle = {Software Testing and Analysis},
+  booktitleaddon = {Proceedings of the 28th ACM SIGSOFT International Symposium},
+  shorttitle = {ISSTA '19},
+  date = {2019-07-10},
+  venue = {Beijing, China},
+  eventdate = {2019-07-15/2019-07-19},
   isbn = {9781450362245},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/3293882.3330552},
-  url = {https://doi.org/10.1145/3293882.3330552},
-  booktitle = {Proceedings of the 28th ACM SIGSOFT International Symposium on Software Testing and Analysis},
-  pages = {192--203},
-  numpages = 12
-}
-
-@article{bastian2019dwarf,
-  author = {Bastian, Th\'eophile and Kell, Stephen and Zappa Nardelli, Francesco},
-  title = {Reliable and Fast DWARF-Based Stack Unwinding},
-  year = 2019,
-  issue_date = {October 2019},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
-  volume = 3,
-  number = {OOPSLA},
-  url = {https://doi.org/10.1145/3360572},
-  doi = {10.1145/3360572},
-  journal = {Proc. ACM Program. Lang.},
-  month = oct,
-  eid = 146,
-  numpages = 24,
-  keywords = {stack unwinding, DWARF, debugging}
+  pages = {192-203},
+  xdata = {acm}
 }
 
 @inproceedings{kumar2018software,
   title={Software Verification with {ITPs} Should Use Binary Code Extraction to Reduce the {TCB}},
   author={Kumar, Ramana and Mullen, Eric and Tatlock, Zachary and Myreen, Magnus O.},
   booktitle={International Conference on Interactive Theorem Proving},
-  pages={362--369},
-  year=2018,
-  organization={Springer},
-  doi={10.1007/978-3-319-94821-8_21}
+  pages={362-369},
+  date=2018,
+  doi={10.1007/978-3-319-94821-8_21},
+  xdata={springer}
 }
 
 @incollection{klein2010refinement,
@@ -2660,63 +2619,75 @@
   author = {Klein, Gerwin and Sewell, Thomas and Winwood, Simon},
   editor = {Hardin, David S.},
   bookTitle = {Design and Verification of Microprocessor Systems for High-Assurance Applications},
-  year = 2010,
+  date = 2010,
   publisher = {Springer Science+Business Media, LLC},
-  address = {Boston, MA},
-  pages = {323--339},
+  venue = {Boston, MA},
+  pages = {323-339},
   isbn = {978-1-4419-1539-9},
-  doi = {10.1007/978-1-4419-1539-9_11},
+  doi = {10.1007/978-1-4419-1539-9_11}
 }
 
 @InProceedings{kamkin2020deductive,
-  title="Deductive Binary Code Verification Against Source-Code-Level Specifications",
-  author="Kamkin, Alexander and Khoroshilov, Alexey and Kotsynyak, Artem and Putro, Pavel",
-  editor="Ahrendt, Wolfgang and Wehrheim, Heike",
-  booktitle="Tests and Proofs",
-  year=2020,
-  publisher="Springer International Publishing",
-  address="Cham",
-  pages="43--58",
+  title={Deductive Binary Code Verification Against Source-Code-Level Specifications},
+  author={Kamkin, Alexander and Khoroshilov, Alexey and Kotsynyak, Artem and Putro, Pavel},
+  editor={Ahrendt, Wolfgang and Wehrheim, Heike},
+  booktitle={Tests and Proofs},
+  date=2020,
+  publisher={Springer International Publishing},
+  address={Cham},
+  pages={43-58},
   doi= {10.1007/978-3-030-50995-8_3},
 }
 
 @inproceedings{bardin2011bincoa,
-  title={The BINCOA framework for binary code analysis},
+  title={The {BINCOA} Framework for Binary Code Analysis},
   author={Bardin, S{\'e}bastien and Herrmann, Philippe and Leroux, J{\'e}r{\^o}me and Ly, Olivier and Tabary, Renaud and Vincent, Aymeric},
-  booktitle={International Conference on Computer Aided Verification},
-  pages={165--170},
-  year={2011},
-  organization={Springer},
-  doi ={10.1007/978-3-642-22110-1_13}
+  booktitle={Computer Aided Verification},
+  booktitleaddon={Proceedings of the 23rd International Conference},
+  shorttitle={CAV 2011},
+  pages={165-170},
+  date={2011},
+  venue={Snowbird, UT, USA},
+  eventdate={2011-07-14/2011-07-20},
+  publisher={Springer},
+  doi={10.1007/978-3-642-22110-1_13},
+  xdata={lncs},
+  shortseries={LNTCS},
+  number=6806
 }
 
 @inproceedings{daniel2020binsec,
-  title={Binsec/rel: Efficient relational symbolic execution for constant-time at binary-level},
+  title={Binsec/rel: Efficient Relational Symbolic Execution for Constant-Time at Binary-Level},
   author={Daniel, Lesly-Ann and Bardin, S{\'e}bastien and Rezk, Tamara},
-  booktitle={2020 IEEE Symposium on Security and Privacy (SP)},
-  pages={1021--1038},
-  year={2020},
-  organization={IEEE},
-  doi={10.1109/SP40000.2020.00074}
+  booktitle={Security and Privacy},
+  booktitleaddon={2020 IEEE Symposium},
+  shorttitle={SP},
+  pages={1021-1038},
+  date=2020,
+  doi={10.1109/SP40000.2020.00074},
+  xdata={ieee}
 }
 
 @inproceedings{reinbacher2011test,
-  title={Test-case generation for embedded binary code using abstract interpretation},
+  title={Test-Case Generation for Embedded Binary Code using Abstract Interpretation},
   author={Reinbacher, Thomas and Brauer, J\"org and Horauer, Martin and Steininger, Andreas and Kowalewski, Stefan},
-  booktitle={Sixth Doctoral Workshop on Mathematical and Engineering Methods in Computer Science (MEMICS'10)--Selected Papers},
-  year={2011},
+  booktitle={Mathematical and Engineering Methods in Computer Science},
+  booktitleaddon={Sixth Doctoral Workshop---Selected Papers},
+  shorttitle={MEMICS'10},
+  date=2011,
   organization={Schloss Dagstuhl-Leibniz-Zentrum fuer Informatik},
   doi =	{10.4230/OASIcs.MEMICS.2010.101}
 }
 
 @inproceedings{redini2019b,
-  title={Bin{T}rimmer: Towards static binary debloating through abstract interpretation},
+  title={Bin{T}rimmer: Towards Static Binary Debloating Through Abstract Interpretation},
   author={Redini, Nilo and Wang, Ruoyu and Machiry, Aravind and Shoshitaishvili, Yan and Vigna, Giovanni and Kruegel, Christopher},
-  booktitle={International Conference on Detection of Intrusions and Malware, and Vulnerability Assessment},
-  pages={482--501},
-  year={2019},
-  organization={Springer},
+  booktitle={Detection of Intrusions and Malware, and Vulnerability Assessment},
+  booktitleaddon={International Conference},
+  pages={482-501},
+  date=2019,
   doi={10.1007/978-3-030-22038-9_23 },
+  xdata={springer}
 }
 
 @Inproceedings{steffen2011active,
@@ -2724,72 +2695,79 @@
   author="Steffen, Bernhard and Howar, Falk and Merten, Maik",
   editor="Bernardo, Marco and Issarny, Val\'erie",
   bookTitle="Formal Methods for Eternal Networked Software Systems: 11th International School on Formal Methods for the Design of Computer, Communication and Software Systems",
-  series="SFM 2011",
-  year=2011,
-  month=jun,
-  day="13--18",
-  location="Bertinoro, Italy",
-  publisher="Springer Berlin Heidelberg",
-  address="Berlin, Heidelberg",
-  pages="256--296",
+  shorttitle="SFM 2011",
+  eventdate={2011-06-13/2011-06-18},
+  venue="Bertinoro, Italy",
+  xdata={springer},
+  pages="256-296",
   isbn="978-3-642-21455-4",
   doi="10.1007/978-3-642-21455-4\_8"
 }
 
 @inproceedings{fiter2017ssh,
-  author = {Fiter\u{a}u-Bro\c{s}tean, Paul and Lenaerts, Toon and Poll, Erik and de~Ruiter, Joeri and Vaandrager, Frits and Verleg, Patrick},
   title = {Model Learning and Model Checking of {SSH} Implementations},
-  year = 2017,
+  author = {Fiter\u{a}u-Bro\c{s}tean, Paul and Lenaerts, Toon and Poll, Erik and de~Ruiter, Joeri and Vaandrager, Frits and Verleg, Patrick},
+  booktitle = {Model Checking of Software},
+  booktitleaddon = {Proceedings of the 24th ACM SIGSOFT International SPIN Symposium},
+  shorttitle = {SPIN 2017},
+  date = 2017,
   isbn = 9781450350778,
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/3092282.3092289},
-  booktitle = {Proceedings of the 24th ACM SIGSOFT International SPIN Symposium on Model Checking of Software},
-  pages = {142--151},
-  numpages = 10,
-  location = {Santa Barbara, CA, USA},
-  series = {SPIN 2017}
+  pages = {142-151},
+  venue = {Santa Barbara, CA, USA},
+  xdata = {acm}
 }
 
 @inproceedings{raffelt2005learnlib,
-  author = {Raffelt, Harald and Steffen, Bernhard and Berg, Therese},
   title = {LearnLib: A Library for Automata Learning and Experimentation},
-  year = 2005,
+  author = {Raffelt, Harald and Steffen, Bernhard and Berg, Therese},
+  booktitle = {Formal Methods for Industrial Critical Systems},
+  booktitleaddon = {Proceedings of the 10th International Workshop},
+  shorttitle = {FMICS ’05},
+  date = 2005,
   isbn = 1595931481,
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
   doi = {10.1145/1081180.1081189},
-  booktitle = {Proceedings of the 10th International Workshop on Formal Methods for Industrial Critical Systems},
-  pages = {62--71},
-  numpages = 10,
-  location = {Lisbon, Portugal},
-  series = {FMICS ’05}
+  pages = {62-71},
+  venue = {Lisbon, Portugal},
+  xdata = {acm}
 }
 
 @mastersthesis{kerkers2017assessing,
   title={Assessing the Security of {IEC} 60870-5-104 Implementations Using Automata Learning},
   author={Kerkers, Max},
-  year=2017,
+  date=2017,
   school={University of Twente}
 }
 
 @article{zhang2019bda,
-  author = {Zhang, Zhuo and You, Wei and Tao, Guanhong and Wei, Guannan and Kwon, Yonghwi and Zhang, Xiangyu},
   title = {BDA: Practical Dependence Analysis for Binary Executables by Unbiased Whole-Program Path Sampling and per-Path Abstract Interpretation},
-  year = {2019},
-  issue_date = {October 2019},
-  publisher = {Association for Computing Machinery},
-  address = {New York, NY, USA},
-  volume = {3},
+  author = {Zhang, Zhuo and You, Wei and Tao, Guanhong and Wei, Guannan and Kwon, Yonghwi and Zhang, Xiangyu},
+  date = {2019-10},
+  volume = 3,
   number = {OOPSLA},
   doi = {10.1145/3360563},
   journal = {Proc. ACM Program. Lang.},
   month = oct,
   eid = 137,
-  numpages = {31},
-  keywords = {Binary Analysis, Abstract Interpretation, Path Sampling, Data Dependence}
+  numpages = 31,
+  xdata = {acm}
 }
 
+@article{bastian2019dwarf,
+  title = {Reliable and Fast DWARF-Based Stack Unwinding},
+  author = {Bastian, Th\'eophile and Kell, Stephen and Zappa Nardelli, Francesco},
+  date = {2019-10},
+  volume = 3,
+  number = {OOPSLA},
+  doi = {10.1145/3360572},
+  journal = {Proc. ACM Program. Lang.},
+  eid = 146,
+  numpages = 24,
+  xdata = {acm}
+}
+
+
+%% Citations that need updating for biblatex style
 @phdthesis{kinder2010static,
   title = {Static Analysis of x86 Executables},
   author = {Johannes Kinder},
@@ -2919,4 +2897,16 @@
   month = {nov},
   pages = {265–310},
   numpages = {46}
+}
+
+% DOI/URL for final version!
+@inproceedings{an2022dsv,
+  title={{DSV}: Disassembly Soundness Validation without Assuming a Ground Truth},
+  author={Xiaoxin An and Freek Verbeek and Binoy Ravindran},
+  booktitle={14th NASA Formal Methods Symposium},
+  series={NFM 2022},
+  year=2022,
+  month=may,
+  day={24--27},
+  location={Pasadena, California, USA}
 }
