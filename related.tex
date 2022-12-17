@@ -254,7 +254,7 @@ It was also used to produce a proof of correctness for a model of
 
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
-was the verification of the seL4 kernel \autocite{klein2009sel4,Klein_AEMSKH_14}.
+was the verification of the seL4 kernel \autocite{klein2009sel4,klein2014comprehensive}.
 The seL4 project provides a microkernel written in formally proven correct \gls{c} code.
 The tool AutoCorres is used for \gls{c} code verification \autocite{greenaway2012bridging}.
 \Textcite{sewell2013tvv} verified a \emph{refinement relation} between the \gls{c} source code
@@ -339,7 +339,7 @@ so a program that has previously been verified correct
 is verified to still be correct after compilation.
 
 The CompCert project is one such verified compiler,
-used by the seL4 project to reduce its \ac{tcb} \autocite{Klein_AEMSKH_14}.
+used by the seL4 project to reduce its \ac{tcb} \autocite{klein2014comprehensive}.
 It is written in a subset of C
 called Clight \autocite{leroy:compcert,blazy2009clight},
 though it itself is able to handle most components of the C99 standard.
