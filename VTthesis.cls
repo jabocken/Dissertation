@@ -35,8 +35,10 @@
 %   * Added bookmargins option
 %   * Integrated mathtools inclusion with AMS stuff
 %   * Disabled hyperref anchors in the title pages due to an annoying warning and moved around some \thispagestyle commands.
+%   * Switched to a more eye-pleasing link color style
 %   * Switched to glossaries for nomenclature/etc.
 %   * Added usage of thmtools so we can have list of theorems/etc. (and gave Remark the remark style)
+%   * Fixed issue with general audience abstract not formatting right when going onto the next page.
 %-------------------------------------------------------------------------
 
 %%% IDENTIFICATION --------------------------------------------------------
@@ -79,7 +81,6 @@
 %% Modern citations
 \RequirePackage[utf8]{inputenc} % if you want to include UTF-8 characters in your source when not using XeLaTeX or LuaTeX; also avoids biber warnings when using accents and stuff
 \RequirePackage[
-%  citestyle=num-comp-fix, % Using custom numeric-comp with auto nb-spacing for \cite and \parencite
   citestyle=numeric-comp,
   maxbibnames=99 % Avoids `et al.` in bibliography
 ]{biblatex} % if issues occur with utf8 inputenc, try the safeinputenc option
@@ -390,12 +391,12 @@
   \fpbookmark{#1}%
   \center % using env macros rather than begin/end means no new group is created
 }{\endcenter}
-\newcommand\abstractpage[2]{\begin{frontpage}{#1}%
+\newcommand\abstractpage[3]{\begin{frontpage}{#1}%
     \thispagestyle{empty} % Title pages should have no style
     {\Large \@title}
-    \vfill
+    #3
     \@author
-    \vfill
+    #3
     (\MakeUppercase{#1})
   \end{frontpage}%
   \vfill
@@ -455,12 +456,12 @@
   \vspace*\fill
 \end{frontpage}}
 
-%This is where the main magic happens
+%This is where the main magic happens; the extra arg to \abstractpage is kind of hacky and really shouldn't be here but I don't know where else to put it to get this formatting right.
 \renewcommand\maketitle{%
   \hypersetup{pageanchor=false}
   \titlepage
-  \ifbool{@abs}{\abstractpage{Abstract}\@abstract}{}
-  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud}{}
+  \ifbool{@abs}{\abstractpage{Abstract}\@abstract\vfill}{}
+  \ifbool{@gaa}{\abstractpage{General Audience Abstract}\@abstractgenaud\par}{}
   \hypersetup{pageanchor=true}
   \ifbool{@ded}\dedpage{}
   \ifbool{@ack}{\chapter*{Acknowledgments}\@acknowledge}{}
