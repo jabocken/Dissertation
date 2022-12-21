@@ -157,7 +157,7 @@ The three programs they focused on for their case study
 were designed to record speed measurements from sensors on four wheels,
 calculate the actual speed, and then transmit it over \iac{can} bus.\footnote{%
   \Iac{can} bus is a standard bus for electronic communications
-  in automotive applications. \todo{this would be great as a glossary entry!}%
+  in automotive applications.%
 }
 Some of the programs required simplification to be checkable,
 so for consistency they applied, or at least attempted to apply,
@@ -291,7 +291,7 @@ PROSPER, at the assembly level.
 Separation kernels are similar to hypervisors,
 providing isolation for individual components of a system and ensuring
 only those components that are allowed to communicate do \autocite{rushby1981dvss}.
-Their methodology integrated HOL4 with \ac{bap} \autocite{brumley2011bap}.
+Their methodology integrated HOL4 with \ac{bap}.
 \Ac{bap} utilizes a custom intermediate language
 that provides an architecture-agnostic representation of machine instructions
 and their side effects.
@@ -510,11 +510,11 @@ efficient but incomplete techniques, such as depth-bounded searches.
 We relate our work for \ac{hg} lifting to existing approaches for disassembly (\cref{related-disassembly}), binary decompilation (\cref{related-decompilation}), binary verification (\cref{related-hg-verification}), and abstract interpretation (\cref{related-absint}), as well as ones that learn state machines from black-box implementations (\cref{related-automata}).
 To the best of our knowledge, the only existing work that has similar focus on disassembly based on formal methods is Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, which we therefore discuss in more detail.
 
-\todo{comparison figure if I have time?}
+%TODO: comparison figure if I have time
 
 \subsection{Jakstab}\label{related-jakstab}
 Jakstab performs binary analysis and control flow reconstruction by utilizing abstract interpretation, like those works in \cref{related-absint}.
-Its main analysis was designed for binaries with potentially handcrafted, obfuscated behavior (such as device drivers and malware),
+Its main analysis was designed for binaries with potentially handcrafted, obfuscated behavior (such as Windows device drivers and malware),
 and much like our \ac{hg} lifting, it uses a form of at-will disassembly.
 This means that only specific series of bytes queried from specific locations in the binary are disassembled.
 
@@ -564,13 +564,9 @@ as it provides memory models for standard aliasing conditions.
 
 \begin{remark}[Issues using Jakstab]
   We were not able to directly compare the behavior of Jakstab with our lifting mechanism.
-  Jakstab on its own did not work due to unsound assumptions on the structure of \ac{elf} binaries.\fturl{https://github.com/jkinder/jakstab/issues/9}
-  \todo{make a citation instead?}
+  Jakstab on its own did not work due to unsound assumptions on the structure of \ac{elf} binaries \autocite{jakstab-error}.
   This is likely due to its development being primarily focused on the handling of Windows programs.
-  Even so, while were able to successfully test with a modified version \autocite{peterson2019},%
-  \fturl{https://github.com/tpetersonkth/AlternatingControlFlowReconstruction/}
-  \todo{the footnote should be a citation too}
-  we were not able to do a comparison as Jakstab does not support 64-bit binaries.
+  Even so, while were able to successfully test with a modified version \autocite{peterson2019,peterson2019artifact}, we were not able to do a comparison as Jakstab does not support 64-bit binaries.
 \end{remark}
 
 \subsection{Disassembly}\label{related-disassembly}
@@ -617,7 +613,7 @@ The key differences between our lifting work and existing disassemblers are that
 The cost of our approach is that it may fail, whereas other approaches are able to guess or use heuristics to continue.
 
 \subsection{Binary Decompilation}\label{related-decompilation}
-\todo{some more!: 10.1002/spe.4380250706, 10.1109/SANER.2018.8330222}
+% TODO some more!: cifuentes1995decompilation, 10.1109/SANER.2018.8330222
 
 As mentioned in the introduction to this dissertation, a decompiler takes a binary or other low-level source as input and lifts it to a higher-level representation.
 RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to \gls{c} code.
@@ -687,8 +683,7 @@ For example, \textcite{fiter2017ssh} used automata learning to infer the functio
 Their learning methodology was based on LearnLib \autocite{raffelt2005learnlib}, an automata learning library.
 Automata learning typically produces abstract high-level models concerning the in/output relations at the protocol level.
 Their \emph{mapper}, which maps back and forth from abstract inputs/outputs to concrete packages to be sent to/received from the server,
-was based on the Paramiko\fturl{https://www.paramiko.org/}
-\ac{ssh} client implementation.
+was based on the Paramiko \autocite{paramiko} \ac{ssh} client implementation.
 
 \Textcite{kerkers2017assessing} performed security analysis
 of power distribution \acp{ics} using automata learning.
