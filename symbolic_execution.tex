@@ -48,10 +48,9 @@ various instructions and their variants (\cref{se:rewrite}).
 In order to perform symbolic execution,
 you must first have some sort of \emph{machine model}.%
 \index{symbolic!execution!machine model}
-The machine model used in this dissertation for the work in Isabelle/HOL
-is an extension of the work of \textcite{roessle2019verified}.
-They embedded in Isabelle/HOL a bitvector-based, big-step semantics
-machine-learned from a modern version of the \gls{arch} \ac{isa}.
+The machine model used in this dissertation for the work in \gls{isabelle}[/HOL] is an extension of the work of \textcite{roessle2019verified}.
+They embedded a bitvector-based, big-step semantics
+machine-learned from a modern version of the \gls{arch} \ac{isa} in \gls{isabelle}[/HOL].
 That semantics included instruction set extensions such as the \ac{sse} family
 to increase the possible programs the semantics could execute.
 To improve reliability of their work,
@@ -66,7 +65,7 @@ and found that in the few cases where they differed, the Intel manuals were wron
 Note that this model does not include concurrency.
 
 The model is structured as follows.
-It has some symbolic \emph{state} defined as an Isabelle record
+It has some symbolic \emph{state} defined as an \gls{isabelle} record
 that stores registers, flags, and 64-bit byte-addressable memory.
 The memory holds both instructions and data, as in the standard von Neumann model.%
 \index{von Neumann model}
@@ -100,7 +99,7 @@ and its size in bytes~$s$ is a natural number.
 
 Reading a region of memory from some state~$\sigma$
 uses the notation $\readmemS{\sigma}{a}{s}$.
-In Isabelle, this operation internally reads the list of~$s$ bytes
+In \gls{isabelle}, this operation internally reads the list of~$s$ bytes
 starting from the given address~$a$ in the appropriate order
 and converts it to a word.
 If it is clear from context which state is meant, the state will be omitted.
@@ -120,9 +119,7 @@ it can be a region, register, or flag.%
 \index{memory!region}
 Flags can only take boolean expressions while
 the result for a register must be a 64-bit word.
-The behavior for regions in Isabelle
-is to internally decompose the expression to write
-into its component bytes and then write those into memory in the appropriate order.
+The behavior for regions in \gls{isabelle} is to internally decompose the expression to write into its component bytes and then write those into memory in the appropriate order.
 The expressions themselves are of type~\gls{esp},
 representing expressions over state parts.
 These expressions consist of common bit-vector\index{symbolic!bit vector}
@@ -153,7 +150,7 @@ are designed with that in mind.
 \end{example}
 Support for big-endian architectures would require changing how reads and writes%
 \index{endianness!big}
-are performed, as both the formal Isabelle and informal Haskell models
+are performed, as both the formal \gls{isabelle} and informal Haskell models
 assume little-endianness in their implementation.
 Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 \index{endianness!bi}
@@ -193,7 +190,7 @@ as they greatly reduce the number of simplification rules that must be applied.
 
 %\subsection{Word Arithmetic Simplification}
 %Word arithmatic is not easy to reason about formally,
-%and the Isabelle/HOL Word library lacks many simplification rules for operations
+%and the \gls{isabelle}[/HOL] Word library lacks many simplification rules for operations
 %performed by assembly instructions, particularly when casting is involved.
 %todo: more eventually?
 
@@ -251,9 +248,9 @@ To combine those writes, the regions must be \emph{merged}.%
 \begin{definition}[Merging]\label{def:merge}
   The \emph{merge}\footnote{%
     This merge operates on the bit level,
-    but technically the original Isabelle version uses byte lists;
+    but technically the original \gls{isabelle} version uses byte lists;
     also, the Haskell version merges the left region onto the right,
-    not the right onto the left as the Isabelle version does.%
+    not the right onto the left as the \gls{isabelle} version does.%
   }
   of two symbolic assignments
   $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
@@ -438,7 +435,7 @@ However, they \emph{cannot} infer enclosure.
 
 Often, the only way to prove enclosure is to unfold its definition.
 This introduces two inequalities over words, as shown in \cref{def:enc}.
-Such inequalities can be solved using the Isabelle/HOL tool \lstinline{unat_arith}, which is an arithmetic equation solver for bitvectors \autocite{dawson2009isabelle,isabelle-word-session}.
+Such inequalities can be solved using the \gls{isabelle}[/HOL] tool \lstinline{unat_arith}, which is an arithmetic equation solver for bitvectors \autocite{dawson2009isabelle,isabelle-word-session}.
 That tool is augmented with several heuristics
 and auxiliary lemmas to facilitate enclosure proofs.
 However, such proofs are time-consuming

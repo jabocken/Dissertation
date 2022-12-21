@@ -310,9 +310,7 @@ The other two are methods for control flow recovery from binaries.
 
 The first two contributions are the memory usage approaches: \emph{Floyd-style} verification and \emph{Hoare-style} verification.
 Both approaches use some form of control flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
-Those proofs are then loaded into the interactive theorem prover Isabelle/HOL%
-\index{Isabelle/HOL} \autocite{nipkow2002isabelle}
-and completed there.
+Those proofs are then loaded into the interactive theorem prover \gls{isabelle}[/HOL] \autocite{nipkow2002isabelle} and completed there.
 The proof strategies for both approaches involve \emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic}, albeit in different ways.
 
 The main differences between the two approaches lie in their degrees of automation, the strengths of their invariants, and how they perform symbolic execution.
@@ -341,7 +339,7 @@ For example, the \ac{hg} work generates proofs of output assurance while the \ac
 \subsection{Floyd-Style Memory Usage}
 This methodology for verification of memory usage relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
 In order to reason about the \acp{cfg}, they are annotated with predicates on state at specific locations, between which the program will be symbolically executed.
-While it is possible to reason about full functional correctness with this methodology, doing so takes a significant amount of effort due to the very low level of abstraction assembly provides, even with proven-correct formal simplification rules in Isabelle.
+While it is possible to reason about full functional correctness with this methodology, doing so takes a significant amount of effort due to the very low level of abstraction assembly provides, even with proven-correct formal simplification rules in \gls{isabelle}.
 This is why we focused on the aforementioned property of memory usage.
 
 %Formal Definition of Memory Usage

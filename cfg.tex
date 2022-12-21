@@ -54,7 +54,7 @@ This is done using a modified version of the \lstinline|reassembly| analysis
 \autocite{wang2017ramblr} of the binary analysis tool \texttt{angr} \autocite{shoshitaishvili2016state,wang2017angr}.%
 \index{\texttt{angr}}
 That modified version was provided by \textcite{roessle2019verified}
-for generating assembly usable with their Isabelle parser.%
+for generating assembly usable with their \gls{isabelle} parser.%
 \index{\texttt{angr}!\texttt{reassembly}}
 By building on \texttt{angr},
 the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
@@ -77,7 +77,7 @@ Even recursive functions are supported, albeit with difficulty.%
 The process that selects cutpoints%
 \index{cutpoint}
 also generates skeleton memory usage theories for every function analyzed.
-The theory files can then be opened in the theorem prover Isabelle
+The theory files can then be opened in the interactive theorem prover \gls{isabelle}
 and the assembly loaded using the parser of \textcite{roessle2019verified}.
 Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
 and add the necessary sets of memory regions that the functions write to
@@ -99,7 +99,7 @@ The work is still not trivial, however.
   }]
     \node[myblock] (binary) {\gls{arch} binary};
     \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python package};
-    \node[myblock, right of=cfg] (isa) {Isabelle};
+    \node[myblock, right of=cfg] (isa) {\gls{isabelle}};
     \node[myblock, right of=isa] (mem) {Formal Proof of Memory Usage};
 
     \draw[transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
@@ -178,7 +178,7 @@ One of the major issues is that they result in significant path explosion.%
 While there are methodologies to reduce the number of paths to execute
 when using loops \autocite{saxena2009lese,obdrzalek2011efficient},
 those methods are not currently formally verified
-and therefore not usable within Isabelle/HOL.
+and therefore not usable within \gls{isabelle}[/HOL].
 Additionally, deciding the loop condition on a symbolic state
 may involve non-determinism (such as an event loop dependent on user input to exit),%
 \index{non-determinism}
@@ -999,9 +999,9 @@ requiring another round of user input.
 After symbolic execution for a basic block has completed,
 a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
-In most cases, that proof can be handled by Isabelle/HOL
+In most cases, that proof can be handled by \gls{isabelle}[/HOL]
 using standard off-the-shelf libraries,
-either ones included with Isabelle or ones from the \ac{afp}
+either ones included with \gls{isabelle} or ones from the \ac{afp}
 (though not necessarily efficiently).
 Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation

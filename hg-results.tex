@@ -189,16 +189,16 @@ The unprovable return address cases can also be broken down further:
   The result is that the algorithm cannot prove that a memory region was separate from the top of the stack frame that stores the return address.
 \end{itemize}
 
-\section{Formal Proofs in Isabelle/HOL}\label{sec:not-me-proofs}
+\section{Formal Proofs in \gls{isabelle}[/HOL]}\label{sec:not-me-proofs}
 \todo{put more in Josh words}
-For several CoreUtils binaries, we extracted \iac{hg} and exported it to the Isabelle/HOL theorem prover.
+For several CoreUtils binaries, we extracted \iac{hg} and exported it to the \gls{isabelle}[/HOL] theorem prover.
 The binaries are closed-source, taken from a standard MacOS 11.5.2 distribution.
 \Cref{tab:isa} provides an overview of the binaries, the number of instructions and Hoare triples, and the number of resolved indirections (there are no unresolved indirections).
 Without exception, all Hoare triples could be proven automatically.
 
 \begin{table}
   \centering
-  \caption{Overview of binaries exported to Isabelle/HOL}
+  \caption{Overview of binaries exported to \gls{isabelle}[/HOL]}
   \label{tab:isa}
   \begin{tabular}{lSS}
     \toprule
@@ -225,7 +225,7 @@ This engine is based on a library of formally proven correct simplification theo
 Finally, we support automatic generation of implicit assumptions necessary for formal proofs.
 The informal algorithm can implicitly make assumptions that, e.g., regions in the global memory space are not overlapping with regions from the stack frame.
 A formal proof must explicitly assume that.
-Effectively, each and any implicit assumption made during \ac{hg} generation is formalized and exported to Isabelle/HOL.
+Effectively, each and any implicit assumption made during \ac{hg} generation is formalized and exported to \gls{isabelle}[/HOL].
 
 \section{Examples of Failures}\label{sec:not-me-failures}
 This \lcnamecref{sec:not-me-failures} covers some specific failure cases for our verification tool.

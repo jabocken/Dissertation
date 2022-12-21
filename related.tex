@@ -85,8 +85,7 @@ Of course, they were targeting a stronger property than those works,
 but they also did not perform any significant work to automate their approach.
 All in all, however, this work is the closest to the Floyd-style approach
 presented in \cref{ch:cfg} of any of the works presented in this chapter,
-as they even implemented a version in Isabelle. Their Isabelle version did not support
-compositionality, however.
+as they even implemented a version in \gls{isabelle}. Their \gls{isabelle} version did not support compositionality, however.
 
 Additionally, \textcite{goel2014syscalls,goelphd} presented an approach for modeling and verifying
 non-deterministic programs on the binary level.
@@ -210,7 +209,7 @@ Unlike our works in \cref{ch:cfg,ch:syntax}, the authors of this paper
 had to do extra reasoning to ensure the \gls{c} and assembly code models were interoperable.
 As we operated directly on full assembly, we did not have to worry about
 that kind of interfacing. Both this work and the work presented in \cref{ch:syntax} used an explicit \ac{vcg},
-but ours was proven correct by its Isabelle/HOL definitions;
+but ours was proven correct by its \gls{isabelle}[/HOL] definitions;
 we did not have to perform any additional work to ensure correctness
 of the methodology.
 Of course, as we implemented ours in an interactive theorem prover,
@@ -245,12 +244,12 @@ to other processor elements, which they were successful at.
 
 More recently, the Sail \ac{isa} specification language,
 which supports automatic generation of emulation code
-and of proof definitions for Isabelle, HOL4, and in some cases Coq,
+and of proof definitions for \gls{isabelle}, HOL4, and in some cases Coq,
 has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
 \autocite{armstrong2018models,armstrong2019isa}.
 The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-MIPS, and RISC-V.
 It was also used to produce a proof of correctness for a model of
-\gls{arm}[v8-A] address translation in Isabelle.
+\gls{arm}[v8-A] address translation in \gls{isabelle}.
 
 \section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}

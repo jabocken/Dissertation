@@ -17,7 +17,7 @@ control flow information, and invariants
 generated to reduce the amount of work required from end users.
 
 Certificate generation is presented in \cref{se:fmuc_gen},
-while the process of verification in Isabelle is documented in \cref{se:fmuc_ver}.
+while the process of verification in \gls{isabelle} is documented in \cref{se:fmuc_ver}.
 A full example of \ac{fmuc} usage can then be found in \cref{se:syntax_example}.
 That example could theoretically overwrite
 its own return address due to its pointer arguments, causing \ac{cfi} issues.
@@ -25,18 +25,15 @@ The associated \ac{fmuc} provides preconditions to prevent such cases
 along with a formal proof of return address preservation under those conditions.
 Following the example in \cref{se:xen} is an in-depth case study
 on the Xen Project hypervisor \autocite{chisnall2008definitive}.
-In total, \acp{fmuc} were generated and proofs discharged in Isabelle
+In total, \acp{fmuc} were generated and proofs discharged in \gls{isabelle}
 for 251 Xen functions.
 
 My primary contributions to the certificate generation and verification approach%
 \index{certificate}
 presented in this chapter include the Hoare rules developed
 for memory usage as well as the \ac{vcg} used to apply those rules
-to \ac{scf} in Isabelle (\cref{se:fmuc_ver}).
-I also greatly expanded the code for full translation of the \acp{fmuc}
-into the Isabelle/HOL language
-and helped adapt the \ac{scf} into a form suitable for verification
-in Isabelle (\cref{isabelle_scf}).
+to \ac{scf} in \gls{isabelle} (\cref{se:fmuc_ver}).
+I also greatly expanded the code for full translation of the \acp{fmuc} into the \gls{isabelle}[/HOL] language and helped adapt the \ac{scf} into a form suitable for verification in \gls{isabelle} (\cref{isabelle_scf}).
 Additionally, I contributed to invariant generation (\cref{sse:inv_gen})
 and performed much of the verification work for our large case study,
 presented in \cref{se:xen}.
@@ -500,7 +497,7 @@ which is then returned along with all of the propagated resumes.
 \section{\acs*{fmuc} Verification}\label{se:fmuc_ver}
 This section presents verification of \iac{fmuc} as shown in \cref{fig:verify},
 one of the primary contributions for this chapter as mentioned in its preamble.
-Both the \ac{fmuc} and the original assembly are loaded into Isabelle/HOL,
+Both the \ac{fmuc} and the original assembly are loaded into \gls{isabelle}[/HOL],
 where the memory usage theorem is then proven using the proof ingredients
 provided by the \ac{fmuc}.
 By this method, which requires a step function
@@ -517,7 +514,7 @@ the \ac{fmuc}'s memory usage Hoare triple can be verified.
     text centered,
     minimum height=1.5cm
   }]
-    \node (a) {Isabelle/HOL};
+    \node (a) {\gls{isabelle}[/HOL]};
     \node[above left=of a] (b) {Assembly};
     \node[below left=of a] (c) {Certificate};
     \node[right=1.5cm of a] (d) {OK/unproven};
@@ -529,19 +526,19 @@ the \ac{fmuc}'s memory usage Hoare triple can be verified.
   \caption{Overview of \acs*{fmuc} verification}\label{fig:verify}
 \end{figure*}
 
-\subsection{Syntactic Control Flow in Isabelle/HOL}\label{isabelle_scf}
+\subsection{Syntactic Control Flow in \gls{isabelle}[/HOL]}\label{isabelle_scf}
 As described previously, \acl{scf} is a representation of the control flow of a function
 in terms of syntactic structures such as basic blocks,
 loops, and if-then-else statements.
 While very similar to the \ac{scf} used when generating \acp{fmuc},
 there are some modifications that must be made when the generated \acp{scf}
-are to be loaded into Isabelle/HOL.
+are to be loaded into \gls{isabelle}[/HOL].
 These modifications are required due to subtle differences in the semantics
 of the generating tool versus the verifying tool,
 and are required to properly support the Hoare rules
 described in \cref{scf_hoare} below.
 
-In the Isabelle/HOL representation,
+In the \gls{isabelle}[/HOL] representation,
 there are no \texttt{Break}s or \texttt{Continue}s;
 any occurrences of such statements are translated to \texttt{Skip}.
 This does mean that programs that cannot be easily transformed
@@ -550,25 +547,23 @@ are not easily handled in this framework.
 However, none of functions encountered in the case study presented in \cref{se:xen}
 had that issue, so it does not appear to be a significant drawback.
 
-Additionally, loops in the Isabelle/HOL \ac{scf} syntax
-do rely on a explicit exit condition.
+Additionally, loops in the \gls{isabelle}[/HOL] \ac{scf} syntax do rely on a explicit exit condition.
 This condition is simply the precondition of the entry block of the loop
 as generated using the methodology in \cref{sse:inv_gen}.
 
-Another important difference is that basic blocks in Isabelle
-take the form $\ABB~\Block*{n}{a}{i}$,
+Another important difference is that basic blocks in \gls{isabelle} take the form $\ABB~\Block*{n}{a}{i}$,
 where~$n$ indicates the number of instructions in the block,~$a$ is the address
 of the last instruction in the block, and~$i$ is an ID
 that uniquely identifies the block in the current \ac{scf}.
 This style is used to assist with the symbolic execution methodology described in
 \cref{sse:syntax_ver_symb}.
 
-Finally, to properly handle function calls in the Isabelle/HOL syntax,
+Finally, to properly handle function calls in the \gls{isabelle}[/HOL] syntax,
 the analyzed \acp{cfg} are preprocessed prior to performing extraction
 in order to isolate \inlineasm{call} instructions into their own basic blocks.
 % Freek did the preprocessing but I did all the rest.
 These single-instruction blocks are then translated into \texttt{Call}~$f$ entries
-in the Isabelle/HOL \ac{scf}, where~$f$ is the textual label of the function called.
+in the \gls{isabelle}[/HOL] \ac{scf}, where~$f$ is the textual label of the function called.
 This allows for proper matching with the Hoare rules presented below.
 
 \subsection{Symbolic Execution for Verification}\label{sse:syntax_ver_symb}
@@ -619,7 +614,7 @@ it exists to allow proving the correctness
 of the Hoare rules shown below in \cref{scf_hoare}.
 
 Unlike the symbolic execution for generation,
-this symbolic execution methodology is implemented fully in Isabelle/HOL,
+this symbolic execution methodology is implemented fully in \gls{isabelle}[/HOL],
 meaning that every rewrite rule has been formally proven correct.
 
 \subsection{Per-Block Verification}\label{sse:per-block}
@@ -649,14 +644,14 @@ Using \cref{def:mem_preserve}, each block gets a lemma of the form
 \end{equation}
 Note that~$M$ is a state-dependent function.
 Every generated version of \cref{eq:block_lemma} is discharged
-with an Isabelle/HOL proof method written in Eisbach \autocite{matichuk2016eisbach},
-Isabelle's proof automation language.
+with an \gls{isabelle}[/HOL] proof method written in Eisbach \autocite{matichuk2016eisbach},
+\gls{isabelle}'s proof automation language.
 For each block, the method takes the block-related proof ingredients
 from the \ac{fmuc} and runs symbolic execution
 to prove the postcondition and thus establish memory usage for the block.
 The open variables $P$, $Q$, $n$, $a$, $i$, and $M$ are all provided by the \ac{fmuc}.
 No user interaction is required outside of cases where semantics
-for specific instructions are unavailable or the Isabelle libraries in use
+for specific instructions are unavailable or the \gls{isabelle} libraries in use
 do not have the right simplification lemmas for automatic reasoning.
 Those cases are rare and become rarer as more relevant lemmas are developed,
 so for basic blocks, the proof is essentially automated.
@@ -865,7 +860,7 @@ or the last rule application resulted in a non-block goal.
 At that point, \cref{step_simp} cleans up any preconditions and postconditions
 in the current goal.
 The last step, \cref{step_auto}, then tries to eliminate as many goals as it can,
-one at a time, with Isabelle's basic \lstinline|auto| method.
+one at a time, with \gls{isabelle}'s basic \lstinline|auto| method.
 If there are no loops present in the \ac{scf} under consideration,
 this method will complete the proof without any need for user interaction.
 
@@ -930,7 +925,7 @@ around further applications of \lstinline|vcg_step|.
 Nothing beyond that should be necessary.
 
 Without exception, each of the proofs we produced
-could be finished using standard, off-the-shelf Isabelle/HOL methods,
+could be finished using standard, off-the-shelf \gls{isabelle}[/HOL] methods,
 though finishing them was not always an automatic process.
 The part that is usually the most involved,
 defining the invariants (as seen in the previous chapter)
@@ -1144,7 +1139,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
       apply (vcg_while \<open>$P_\mathtt{123e}$ || $P_\mathtt{1246}$\<close>)
       apply vcg_step+
     \end{lstlisting}
-    \caption{Isabelle proof code (manual effort)}\label{fig:manual}
+    \caption{\gls{isabelle} proof code (manual effort)}\label{fig:manual}
   \end{subfigure}
   \caption{Application of entire methodology on example}
 \end{figure}
@@ -1183,7 +1178,7 @@ The only interactions required in verifying the \ac{fmuc} of the entire function
   \item showing that, in the case of a break, the postcondition of the loop body
   implies the precondition of $\ABB~\Block{1246}{1249}$.
 \end{enumerate*}
-This amounts to two manually written lines of Isabelle proof code.
+This amounts to two manually written lines of \gls{isabelle} proof code.
 
 To demonstrate the black-box functionality from \cref{sse:fmuc_comp},
 \lstinline|is_even| was treated as external to the example's analysis.
