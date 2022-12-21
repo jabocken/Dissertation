@@ -1,6 +1,6 @@
 \chapter{Attribution}\label{attribution}
 The work presented in this dissertation is not solely my own,
-as the four papers involved were a significant collaborative effort.
+as the four contributions it contains were a significant collaborative effort.
 The sections below describe which components were primarily my work
 and which were mainly those of my compatriots.
 Joint efforts are documented as well.
@@ -19,8 +19,7 @@ were done by a fellow student working on a tangential project,
 however \autocite{verbeek2019refinement}.
 
 \section*{Formal Verification of Memory Preservation of \glsentryname{arch} Binaries}\label{attribute1}
-The first paper, accepted for presentation this September,
-covers the Floyd-style verification work described in \cref{ch:cfg}.
+The first paper covers the Floyd-style verification work described in \cref{ch:cfg} \autocite{bockenek2019preservation}.
 I provided three main contributions to that work.
 The first was a Python package developed to interface with \texttt{angr}
 \autocite{shoshitaishvili2016state}
@@ -54,8 +53,8 @@ The rules were implemented in \gls{isabelle} and formally proven correct.
 \section*{Highly Automated Formal Proofs over Memory Usage of Assembly Code}
 \label{attribute2}
 Following on from that work is a paper
-that builds on our experiences from the previous verification
-work \autocite{verbeek2020automated}. That work,
+that built on our experiences from the previous verification
+work \autocite{verbeek2020automated}. This work,
 which introduces the generation and verification of
 \acp{fmuc}, is described in \cref{ch:syntax}.
 
@@ -92,14 +91,26 @@ for additional instructions encountered in the process of \ac{fmuc} generation,
 as well.
 
 \section*{Formally Verified Lifting of C-compiled \glsentryname{arch} Binaries}
-\todo\dots
+The first of two control flow recovery papers, this work was again a collaboration with Dr.~Verbeek and others, with him and me being the major contributors to the work.
+It introduces the concept of \acp{hg} and provides formalisms, pen-and-paper proofs, a case study, and formal verification of some produced \acp{hg} \autocite{verbeek2022lifting}.
 
-\autocite{verbeek2022lifting}
+The initial codebase and basic step function, memory model framework, and such was developed by Dr.~Verbeek, but I took ownership of it after that.
+While Dr.~Verbeek did contribute further adjustments during the process, most of the development from that point on was done by me.
+This includes fleshing out the step function with the semantics of more instructions as we encountered them in the case study, as well as larger decisions about implementation structure.
+For example, I made the decision to switch the individual instruction parsing over to use Capstone \autocite{capstone} via the \texttt{hapstone} package \autocite{hapstone} when a collaborator uncovered a bug in the parsing library that was originally chosen.
+I also transitioned the work from relying on unbounded integers in the Z3 interface to utilizing Z3's bitvector formulas, providing more accuracy and precision.
+Additionally, development of instrumentation for and application of the tool to the real-world programs and libraries of the case study was all done by me.
+
+Finally, the formal proofs of \acp{hg} in \gls{isabelle} were performed entirely by Dr.~Verbeek.
+They have been documented in this dissertation for completion's sake.
+Most of the pen-and-paper proofs were also refined or completed by Dr.~Verbeek, but I did assist with those and provided some of the initial ones.
 
 \section*{Exceptional Interprocedural Control Flow Graphs}
-\todo\dots
+The second of the control flow recovery papers and the final work in this dissertation, this paper presents the concept of \acp{eicfg} and provides formalism, pen-and-paper proofs, a case study, and fuzzed validation of some of the relevant \ac{eh} library functions.
+The work in paper form is not yet published, but this dissertation will be updated with a proper citation once it has been accepted by a conference.
 
-This work was also done in collaboration with Dr.~Verbeek, but the contributions are primarily my own.
-Some of the basic structure of the implementation was pulled from the previous work (instruction fetching, some aspects of the semantics and basic step function) but everything built on top of that was all new.
-
-\todo{cite unpublished work?}
+While this work was also done in collaboration with Dr.~Verbeek, I did most of the actual development.
+This includes the implementation, formalisms, selection and analysis of the case study, and validation of components.
+Some of the basic structure of the implementation was pulled from the previous contribution.
+This includes such aspects as the instruction fetching and the initial version of the step function.
+However, everything built on top of that was all new, and a significant amount of refactoring occurred even for the shared components.
