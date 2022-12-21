@@ -131,7 +131,7 @@ The process of control flow recovery is a vital component of many binary analyse
 This is because all of those applications, discussed below, require \emph{lifting} raw unstructured data to a form that allows reasoning over behavior and semantics.
 
 \subsubsection{Decompilation}
-The process of \emph{decompilation} is the reverse of compilation \todo{citation?}.
+The process of \emph{decompilation} is the reverse of compilation \autocite{cifuentes1994reverse}.
 It attempts to \emph{lift} low-level code, possibly even machine code, to a higher-level representation.
 That representation can be something like LLVM\index{LLVM} \ac{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \gls{cpp} \autocite{fokin2011smartdec}.
 \Ac{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well, or are used to provide the control flow for one \autocite{mcsema}.
@@ -159,7 +159,7 @@ If you are instrumenting binaries to dynamically randomize their own basic block
 
 \Textcite{duck2020binary} did recently provide a way to patch binaries without control flow information.
 However, that work requires potentially inefficient program modification such as extra instruction padding to accomplish that task.
-It is also restricted specifically to insertion of code trampolines \todo{citation or glossary entry}.
+It is also restricted specifically to insertion of code trampolines \autocite{baker1995cons}.
 That is useful if program size and usage of additional functions is not a concern but may not help for more restrictive tasks.
 
 \subsubsection{Security}
@@ -195,7 +195,7 @@ While most \acp{isa} do have different instructions for signed versus unsigned i
 They are merely lists of bytes starting at some address, and even the number of bytes and the address to read from or write to can be variable.
 A user could go as far as supplying the result of a floating-point computation as the address operand of an instruction that loads or stores memory.
 Historically, there have been computers that associated type information with memory locations in hardware \autocite{feustel1972rice,feustel1973advantages,thornton2008rice}, but we do not have that luxury on typical modern systems.
-Tagged memory could also serve that purpose \todo{citations?}, but it is not yet widely in use.
+Tagged memory could also serve that purpose \autocite{bradbury2014tagged,song2015towards,zeldovich2008tagged}, but it is not yet widely in use.
 
 An additional issue with assembly, and the one most significant for the memory-related properties in this dissertation, lies in the simplicity of the user-exposed memory model.
 The vast majority of high-level, structured languages with scoping, including \gls{c}, prevent functions from accessing the local variables of other functions without significant effort or explicit notation or argument passing, but the same is not true for assembly.
@@ -251,42 +251,42 @@ Interprocedural analysis is challenging, as one cannot simply isolate individual
 \section{State of the Art}
 Initial formalisms developed by \textcite{floyd1967assigning,hoare1969axiomatic} have provided a basis for the formal verification of software for over fifty years.
 Many works have built on those core structures over the years to model additional program features, such as \emph{separation logic} \autocite{reynolds2002separation} for composability and various ways of representing concurrent code \autocite{owicki1976gries,xu1997rely-guarantee}.
-
-Despite this, to the best of our knowledge, there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory usage as described here.
-Thus, the focus on the state of the art here involves general assembly verification as well as control flow recovery.
+Despite this, to the best of our knowledge, no works successfully tackle the specific problems tackled in this dissertation.
 
 \subsection{Assembly Verification}
+As there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory usage as described here, we focus on other important works in the field that lead up to our contributions for memory usage.
+
 % basic context
 One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}, quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
 
 % add back in citations if you lose the ability to use them in the acronym first use when switching to \gls
-Later, Myreen et.\ al provided an initial approach to formal binary lifting.
+Another big breakthrough was the development by Myreen et.\ al of an initial approach to formal binary lifting.
 Known as \emph{\ac{dil}}, it converts machine code into \iac{hol} representation.
 This representation can then be used for verification efforts in a theorem prover.
+As a specific example, it was utilized in the verification of the \gls{sel4} microkernel \autocite{klein2009sel4,klein2014comprehensive,sel4}.
+However, though the usage of \ac{dil} enabled automatic binary lifting for much of \gls{sel4}, that verification effort still required significant manual effort.
 
-Then, in 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics
-for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
+Moving on, in 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
 That work allows mechanized reasoning over compiled programs in the ACL2 theorem prover \autocite{ACL2}.
 
-Soon after, \textcite{tan2015auspice} introduced a logic framework called AUSPICE for automated verification of safety properties on the assembly level.
-AUSPICE took six hours to execute on \num{533} instructions, but was applicable to unmodified code.
-Our methodology in \cref{ch:syntax} is also applicable to unmodified code, as long as that code is assembly.
-The contributions in \cref{hg,eicfg} go even further by being directly usable with existing binaries.
-
-More recently, \textcite{baumann2016high} provided \pgls{arm}[v8]-based hypervisor that was formally verified on the machine code level to ensure isolation of guest \acp{os}.
-That work was based on an earlier one for \pgls{arm}[v7] separation kernel, PROSPER \autocite{dam2013hypervisor,dam2013formal}.
-
-Additionally, a few years ago, \textcite{fromherz2019verified} embedded a subset of the \gls{arch} \ac{isa} in the functional, verification-oriented language F$^*$ \autocite{fstar}.
-This was done in order to perform a proof of correctness over the commonly-used cryptographic routine AES-GCM.\index{AES-GCM}
-Their usage of \iac{vcg} is similar to ours in \cref{ch:syntax}, but ours did not need to be separately formally verified as we implemented it with proven-true Hoare rules.\index{Hoare!rule}
-
-Non-formal assembly and binary analysis has also been a rich field of study for years \autocite{kruegel2005automating,brumley2011bap,wang2017angr}.
+\Textcite{heule2016stratified} followed that up with a technique using machine learning to derive bitvector semantics from actual \acp{cpu}.
+This allowed for more accurate semantics, as they identified mistakes and bugs in the human-readable Intel documentation of the instructions they derived semantics for.
+That work was then extended, improved, formalized, and proven correct by \textcite{roessle2019verified}.
+Though we did not directly utilize these two works, they served as inspiration and influence in developing our instruction semantics and the validation performed in \cref{ch:eicfg-validation}.
 
 \subsection{Control Flow Recovery}
-To the best of our knowledge, at the time this dissertation was written, no other tool operating on binaries could provide scalable, formally overapproximative assurance between a binary and its lifted representation.
+At the time this dissertation was written, no other tool operating on binaries could provide scalable, formally overapproximative assurance between a binary and its lifted representation.
 The bulk of existing methods are either known to be unsound (they either misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative}.
 The strength of those tools is their universality: they typically provide output for any binary, even in cases where guesses and non-validated assumptions have to be made.
 Their weakness is that their outputs are untrustworthy; thus, any analyses built on top of them are untrustworthy as well.
+
+There have been some efforts to resolve this issue.
+For example, \textcite{brumley2013native} developed Phoenix, a tool for decompilation to \gls{c}.
+This tool ensures the preservation of semantics of binaries even in the presence of unstructured control flow.
+However, it relies on an external tool, \ac{bap}, to perform the control flow recovery and they encountered multiple situations where it did not work due to its lack of support for floating point and other ``exotic'' instructions.
+\Textcite{kinder2010static,kinder2012alternating,kinder2012virtualization} also provided the tool Jakstab, which performs formal binary lifting using abstract interpretation.
+However, it is targeted at a different, more limited set of applications from our works; specifically, small obfuscated programs such as Windows device drivers and malware.
+We also we found it to be rather limited from a practical perspective aside from that.
 
 % EXISTING TOOLS DO NOT SOLVE THE PROBLEM (eicfg)
 Furthermore, existing state-of-the-art disassemblers/decompilers, such as IDA Pro \autocite{ida}, Ghidra \autocite{ghidra}, and Binary Ninja \autocite{binary-ninja}, do not document exceptional control flow between procedures.
@@ -418,14 +418,11 @@ The soundness of this overapproximation is ultimately shown with pen-and-paper p
 Additionally, \cref{hg-example} contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
 That example exhibits a \iac{rop} gadget that depends on whether two pointers alias or not, with the aliasing case resulting in an unexpected \inlineasm{ret} being executed. That aspect of the example is discussed further in \cref{weird}.
 
-\Ac{hg} lifting does have a similar work, Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, but it is targeted at a different set of applications from our work and we found it to be rather limited practically.
-Our work is also much more scalable, recovering the control flow for \glssymbol{inst-total-lifted} instructions.
+This work proved to be more scalable than Jakstab, recovering the control flow for \glssymbol{inst-total-lifted} instructions.
 
 \subsection{Exceptional Interprocedural Control Flow Recovery}
-The final contribution of this dissertation is a tool for static, interprocedural, automated \gls{cpp}-exception-aware%
-\fturl{https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html} \todo{use citation instead}
-binary-level control flow analysis.
-That tool produces \emph{\acp{eicfg}} using an abstract interpretation-inspired \todo{citation}, recursive-descent methodology \todo{citation?}.
+The final contribution of this dissertation is a tool for static, interprocedural, automated \gls{cpp}-exception-aware \autocite{cxxEhAbi} binary-level control flow analysis.
+That tool produces \emph{\acp{eicfg}} using an abstract interpretation-inspired \autocite{cousot1976static,cousot1977abstract}, recursive-descent methodology \autocite{nagy2022bobw}.
 It can do this even in the presence of recursion and some forms of indirect control flow.
 To accomplish this, the \acp{eicfg} document program state in a restricted domain that only concerns itself with the components of program state necessary to perform function calls and \ac{eh}.
 This includes exception objects currently allocated, number of uncaught exceptions, and which exceptions are currently in a caught state.
@@ -502,7 +499,7 @@ This ensures that the result of accessing such regions will just be \gls{bot}, a
 From our experiments, this did not result in significant loss of the information necessary to successfully complete our analyses.
 
 For \acp{eicfg} specifically, we assume that no external calls throw exceptions themselves.
-We also do not model \lstinline|setjmp|/\lstinline|longjmp|, as they do not interact well with structured \ac{eh} \autocite{using-setjmp-and-longjmp}.
+We also do not model \inlineasm{setjmp}/\inlineasm{longjmp}, as they do not interact well with structured \ac{eh} \autocite{using-setjmp-and-longjmp}.
 Of course, the \ac{hg} work does not support \ac{eh}, though it can still analyze binaries containing the corresponding library calls.
 
 % no need for an Impact section

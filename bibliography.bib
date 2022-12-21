@@ -27,6 +27,10 @@
   publisher = IEEE,
   location = IEEELoc
 }
+@Xdata{usenix,
+  publisher = {USENIX Association},
+  location = {2560 Ninth Street, Suite 215, Berkeley, CA, USA}
+}
 
 % using number instead of volume as volume goes with the title/journal but number goes with the series
 @inproceedings{bockenek2019preservation,
@@ -583,8 +587,7 @@
   eventdate = {1998-01-26/1998-01-29},
   venue = {San Antonio, TX, USA},
   doi = {10.5555/1267549.1267554},
-  publisher = {USENIX Association},
-  location = {2560 Ninth St. Suite 215 Berkeley, CA, USA}
+  xdata = {usenix}
 }
 
 @article{matichuk2016eisbach,
@@ -1037,6 +1040,14 @@
   xdata = {acm}
 }
 
+@online{sel4,
+  title = {The {seL4®} Microkernel},
+  organization = {seL4 Project a Series of LF Projects, LLC.},
+  url = {https://sel4.systems/},
+  date = 2022,
+  urldate = {2022-12-21}
+}
+
 @inproceedings{greenaway2012bridging,
   title = {Bridging the Gap: Automatic Verified Abstraction of {C}},
   author = {Greenaway, David and Andronick, June and Klein, Gerwin},
@@ -1337,7 +1348,7 @@
   volume=14,
   pages={161-176},
   date=2005,
-  organization={USENIX Association}
+  xdata={usenix}
 }
 
 @inproceedings{song2008bitblaze,
@@ -2192,8 +2203,8 @@
   date={2013-08},
   eventdate={2013-08-13},
   venue={Washington, D.C.},
-  publisher = {USENIX Association},
-  url={https://www.usenix.org/conference/woot13/workshop-program/presentation/shapiro}
+  url={https://www.usenix.org/conference/woot13/workshop-program/presentation/shapiro},
+  xdata={usenix}
 }
 
 @inproceedings{brumley2013native,
@@ -2204,9 +2215,9 @@
   pages={353-368},
   isbn={978-1-931971-03-4},
   venue={Washington, D.C.},
-  publisher = {USENIX Association},
   date={2013-08},
-  url={https://www.usenix.org/conference/usenixsecurity13/technical-sessions/presentation/schwartz}
+  url={https://www.usenix.org/conference/usenixsecurity13/technical-sessions/presentation/schwartz},
+  xdata={usenix}
 }
 
 @inproceedings{wartell2012binary,
@@ -2407,7 +2418,7 @@
   venue = {San Diego, CA},
   pages = {845-860},
   url = {https://www.usenix.org/conference/usenixsecurity14/technical-sessions/presentation/bao},
-  publisher = {USENIX Association}
+  xdata={usenix}
 }
 
 @inproceedings{pe2020probabilistic,
@@ -2421,6 +2432,25 @@
   pages = {373-385},
   venue = {Austin, USA},
   xdata = {acm}
+}
+
+@phdthesis{cifuentes1994reverse,
+  title={Reverse Compilation Techniques},
+  author={Cifuentes, Cristina},
+  date=1994,
+  school={Queensland University of Technology},
+  location={Brisbane, Queensland, Australia}
+}
+
+@article{cifuentes1995decompilation,
+  author = {Cifuentes, Cristina and Gough, K. John},
+  title = {Decompilation of Binary Programs},
+  journal = {Software: Practice and Experience},
+  volume = 25,
+  number = 7,
+  date = 1995,
+  pages = {811-829},
+  doi = {10.1002/spe.4380250706}
 }
 
 @article{cifuentes2001recovery,
@@ -2526,7 +2556,7 @@
   date = {2019-08},
   venue = {Santa Clara, CA},
   url = {https://www.usenix.org/conference/cset19/presentation/g},
-  publisher = {USENIX Association}
+  xdata = {usenix}
 }
 
 @online{ghidra,
@@ -3001,4 +3031,70 @@
   pages={636-655},
   xdata={lncs},
   number=13260
+}
+
+@article{baker1995cons,
+  title = {{CONS} Should Not {CONS} Its Arguments, Part II: Cheney on the {M.T.A.}},
+  author = {Baker, Henry G.},
+  date = {1995-09},
+  volume = 30,
+  number = 9,
+  issn = {0362-1340},
+  doi = {10.1145/214448.214454},
+  journal = {SIGPLAN Notices},
+  pages = {17-20},
+  xdata = {acm}
+}
+
+@report{bradbury2014tagged,
+  title={Tagged Memory and Minion Cores in the {lowRISC} {SoC}},
+  author={Bradbury, Alex and Ferris, Gavin and Mullins, Robert},
+  type = {Memo},
+  institution={University of Cambridge},
+  date={2014-12},
+  url={https://web.archive.org/web/20220814190715/https://lowrisc.org/downloads/lowRISC-memo-2014-001.pdf},
+  note={Original link no longer works},
+  urldate={2022-12-21}
+}
+
+@inproceedings{song2015towards,
+  title={Towards General Purpose Tagged Memory},
+  author={Song, Wei and Bradbury, Alex and Mullins, Robert},
+  booktitle={RISC-V Workshop},
+  booktitleaddon={Proceedings},
+  volume=122,
+  date=2015,
+  publisher={Citeseer},
+  url={https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=d111eea891bcddf8d7d2d54fbd4ac8c8342ad79b}
+}
+
+@inproceedings{zeldovich2008tagged,
+  title = {Hardware Enforcement of Application Security Policies Using Tagged Memory},
+  author = {Zeldovich, Nickolai and Kannan, Hari and Dalton, Michael and Kozyrakis, Christos},
+  date = {2008-12-08},
+  eventdate = {2008-12-08/2008-12-10},
+  booktitle = {Operating Systems Design and Implementation},
+  booktitleaddon = {Proceedings of the 8th USENIX Conference},
+  pages = {225-240},
+  venue = {San Diego, CA, USA},
+  shorttitle = {OSDI'08},
+  doi = {10.5555/1855741.1855757},
+  xdata = {usenix}
+}
+
+@online{cxxEhAbi,
+  title = {C++ ABI for Itanium: Exception Handling},
+  version = {1.22},
+  url = {https://itanium-cxx-abi.github.io/cxx-abi/abi-eh.html},
+  date = {2017-03-14},
+  urldate = {2022-12-21}
+}
+
+@online{nagy2022bobw,
+  title = {Toward a Best-of-Both-Worlds Binary Disassembler},
+  author = {Stefan Nagy},
+  url = {https://blog.trailofbits.com/2022/01/05/toward-a-best-of-both-worlds-binary-disassembler/},
+  date = {2022-01-05},
+  urldate = {2022-12-21},
+  organization = {Trail of Bits}
 }
