@@ -506,11 +506,21 @@ efficient but incomplete techniques, such as depth-bounded searches.
   \end{tabular}
 \end{table*}
 
-\section{Lifting \Acsp*{cfg} from Binaries}\label{related-lifting}
+\section{Control Flow Recovery}\label{related-lifting}
 We relate our work for \ac{hg} lifting to existing approaches for disassembly (\cref{related-disassembly}), binary decompilation (\cref{related-decompilation}), binary verification (\cref{related-hg-verification}), and abstract interpretation (\cref{related-absint}), as well as ones that learn state machines from black-box implementations (\cref{related-automata}).
 To the best of our knowledge, the only existing work that has similar focus on disassembly based on formal methods is Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, which we therefore discuss in more detail.
 
-%TODO: comparison figure if I have time
+\begin{comment}
+  \begin{table*}
+    \centering
+    \caption{Overview of disassembly and decompilation approaches}
+    \begin{tabular}{llc}
+      \toprule
+      \midrule
+      \bottomrule
+    \end{tabular}
+  \end{table*}
+\end{comment}
 
 \subsection{Jakstab}\label{related-jakstab}
 Jakstab performs binary analysis and control flow reconstruction by utilizing abstract interpretation, like those works in \cref{related-absint}.
@@ -613,20 +623,28 @@ The key differences between our lifting work and existing disassemblers are that
 The cost of our approach is that it may fail, whereas other approaches are able to guess or use heuristics to continue.
 
 \subsection{Binary Decompilation}\label{related-decompilation}
-% TODO some more!: cifuentes1995decompilation, 10.1109/SANER.2018.8330222
-
 As mentioned in the introduction to this dissertation, a decompiler takes a binary or other low-level source as input and lifts it to a higher-level representation.
-RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to \gls{c} code.
-SmartDec \autocite{fokin2011smartdec} lifts to \gls{cpp} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
+An early attempt at such lifting to full source code level was that of \textcite{cifuentes1995decompilation}.
+The \lstinline|dcc| tool resulting from that work lifts \gls{80286} assembly to \gls{c} code, though its internal representation can support multiple higher-level languages.
+In fact, it performs a similar sort of syntactic control flow reconstruction as the Hoare-style work presented in this dissertation.
+That does leave it with similar limitations to that work, however.
+
+More recent works such as RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to \gls{c} code as well.
+Meanwhile, the SmartDec tool \autocite{fokin2011smartdec} lifts to \gls{cpp} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
 Ramblr \autocite{wang2017ramblr} lifts a binary to \emph{symbolized} assembly, where concrete addresses are replaced with symbolic labels.
 CodeSurfer/\gls{x86} \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}
 provides a graphical interface for lifting binaries to an intermediate representation and interactively analyzing them.
 Additionally, decompilers are often integrated into reverse engineering and program exploration tools such as IDA Pro \autocite{ida-decompiler},
 Binary Ninja \autocite{binary-ninja-decompiler}, and Ghidra \autocite{ghidra}.
 
-A key factor in decompilation approaches, and also in other approaches that aim at producing control flow graphs or dataflow analyses, is that many of them assume that disassembly has been done by an external tool that is assumed to be sound.
+Some decompilers even rely on techniques of machine learning, much like disassemblers.
+The field of natural language processing in particular has provided inspiration for the processing of formal languages.
+For example, \textcite{katz2018recurrent} applied recurrent neural networks, which are often used for text processing and generation, to the problem of decompilation.
+
+Despite all this, a key factor in many decompilation approaches, and also in other approaches that aim at producing control flow graphs or dataflow analyses, is that they rely on the disassembly and control flow recovery being done by an external tool that is assumed to be sound.
 Our algorithm thus \emph{complements} these works.
 For example, McSema requires an external source of control flow information, which could be generated from our solution.
+\lstinline|dcc| notably performs its own disassembly, but that is not the prevailing trend.
 
 For a more formal approach, we return to \ac{dil} \autocite{myreen2007hoare,myreen2012dil}.
 However, \ac{dil} does not deal with indirect branching and \emph{assumes} that return addresses are not overwritten.

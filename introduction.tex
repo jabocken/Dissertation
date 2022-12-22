@@ -276,7 +276,7 @@ Though we did not directly utilize these two works, they served as inspiration a
 
 \subsection{Control Flow Recovery}
 At the time this dissertation was written, no other tool operating on binaries could provide scalable, formally overapproximative assurance between a binary and its lifted representation.
-The bulk of existing methods are either known to be unsound (they either misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative}.
+The bulk of existing methods are either known to be unsound (they either misidentify code as data or are underapproximative) \autocite{schwartz2002disassembly} or are speculative or learning-based \autocite{wartell2011differentiating,khadra2016speculative,katz2018recurrent}.
 The strength of those tools is their universality: they typically provide output for any binary, even in cases where guesses and non-validated assumptions have to be made.
 Their weakness is that their outputs are untrustworthy; thus, any analyses built on top of them are untrustworthy as well.
 
