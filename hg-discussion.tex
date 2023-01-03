@@ -21,8 +21,7 @@ Therefore, basing a verification effort on a verified \ac{hg} instead of directl
 \section{Decompilation}
 Similarly, we argue that the majority of existing decompilation tools \emph{assume} the existence of a reliable disassembler.
 A verified \ac{hg} is a reliable base for decompilation.
-For example, the provably correct assembly and control flow inferred by our approach could be used as input to McSema \autocite{dinaburg2014mcsema} in order to produce provably correct LLVM code.
-\todo{glossary entry for LLVM}
+For example, the provably correct assembly and control flow inferred by our approach could be used as input to McSema \autocite{dinaburg2014mcsema} in order to produce provably correct \gls{llvm} code.
 The assumptions then may be translated to higher-level \inlineasm{assert}-statements: the decompiled code is correct as long as no assert is triggered.
 
 \section{Patching}

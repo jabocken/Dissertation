@@ -247,7 +247,7 @@ which supports automatic generation of emulation code
 and of proof definitions for \gls{isabelle}, HOL4, and in some cases Coq,
 has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
 \autocite{armstrong2018models,armstrong2019isa}.
-The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-MIPS, and RISC-V.
+The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-\ac{mips}, and RISC-V.
 It was also used to produce a proof of correctness for a model of
 \gls{arm}[v8-A] address translation in \gls{isabelle}.
 
@@ -413,8 +413,7 @@ as well as CVC Lite \autocite{barrett2004cvcl} and CVC3 \autocite{barrett2007cvc
 This allows for formal verification.
 
 Meanwhile, the tool Infer \autocite{calcagno2011infer}, now developed at Facebook,
-provides in-depth static analysis of LLVM code to detect bugs in programs
-written in a variety of languages.
+provides in-depth static analysis of \gls{llvm} code to detect bugs in programs written in a variety of languages.
 It utilizes separation logic \autocite{reynolds2002separation}
 and bi-abduction to perform its analyses in an automated fashion.
 It is designed to be integrated into compiler toolchains
@@ -474,7 +473,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
     Goel et al. & \gls{arch} & \acs*{itp} & word-count  & \num{186} insts \\
     Tan et al. & \gls{arm}[v7] & ATP & String search & \num{983} insts \\
     Myreen et al. & \gls{arm}/\gls{x86} & \acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
-    Feng et al. & MIPS-like & \acs*{itp} & Example funcs & \\
+    Feng et al. & \acs*{mips}-like & \acs*{itp} & Example funcs & \\
     Schlich et al. & ATmega16 & MC & Auto funcs & Around 8k insts \\
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
       \makecell[l]{\num{2630} \acs{sloc}\\
@@ -630,7 +629,7 @@ In fact, it performs a similar sort of syntactic control flow reconstruction as 
 That does leave it with similar limitations to that work, however.
 
 More recent works such as RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to \gls{c} code as well.
-Meanwhile, the SmartDec tool \autocite{fokin2011smartdec} lifts to \gls{cpp} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to LLVM\index{LLVM}.
+Meanwhile, the SmartDec tool \autocite{fokin2011smartdec} lifts to \gls{cpp} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to \gls{llvm}.
 Ramblr \autocite{wang2017ramblr} lifts a binary to \emph{symbolized} assembly, where concrete addresses are replaced with symbolic labels.
 CodeSurfer/\gls{x86} \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}
 provides a graphical interface for lifting binaries to an intermediate representation and interactively analyzing them.
@@ -692,7 +691,7 @@ BinTrimmer also does not provide invariants with sufficient strength to serve as
 Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \ac{sloc}, in contrast to the \ac{hg} Xen Hypervisor case study presented in \cref{hg-extraction}.
 
 Finally, while not a binary lifting approach, the tool Crab \autocite{crab}, uses abstract interpretation for loop invariant restriction \autocite{gange2016abstract}.
-This tool is part of the SeaHorn verification framework for LLVM \ac{ir} \autocite{seahorn}.
+This tool is part of the SeaHorn verification framework for \gls{llvm} \ac{ir} \autocite{seahorn}.
 
 \subsection{Automata Learning}\label{related-automata}
 Automata learning algorithms are a different approach to state machine extraction.
@@ -757,15 +756,15 @@ While Binary Ninja \autocite{binary-ninja}, IDA Pro \autocite{ida}, and Ghidra \
 For example, Ghidra provides default, platform-dependent analyses that extract try-catch block information and other landing pad information for \ac{eh}.
 However, it does not provide unwinding control flow in the generated block/call graphs, only cross-references for the $\landingpadtable$.
 This means that it can identify landing pads and analyze the code following them, but it cannot identify the exceptions that will reach them.
-Its built-in debugger that can perform unwinding is also ultimately just an interface to external, dynamic debugging tools such as \ac{gdb} or \href{https://lldb.llvm.org/}{LLDB},
+Its built-in debugger that can perform unwinding is also ultimately just an interface to external, dynamic debugging tools such as \ac{gdb} or \gls{lldb} \autocite{lldb},
 which perform dynamic analysis and instrumentation. Traces are also supported,
 but those require the program to have been run previously.
 
-McSema \autocite{mcsema} is back too! It is relevant because its decompilation process lifts machine code to LLVM bitcode.
-This allows providing intraprocedural exception analysis by generating the LLVM representation for exception landing pads \autocite{mcsema-exceptions}.
-However, it does not perform interprocedural analysis as it merely lifts to LLVM bitcode rather than tracing the execution of exceptions from throw site to landing pad.
+McSema \autocite{mcsema} is back too! It is relevant because its decompilation process lifts machine code to \gls{llvm} bitcode.
+This allows providing intraprocedural exception analysis by generating the \gls{llvm} representation for exception landing pads \autocite{mcsema-exceptions}.
+However, it does not perform interprocedural analysis as it merely lifts to \gls{llvm} bitcode rather than tracing the execution of exceptions from throw site to landing pad.
 
-RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-LLVM, though it also supports \gls{c} output.
+RetDec \autocite{retdec} functions similarly to McSema as a decompiler-to-\gls{llvm}, though it also supports \gls{c} output.
 However, we could not find information about its ability, or lack thereof, to deal with \ac{eh}. We also were unable to successfully apply it to programs using \gls{cpp} exceptions.
 Furthermore, even when it does work it suffers from accuracy issues and produces non-semantically-equivalent results, many of which do not even run \autocite{foudree2019regsym}.
 As with McSema, it does not perfom interprocedural exception analysis.
