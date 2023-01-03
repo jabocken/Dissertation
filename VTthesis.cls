@@ -155,14 +155,15 @@
 % Package for flexible glossaries; I had issues with nomencl and this will allow more centralized configuration anyway. Also supports acronyms, though I am not yet transitioning those yet.
 % configuring glossaries-extra to use bib2gls and also provide accessibility support just in case you want to use it for symbols or whatever that wouldn't screen-read right; treating undefined glossary entries as warnings to match standard missing-reference stuff is automatically integrated into record because of how bib2gls works.
 % important: this must come AFTER hyperref, babel, polyglossia, inputenc and fontenc!
-\RequirePackage[record,accsupp,
-  postpunc=dot,% full stop after description
+\RequirePackage[record,accsupp, % accessibility support
+  postdot,% full stop after description; may be better to use post-description-dot per resource entry
   nostyles,% don't load default style packages; this is the recommendation
-  % load glossaries-extra-stylemods.sty and glossary-tree.sty, bookindex
-  stylemods={tree,bookindex},
-  symbols,index,numbers % want these glossaries
+  % load glossaries-extra-stylemods.sty and tree, bookindex, long/list for abbrevs
+  stylemods={tree,bookindex,long,list}, % index(group) doesn't fail when you don't include tree but latexmk errored out due to lack of stabilization
+  style=indexgroup, % default style
+  prefix, % for a(n) configuration
+  abbreviations,symbols,index,numbers % want these glossaries
 ]{glossaries-extra}
-\RequirePackage{glossaries-prefix} % for a(n) configuration
 
 % For including pdf images (not always needed):
 %\RequirePackage[final]{graphicx}

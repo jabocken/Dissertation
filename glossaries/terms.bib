@@ -1,6 +1,6 @@
 @entry{sel4,
   name = {seL4},
-  description = {A secure, heavily-tested microkernel}
+  description = {A secure, heavily-tested and verified microkernel}
 }
 
 @index{assembly}
@@ -25,19 +25,19 @@
 }
 @entry{amd64,
   name = {AMD64},
-  see = {arch},
+  alias = {arch},
   parent = {assembly},
   prefix = {an~}
 }
 @entry{x86_64,
   name = {x86\_64},
-  see = {arch},
+  alias = {arch},
   parent = {assembly},
   prefix = {an~}
 }
 @entry{i64,
   name = {Intel 64},
-  see = {arch},
+  alias = {arch},
   parent = {assembly},
   prefix = {an~}
 }
@@ -48,6 +48,11 @@
   parent = {assembly},
   seealso = {arch},
   prefix = {an~}
+}
+@entry{riscv,
+  name = {RISC-V},
+  description = {An open standard \ac{isa} based on established \ac{risc} principles},
+  parent = {assembly}
 }
 
 % TODO: not sure how best to represent this one, usually index levels leave out the top word but I'm not sure how to do that with glossaries
@@ -92,4 +97,15 @@
   name = {LLDB},
   description = {The debugger used by the LLVM project},
   seealso = {llvm}
+}
+
+@entry{floyd,
+  name = {Floyd-style},
+  description = {\todo\dots},
+  seealso = {hoare}
+}
+@entry{hoare,
+  name = {Hoare-style},
+  description = {\todo\dots},
+  seealso = {floyd}
 }

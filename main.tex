@@ -221,7 +221,7 @@
 
 \addbibresource{bibliography.bib}
 
-\includeonly{introduction,related,symbolic_execution,cfg,syntax,attribution}
+\includeonly{related}
 
 % To hide remaining nomnclature for now
 \newcommand\nomenclature[3][]{}
@@ -241,13 +241,14 @@
   \microtypesetup{protrusion=true}
 
   \printacronyms[heading=chapter]
-  \printunsrtglossary[type=symbols,style=indexgroup] % no default style for symbols
-  \printunsrtglossary[type=numbers,style=indexgroup] % no default style for numbers
+  \printunsrtabbreviations[style=altlist] % better style for abbreviations with descs than tree/index; what's the difference between tree and index, anyway?
+  \printunsrtglossary[type=symbols]
+  \printunsrtglossary[type=numbers]
 
   \include{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
-  \acresetall % Any acronyms used inside the front matter should start over here. Will replace with \gls version when switching acronyms over
+  \acresetall % Any acronyms used inside the front matter should start over here. No easy gls replacement as there is only \glsreset, which is annoying.
 
   \part{Introductory Elements}
   \include{introduction}
@@ -277,7 +278,7 @@
     \backmatter % All the stuff that comes after the body chapters
     \printbibliography[heading=bibintoc]
 %    \printindex % Interferes with glossaries-extra index
-    \printunsrtglossary[style=indexgroup] % Default glossary (this stuff normally goes in back matter); for whatever reason the default style doesn't format @index/child @entries right (extra desc, not including name)
+    \printunsrtglossary % Default glossary (this stuff normally goes in back matter)
     \printunsrtglossary[type=index,style=bookindex] % default style not good for index
   }
 %  \appendix % formats the chapter name to appendix to properly define the headers

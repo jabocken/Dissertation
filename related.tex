@@ -155,14 +155,11 @@ The most relevant case study to this dissertation was its application
 to software compiled for an automotive microcontroller \autocite{schlich2007automotive}.
 The three programs they focused on for their case study
 were designed to record speed measurements from sensors on four wheels,
-calculate the actual speed, and then transmit it over \iac{can} bus.\footnote{%
-  \Iac{can} bus is a standard bus for electronic communications
-  in automotive applications.%
-}
+calculate the actual speed, and then transmit it over \pgls{can} bus.
 Some of the programs required simplification to be checkable,
 so for consistency they applied, or at least attempted to apply,
 the same simplifications to all three programs.
-They did what they could to remove sends over the \ac{can} bus
+They did what they could to remove sends over the \gls{can} bus
 and tried to focus on the speed signal from just one wheel rather than all four.
 Ultimately, they were able to reason about all three programs
 and prove both functional and non-functional properties of those programs.
@@ -247,7 +244,7 @@ which supports automatic generation of emulation code
 and of proof definitions for \gls{isabelle}, HOL4, and in some cases Coq,
 has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
 \autocite{armstrong2018models,armstrong2019isa}.
-The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-\ac{mips}, and RISC-V.
+The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-\ac{mips}, and \gls{riscv}.
 It was also used to produce a proof of correctness for a model of
 \gls{arm}[v8-A] address translation in \gls{isabelle}.
 
@@ -654,7 +651,7 @@ In contrast, our \ac{hg} lifting approach supports various forms of indirect bra
 As a reminder, binary verification techniques aim to prove properties on the machine code level \autocite{kumar2018software}.
 Typically, binary verification aims at proving that the binary is correct with respect to some higher-level artifact (source code or a specification).
 \Textcite{klein2009sel4,klein2010refinement,sewell2013tvv} used a refinement-based approach to verify the seL4\index{seL4} microkernel binary.
-\Textcite{kamkin2020deductive} developed a methodology for verifying that the machine code of RISC-V\index{RISC-V} binaries satisfy annotations in the binaries' source code.
+\Textcite{kamkin2020deductive} developed a methodology for verifying that the machine code of \gls{riscv} binaries satisfy annotations in the binaries' source code.
 For a top-down approach, proof-carrying code \autocite{necula1997proof}
 integrates a proof of correctness into the binary that is verified at runtime.
 If the proof fails, the binary cannot be executed.
