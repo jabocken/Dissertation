@@ -7,10 +7,10 @@ We then extended those semantics with additional rewrite rules
 to increase efficiency and properly reason about memory.
 Those rules are documented in \cref{se:rewrite}.
 The rules involving reading and writing from memory
-form the basis for the memory usage methodologies
+form the basis for the \gls{memuse} methodologies
 in \cref{ch:cfg,ch:syntax}.
 They essentially generate memory region \acp{vc} that must be discharged
-in order to prove memory usage.
+in order to prove \gls{memuse}.
 
 My main contribution to this chapter was working on additional proven-correct
 simplification rules for word arithmetic as well as more presimplification rules for
@@ -468,7 +468,7 @@ except for those cases where reads or writes of different size
 from or to the same region occur. \Cref{ch:syntax} takes that approach.
 
 \subsubsection{Overflow}
-As a note, many of the formal rewrite rules regarding memory usage
+As a note, many of the formal rewrite rules regarding \gls{memuse}
 have an internal requirement that the supplied memory regions not overflow.
 That is, for any memory region~$r$,
 its address plus its size must be less than $2^{64}$.

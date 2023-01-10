@@ -13,13 +13,11 @@ We applied \ac{hg} extraction to:
 \begin{enumerate}
   \item several stripped binaries of CoreUtils as found in a standard Ubuntu distribution;
   \item a binary with a manually induced buffer overflow, confirming that no \ac{hg} is extracted; and
-  \item all \glssymbol{bin-total} \gls{arch} binaries and all \glssymbol{lib-func-total} functions from the 25 shared objects we identified in the Xen hypervisor.
-  \todo{gls entry for hypervisor?}
+  \item all \glssymbol{bin-total} \gls{arch} binaries and all \glssymbol{lib-func-total} functions from the 25 shared objects we identified in the \gls{xen} hypervisor.
 \end{enumerate}
 This \lcnamecref{hg-extraction} focuses on the Xen case study specifically.
 The Xen Project is a mature, industrial-strength hypervisor used in many production systems, including Amazon's cloud platforms \autocite{chisnall2008definitive}.
 Hypervisors provide a method for managing multiple virtual instances of operating systems (guests) on a physical host.
-\todo{glossary entry for hypervisor?}
 Xen is a suitable case study because of two things:
 \begin{itemize}
   \item its complexity and
@@ -63,7 +61,6 @@ Xen is a suitable case study because of two things:
 The analysis was performed on a machine with a six-core (twelve logical cores), \SI{2.9}{\giga\hertz} Intel Core i9-8950HK \ac{cpu}.
 That machine had \SI{31}{\gibi\byte} of \ac{ram}
 and \SI{32}{\gibi\byte} of swap space on a KXG50PNV1T02 NVMe \ac{ssd}.
-\todo{does NVMe have a proper long-form or is it fine as is?}
 Its \ac{os} was Linux Mint 20.1 Cinnamon.
 The version of Xen under test was 4.12.
 \begin{remark}[Parallelization]
@@ -94,17 +91,15 @@ must be strong enough to prove that the return address at the top of the current
 Furthermore, that precondition must also be strong enough to show that the value of the stack pointer has been restored to the initial value it held on function entry.
 If the current precondition is not strong enough to satisfy those conditions, the algorithm does not produce \iac{hg}.
 This is because it cannot prove return address integrity.
-\todo{add glossary entry?}
 A breakdown of these cases occurs later in \cref{hg-results-summary}.
 
 \subsubsection{Concurrency}
 Binaries that contain multithreading-related function calls are out of scope for this analysis.
 This was determined primarily by the presence of \inlineasm{pthread} calls, mutexes, and semaphores.
-\todo{glossary entries for mutex/semaphore?}
 However, those binaries were still included in \cref{tab:xen} in order to account for all \gls{arch} Xen binaries.
 
 \subsubsection{Timeout}
-While our algorithm has a proof of termination \todo{double-check, it looks like we do but I want to make sure},
+While our algorithm has a proof of termination,
 state space explosion or other resource limitations sometimes make full execution infeasible.
 In order to ensure a full analysis, we set a timeout on analysis to \SI4\hour\ per binary/function.
 This resulted in failure for only one binary and four library functions.
@@ -120,7 +115,7 @@ As states belonging to the same address are joined whenever compatible, the numb
 State overhead scales with the amount of predicted control flow-related immediate values.
 This was described in the addendum to \cref{def:compatibility}.
 
-Moving on, column~A shows the number of \emph{resolved} indirections.
+Next, Column~A shows the number of \emph{resolved} indirections.
 By resolved, we mean the indirect jumps and calls where the postcondition's instruction pointer value could be overapproximatively established.
 Meanwhile, columns~B and~C show the number of \emph{annotations} for unresolved indirect jumps and calls, respectively.
 Unresolved indirect jumps were primarily caused by two things.
@@ -178,11 +173,9 @@ We can account for why this number is relatively high:
   \item Even though not all instructions of the \gls{arch} \ac{isa} are supported, all instructions occurring in the case study are, so this is not a reason why functions were rejected.
 \end{itemize}
 The unprovable return address cases can also be broken down further:
-\todo{perhaps I should move this upwards into the ``Failure Case'' section}
 \begin{itemize}
   \item Some of the rejections constitute functions that do not adhere to the calling conventions of the System~V \ac{abi}.
   Manual analysis of these cases shows that these are all compiler-generated functions that are not required to follow calling conventions.
-  \todo{and optimized cases?}
   \item Other rejections were caused by preconditions that were insufficiently strong enough for the derivation of overapproximative bounded sets of concrete values for the next instruction pointers.
   This may occur when an array or struct is stored on the stack and accessed via variable offset.
   Such constructs may lead to complicated pointer arithmetic \emph{within} the stack frame.
@@ -274,5 +267,5 @@ In the binary \texttt{/usr/bin/ssh}---as available in a standard MacOS distribut
     & \mathtt{ ~] + 56}\\
   \end{array}
 \end{equation*}
-This complicated symbolic value shows that the stackpointer is not normally restored, but instead read from a region in memory whose address is based on the initial value of register $\mathtt{R9}$ (notation $\mathtt{*[a]}$ denotes reading from address $\mathtt{a}$ \todo{this was already introduced though}).
+This complicated symbolic value shows that the stackpointer is not normally restored, but instead read from a region in memory whose address is based on the initial value of register $\mathtt{R9}$ (as before, notation $\mathtt{*[a]}$ denotes reading from address $\mathtt{a}$).
 This function leads to a verification error, as the stack pointer cannot be proven to be normally restored, no accurate memory relations over the local stack frame can be formulated.

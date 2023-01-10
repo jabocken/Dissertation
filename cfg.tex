@@ -1,8 +1,7 @@
 \chapter{Floyd-Style Verification}\label{ch:cfg}
-The memory usage analysis approach presented in this chapter
+The \gls{memuse} analysis approach presented in this chapter
 provides a Floyd-style methodology featuring annotations on specific instructions.
-It is designed for the proving of memory usage%
-\index{memory!usage}
+It is designed for the proving of \gls{memuse}
 over individual assembly functions.
 That property ensures that only documented regions of memory are read and written;%
 \index{memory!region}
@@ -32,10 +31,10 @@ is presented in \cref{se:cfg_application}.
 Our observations regarding usage of the methodology on that case study
 are given in \cref{se:usability}.
 
-My three main contributions to the memory usage work presented here were:
+My three main contributions to the \gls{memuse} work presented here were:
 \begin{enumerate*}
   \item the development of a tool for producing proof skeletons
-  for memory usage, interfacing with the analysis tool
+  for \gls{memuse}, interfacing with the analysis tool
   \texttt{angr} (\cref{se:cfg_overview});
   \item the development of structured proof strategies
   to flesh out and verify those skeleton proofs,
@@ -76,14 +75,14 @@ Even recursive functions are supported, albeit with difficulty.%
 
 The process that selects cutpoints%
 \index{cutpoint}
-also generates skeleton memory usage theories for every function analyzed.
+also generates skeleton \gls{memuse} theories for every function analyzed.
 The theory files can then be opened in the interactive theorem prover \gls{isabelle}
 and the assembly loaded using the parser of \textcite{roessle2019verified}.
 Once that is done, a user can flesh out the invariants (\cref{se:cfg_invariant})
 and add the necessary sets of memory regions that the functions write to
-in order to complete the proofs of memory usage.
+in order to complete the proofs of \gls{memuse}.
 Defining the necessary invariants for functions with complex control flow
-is generally a hard task, but targeting a property such as memory usage
+is generally a hard task, but targeting a property such as \gls{memuse}
 does reduce the amount of work required
 as seen in \cref{se:cfg_examples,se:cfg_application}.
 The work is still not trivial, however.
@@ -100,7 +99,7 @@ The work is still not trivial, however.
     \node[myblock] (binary) {\gls{arch} binary};
     \node[myblock, right of=binary, minimum height=1cm] (cfg) {Python package};
     \node[myblock, right of=cfg] (isa) {\gls{isabelle}};
-    \node[myblock, right of=isa] (mem) {Formal Proof of Memory Usage};
+    \node[myblock, right of=isa] (mem) {Formal Proof of \gls{memuse}};
 
     \draw[transform canvas={yshift=1.5em}] (binary) -- node[above] {\footnotesize disassemble} (isa);
     \draw (binary) -- (cfg);
@@ -108,11 +107,11 @@ The work is still not trivial, however.
     \draw[transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
     \draw[transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
-  \caption{Overview of Floyd-style memory usage verification}\label{fig:cfg_overview}
+  \caption{Overview of Floyd-style \gls{memuse} verification}\label{fig:cfg_overview}
 \end{figure}
 
 \section{Formal Definitions}\label{se:cfg_defs}
-A formal definition of memory usage requires a formal basis to work with,
+A formal definition of \gls{memuse} requires a formal basis to work with,
 and that basis is the machine model from \cref{se:machine_model}.
 
 \subsection{Symbolic Execution for Floyd-Style Verification}\label{cfg_symb_exec}
@@ -155,7 +154,7 @@ The result is that the program statement,
 the block of instructions to execute, is characterized by the addresses of its initial
 and ending instructions, defined in~$P$ and~$H$, rather than via specific syntax.
 Thus, we have the following definition:
-\begin{definition}[Hoare triple for memory usage]\label{def:htriple}
+\begin{definition}[Hoare triple for \gls{memuse}]\label{def:htriple}
   $\htriple{P}H{Q}$
   denotes that, for any initial state that satisfies the precondition~$P$
   and results in symbolic execution to the halting condition~$H$ terminating,
@@ -274,8 +273,7 @@ In essence, Floyd-style verification%
 models a program as \iac{cfg} where each edge is an implication.
 
 \subsection{Definition of Memory Usage}\label{sse:mem_pres}
-The formal definition of memory Usage%
-\index{memory!usage}
+The formal definition of \gls{memuse}
 takes the form of a Hoare triple from \cref{def:htriple}.
 Initially, there must be some predicate~$P$ that characterizes the initial state,
 at a minimum by setting the instruction pointer
@@ -284,13 +282,13 @@ In addition, there is some set of memory regions~$M$
 that the function is allowed to write to.
 $M$ includes the stack frame and any utilized data sections from the source binary,
 as well as whatever heap memory was supplied or allocated, if any.
-Memory usage formulates that any byte not within any of the regions in~$M$
+\gls{memuse} formulates that any byte not within any of the regions in~$M$
 has to remain unchanged throughout the execution of that function.
 The notation for this formulation is shown below.
 \begin{definition}[Memory usage]\label{mem_pres_hoare}
   Let~$M$ be a set of memory regions, let~$P$ be a precondition,
   and let~$H$ denote a halting condition.
-  A piece of assembly demonstrates \emph{memory usage} if and only if,
+  A piece of assembly demonstrates \emph{\gls{memuse}} if and only if,
   for any address~$a$ and byte value~$v_0$, the following implication holds:
   \begin{equation}
   (\forall r\in M\cdot r\gls{separate}\region{a}1)\longrightarrow\htriple{P\land \readmem{a}1=v_0}H{Q\land\readmem{a}1=v_0}
@@ -418,7 +416,7 @@ It is generally assumed that the net effect of a function call
 does not touch these registers.
 Consider a situation in which \lstinline{rbp} contains an address,
 which will be used as the target of a write after a function call.
-In order to prove memory usage, \lstinline{rbp} must be shown to be preserved.
+In order to prove \gls{memuse}, \lstinline{rbp} must be shown to be preserved.
 Generally, this is easy to prove
 by strengthening the pre- and postcondition with a conjunct $\mathrbp=\rbpo$.
 The proof is generally not complicated,
@@ -516,7 +514,7 @@ parent relationships can then be established as shown below:
   & \parent{\region{\rspo-16}8}{i_s}{r_s} && \parent{\region{a}1}{i_a}{\region{a}1}
 \end{align*}
 
-For the memory usage proof of this function, we chose to associate annotations
+For the \gls{memuse} proof of this function, we chose to associate annotations
 at the start of the function, an instruction that broke the loop,
 and the return address of the function
 (a logical variable, as the caller of the function is unspecified for this proof).
@@ -748,7 +746,7 @@ other than the upmost return address. The resulting Hoare triple becomes:
   \end{array}
 \end{equation}
 This, combined with the regions presented above as assumptions,
-provide us with our theorem of memory usage.
+provide us with our theorem of \gls{memuse}.
 
 \section{Application: HermitCore}\label{se:cfg_application}
 The concept of \emph{unikernels} has existed in the world of virtualization
@@ -932,13 +930,13 @@ The three main aspects of per-function user interaction for this methodology are
   \item defining a Floyd invariant,
   \item strengthening the precondition,%
     \footnote{Includes adding additional memory regions and region relationships} and
-  \item finishing the proof of memory usage.
+  \item finishing the proof of \gls{memuse}.
 \end{enumerate*}
 The functions analyzed in the above case study provided some significant insight
 into the usability of those aspects.
 
 \subsection{Defining the Invariant}
-While restricting the verification effort to memory usage
+While restricting the verification effort to \gls{memuse}
 does reduce the effort required to provide Floyd invariants, it does not eliminate it.
 This is more of a problem for loops with complex behavior
 and is a significant problem for recursive functions.
@@ -965,7 +963,7 @@ be preserved for their extant,%
 \index{function!return address}
 being pushed on and popped off the stack.
 Any additional stored conditions
-that may affect memory usage must be kept track of as well.
+that may affect \gls{memuse} must be kept track of as well.
 
 On a nicer note, an advantage of the requirements for proofs over recursion
 is that they essentially require showing termination of the recursion
@@ -1009,13 +1007,13 @@ requiring significant \ac{itp} over word arithmetic.
 
 \section{Summary}
 This chapter covered one method for formal verification
-of memory usage in \gls{arch} binaries,
+of \gls{memuse} in \gls{arch} binaries,
 showing that functions in a binary restrict themselves to certain regions of memory.
 The approach here aimed to automate verification
 while still allowing user interaction wherever necessary.
 As a semi-automated approach,
 it requires setting up an invariant, which traditionally is a hard problem in itself.
-Requirements for memory usage invariants were provided for several examples.
+Requirements for \gls{memuse} invariants were provided for several examples.
 For recursive functions, more involved invariants are required,
 along with \ac{itp} to show preservation of the stack and frame pointers.
 Invariants may include preconditions necessary for excluding exceptional behavior,
@@ -1025,7 +1023,7 @@ by applying the methodology to a disassembled binary
 instead of deriving them from documents or source code annotations.
 
 The approach was applied to functions of HermitCore, a unikernel~\ac{os}.
-Memory usage was formally proven for functions with loops, recursion,
+\Gls{memuse} was formally proven for functions with loops, recursion,
 \gls{c} structs and unions, and dynamic memory operations.
 All verified functions were verified with non-optimized compilation,
 and some had their optimized versions verified as well.

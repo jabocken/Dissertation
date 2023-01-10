@@ -53,8 +53,11 @@ It can even depend on what compiler options are in use, including the level of o
   Doing so requires knowledge of the layout of the stack, including the values of the stack and frame pointers, thus making it an \emph{assembly-level} or lower property.
 \end{example}
 On the flip side, this also means that \emph{such low-level properties can be precisely stated even if they are not evident on the source level}.
-One such property is \emph{memory usage}.
-This property indicates that the memory a program writes and reads (in other words, \emph{uses}) is bounded by prespecified regions.
+One such property is \emph{\gls{memuse}}.
+\begin{definition}[Memory Usage (informal)]
+  Informally, \gls{memuse} describes the memory a program writes and reads (in other words, \emph{uses}) in terms of prespecified regions.
+  If verified correct, all memory utilized by the program is bounded to those regions.
+\end{definition}
 
 Another property is \emph{actual control flow recovered from the binary}.
 The control flow one can identify from source code is not necessarily the actual control flow a program will take due to the binary-source semantic gap.
@@ -79,30 +82,30 @@ We provide two contributions for each, summarized here and expanded on later in 
 \end{itemize}
 
 \section{Motivation}
-Now that we have introduced the concepts of memory usage and control flow recovery, we here provide some motivation for their usage.
+Now that we have introduced the concepts of \gls{memuse} and control flow recovery, we here provide some motivation for their usage.
 
 \subsection{Memory Usage}
-As a basic property, memory usage has potential applications to security analyses, compositional reasoning, and even concurrency.
+As a basic property, \gls{memuse} has potential applications to security analyses, compositional reasoning, and even concurrency.
 These potential applications are described in more detail below.
 
 \subsubsection{Security}
-Unbounded memory usage can lead to vulnerabilities such as buffer overflows and data leakage.
+Unbounded \gls{memuse} can lead to vulnerabilities such as buffer overflows and data leakage.
 One example of such a vulnerability would be 2014's Heartbleed \autocite{heartbleed}\index{heartbleed}.
 Heartbleed was caused by a lack of bounds checking on a string array requested as output as part of a ``heartbeat'' message.
 This, combined with a custom memory manager that also had no security protections against out-of-bounds memory accesses, lead to potential leakage of sensitive data such as passwords and encryption keys.
-Memory usage analysis could serve as a foundation for formal security analyses that could be used to expose vulnerabilities involving malicious writes.
+\Gls{memuse} analysis could serve as a foundation for formal security analyses that could be used to expose vulnerabilities involving malicious writes.
 
-Another important property that memory usage could help with is \ac{cfi}.
+Another important property that \gls{memuse} could help with is \ac{cfi}.
 \Ac{cfi} ensures that software execution follows a predetermined \ac{cfg} using static analysis and runtime checks.
 At a minimum, this requires proving that a program cannot overwrite its stack pointer or that a called function does not overwrite local variables of its caller.
-In other words, it must be proven that the memory writes of a program are confined to prespecified regions, which is part of what the property of memory usage states.
+In other words, it must be proven that the memory writes of a program are confined to prespecified regions, which is part of what the property of \gls{memuse} states.
 This can aid in avoiding \ac{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
 On a high level, it states that a group of users using a certain set of commands \emph{does not interfere} with another group of users if the first group's actions have no effect on what the second group of users can see
 \autocite{goguen1982security,rushby1992noninterference}.
 On a functional level, that could be interpreted as a statement that a non-interfering function does not modify any memory that is accessed by the function not being interfered with.
-Remember that memory usage is specifically about showing that all memory outside of specific regions is not modified or read by the function or functions associated with those regions.
+Remember that \gls{memuse} is specifically about showing that all memory outside of specific regions is not modified or read by the function or functions associated with those regions.
 This means that proving the region sets for two functions are disjoint would essentially prove noninterference for those two functions.\footnote{%
   A weaker property would be showing that one of the functions does not write
   to any of the memory regions read by the other, but that would actually be harder to prove as we do not currently differentiate between regions that are read and written.%
@@ -115,7 +118,7 @@ Separation logic provides a \emph{frame rule} that supports such%
 decomposition \autocite{o2001local,reynolds2002separation,krebbers2017essence}.
 Put into words, the frame rule states that,
 if a program or program fragment can be confined to a certain part of a state, properties of that program or program fragment carry over when used as part of a larger system involving that state.
-Memory usage allows discharging the most involved part of the frame rule, at least in terms of individual assembly functions.
+\Gls{memuse} allows discharging the most involved part of the frame rule, at least in terms of individual assembly functions.
 That is, it shows that the operations on memory in those functions are constrained to specific regions.
 This could then serve as a basis for a larger proof effort over multi-function assembly programs.
 
@@ -124,7 +127,7 @@ Reasoning over concurrent programs is complicated due to the potential interacti
 While there are ways of handling such interactions in a structured manner via kernel- or library-provided \ac{ipc}, one method commonly used for the sake of efficiency is \emph{shared memory}.
 Shared memory, in the context of this work, refers to threads or processes sharing either a full memory space or portions of one (via memory mapping) that can be written to and read from freely by any thread or process with access to it.
 Usage of shared memory can result in \emph{unintended} interactions between threads.
-Memory usage could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
+\Gls{memuse} could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
 
 \subsection{Control Flow Recovery}
 The process of control flow recovery is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
@@ -205,7 +208,7 @@ They also do not work if the program manually manages its memory in large chunks
 Any verification effort that wishes to reason about low-level memory properties therefore must provide its own abstractions and assumptions on layout.
 
 \subsection{Disassembly and Binary Lifting}\label{challenges-disassembly}
-Moving to an approach that integrates disassembly into the process of extracting information from a low-level program further requires gaining insight into program control flow.
+Switching to an approach that integrates disassembly into the process of extracting information from a low-level program further requires gaining insight into program control flow.
 Typically, such binary lifting requires answering \emph{at least} the following base questions:
 \begin{itemize}
   \item \emph{Which} instructions are potentially executed within the binary?
@@ -254,25 +257,41 @@ Many works have built on those core structures over the years to model additiona
 Despite this, to the best of our knowledge, no works successfully tackle the specific problems tackled in this dissertation.
 
 \subsection{Assembly Verification}
-As there are currently no state-of-the-art methods that specifically aim to formally verify the property of memory usage as described here, we focus on other important works in the field that lead up to our contributions for memory usage.
+As there are currently no state-of-the-art methods that specifically aim to formally verify the property of \gls{memuse} as described here, we focus on other important works in the field that lead up to our contributions for \gls{memuse}.
 
 % basic context
-One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}, quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
+One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}.
+That work involved analysis of a subset of the \gls{8080} \ac{isa}, \gls{space8080}, using the software suite \ac{spade}.
+\Ac{spade} was an early software suite for the development of high-integrity software.
+Their work utilized an interactive \gls{floyd} verification approach to prove functional correctness of very small functions.
+It was quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
+That application involved the verification of the firmware of a jet engine's fuel control unit.
 
 % add back in citations if you lose the ability to use them in the acronym first use when switching to \gls
-Another big breakthrough was the development by Myreen et.\ al of an initial approach to formal binary lifting.
+Another big breakthrough was the development by Myreen et al.\ of an initial approach to formal binary lifting.
 Known as \emph{\ac{dil}}, it converts machine code into \iac{hol} representation.
 This representation can then be used for verification efforts in a theorem prover.
 As a specific example, it was utilized in the verification of the \gls{sel4} microkernel \autocite{klein2009sel4,klein2014comprehensive,sel4}.
 However, though the usage of \ac{dil} enabled automatic binary lifting for much of \gls{sel4}, that verification effort still required significant manual effort.
 
-Moving on, in 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
+Then, in 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
 That work allows mechanized reasoning over compiled programs in the ACL2 theorem prover \autocite{ACL2}.
+Further previous and later efforts for a variety of assembly-level analyses and targets are documented later in \cref{se:previous_assembly}.
+The ones mentioned here are also described in more detail.
 
-\Textcite{heule2016stratified} followed that up with a technique using machine learning to derive bitvector semantics from actual \acp{cpu}.
-This allowed for more accurate semantics, as they identified mistakes and bugs in the human-readable Intel documentation of the instructions they derived semantics for.
-That work was then extended, improved, formalized, and proven correct by \textcite{roessle2019verified}.
-Though we did not directly utilize these two works, they served as inspiration and influence in developing our instruction semantics and the validation performed in \cref{ch:eicfg-validation}.
+Switching topics, the \textsc{Strata}\index{Strata} tool by \textcite{heule2016stratified} provides a technique using machine learning to derive bitvector semantics from actual \acp{cpu}.
+This allows for more accurate semantics than previous approaches relying on human-interpreted specification documents even when when working with \ac{cisc} \acp{isa}.
+As evidence, the Heule team identified mistakes and bugs in the human-readable Intel\index{Intel} documentation of the instructions they derived semantics for.
+Of course, even \ac{risc} specifications, despite ostensibly being simpler, are not always implemented accurately in emulators or other tools not synthesized directly from a structured specification \autocite{jiang2022examiner}.
+This indicates that \ac{tcb} reduction is desirable for all architectures if the goal is to maximize reliability and trustworthiness of the final product.
+
+Despite the accomplishments of the Heule work, it still has some drawbacks. Most importantly, their approach was not formally verified.
+This means that there is still potential for bugs in the specification or synthesis of semantics to go unnoticed.
+That gap was filled by the work of \textcite{roessle2019verified}.
+That work establishes a methodology for generating formal equivalence theorems between assembly code and big-step semantics in an interactive theorem prover (specifically, \gls{isabelle}).
+This was accomplished by using \textsc{Strata}\index{Strata} to extract per-instruction small-step semantics and then performing tests in a formal framework against actual hardware to validate them.
+The validated semantics were then used in \iac{dil} methodology to lift full programs into a form that could be easily reasoned over, even in the presence of floating-point operations.
+Though we did not directly build on the works of \textcite{heule2016stratified} or \textcite{roessle2019verified}, they served as inspiration and influence in developing our instruction semantics as well as for the validation performed in \cref{ch:eicfg-validation}.
 
 \subsection{Control Flow Recovery}
 At the time this dissertation was written, no other tool operating on binaries could provide scalable, formally overapproximative assurance between a binary and its lifted representation.
@@ -286,7 +305,8 @@ This tool ensures the preservation of semantics of binaries even in the presence
 However, it relies on an external tool, \ac{bap}, to perform the control flow recovery and they encountered multiple situations where it did not work due to its lack of support for floating point and other ``exotic'' instructions.
 \Textcite{kinder2010static,kinder2012alternating,kinder2012virtualization} also provided the tool Jakstab, which performs formal binary lifting using abstract interpretation.
 However, it is targeted at a different, more limited set of applications from our works; specifically, small obfuscated programs such as Windows device drivers and malware.
-We also we found it to be rather limited from a practical perspective aside from that.
+It also often requires an external harness in order to validate those drivers which must be included in the \ac{tcb} if it is not itself validated.
+Furthermore, we argue that it is not actually an overapproximative tool later in \cref{related-jakstab}.
 
 % EXISTING TOOLS DO NOT SOLVE THE PROBLEM (eicfg)
 Furthermore, existing state-of-the-art disassemblers/decompilers, such as IDA Pro \autocite{ida}, Ghidra \autocite{ghidra}, and Binary Ninja \autocite{binary-ninja}, do not document exceptional control flow between procedures.
@@ -305,10 +325,10 @@ In contrast, our \ac{eicfg} generator does not.
 
 \section{Contributions}
 This dissertation consists of four main contributions.
-Two of them are formal approaches to per-function verification of the assembly-level property we call memory usage.
+Two of them are formal approaches to per-function verification of the assembly-level property we call \gls{memuse}.
 The other two are methods for control flow recovery from binaries.
 
-The first two contributions are the memory usage approaches: \emph{Floyd-style} verification and \emph{Hoare-style} verification.
+The first two contributions are the \gls{memuse} approaches: \emph{\gls{floyd}} verification and \emph{\gls{hoare}} verification.
 Both approaches use some form of control flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
 Those proofs are then loaded into the interactive theorem prover \gls{isabelle}[/HOL] \autocite{nipkow2002isabelle} and completed there.
 The proof strategies for both approaches involve \emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic}, albeit in different ways.
@@ -327,7 +347,7 @@ However, they differ in their degree of scalability, their degree of context-sen
 For example, the \ac{hg} work generates proofs of output assurance while the \ac{eicfg} work uses informal proofs combined with concrete validation of its \ac{eh}-related abstract transition rules.
 
 \begin{comment}
-  % memory usage result summary
+  % \gls{memuse} result summary
   For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
 
   % cf recovery result summary
@@ -337,18 +357,18 @@ For example, the \ac{hg} work generates proofs of output assurance while the \ac
 \end{comment}
 
 \subsection{Floyd-Style Memory Usage}
-This methodology for verification of memory usage relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
+This methodology for verification of \gls{memuse} relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
 In order to reason about the \acp{cfg}, they are annotated with predicates on state at specific locations, between which the program will be symbolically executed.
 While it is possible to reason about full functional correctness with this methodology, doing so takes a significant amount of effort due to the very low level of abstraction assembly provides, even with proven-correct formal simplification rules in \gls{isabelle}.
-This is why we focused on the aforementioned property of memory usage.
+This is why we focused on the aforementioned property of \gls{memuse}.
 
 %Formal Definition of Memory Usage
-In our model, memory usage is formulated as a set of \emph{regions} that start at some address and have a specific size in bytes.
+In our model, \gls{memuse} is formulated as a set of \emph{regions} that start at some address and have a specific size in bytes.
 We do not currently differentiate between regions for writes and regions for reads, though doing so is a possibility in the future.
-Proving memory usage requires performing symbolic execution on the underlying assembly instructions and showing that no regions beyond those needed to complete the proof are modified.
+Proving \gls{memuse} requires performing symbolic execution on the underlying assembly instructions and showing that no regions beyond those needed to complete the proof are modified.
 
 %Semi-Automated Formal Verification for Memory Usage
-In order to reason about and complete proofs for memory usage in a theorem prover, the structure of the proof must be extracted from the assembly programs.
+In order to reason about and complete proofs for \gls{memuse} in a theorem prover, the structure of the proof must be extracted from the assembly programs.
 For that purpose, our code generation tool for this work produces the skeleton of a proof based on the control flow of the analyzed functions.
 This is achieved using off-the-shelf tools.
 
@@ -368,17 +388,17 @@ Formulating annotations that must hold for all loop iterations is not easy when 
 The closest related work to this, that of \textcite{matthews2006verification}, resulted in the verification of only \num{20} functions, with \num{631} assembly-level instructions in total.
 That is only \SI{26.67}{\percent} of the functions, or under \SI{26.5}{\percent} of the instructions, that we verified here.
 On top of that, the \acp{isa} they worked with are not as low-level as the \gls{arch} \ac{isa}.
-While they verified functional correctness instead of a weaker property like memory usage, they also specifically reduced the complexity of the most complicated set of functions they verified by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
+While they verified functional correctness instead of a weaker property like \gls{memuse}, they also specifically reduced the complexity of the most complicated set of functions they verified by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
 
 \subsection{Hoare-Style Memory Usage}
-Taking our experiences from the Floyd-style verification work into account, we chose a slightly different path for the other memory usage work presented in this dissertation.
+Taking our experiences from the Floyd-style verification work into account, we chose a slightly different path for the other \gls{memuse} work presented in this dissertation.
 This approach focuses on relating symbolically-executed basic blocks with a syntactic representation of program control flow.
 It also involves significantly more information generation than the previously-discussed approach.
 
 %Mostly-Automated Formal Verification for Memory Usage
 Abstracting away from the concrete control flow to a more structured syntax increases the capacity for automation as it allows for the development of a set of \emph{Hoare rules}\index{Hoare!rule} \autocite{hoare1969axiomatic} over the syntactic control flow.
 By developing and using a set of such formal rules, we were able to restrict symbolic execution to the level of individual basic blocks and then use those rules to do the rest of the work.
-This greatly simplified our proof strategies for proving memory usage.
+This greatly simplified our proof strategies for proving \gls{memuse}.
 
 The change in methodology alone would not have been enough, however.
 As stated, we also generate much more information.
@@ -399,7 +419,7 @@ That is \SI{9.7}{insts\per\minute} compared to \SI{1.48}{insts\per\minute} for A
 We did have some functions that took an overly long period of time due to the suboptimality of \acl*{scf} with respect to minimizing symbolic execution, but those were atypical.
 
 \subsection{Hoare-Logic-Based Control Flow Recovery}
-Moving to the contributions for control flow recovery, we have an algorithm (and implementation) for lifting \iac{hg} out of \pgls{arch} binary.
+Changing focus to the contributions for control flow recovery, we have an algorithm (and implementation) for lifting \iac{hg} out of \pgls{arch} binary.
 \Acp{hg} are \gls{hoare-logic}-based \acp{cfg}
 The vertices of those \acp{hg} are symbolic states that consist of the following:
 \begin{enumerate}
@@ -510,7 +530,7 @@ Following this introduction in \cref{ch:related} is a review of tools and work r
 For an in-depth exploration of the basis for the symbolic execution engines and formal memory reasoning used by the contributions of this work,
 see \cref{ch:symbolic_execution}.
 
-After that, the Floyd-style approach to verification of memory usage mentioned above is presented in \cref{ch:cfg} while the Hoare-style approach is presented in \cref{ch:syntax}.
+After that, the Floyd-style approach to verification of \gls{memuse} mentioned above is presented in \cref{ch:cfg} while the Hoare-style approach is presented in \cref{ch:syntax}.
 I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
 followed by the interprocedural, exception-aware \ac{cfg} extractor in \cref{eicfg}.
 Finally, this dissertation wraps up in \cref{ch:conclusions}.

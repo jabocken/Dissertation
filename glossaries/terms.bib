@@ -49,6 +49,19 @@
   seealso = {arch},
   prefix = {an~}
 }
+@entry{8080,
+  name = {Intel 8080},
+  description = {An even older chipset than the 80286},
+  parent = {assembly},
+  seealso = {arch},
+  prefix = {an~}
+}
+@entry{space8080,
+  name = {SPACE-8080},
+  description = {A verifiable subset of the Intel 8080 \ac{isa}},
+  parent = {assembly},
+  seealso = {8080}
+}
 @entry{riscv,
   name = {RISC-V},
   description = {An open standard \ac{isa} based on established \ac{risc} principles},
@@ -102,10 +115,22 @@
 @entry{floyd,
   name = {Floyd-style},
   description = {\todo\dots},
+  prefix = {a~},
   seealso = {hoare}
 }
 @entry{hoare,
   name = {Hoare-style},
   description = {\todo\dots},
+  prefix = {a~},
   seealso = {floyd}
+}
+
+@entry{memuse,
+  name = {memory usage},
+  description = {A description or representation of the memory read and written by a program. The program is guaranteed to not \emph{use} any memory outside those regions. To ensure correctness, it must be \emph{overapproximative}}
+}
+
+@entry{xen,
+  name = {the Xen Project},
+  description = {A fully-featured, production-capable hypervisor}
 }

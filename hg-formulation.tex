@@ -9,7 +9,6 @@ The concepts and definitions presented here were developed in concert with Dr.~F
 In particular, he was a significant contributor to the initial algorithmic setup and the proofs in this \lcnamecref{ch:hg-formulation}.
 
 \section{Starting Concepts}\label{hg-concepts}
-\todo{maybe move some of this to an earlier/communal chapter?}
 For this \lcnamecref{hg}, we have the following types:
 \begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries \glsentryname{mem}}]
   \item[\gls{inst2}] a structured representation of assembly instructions
@@ -40,7 +39,7 @@ where~$X$ can be either a predicate or a memory model.
   where symbolic states in $\gls{abs-state}=\gls{predicate}\times\gls{mem}$ consist of predicates and memory models, $\gls{symbolic-state}[_I] \in \gls{abs-state}$ is an initial symbolic state, and \gls{symbolic-transition} of type $\gls{abs-state} \times \gls{inst2}\times\gls{abs-state}\mapsto\gls{bool}$ is a non-deterministic transition relation labeled with instructions.
 \end{definition}
 
-Moving on, the algorithm requires the definition of a \emph{join} operation over symbolic states.
+Furthermore, the algorithm requires the definition of a \emph{join} operation over symbolic states.
 This operation soundly merges the information stored in two such states.
 It is required because the algorithm explores the \ac{hg} state space by recursively adding new vertices/states and edges on the fly.
 Joining serves two purposes:
@@ -381,7 +380,7 @@ which is then supplied to the below function.
     \end{cases}
   \end{align*}
   \todo{fix the formatting! though switching to equation* already got me halfway thebre}
-  Notation $a \cons X$ denotes $\{a\} \cup X$ \todo{put this in glossary}.
+  Notation $a \cons X$ denotes $\{a\} \cup X$ % TODO: put this in glossary
   \begin{equation*}
     \begin{array}{lcl}
       \gls{insertM}_\text{AL}(t_0,t_1,M) &\gls{defeq}& \\
@@ -397,7 +396,7 @@ As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be ins
 \begin{enumerate}
   \item If~$t_0$ and~$t_1$ alias, then they are combined by taking the union of their nodes.
   Their child regions are not necessarily the same, however.
-  Thus, subtrees are then reinserted using a $\mathsf{fold}$ \todo{change up this notation/styling}.
+  Thus, subtrees are then reinserted using a $\mathsf{fold}$.
   \item If trees~$t_0$ and~$t_1$ are separate, then tree~$t_0$ is recursively inserted into the remainder of the memory model and~$t_1$ is added without modification.
   \item If~$t_0$ is enclosed in~$t_1$, it is recursively inserted into the sub-forest of~$t_1$.
   Each memory model~$M'$ thus obtained is wrapped in a tree $\langle R_1,M'\rangle$.
@@ -444,7 +443,6 @@ A tree holds if its node contains only aliasing regions and all trees in its sub
   holds only in states where $\rdio+8\le\rsio$ or $\rsio+8\le\rdio$.
 \end{example}
 
-\todo{I changed up the wording but this still seems a bit abrupt, not sure how best to lead into the completeness discussion}
 An important quality our insertion function must possess is \emph{completeness}.%
 \index{completeness}
 That is, the produced memory models should cover any possible relation between inserted region~$r$ and any region~$r'$ already present in the memory model.
@@ -457,7 +455,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
   Let~$r_0$ and~$M$ be a region and a memory model, respectively.
   Also let~$f$ of type $\gls{constant}\times\gls{nat}\mapsto \{ \gls{alias},  \gls{separate}, \gls{enclosed},\gls{encloses}\}$ be some mapping that provides a relation between~$r_0$ and~$r'$ for any region~$r'$ currently in memory model~$M$.
   Assume that $f$ is possibly true:
-  \todo{glossary entry for $\models$}
+  % TODO: glossary entry for $\models$
   \begin{equation*}
     \exists\gls{concrete-state} \sepdot \gls{concrete-state} \gls{holds}M \land (\forall r' \in R(M) \sepdot \gls{concrete-state} \models r_0~f(r')~r')
   \end{equation*}
@@ -471,7 +469,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
   The proof is by induction.
   The base case is trivial.
   For the inductive case, we insert region~$r$ into $\{t_1\} \cup M$.
-  \todo{Five} cases are possible:
+  Five cases are possible:
   \begin{enumerate}
     \item Region $r_0$ necessarily aliases with $t_1$.
     In this case, since mapping $f$ is possibly true, it must assign \gls{alias} to all top-level regions of $t_1$, \gls{encloses} to all other regions in $t_1$ and \gls{separate} to all regions in $M$.
@@ -493,7 +491,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
     Again, the \ac{ih} then finishes the proof.
     \item As an extra case, consider when no relation can necessarily be established. In that case, all of the above proofs apply, as memory models are generated for each possible case within this set.\footnote{%
       This does \emph{not} include partially overlapping cases, as described in the previous \lcnamecref{ch:hg-lifting}.%
-    } \todo{Shouldn't I include this part? Not sure why it was commented out.}\qedhere
+    }\qedhere % including this last case for now just in case
   \end{enumerate}
 \end{proof}
 
@@ -584,7 +582,6 @@ To strengthen our arguments, we prove that the join over memory models we have p
 \end{proof}
 
 \begin{definition}
-  \todo{did we introduce the \emph{symbolic} state terminology before this?}
   The join of two symbolic states $\gls{symbolic-state}[_0]=\langle P_0,M_0\rangle$
   and $\gls{symbolic-state}[_1]=\langle P_1,M_1\rangle$, notation $\gls{symbolic-state}[_0]\gls{join}\gls{symbolic-state}[_1]$, is:
   \begin{equation*}
@@ -609,7 +606,7 @@ To strengthen our arguments, we prove that the join over memory models we have p
 That base functionality is then extended in two ways:
 \begin{enumerate}
   \item the addition of a context-free approach to function calls (see \cref{function-call-extension}) and
-  \item the prevention of states from being joined when they are incompatible (i.e.\ not matching \cref{def:compatibility}). \todo{index entry that just points to compatible's?}
+  \item the prevention of states from being joined when they are incompatible (i.e.\ not matching \cref{def:compatibility}).
 \end{enumerate}
 In order to do this, the algorithm maintains two objects.
 First, \pgls{bag} of the produced symbolic states that have yet to be explored.
@@ -620,10 +617,10 @@ When the \gls{bag} is empty, \gls{hg} is the final \ac{hg}.
 Furthermore, the algorithm requires a function~\gls{step-hg-semantics} that models instruction semantics.
 Our implementation supports a wide range of \gls{arch} instructions,
 including (conditional) moves and jumps as well as
-arithmetic, logical and bit-vector operations (sufficient to deal with all Xen binaries).\todo{glossary for Xen}
+arithmetic, logical and bit-vector operations (sufficient to deal with all \gls{Xen} binaries).
 Given a supported instruction and a suitable memory model,
 function~\gls{step-hg-semantics} transforms its supplied predicate
-into a set of predicates \todo{glossary entry for lots of these terms would be nice}
+into a set of predicates
 by symbolically executing the single instruction.
 The memory model allows~\gls{step-hg-semantics} to take into account information on pointer relations
 when performing symbolic execution using destination operands
@@ -638,7 +635,7 @@ To that end, it requires the predicate of the current symbolic state.
 No memory model information is required for this evaluation;
 that information is only required when writing to a location in memory.
 \begin{definition}\label{def:eval}
-  Given predicate $P$, \todo{glossary entry for the variable?} the evaluation of an expression $e$ is defined as follows:
+  Given predicate $P$, the evaluation of an expression $e$ is defined as follows:
   \begin{equation*}
     \gls{eval}(e,P)=\begin{cases}
       v & \text{if $e = v$ is a clause in }P \\
@@ -696,7 +693,6 @@ However, it is sufficient to detect situations in which values will \emph{likely
 
 This modification to compatibility does not cause any soundness issues.
 If a value was erroneously deemed to influence future control flow, then we have unnecessarily explored paths that could have been joined earlier, but this only affects analysis time and not soundness.
-\todo{reference join by textual form somehow?}
 Joining states that contain immediate values that turn out to be necessary to assess future control flow is no issue either.
 It will merely lead to unresolved indirections or errors being reported by the analysis, and soundness will still not be affected.
 
@@ -715,7 +711,7 @@ In very specific cases it even results in more preciseness.
   \label{alg:invgen}
   \algnewcommand{\IIf}[2]{\State\algorithmicif\ #1\ \algorithmicthen~#2}
   \begin{algorithmic}[1]
-    \Function{explore}{} \todo{gls link for {explore} here?}
+    \Function{explore}{}
       \State pop \gls{symbolic-state} from \gls{bag}\label{line:pop}
       \If{$\exists\gls{symbolic-state}[_c]\in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state}$}\label{line:compat}
         \IIf{$\gls{symbolic-state}\gls{order} \gls{symbolic-state}[_c]$}{\Return}\label{line:terminate}
@@ -739,7 +735,7 @@ In very specific cases it even results in more preciseness.
 Let~\gls{symbolic-state} be some symbolic state from the~\gls{bag} (\cref{line:pop}).
 Function \gls{explore} first searches for a current symbolic state~$\gls{symbolic-state}[_c]$ already in the current~\gls{hg} that is compatible (\cref{line:compat}).
 If such a state exists and it is more abstract (based on ordering~\gls{order})
-\todo{glossary entry for this ordering, and also probably needs to be explained earlier or in the background chapter section on lattices!}
+% TODO: glossary entry for this ordering maybe? and also probably needs to be explained earlier or in the background chapter section on lattices!
 than state~\gls{symbolic-state}, no further exploration is necessary (\cref{line:terminate}).
 Otherwise,~\gls{symbolic-state} and~$\gls{symbolic-state}[_c]$ are joined (\cref{line:join}).
 The~\gls{hg} is modified by replacing the current state with the joined one.
@@ -759,7 +755,6 @@ Otherwise, the successor is added to the bag.
 
 \subsubsection{Soundness} % While technically there should be multiple subsubsections for usage of stuff like this, I think it looks better this way than using \paragraph. It should be fine as subsubsections aren't numbered anyway.
 To formulate soundness and present a proof, we first define a relation $\mathbf{R}$
-\todo{this relation needs a glossary entry!}
 between the concrete transition system and the \ac{hg}.
 We then prove \cref{lem:simulation}, which shows that this relation is a simulation.
 As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function~\gls{step-hg}.
@@ -802,7 +797,7 @@ In words, for every reachable transition from~\gls{concrete-state} to~$\gls{conc
 \end{theorem}
 \begin{proof}
   The structure of the algorithm is close to \iac{dfs}.
-  For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.\todo{glossary entry!}
+  For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.
   For a normal \ac{dfs}, the white-path lemma states that the \ac{dfs} will eventually explore some state~$\gls{concrete-state}[']$ if and only if there exists some state~\gls{concrete-state} currently in the bag \emph{and} there exists a ``white'' path from~\gls{concrete-state} to~$\gls{concrete-state}[']$.
   A key difference between \cref{alg:invgen} and a normal \ac{dfs} is that states are joined.
   For the sake of this proof, a state is therefore considered ``white'' if the current \ac{hg} contains no compatible state that is equal or more abstract (under~\gls{order}).
@@ -863,7 +858,6 @@ If the operand of a \inlineasm{call} can be resolved to an address inside the ex
 Consider the following assembly code:
 
 \begin{center}
-  \todo{change to listing, etc.! Minipage might not even be needed for that as long as we do the breaks right}
   \begin{tabular}{ccc}
     \textbf{Function Call} & \textbf{Return} & \textbf{Exit} \\\hline
     \begin{minipage}{0.3\linewidth}
@@ -900,7 +894,6 @@ A function may always exit, in which case address \texttt{0x105} is never visite
 Other issues, such as buffer overflows, can prevent a normal return as well.
 
 We therefore introduce the notion of \emph{reachability}.
-\todo{glossary entry!}
 Each symbolic state has a Boolean field (\gls{bool}) that is set to true only if the state is known to be reachable.
 States in the bag whose reachability field is false are not selected.
 \Cref{line:compat} of the algorithm becomes:
@@ -909,7 +902,6 @@ States in the bag whose reachability field is false are not selected.
 \noindent
 {
   \centering
-  \todo{more to revise}
   \begin{tabular}{c}\hline
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
@@ -929,7 +921,6 @@ Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the
 {
   \centering
   \begin{tabular}{c}\hline
-  \todo{more to revise}
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{13}
@@ -940,11 +931,9 @@ Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the
   \end{tabular}
 }\\
 \\
-\todo{SEcondly to what?}
 As stated, we treat internal function calls as \emph{context free}.
 In the example above, exploration of address \texttt{0x400} is done in a fresh empty symbolic state.
 In that state, instead of pushing the concrete return address \texttt{0x105}, a symbol $\mathcal{S}_\mathtt{0x400}$ is pushed.
-\todo{glossary entry}
 As a result, wherever the internal function is called, it will always start in the exact same state and therefore exploration happens only once.
 
 A global mapping is maintained that remembers that symbol $\mathcal{S}_\mathtt{0x400}$ is linked to return address $\mathtt{0x105}$.

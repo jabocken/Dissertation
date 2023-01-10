@@ -1,8 +1,8 @@
 \chapter{Conclusions}\label{ch:conclusions}
-Certain properties, such as memory usage and control flow-related ones, can only be proven on the assembly level.
+Certain properties, such as \gls{memuse} and control flow-related ones, can only be proven on the assembly level.
 This is due to
 \begin{enumerate}
-  \item memory usage requiring a concrete representation of memory and
+  \item \gls{memuse} requiring a concrete representation of memory and
   \item compiled programs having more options for control flow than are present in the source language.
 \end{enumerate}
 Unfortunately, assembly-level verification, or analysis in general, is a fundamentally harder problem than source-level analysis due to the low level of abstraction.
@@ -12,13 +12,13 @@ Furthermore, by eliminating the need to trust the compiler and the semantics of 
 Additionally, the set of properties mentioned above cannot be determined automatically under all circumstances. They are \emph{undecidable} properties.
 Because of this and the overheads that \ac{itp} can have, we designed
 \begin{enumerate}
-  \item \emph{semi-automated} methodologies for memory usage and later
+  \item \emph{semi-automated} methodologies for \gls{memuse} and later
   \item non-\ac{itp} \emph{fully automated} methodologies for targeted control flow analyses.
 \end{enumerate}
 Those methodologies are briefly revisited below.
 
 \section{Contributions Revisited}
-This dissertation presented two methods for proving memory usage,
+This dissertation presented two methods for proving \gls{memuse},
 Floyd-style verification and Hoare-style verification.
 Both approaches rely on the same symbolic execution model and memory-related rewrite rules documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
 \begin{remark}[Hoare triple usage]
@@ -34,7 +34,7 @@ Neither can resolve all indirect branches, however.
 This methodology uses a Floyd-style approach \autocite{floyd1967assigning}
 with automatically-selected cutpoints.
 It is very similar to the work of \textcite{matthews2006verification},
-but with a focus on memory usage specifically.
+but with a focus on \gls{memuse} specifically.
 The rewrite rules over memory accesses from \cref{memory_rewrite}
 result in additional \acp{vc} that would not be present in Matthews' framework.
 Those \acp{vc} would require time-consuming word arithmetic if the appropriate preconditions/assumptions were not present.
@@ -101,7 +101,7 @@ There are a multitude of ways in which the contributions of this dissertation co
 Below are some of them.
 
 \subsection{Invariant Strength}
-As a formal property, memory usage has been proven to never miss any memory regions written to, assuming the correctness of the semantics and model it is applied to \autocite{bockenek2019preservation,verbeek2022lifting}.
+As a formal property, \gls{memuse} has been proven to never miss any memory regions written to, assuming the correctness of the semantics and model it is applied to \autocite{bockenek2019preservation,verbeek2022lifting}.
 Put another way, however, this means that the methodology \emph{must} be conservative.
 If it cannot make a determination about the usage status of some region of memory,
 it must assume that that region is used. It must \emph{overapproximate}.%
@@ -111,7 +111,7 @@ It does not matter if the cause was an underdeveloped state or too large of one 
 Futhermore, in order to enhance automation, we currently generate very weak invariants.
 This means that our overapproximations may become \emph{very} overapproximative.
 While such an approach still works reasonably well, being able to generate stronger invariants would allow decreasing overapproximation.
-In other words, stronger invariants mean stricter memory usage proofs.
+In other words, stronger invariants mean stricter \gls{memuse} proofs.
 
 One way to do this would be to implement some form of abstract interpretation. % (\cref{background-absint}).
 As discussed, it has shown great success in the field of sound binary analysis \cref{related-jakstab,related-absint}.
