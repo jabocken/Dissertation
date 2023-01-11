@@ -74,7 +74,7 @@
 }
 
 @inproceedings{verbeek2020sound,
-  title = {Sound {C} Code Decompilation for a subset of x86-64 Binaries},
+  title = {Sound {C} Code Decompilation for a Subset of x86-64 Binaries},
   author = {Verbeek, Freek and Olivier, Pierre and Ravindran, Binoy},
   booktitle = {Software Engineering and Formal Methods},
   booktitleaddon = {Proceedings of the 18th International Conference},
@@ -87,7 +87,10 @@
   series={Lecture Notes in Theoretical Computer Science and General Issues},
   shortseries = {LNTCS},
   number = 12310,
-  doi = {10.1007/978-3-030-58768-0_14}
+  pages = {247-264},
+  doi = {10.1007/978-3-030-58768-0_14},
+  publisher = {Springer International Publishing},
+  location = {Cham}
 }
 
 @inproceedings{verbeek2020automated,
@@ -446,7 +449,7 @@
   eventdate = {2017-02-26/2017-03-03},
   venue = {San Diego, CA, USA},
   doi = {10.14722/ndss.2017.23225},
-  publisher = {IKnternet Society}
+  publisher = {Internet Society}
 }
 
 @online{afp,
@@ -842,7 +845,7 @@
   title = {Simulation and Formal Verification of x86 Machine-Code Programs that make System Calls},
   author = {Shilpi Goel and Warren A. Hunt and Matt Kaufmann and Soumava Ghosh},
   editor = {Claessen, Koen and Kuncak, Viktor},
-  booktitle = {2014 Formal Methods in Computer-Aided Design},
+  booktitle = {Formal Methods in Computer-Aided Design},
   shorttitle = {FMCAD 2014},
   date = {2014-12-18},
   venue = {Lausanne, Switzerland},
@@ -874,7 +877,7 @@
   venue = {San Francisco, CA, USA},
   eventdate = {2015-07-18/2015-07-19},
   doi = {10.1007/978-3-319-29613-5_12},
-  publisher = Springer,
+  publisher = {Springer International Publishing},
   location = {Cham}
 }
 
@@ -900,7 +903,6 @@
   booktitle = {2008 Formal Methods in Computer-Aided Design},
   shorttitle = {FMCAD 2008},
   date = {2008-11-25},
-  day = {17/20},
   pages = {1-8},
   venue = {Portland, OR, USA},
   eventdate = {2008-11-17/2008-11-20},
@@ -1028,8 +1030,7 @@
 
 @article{klein2014comprehensive,
   title            = {Comprehensive Formal Verification of an {OS} Microkernel},
-  author           = {Klein, Gerwin and Andronick, June and Elphinstone, Kevin and Murray, Toby and Sewell, Thomas and
-  Kolanski, Rafal and Heiser, Gernot},
+  author           = {Klein, Gerwin and Andronick, June and Elphinstone, Kevin and Murray, Toby and Sewell, Thomas Arthur Leck and Kolanski, Rafal and Heiser, Gernot},
   journaltitle          = {ACM Transactions on Computer Systems},
   shortjournaltitle     = {TOCS},
   doi              = {10.1145/2560537},
@@ -2322,20 +2323,26 @@
 @inproceedings{miller2019probabilistic,
   title={Probabilistic Disassembly},
   author={Miller, Kenneth and Kwon, Yonghwi and Sun, Yi and Zhang, Zhuo and Zhang, Xiangyu and Lin, Zhiqiang},
-  booktitle={2019 IEEE/ACM 41st International Conference on Software Engineering (ICSE)},
+  booktitle={Software Engineering},
+  booktitleaddon={2019 IEEE/ACM 41st International Conference},
+  shorttitle={ICSE},
   pages={1187-1198},
   date=2019,
-  organization={IEEE},
-  doi={10.1109/ICSE.2019.00121}
+  doi={10.1109/ICSE.2019.00121},
+  xdata={ieee}
 }
 
 @inproceedings{kruegel2004static,
   title={Static Disassembly of Obfuscated Binaries},
   author={Kruegel, Christopher and Robertson, William and Valeur, Fredrik and Vigna, Giovanni},
-  booktitle={USENIX Security Symposium},
-  volume=13,
-  pages={18},
-  date=2004
+  booktitle={13th USENIX Security Symposium},
+  booktitleaddon={Proceedings}
+  numpages=16,
+  date=2004,
+  eventdate={2004-08-09/2004-08-13},
+  publisher={USENIX Association},
+  venue={San Diego, CA, USA},
+  url={https://www.usenix.org/conference/13th-usenix-security-symposium/static-disassembly-obfuscated-binaries}
 }
 
 @inproceedings{fokin2011smartdec,
@@ -2380,7 +2387,7 @@
 @inproceedings{khadra2016speculative,
   title = {Speculative Disassembly of Binary Code},
   author = {Ben~Khadra, Mohamed Ammar and Stoffel, Dominik and Kunz, Wolfgang},
-  booktitle = {Compliers, Architectures, and Sythesis of Embedded Systems},
+  booktitle = {Compilers, Architectures, and Sythesis of Embedded Systems},
   booktitleaddon = {Proceedings of the 2016 International Conference},
   shorttitle = {CASES '16},
   date = {2016-10-01},
@@ -2549,10 +2556,10 @@
 }
 
 @online{ida,
-  title={{IDA Pro} -- {Hex Rays}},
+  title={Hex Rays - State-of-the-art binary code analysis solutions},
   author={{Hex-Rays SA}},
   url={https://www.hex-rays.com/ida-pro/},
-  urldate={2022-11-18}
+  urldate={2023-01-11}
 }
 
 @online{ida-decompiler,
@@ -2721,16 +2728,23 @@
 @inproceedings{kumar2018software,
   title={Software Verification with {ITPs} Should Use Binary Code Extraction to Reduce the {TCB}},
   author={Kumar, Ramana and Mullen, Eric and Tatlock, Zachary and Myreen, Magnus O.},
-  booktitle={International Conference on Interactive Theorem Proving},
+  booktitle={Interactive Theorem Proving},
+  booktitleaddon={Proceedings of the 9th International Conference},
+  shortitle={ITP 2018},
   pages={362-369},
   date=2018,
   doi={10.1007/978-3-319-94821-8_21},
-  xdata={springer}
+  venue={Oxford, UK},
+  eventdate={2018-07-09/2018-07-12},
+  number=10895,
+  xdata={lncs},
+  series={Lecture Notes in Theoretical Computer Science and General Issues},
+  shortseries = {LNTCS},
 }
 
 @incollection{klein2010refinement,
   title = {Refinement in the Formal Verification of the {seL4} Microkernel},
-  author = {Klein, Gerwin and Sewell, Thomas and Winwood, Simon},
+  author = {Klein, Gerwin and Sewell, Thomas Arthur Leck and Winwood, Simon},
   editor = {Hardin, David S.},
   bookTitle = {Design and Verification of Microprocessor Systems for High-Assurance Applications},
   date = 2010,
@@ -2771,7 +2785,6 @@
   date={2011},
   venue={Snowbird, UT, USA},
   eventdate={2011-07-14/2011-07-20},
-  publisher={Springer},
   doi={10.1007/978-3-642-22110-1_13},
   xdata={lncs},
   series={Lecture Notes in Theoretical Computer Science and General Issues},
@@ -2780,7 +2793,7 @@
 }
 
 @inproceedings{daniel2020binsec,
-  title={Binsec/rel: Efficient Relational Symbolic Execution for Constant-Time at Binary-Level},
+  title={Binsec/Rel: Efficient Relational Symbolic Execution for Constant-Time at Binary-Level},
   author={Daniel, Lesly-Ann and Bardin, S{\'e}bastien and Rezk, Tamara},
   booktitle={Security and Privacy},
   booktitleaddon={2020 IEEE Symposium},
@@ -2803,13 +2816,13 @@
 }
 
 @inproceedings{redini2019b,
-  title={Bin{T}rimmer: Towards Static Binary Debloating Through Abstract Interpretation},
+  title={\textsc{BinTrimmer}: Towards Static Binary Debloating Through Abstract Interpretation},
   author={Redini, Nilo and Wang, Ruoyu and Machiry, Aravind and Shoshitaishvili, Yan and Vigna, Giovanni and Kruegel, Christopher},
   booktitle={Detection of Intrusions and Malware, and Vulnerability Assessment},
   booktitleaddon={International Conference},
   pages={482-501},
   date=2019,
-  doi={10.1007/978-3-030-22038-9_23 },
+  doi={10.1007/978-3-030-22038-9_23},
   xdata={springer}
 }
 
@@ -2872,7 +2885,7 @@
 }
 
 @article{zhang2019bda,
-  title = {BDA: Practical Dependence Analysis for Binary Executables by Unbiased Whole-Program Path Sampling and per-Path Abstract Interpretation},
+  title = {{BDA}: Practical Dependence Analysis for Binary Executables by Unbiased Whole-Program Path Sampling and Per-Path Abstract Interpretation},
   author = {Zhang, Zhuo and You, Wei and Tao, Guanhong and Wei, Guannan and Kwon, Yonghwi and Zhang, Xiangyu},
   doi = {10.1145/3360563},
   eid = 137,
