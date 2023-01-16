@@ -5,12 +5,13 @@ This chapter covers some of that history.
 
 Up first in \cref{se:previous_assembly}
 are some previous formal verification efforts that target assembly.
-Following that is work on a lower level, specifically formal analysis of \acp{isa} and lower-level hardware details, in \cref{se:hardware}.
-After that is work in which assembly verification played a role
+%Following that is work on a lower level, specifically formal analysis of \acp{isa} and lower-level hardware details, in \cref{se:hardware}.
+Following that is work in which assembly verification played a role
 in a larger verification context, \cref{se:integrated_assembly}.
-We subsequently discuss verified compilation and static analysis tools in \cref{se:verified,se:static_analysis}.
-\Cref{related-table} provides an overview of the assembly,
-hardware, and integrated projects.
+%We subsequently discuss, to provide contrast, verified compilation and informal static analysis tools in \cref{se:verified,se:static_analysis}.
+\Cref{related-table} provides an overview of the assembly
+%hardware,
+and integrated projects.
 It also includes the first two works presented in this dissertation.
 
 Switching tracks to a more categorical representation for the second half of this dissertation, we have the following two \lcnamecrefs{related-lifting}.
@@ -216,40 +217,43 @@ of the methodology.
 Of course, as we implemented ours in an interactive theorem prover,
 we could guide the \ac{vc} generation and discharging as needed.
 
-\section{ISA and Hardware-Level Verification}\label{se:hardware}
-On a level lower than the assembly code level, or even the machine code level, is the work done by hardware designers and testers to verify the products that run those codes.
-This can involve validating properties of the \ac{isa}, or even lower-level properties.
-Quite often this is done with model checkers.
+\begin{comment}
+  \section{ISA and Hardware-Level Verification}\label{se:hardware}
+  On a level lower than the assembly code level, or even the machine code level, is the work done by hardware designers and testers to verify the products that run those codes.
+  This can involve validating properties of the \ac{isa}, or even lower-level properties.
+  Quite often this is done with model checkers.
 
-For example, Arm\index{Arm Ltd.} recently released several of their \gls{arm} \acp{isa} in a machine-parsable, executable format called \ac{asl}, a result that took five years to develop.
-While not directly verifiable, the \ac{asl} documents were automatically translated into a verifiable form.
-Specifically, the subset of System-Verilog usable with commercial model checkers.
-This form was utilized by a tool called ISA-Formal\index{ISA-Formal} \autocite{reid2016endtoend}.
-ISA-Formal\index{ISA-Formal} is intended to verify processor pipeline control and has been successfully used for that purpose on multiple versions of the \gls{arm} \ac{isa}.
-At its core, it uses bounded model checking for instruction sequence exploration.
+  For example, Arm\index{Arm Ltd.} recently released several of their \gls{arm} \acp{isa} in a machine-parsable, executable format called \ac{asl}, a result that took five years to develop.
+  While not directly verifiable, the \ac{asl} documents were automatically translated into a verifiable form.
+  Specifically, the subset of System-Verilog usable with commercial model checkers.
+  This form was utilized by a tool called ISA-Formal\index{ISA-Formal} \autocite{reid2016endtoend}.
+  ISA-Formal\index{ISA-Formal} is intended to verify processor pipeline control and has been successfully used for that purpose on multiple versions of the \gls{arm} \ac{isa}.
+  At its core, it uses bounded model checking for instruction sequence exploration.
 
-Not all of the components they worked with could be handled by the model checkers, however; that usage was restricted to \ac{isa} analysis.
-Alternative verification techniques were used for the components that the model checkers could not handle, such as the \acp{fpu} and memory system.
-These alternative techniques involved raising the abstraction level and/or reducing the explored state space,
-as their goal was not necessarily to detect all bugs in those specific units.
-Instead, they wanted to check the correctness of the logic connecting them to other processor elements, which they were successful at.
+  Not all of the components they worked with could be handled by the model checkers, however; that usage was restricted to \ac{isa} analysis.
+  Alternative verification techniques were used for the components that the model checkers could not handle, such as the \acp{fpu} and memory system.
+  These alternative techniques involved raising the abstraction level and/or reducing the explored state space,
+  as their goal was not necessarily to detect all bugs in those specific units.
+  Instead, they wanted to check the correctness of the logic connecting them to other processor elements, which they were successful at.
 
-More recently, the Sail \ac{isa} specification language,
-which supports automatic generation of emulation code
-and of proof definitions for \gls{isabelle}, HOL4\index{HOL4}, and in some cases Coq\index{Coq},
-has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
-\autocite{armstrong2018models,armstrong2019isa}.
-The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-\ac{mips}, and \gls{riscv}.
-It was also used to produce a proof of correctness for a model of
-\gls{arm}[v8-A] address translation in \gls{isabelle}.
+  More recently, the Sail \ac{isa} specification language,
+  which supports automatic generation of emulation code
+  and of proof definitions for \gls{isabelle}, HOL4\index{HOL4}, and in some cases Coq\index{Coq},
+  has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
+  \autocite{armstrong2018models,armstrong2019isa}.
+  The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-\ac{mips}, and \gls{riscv}.
+  It was also used to produce a proof of correctness for a model of
+  \gls{arm}[v8-A] address translation in \gls{isabelle}.
 
-Building on such models (specifically, the \gls{arm} specification), \textcite{jiang2022examiner} checked for inconsistencies and bugs in \ac{cpu} emulators such as \ac{qemu} and \texttt{angr}\index{angr}.
-They were able to uncover thousands of situations where the instruction stream generated according to the official specification did not match up to that produced by emulators.
-They also uncovered twelve bugs that influenced the behavior of various common instructions.
-We perform a similar validation of our modeling of library functions for exception handling purposes in \cref{ch:eicfg-validation}.
-However, we lack a structured specification to generate semantics from or test against, so we tested against real-world implementations instead (and uncovered several bugs in our model).
+  Building on such models (specifically, the \gls{arm} specification), \textcite{jiang2022examiner} checked for inconsistencies and bugs in \ac{cpu} emulators such as \ac{qemu} and \texttt{angr}\index{angr}.
+  They were able to uncover thousands of situations where the instruction stream generated according to the official specification did not match up to that produced by emulators.
+  They also uncovered twelve bugs that influenced the behavior of various common instructions.
+  We perform a similar validation of our modeling of library functions for exception handling purposes in \cref{ch:eicfg-validation}.
+  However, we lack a structured specification to generate semantics from or test against, so we tested against real-world implementations instead (and uncovered several bugs in our model).
+\end{comment}
 
-\section{Integrated Assembly-Level Verification Efforts}\label{se:integrated_assembly}
+\section{Efforts Involving Assembly-Level Verification}
+\label{se:integrated_assembly}
 A major verification effort based on \acl{dil}
 was the verification of the seL4 kernel \autocite{klein2009sel4,klein2014comprehensive}.
 The seL4 project provides a microkernel written in formally proven correct \gls{c} code.
@@ -325,137 +329,140 @@ the verified, high-level assembly language Piton \autocite{moore1988piton}.
 \Textcite{moore1989language} then proved the correctness
 of that language's FM8502 implementation.
 
-\section{Verified Compilation}\label{se:verified}
-In contrast to directly verifying machine or assembly code,
-one can verify source code and then use \emph{verified compilation}.%
-\index{verified compilation}
-Verified compilation establishes that
-the semantics of the output of the verified compiler
-is equivalent to the semantics of the input,
-so a program that has previously been verified correct
-is verified to still be correct after compilation.
+\begin{comment}
+  \section{Verified Compilation}\label{se:verified}
+  In contrast to directly verifying machine or assembly code,
+  one can verify source code and then use \emph{verified compilation}.%
+  \index{verified compilation}
+  Verified compilation establishes that
+  the semantics of the output of the verified compiler
+  is equivalent to the semantics of the input,
+  so a program that has previously been verified correct
+  is verified to still be correct after compilation.
 
-The CompCert project is one such verified compiler,
-used by the seL4 project to reduce its \ac{tcb} \autocite{klein2014comprehensive}.
-It is written in a subset of C
-called Clight \autocite{leroy:compcert,blazy2009clight},
-though it itself is able to handle most components of the C99 standard.
-The main difference between \gls{c} and Clight is that Clight is \emph{pure};
-none of its operations have side effects. It also provides only one loop structure,
-an infinite loop that must be broken out of to exit.
-Clight has been mechanized in the Coq theorem prover with established
-big-step operational semantics, making it a useful subset of C
-for program verification work in Coq.
+  The CompCert project is one such verified compiler,
+  used by the seL4 project to reduce its \ac{tcb} \autocite{klein2014comprehensive}.
+  It is written in a subset of C
+  called Clight \autocite{leroy:compcert,blazy2009clight},
+  though it itself is able to handle most components of the C99 standard.
+  The main difference between \gls{c} and Clight is that Clight is \emph{pure};
+  none of its operations have side effects. It also provides only one loop structure,
+  an infinite loop that must be broken out of to exit.
+  Clight has been mechanized in the Coq theorem prover with established
+  big-step operational semantics, making it a useful subset of C
+  for program verification work in Coq.
 
-The full proof of \emph{semantic preservation},
-as it is called in the CompCert documentation,
-is based off of proofs of semantic preservation
-for each step in CompCert's compilation process, of which there are twenty.
-On top of that, it has eleven different intermediate languages for those steps,
-all of which had to be proven semantically equivalent.
+  The full proof of \emph{semantic preservation},
+  as it is called in the CompCert documentation,
+  is based off of proofs of semantic preservation
+  for each step in CompCert's compilation process, of which there are twenty.
+  On top of that, it has eleven different intermediate languages for those steps,
+  all of which had to be proven semantically equivalent.
 
-Another example of verified compilation is CakeML \autocite{kumar2014cakeml}.
-It utilizes a (substantial)
-subset of Standard ML modeled with big-step operational semantics in \ac{hol}.
-Its main compiler frontend is designed to take ML-like \ac{hol} functions
-and translate them to a CakeML \ac{ast}, which is then translated into machine code
-using a verified backend. The compiler itself is bootstrapped,
-meaning it can compile itself in \ac{hol}. It also provides support for using \gls{hoare-logic}
-to perform post-hoc verification using a version of the CFML verification framework
-\autocite{gueneau2017formulae,arthur2015union,chargueraud2011cfv}.
+  Another example of verified compilation is CakeML \autocite{kumar2014cakeml}.
+  It utilizes a (substantial)
+  subset of Standard ML modeled with big-step operational semantics in \ac{hol}.
+  Its main compiler frontend is designed to take ML-like \ac{hol} functions
+  and translate them to a CakeML \ac{ast}, which is then translated into machine code
+  using a verified backend. The compiler itself is bootstrapped,
+  meaning it can compile itself in \ac{hol}. It also provides support for using \gls{hoare-logic}
+  to perform post-hoc verification using a version of the CFML verification framework
+  \autocite{gueneau2017formulae,arthur2015union,chargueraud2011cfv}.
 
-More recently, \textcite{chen2018compositional} produced a compositional framework
-for the development of certified, \emph{interruptible}%
-\index{interrupt}
-\ac{os} kernels that use device drivers.%
-\index{operating system!kernel}
-This was previously a challenge due to the non-local and asynchronous behavior
-of hardware interrupts. Their approach uses a general certified device model
-with multiple instantiations and provides an effective model of device interrupts.
-The verification was done in Coq with the kernel written in Clight.
-Once verification was complete, the source code was compiled using a modified version
-of CompCert to ensure the semantics were maintained.
-They showed the value of their work by taking a preexisting,
-non-interruptible, mostly-verified kernel, mCertiKOS \autocite{costanzo2016endtoend},
-and extending it to work in their framework along with a couple of device drivers.
-In order to deal with devices running in parallel with the \ac{cpu},
-device interaction, drivers that are written in a mix of assembly and C,
-and properly integrating the correctness proofs for individual components
-of the system under test, they did the following.
-First, they designed their system architecture such that each device driver
-is given its own logical \ac{cpu}, running independently from the core of the kernel.
-Then they designed an abstract model of interrupts
-based on existing hardware implementations.
-The correctness of the system as a whole was shown
-by starting from a base machine model
-and proving a refinement relation with each layer of abstraction placed on top of it.
-As they started off with a mostly-verified kernel, it is likely they would have had
-more difficulty if they had started with a kernel
-not explicitly designed to be verified.
+  More recently, \textcite{chen2018compositional} produced a compositional framework
+  for the development of certified, \emph{interruptible}%
+  \index{interrupt}
+  \ac{os} kernels that use device drivers.%
+  \index{operating system!kernel}
+  This was previously a challenge due to the non-local and asynchronous behavior
+  of hardware interrupts. Their approach uses a general certified device model
+  with multiple instantiations and provides an effective model of device interrupts.
+  The verification was done in Coq with the kernel written in Clight.
+  Once verification was complete, the source code was compiled using a modified version
+  of CompCert to ensure the semantics were maintained.
+  They showed the value of their work by taking a preexisting,
+  non-interruptible, mostly-verified kernel, mCertiKOS \autocite{costanzo2016endtoend},
+  and extending it to work in their framework along with a couple of device drivers.
+  In order to deal with devices running in parallel with the \ac{cpu},
+  device interaction, drivers that are written in a mix of assembly and C,
+  and properly integrating the correctness proofs for individual components
+  of the system under test, they did the following.
+  First, they designed their system architecture such that each device driver
+  is given its own logical \ac{cpu}, running independently from the core of the kernel.
+  Then they designed an abstract model of interrupts
+  based on existing hardware implementations.
+  The correctness of the system as a whole was shown
+  by starting from a base machine model
+  and proving a refinement relation with each layer of abstraction placed on top of it.
+  As they started off with a mostly-verified kernel, it is likely they would have had
+  more difficulty if they had started with a kernel
+  not explicitly designed to be verified.
 
-\section{Non-Formal Static Analysis}\label{se:static_analysis}
-As a reminder, non-formal static analysis of binary code for the detection of bugs has also been an active research field for decades \autocite{kruegel2005automating,wang2017angr}.
-This section covers some of the projects in that field from the past twenty years.
+  \section{Non-Formal Static Analysis}\label{se:static_analysis}
+  As a reminder, non-formal static analysis of binary code for the detection of bugs has also been an active research field for decades \autocite{kruegel2005automating,wang2017angr}.
+  This section covers some of the projects in that field from the past twenty years.
 
-The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
-provides a tool called Vine that lifts \gls{x86} instructions to its own \ac{il} for assembly
-in order to perform analyses on a higher level.
-That language is fully-featured and can itself be compiled back down to assembly
-if so desired.
-In terms of analyses, Vine can construct \acp{cfg} for the lifted programs,
-perform compiler-style dataflow analysis, generate dependency graphs,
-and slice programs \autocite{weiser1981slicing,tip1995survey}.
-Though Vine itself is not formally verified,
-it does support interfacing with the aforementioned \ac{smt} solver \ac{stp}
-as well as CVC Lite \autocite{barrett2004cvcl} and CVC3 \autocite{barrett2007cvc3}.
-This allows for formal verification.
+  The BitBlaze project \autocite{song2008bitblaze,BitBlazeWebSite}
+  provides a tool called Vine that lifts \gls{x86} instructions to its own \ac{il} for assembly
+  in order to perform analyses on a higher level.
+  That language is fully-featured and can itself be compiled back down to assembly
+  if so desired.
+  In terms of analyses, Vine can construct \acp{cfg} for the lifted programs,
+  perform compiler-style dataflow analysis, generate dependency graphs,
+  and slice programs \autocite{weiser1981slicing,tip1995survey}.
+  Though Vine itself is not formally verified,
+  it does support interfacing with the aforementioned \ac{smt} solver \ac{stp}
+  as well as CVC Lite \autocite{barrett2004cvcl} and CVC3 \autocite{barrett2007cvc3}.
+  This allows for formal verification.
 
-Meanwhile, the tool Infer \autocite{calcagno2011infer}, now developed at Facebook,
-provides in-depth static analysis of \gls{llvm} code to detect bugs in programs written in a variety of languages.
-It utilizes separation logic \autocite{reynolds2002separation}
-and bi-abduction to perform its analyses in an automated fashion.
-It is designed to be integrated into compiler toolchains
-in order to provide immediate feedback even in \ac{ci} scenarios.
-For all the languages it handles, it checks for null pointer accesses
-and other null-related issues as well as checking for language-specific
-concurrency issues.
-For C-style languages with a lower level of abstraction,
-it also looks for memory leaks, performs linting for violations of coding conventions,
-and checks for calls to mobile device \acp{api} that are not available
-for the target device \ac{os}.
-In Android code and Java in general, it ensures annotations can be reached,
-looks out for mutability issues, and checks for resource leaks.
+  % Infer \emph{is} formal, not sure why I put it here
+  Meanwhile, the tool Infer \autocite{calcagno2011infer}, now developed at Facebook,
+  provides in-depth static analysis of \gls{llvm} code to detect bugs in programs written in a variety of languages.
+  It utilizes separation logic \autocite{reynolds2002separation}
+  and bi-abduction to perform its analyses in an automated fashion.
+  It is designed to be integrated into compiler toolchains
+  in order to provide immediate feedback even in \ac{ci} scenarios.
+  For all the languages it handles, it checks for null pointer accesses
+  and other null-related issues as well as checking for language-specific
+  concurrency issues.
+  For C-style languages with a lower level of abstraction,
+  it also looks for memory leaks, performs linting for violations of coding conventions,
+  and checks for calls to mobile device \acp{api} that are not available
+  for the target device \ac{os}.
+  In Android code and Java in general, it ensures annotations can be reached,
+  looks out for mutability issues, and checks for resource leaks.
 
-The static analysis tool FindBugs, written for Java code,
-takes a bit of a different approach from those other two
-\autocite{hovemeyer2004findbugs}.
-Rather than performing control flow or dataflow analyses,
-it searches Java bytecode for common (bad practice) code idioms
-in order to detect likely bugs. Much like Infer,
-some of the common errors it highlights include null pointer dereferences,
-objects that compare equal not having equal hash codes,
-and inconsistent synchronization.
-It even provides a bug database that can be used to keep track of its warnings
-throughout multiple iterations of development.
+  The static analysis tool FindBugs, written for Java code,
+  takes a bit of a different approach from those other two
+  \autocite{hovemeyer2004findbugs}.
+  Rather than performing control flow or dataflow analyses,
+  it searches Java bytecode for common (bad practice) code idioms
+  in order to detect likely bugs. Much like Infer,
+  some of the common errors it highlights include null pointer dereferences,
+  objects that compare equal not having equal hash codes,
+  and inconsistent synchronization.
+  It even provides a bug database that can be used to keep track of its warnings
+  throughout multiple iterations of development.
 
-A somewhat older tool, Splint \autocite{evans2002static} detects buffer overflows
-and similar potential security flaws in \gls{c} code.
-Splint relies on annotated preconditions to derive postconditions
-based on the syntactic structure of the code.
-While their methodology is very similar to the formal technique of \gls{hoare-logic},
-%described later on in this dissertation (\cref{se:hoare}),
-they used heuristics for loop analysis rather than proper invariants
-and thus could potentially miss bugs.
-The annotations Splint uses are memory-focused, such as allowing users to specify
-that certain variables should never be null or providing an emulation of
-\lstinline|unique_ptr| functionality. It also does constraint analysis
-and issues warnings when it encounters an expression it cannot determine
-will not result in a bug, as well as checking for format string vulnerabilities.
+  A somewhat older tool, Splint \autocite{evans2002static} detects buffer overflows
+  and similar potential security flaws in \gls{c} code.
+  Splint relies on annotated preconditions to derive postconditions
+  based on the syntactic structure of the code.
+  While their methodology is very similar to the formal technique of \gls{hoare-logic},
+  %described later on in this dissertation (\cref{se:hoare}),
+  they used heuristics for loop analysis rather than proper invariants
+  and thus could potentially miss bugs.
+  The annotations Splint uses are memory-focused, such as allowing users to specify
+  that certain variables should never be null or providing an emulation of
+  \lstinline|unique_ptr| functionality. It also does constraint analysis
+  and issues warnings when it encounters an expression it cannot determine
+  will not result in a bug, as well as checking for format string vulnerabilities.
 
-The main difference between these static analysis tools and formal verification
-is that these tools are generally highly suited to finding bugs
-but are not able to prove their absence. This is due to a reliance on
-efficient but incomplete techniques, such as depth-bounded searches.
+  The main difference between these static analysis tools and formal verification
+  is that these tools are generally highly suited to finding bugs
+  but are not able to prove their absence. This is due to a reliance on
+  efficient but incomplete techniques, such as depth-bounded searches.
+\end{comment}
 
 \begin{table*}
   \centering
@@ -480,7 +487,7 @@ efficient but incomplete techniques, such as depth-bounded searches.
     \textbf{\Cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
     \textbf{\Cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
-    Reid et al. & \acs*{asl} & MC+others & \gls{arm} \acp{isa} & \num{2209191}+ \acs{sloc} \\
+%    Reid et al. & \acs*{asl} & MC+others & \gls{arm} \acp{isa} & \num{2209191}+ \acs{sloc} \\
     Sewell et al. & \gls{c} & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
     Shi et al. & \gls{c}/\gls{arm}[9] & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
     Dam et al. & \gls{arm}[v7] & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
@@ -504,7 +511,8 @@ efficient but incomplete techniques, such as depth-bounded searches.
 \end{table*}
 
 \section{Control Flow Recovery}\label{related-lifting}
-We relate our work for \ac{hg} lifting to existing approaches for disassembly (\cref{related-disassembly}), binary decompilation (\cref{related-decompilation}), binary verification (\cref{related-hg-verification}), and abstract interpretation (\cref{related-absint}), as well as ones that learn state machines from black-box implementations (\cref{related-automata}).
+We relate our work for \ac{hg} lifting to existing approaches for disassembly (\cref{related-disassembly}), binary decompilation (\cref{related-decompilation}), and binary verification (\cref{related-hg-verification}).
+%, and abstract interpretation (\cref{related-absint}), as well as ones that learn state machines from black-box implementations (\cref{related-automata}).
 To the best of our knowledge, the only existing work that has a similar focus on disassembly based on formal methods is Jakstab \autocite{kinder2010static,kinder2012alternating,kinder2012virtualization}, which we therefore discuss in more detail.
 
 \begin{table*}
@@ -517,9 +525,13 @@ To the best of our knowledge, the only existing work that has a similar focus on
     Jakstab & Yes & No & AbsInt & Windows drivers \\
     \texttt{objdump} & No & No & linear sweep & \\
     BYTEWEIGHT & No & No & Probabilistic & Various bins \\
-    Wartell et al. & No & No & Probabilistic & Hand-picked bins \\
+    Wartell et al. & No & No & Probabilistic & Handpicked bins \\
     Miller et al. & No & No & Probabilistic & Various bins \\
     Spedi & No & No & Probabilistic & Benchmarks \\
+    \lstinline|dcc| & No\todo? & No & \todo\dots & \todo\dots \\
+    \lstinline|asm2c| & No\todo? & No & \todo\dots & \todo\dots \\
+    Mocha & No & No & Graph manip. & \\
+    Krakatoa & No & No & Graph manip.+rewriting & Handpicked files \\
     RetDec & No & No & \todo\dots & \todo\dots \\
     Phoenix & No & No & \todo\dots & \todo\dots \\
     FoxDec & Yes & \todo{No?} & \todo\dots & \todo\dots \\
@@ -539,7 +551,9 @@ To the best of our knowledge, the only existing work that has a similar focus on
 \end{table*}
 
 \subsection{Jakstab}\label{related-jakstab}
-Jakstab performs binary analysis and control flow reconstruction by utilizing abstract interpretation, like those works in \cref{related-absint}.
+Jakstab performs binary analysis and control flow reconstruction by utilizing
+\emph{abstract interpretation} \autocite{cousot1976static,cousot1977abstract}.
+%abstract interpretation, like those works in \cref{related-absint}.
 Its main analysis was designed for binaries with potentially handcrafted, obfuscated behavior (such as Windows device drivers and malware),
 and much like our \ac{hg} lifting, it uses a form of at-will disassembly.
 This means that only specific series of bytes queried from specific locations in the binary are disassembled.
@@ -644,6 +658,11 @@ An early attempt at such lifting to full source code level was that of \textcite
 The \lstinline|dcc| tool resulting from that work lifts \gls{80286} assembly to \gls{c} code, though its internal representation can support multiple higher-level languages.
 In fact, it performs a similar sort of syntactic control flow reconstruction as the Hoare-style work presented in this dissertation.
 That does leave it with similar limitations to that work, however.
+\Textcite{cifuentes1998assembly} also provided a similar translator for \ac{sparc} assembly, \lstinline|asm2c|, soon after.
+
+Decompiling Java bytecode to source code was of interest starting in the 90s as well, with tools such as Mocha \autocite{mocha} and Krakatoa \autocite{proebsting1997krakatoa}.
+Both tools utilize graph transformations to extract information, with Krakatoa providing additional rewriting rules and greater coverage.
+These tools are interesting as, unlike many register-based \acp{isa}, including the one we target here (\gls{arch}), the \ac{jvm} is a stack-based architecture with pseudo-register local variables for method arguments and other purposes.
 
 More recent works such as RetDec \autocite{retdec}, Phoenix \autocite{brumley2013native}, and FoxDec \autocite{verbeek2020sound} all aim at lifting a binary to \gls{c} code as well.
 Meanwhile, the SmartDec tool \autocite{fokin2011smartdec} lifts to \gls{cpp} code, whereas McSema \autocite{dinaburg2014mcsema} lifts to \gls{llvm}.
@@ -657,9 +676,10 @@ Some decompilers even rely on techniques of machine learning, much like disassem
 The field of natural language processing in particular has provided inspiration for the processing of formal languages.
 For example, \textcite{katz2018recurrent} applied recurrent neural networks, which are often used for text processing and generation, to the problem of decompilation.
 
-Despite all this, a key factor in many decompilation approaches, and also in other approaches that aim at producing control flow graphs or dataflow analyses, is that they rely on the disassembly and control flow recovery being done by an external tool that is assumed to be sound.
+Despite all this, a key factor in many decompilation approaches, and also in other approaches that aim at producing \acp{cfg} or dataflow analyses, is that they rely on the disassembly and control flow recovery being done by an external tool that is assumed to be sound.
 Our algorithm thus \emph{complements} these works.
 For example, McSema requires an external source of control flow information, which could be generated from our solution.
+Many loop-identifying algorithms used by decompilers require \iac{cfg} as well \autocite{hecht1974reducible,wei2007loops}.
 \lstinline|dcc| notably performs its own disassembly, but that is not the prevailing trend.
 
 For a more formal approach, we return to \ac{dil} \autocite{myreen2007hoare,myreen2012dil}.
@@ -688,49 +708,51 @@ Our \ac{hg} lifting approach \emph{complements} formal verifiers that generate i
   This is useful because verification based on untrustworthy disassemblers and control flow reconstruction is itself untrustworthy.
 \end{remark}
 
-\subsection{Abstract Interpretation}\label{related-absint}
-The general problem of lifting binary code from a string of zeroes and ones to a higher-level form is known to be undecidable.
-Thus, approximate solutions have been extensively studied, especially in the framework of \emph{abstract interpretation} \autocite{cousot1976static,cousot1977abstract}.
-Such an approach gives mathematical foundations to reason about approximations and their computations.% (elaborated on in \cref{background-absint}).
+\begin{comment}
+  \subsection{Abstract Interpretation}\label{related-absint}
+  The general problem of lifting binary code from a string of zeroes and ones to a higher-level form is known to be undecidable.
+  Thus, approximate solutions have been extensively studied, especially in the framework of \emph{abstract interpretation} \autocite{cousot1976static,cousot1977abstract}.
+  Such an approach gives mathematical foundations to reason about approximations and their computations.% (elaborated on in \cref{background-absint}).
 
-\Textcite{bardin2011bincoa,daniel2020binsec} provided Binsec, which utilizes abstract interpretation in the process of information flow analysis for cryptographic implementations.
-\Textcite{zhang2019bda} provided a path sampling algorithm and use abstract interpretation to prune infeasible paths.
-Meanwhile, \textcite{reinbacher2011test} used abstract interpretation in a similar fashion for binary-level test case generation.
-These works aim at orthogonal usages of abstract interpretation with respect to our \ac{hg} lifting work, as they \emph{assume} availability of a tool that provides overapproximative control flow.
-Our approach is thus highly complementary to them.
+  \Textcite{bardin2011bincoa,daniel2020binsec} provided Binsec, which utilizes abstract interpretation in the process of information flow analysis for cryptographic implementations.
+  \Textcite{zhang2019bda} provided a path sampling algorithm and use abstract interpretation to prune infeasible paths.
+  Meanwhile, \textcite{reinbacher2011test} used abstract interpretation in a similar fashion for binary-level test case generation.
+  These works aim at orthogonal usages of abstract interpretation with respect to our \ac{hg} lifting work, as they \emph{assume} availability of a tool that provides overapproximative control flow.
+  Our approach is thus highly complementary to them.
 
-There is also BinTrimmer, developed by \textcite{redini2019b}.
-It uses abstract interpretation to refine \acp{cfg} from binaries for debloating and deals with indirect branches in an overapproximative fashion.
-The key distinction between our \ac{hg} approach and BinTrimmer is that it is \emph{solely} concerned with indirections.
-Other properties of assembly programs are not a consideration.
-These include security properties such as control flow integrity (return addresses are not overwritten and jumps/calls go where they are supposed to), avoidance of stack overflows, etc.
-BinTrimmer also does not provide invariants with sufficient strength to serve as evidence for overapproximation.
-Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \ac{sloc}, in contrast to the \ac{hg} Xen Hypervisor case study presented in \cref{hg-extraction}.
+  There is also BinTrimmer, developed by \textcite{redini2019b}.
+  It uses abstract interpretation to refine \acp{cfg} from binaries for debloating and deals with indirect branches in an overapproximative fashion.
+  The key distinction between our \ac{hg} approach and BinTrimmer is that it is \emph{solely} concerned with indirections.
+  Other properties of assembly programs are not a consideration.
+  These include security properties such as control flow integrity (return addresses are not overwritten and jumps/calls go where they are supposed to), avoidance of stack overflows, etc.
+  BinTrimmer also does not provide invariants with sufficient strength to serve as evidence for overapproximation.
+  Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \ac{sloc}, in contrast to the \ac{hg} Xen Hypervisor case study presented in \cref{hg-extraction}.
 
-Finally, while not a binary lifting approach, the tool Crab \autocite{crab}, uses abstract interpretation for loop invariant restriction \autocite{gange2016abstract}.
-This tool is part of the SeaHorn verification framework for \gls{llvm} \ac{ir} \autocite{seahorn}.
+  Finally, while not a binary lifting approach, the tool Crab \autocite{crab}, uses abstract interpretation for loop invariant restriction \autocite{gange2016abstract}.
+  This tool is part of the SeaHorn verification framework for \gls{llvm} \ac{ir} \autocite{seahorn}.
 
-\subsection{Automata Learning}\label{related-automata}
-Automata learning algorithms are a different approach to state machine extraction.
-They perform black-box testing in order to \emph{learn} the behavior of a system \autocite{steffen2011active}.
-For example, \textcite{fiter2017ssh} used automata learning to infer the functionality of three \ac{ssh} server implementations.
-Their learning methodology was based on LearnLib \autocite{raffelt2005learnlib}, an automata learning library.
-Automata learning typically produces abstract high-level models concerning the in/output relations at the protocol level.
-Their \emph{mapper}, which maps back and forth from abstract inputs/outputs to concrete packages to be sent to/received from the server,
-was based on the Paramiko \autocite{paramiko} \ac{ssh} client implementation.
+  \subsection{Automata Learning}\label{related-automata}
+  Automata learning algorithms are a different approach to state machine extraction.
+  They perform black-box testing in order to \emph{learn} the behavior of a system \autocite{steffen2011active}.
+  For example, \textcite{fiter2017ssh} used automata learning to infer the functionality of three \ac{ssh} server implementations.
+  Their learning methodology was based on LearnLib \autocite{raffelt2005learnlib}, an automata learning library.
+  Automata learning typically produces abstract high-level models concerning the in/output relations at the protocol level.
+  Their \emph{mapper}, which maps back and forth from abstract inputs/outputs to concrete packages to be sent to/received from the server,
+  was based on the Paramiko \autocite{paramiko} \ac{ssh} client implementation.
 
-\Textcite{kerkers2017assessing} performed security analysis
-of power distribution \acp{ics} using automata learning.
-LearnLib was again used to provide the necessary learning features.
-In addition to implementing a mapper to support the necessary \ac{ics}
-protocols, Kerkers also had to provide software and hardware testing interfaces for the physical \acp{ics} that were under test.
+  \Textcite{kerkers2017assessing} performed security analysis
+  of power distribution \acp{ics} using automata learning.
+  LearnLib was again used to provide the necessary learning features.
+  In addition to implementing a mapper to support the necessary \ac{ics}
+  protocols, Kerkers also had to provide software and hardware testing interfaces for the physical \acp{ics} that were under test.
 
-Automata learning techniques can be used to infer state machines when source code is not available.
-However, they do not provide formal statements of overapproximation.
-They also require development of a \emph{mapper}, which translates between the learner and the black box.
-Developing such a mapper is a significant per-binary manual effort.
-Its implementation has a severe impact on the validity of the inferred state machine.
-In contrast, our disassembly approach does not require such manual effort.
+  Automata learning techniques can be used to infer state machines when source code is not available.
+  However, they do not provide formal statements of overapproximation.
+  They also require development of a \emph{mapper}, which translates between the learner and the black box.
+  Developing such a mapper is a significant per-binary manual effort.
+  Its implementation has a severe impact on the validity of the inferred state machine.
+  In contrast, our disassembly approach does not require such manual effort.
+\end{comment}
 
 \section{Exception Handling Analysis}\label{related-exceptions}
 The two main approaches to analyzing exceptional behavior for \gls{cpp} programs, and behavioral program analysis in general, are bottom-up and top-down.
@@ -824,15 +846,17 @@ To deal with such scenarios, \textcite{bastian2019dwarf} provide tools for the v
 
 \section{Summary}
 This section covered some of the work related to that presented in this dissertation.
-Previous assembly-, \ac{isa}-, and hardware-level formal verification efforts,
-verification efforts containing assembly or binary analysis components,
-verified compilation, and non-formal static analysis tools were all discussed.
-We also covered various tools and approaches for lifting or extracting control flow graphs/state machines from binaries as well as ones that perform exception-aware analyses.
+Previous assembly-level
+%, \ac{isa}-, and hardware-level
+formal verification efforts
+as well as verification efforts containing assembly or binary analysis components were discussed.
+%verified compilation, and non-formal static analysis tools were all discussed.
+We also covered various tools and approaches for lifting or extracting \acp{cfg}/state machines from binaries as well as ones that perform exception-aware analyses.
 
 Notably, while multiple assembly-level verification efforts
 presented in this chapter achieved more coverage
 than the over \num{2379} instructions achieved by the work in \cref{ch:cfg},
 none appear to have achieved the \num{12252}
-verified instructions covered in \cref{ch:syntax} except the work produced by
-Arm\index{Arm Ltd.} employees.
+verified instructions covered in \cref{ch:syntax}.
+%except the work produced by Arm\index{Arm Ltd.} employees.
 We then built further on that with our approaches in \cref{hg}, covering \glssymbol{inst-total-lifted} instructions, and \cref{eicfg}, covering \glssymbol{eicfg-inst-total} instructions.
