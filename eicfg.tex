@@ -47,7 +47,7 @@ We have verified that this holds for more complicated programs as well (some of 
 \begin{figure}
   \centering
   \begin{tikzpicture}
-    \graph[grow down=0.7cm,branch right,nodes={draw,ellipse,font=\footnotesize\ttfamily}]{
+    \graph[grow down=1.25cm, branch right=1.5cm, nodes={draw,ellipse,font=\ttfamily}]{
       foo -> fEnd1/""[ret],
       foo -> "" -> {fEnd1, fEnd2/""[ret]}, % more compact this way
       foo'[landing] -> fEnd'/""[ret],
@@ -57,11 +57,11 @@ We have verified that this holds for more complicated programs as well (some of 
       b1 -> bEnd2, % necessary due to group/chain interactions
       bar'[landing] -> bEnd'/""[ret],
 
-      {[grow down=.9cm, branch right=1.2cm]
+      {[grow down=1.25cm, branch right=1.5cm]
         {main[circle], catch[landing]} -> {
           callSite/""[diamond],
-          ""[at=(0:-.25)],
-          ""[ret, bad, at=(0:-.7), < draw=none]
+          ""[at=(0:-.5)],
+          ""[ret, bad, at=(0:-1), < draw=none]
         } -> ""[ret,good],
       };
 
