@@ -61,3 +61,30 @@
   description = {The number of test cases generated with arbitrary values in order to gain confidence in the result of the abstract step rules of the \ac{eicfg} symbolic execution engine as compared to a concrete implementation},
   group = {eicfg}
 }
+@number{total-bins,
+  name = {Total number of binaries},
+  symbol = {\num{341}},
+  description = {The total number of binaries in the \ac{eicfg} case study},
+  group = {eicfg}
+}
+% Actually 3654 but we left out one of the successful binaries due to its control failing
+@number{unique-throws,
+  name = {Unique throws},
+  symbol = {\num{3350}},
+  description = {The total number of unique throws identified for the \ac{eicfg} case study},
+  group = {eicfg}
+}
+% Actually 2589 but we left out one of the successful binaries due to its control failing
+@number{caught-throws,
+  name = {Caught throws},
+  symbol = {\num{2356}},
+  description = {The total number of potentially caught throws identified for the \ac{eicfg} case study},
+  group = {eicfg}
+}
+% Actually 1065 but we left out one of the successful binaries due to its control failing
+@number{uncaught-throws,
+  name = {Uncaught throws},
+  symbol = {\num{994}},
+  description = {The total number of definitely uncaught throws identified for the \ac{eicfg} case study},
+  group = {eicfg}
+}

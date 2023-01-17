@@ -60,7 +60,7 @@ $\alpha$ operates after the concrete library function is executed, extracting th
 The test harness then verifies that the abstracted end state parts match the expected ones generated previously, satisfying \cref{eq:validation}.
 
 \section{Results}\label{eicfg-results}
-Here we present the results of generating \acp{eicfg} for \totalbins\ real-world programs and libraries.
+Here we present the results of generating \acp{eicfg} for \glssymbol{total-bins} real-world programs and libraries.
 These programs and libraries have a variety of sizes and use cases and were sourced from places like GitHub and the \ac{apt} repositories.
 \exceptbins\ of these programs utilize \gls{cpp} \ac{eh} (several despite the lack of \ac{eh} tables) while all have been compiled for the \gls{arch} \ac{isa} and the System~V \ac{abi}.
 %\strippedbins\ of the binaries were stripped of symbols.
@@ -124,8 +124,8 @@ That baseline version functions as our regular tool but without the unwinding-re
         % \end{threeparttable}
 \end{table}
 
-We identified \uniquethrows\ unique throws and traced the exceptional control flow of each one.
-Based on our analysis, we were able to identify \uncaughtthrows\ of them as uncaught; the remaining \caughtthrows\ all had a potential catch block in their unwinding path.
+We identified \glssymbol{unique-throws} unique throws and traced the exceptional control flow of each one.
+Based on our analysis, we were able to identify \glssymbol{uncaught-throws} of them as uncaught; the remaining \glssymbol{caught-throws} all had a potential catch block in their unwinding path.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
 Note the Xen binaries exhibited no change, as none contained any exceptional control flow.
@@ -236,7 +236,7 @@ Those rules are utilized by a step function that performs the process of disasse
 The algorithm itself was informally proven sound using pen-and-paper proofs.
 
 For increased assurance, a subset of the abstract transition rules were subsequently validated using fuzzing and comparative analysis with \glssymbol{fuzz-count} concrete executions of the corresponding functions.
-We also performed a real-world case study on \totalbins\ off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and Fortran source code.
+We also performed a real-world case study on \glssymbol{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
 Our tool was able to successfully execute on \glssymbol{eicfg-bin-success} of those binaries.
-Furthermore, it was able to identify \uniquethrows\ unique throws and successfully trace the exceptional control flow for every one of them.
+Furthermore, it was able to identify \glssymbol{unique-throws} unique throws and successfully trace the exceptional control flow for every one of them.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.

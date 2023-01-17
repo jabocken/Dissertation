@@ -21,10 +21,12 @@ Those methodologies are briefly revisited below.
 This dissertation presented two methods for proving \gls{memuse},
 Floyd-style verification and Hoare-style verification.
 Both approaches rely on the same symbolic execution model and memory-related rewrite rules documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
-\begin{remark}[Hoare triple usage]
-  Technically they also both use Hoare triples, but only \cref{ch:syntax} uses proper Hoare rules.
-  \Cref{ch:cfg} uses a modified style that takes a halting condition~$H$ instead of a syntactic construct in the middle.
-\end{remark}
+\begin{comment}
+  \begin{remark}[Hoare triple usage]
+    Technically they also both use Hoare triples, but only \cref{ch:syntax} uses proper Hoare rules.
+    \Cref{ch:cfg} uses a modified style that takes a halting condition~$H$ instead of a syntactic construct in the middle.
+  \end{remark}
+\end{comment}
 
 \Cref{hg,eicfg} then each provided a method for the lifting of control flow from binaries.
 The former aims for general control flow in the absence of structured exceptions, while the latter is focused specifically on exception-related control flow.
@@ -88,16 +90,16 @@ They do this by including nodes and edges for exceptional control flow while lim
 
 Our abstract transition relation for exceptional control flow has been informally shown to overapproximate the concrete versions of those edges.
 This was achieved by fuzzing many of the individual functions of the \gls{cpp} \ac{eh} \ac{abi}.
-The functions tested were each executed with \gls{fuzz-count} test cases generated with arbitrary exceptional state.
+The functions tested were each executed with \glssymbol{fuzz-count} test cases generated with arbitrary exceptional state.
 This approach also helped identify edge cases that were not specified in the \gls{cpp} \ac{eh} \ac{abi} \cite{cxxEhAbi}.
 
-Furthermore, we have applied our \ac{eicfg} generator to \totalbins\ real-world programs and libraries.
-We identified \uniquethrows\ unique throws and were able to trace each one's exceptional control flow: \caughtthrows\ were potentially caught while \uncaughtthrows\ had no identified potential for being caught.
+Furthermore, we have applied our \ac{eicfg} generator to \glssymbol{total-bins} real-world programs and libraries.
+We identified \glssymbol{unique-throws} unique throws and were able to trace each one's exceptional control flow: \glssymbol{caught-throws} were potentially caught while \glssymbol{uncaught-throws} had no identified potential for being caught.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
 
 \section{Future Work}
-There are a multitude of ways in which the contributions of this dissertation could be improved.
+There are a multitude of ways in which the contributions of this dissertation could be built upon.
 Below are some of them.
 
 \subsection{Invariant Strength}
@@ -114,7 +116,7 @@ While such an approach still works reasonably well, being able to generate stron
 In other words, stronger invariants mean stricter \gls{memuse} proofs.
 
 One way to do this would be to implement some form of abstract interpretation. % (\cref{background-absint}).
-As discussed, it has shown great success in the field of sound binary analysis \cref{related-jakstab,related-absint}.
+As discussed, it has shown great success in the field of sound binary analysis \cref{related-jakstab}. % related-absint
 It was even used as inspiration for some of the contributions here (\cref{hg,eicfg}).
 However, abstract interpretation is formulated around domains.
 Determining the best domains to use for such an approach would be a challenge.
@@ -162,7 +164,7 @@ One solution is better jump table heuristics \autocite{cifuentes2001recovery,fle
 This may result in less false positives/negatives for jump table calculations without the need for manual tuning.
 Doing so would reduce excess nondeterminism and overapproximation without the need for explicit state space reduction techniques.
 
-\subsection{Concurrency and Interrupts and Signals}
+\subsection{Concurrency, Interrupts, and Signals}
 None of the contributions of this document fully support analysis of concurrent code.
 While \cref{eicfg} analyzes the callbacks passed to functions such as \inlineasm{pthread_create}, it does so by treating them as being called at that point.
 This means that even that contribution has no concept of multiple threads.
@@ -194,7 +196,7 @@ Better pointer inference support would be beneficial as well.
 By that we mean identifying which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling.
 This could allow for reduction of infeasible memory models.
 
-\subsection{Extending and Integrating Later Contributions into Formal Frameworks}
+\subsection{Integrating Later Contributions into Formal Frameworks}
 Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique, including decompilation, binary verification and binary patching.
 However, while some \acp{hg} have been validated, this validation is a manual approach.
 Furthermore, the validation done for \acp{eicfg} applies to individual steps and, while done as a concrete analysis, does not integrate with formal tools.
