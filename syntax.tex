@@ -28,15 +28,17 @@ on the Xen Project hypervisor \autocite{chisnall2008definitive}.
 In total, \acp{fmuc} were generated and proofs discharged in \gls{isabelle}
 for 251 Xen functions.
 
-My primary contributions to the certificate generation and verification approach%
-\index{certificate}
-presented in this chapter include the Hoare rules developed
-for \gls{memuse} as well as the \ac{vcg} used to apply those rules
-to \ac{scf} in \gls{isabelle} (\cref{se:fmuc_ver}).
-I also greatly expanded the code for full translation of the \acp{fmuc} into the \gls{isabelle}[/HOL] language and helped adapt the \ac{scf} into a form suitable for verification in \gls{isabelle} (\cref{isabelle_scf}).
-Additionally, I contributed to invariant generation (\cref{sse:inv_gen})
-and performed much of the verification work for our large case study,
-presented in \cref{se:xen}.
+\begin{comment}
+  My primary contributions to the certificate generation and verification approach%
+  \index{certificate}
+  presented in this chapter include the Hoare rules developed
+  for \gls{memuse} as well as the \ac{vcg} used to apply those rules
+  to \ac{scf} in \gls{isabelle} (\cref{se:fmuc_ver}).
+  I also greatly expanded the code for full translation of the \acp{fmuc} into the \gls{isabelle}[/HOL] language and helped adapt the \ac{scf} into a form suitable for verification in \gls{isabelle} (\cref{isabelle_scf}).
+  Additionally, I contributed to invariant generation (\cref{sse:inv_gen})
+  and performed much of the verification work for our large case study,
+  presented in \cref{se:xen}.
+\end{comment}
 
 \section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
 \begin{figure*}
@@ -79,7 +81,7 @@ read and written by the function in question.
 This was detailed in \cref{ch:symbolic_execution}.
 To eliminate duplicates and produce \acp{mrr}
 showing which regions overlap or are enclosed or separate,
-the region sets are then fed to the \ac{smt} solver Z3 \autocite{de2008z3}.
+the region sets are then fed to the \ac{smt} solver \gls{z3} \autocite{de2008z3}.
 Symbolic execution is also used in the process of generating
 the pre- and postconditions for each basic block,
 elaborated on in \cref{sse:inv_gen}.
@@ -92,7 +94,7 @@ will fail if there are issues in control flow extraction,
 \Ac{mrr} generation is an exception
 because the \acp{mrr} are formulated as assumptions,
 and thus inconsistent \acp{mrr} will result in vacuous proofs.
-This is why the methodology relies on Z3 for \ac{mrr} generation;
+This is why the methodology relies on \gls{z3} for \ac{mrr} generation;
 using a known-reliable tool greatly reduces the possibility of issues.
 
 \subsection{Control Flow Extraction}\label{sse:cfg_extract}
@@ -331,14 +333,14 @@ are formulated as \ac{smt} problems.
 The \ac{smt} formulations are negations
 of the equations presented in \cref{def:sep,def:enc};
 the result states the property holds if the resultant problem is \emph{unsatisfiable}.
-These \ac{smt} problems can be solved by Z3 \autocite{de2008z3}
+These \ac{smt} problems can be solved by \gls{z3} \autocite{de2008z3}
 for a wide range of expressions over bitvectors
 using the \lstinline|QF_UFBV| logic \autocite{smtlib:bitvector-logic,smtlib:bitvector-theory}.
-Z3 is also used in this work for determining the sign of two values
+\Gls{z3} is also used in this work for determining the sign of two values
 in the region merge algorithm, originally presented in \cref{def:merge}.
 Additionally, reads of overlapping regions may require merging
 and separation analysis as described in \cref{memory_aliasing},
-so they also rely on Z3.
+so they also rely on \gls{z3}.
 
 The result of evaluating the above \ac{smt} problems
 over all pairs of memory regions for a basic block, each region being given a unique ID,
@@ -1355,8 +1357,7 @@ Sometimes, addresses are computed using a combination of arithmetic operators%
 \index{operator!arithmetic}
 with bitwise logical operators.%
 \index{operator!bitwise}
-In some of these cases, our translation to Z3 does not produce an answer.%
-\index{Z3}
+In some of these cases, our translation to \gls{z3} does not produce an answer.
 As an example, function \texttt{qcow\_open}
 uses the rotate-left function to compute an address.
 As another example, function \texttt{AES\_set\_encrypt\_key}

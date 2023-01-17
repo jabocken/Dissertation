@@ -324,13 +324,13 @@ Finally, regions in sibling nodes are separate.
 \end{definition}
 Such relations hold \emph{necessarily} if and only if they hold in all concrete states~\gls{concrete-state}.
 For example, $\region{\rsio}{4}\gls{separate}\region{\rsio+4}{4}$ is a necessarily-separate relation as there are no values of~$\rsio$ for which those two regions are not separate.
-The \ac{smt} solver/theorem prover Z3 \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses\index{symbolic!address}
+The \ac{smt} solver/theorem prover \gls{z3} \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses\index{symbolic!address}
 given the current state predicate\index{state!predicate}.
-This is done via expression translation directly to Z3's bit-vector\index{numeric!bit vector}
+This is done via expression translation directly to \gls{z3}['s] bit-vector\index{numeric!bit vector}
 representations, meaning no information is lost in the conversion
 and when querying the constructed logical formulas.
 
-In our Z3 interface, each operation to determine aliasing/separation/enclosure
+In our \gls{z3} interface, each operation to determine aliasing/separation/enclosure
 also takes a predicate as an additional argument.
 This is used to provide additional assumptions for necessarily-calculations,
 as in isolation it is often not possible to determine the relationships between

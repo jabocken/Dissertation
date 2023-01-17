@@ -11,52 +11,39 @@ as presented in \cref{se:rewrite},
 which is shared between the two works presented in this document,
 was provided by Dr.~Freek Verbeek.
 
-My contribution to that section was working on additional proven-correct
-simplification rules as well as more presimplification rules for
-various instructions and their variants (also \cref{se:rewrite});
-most of the presimplification rules
-were done by a fellow student working on a tangential project,
-however \autocite{verbeek2019refinement}.
+The symbolic execution engine used in those two contributions was initially provided and developed by Dr.~Peter Lammich.
+While the machine model we ended up using in the work was provided to us as well,
+the semantics was not fully suitable for efficient formal verification in \gls{isabelle}.
+This was due to its status as bitvector formulas \autocite{roessle2019verified}, which \gls{isabelle} did not have strong support for at the time.
+Therefore I also assisted in the development of simplification rules
+to enable higher-level reasoning on individual and multiple instructions.
+Many were also provided by a fellow student working on a tangential project \autocite{verbeek2019refinement}.
+As with the symbolic execution engine, the rules were implemented in \gls{isabelle} and formally proven correct (\cref{se:rewrite}).
 
-\section*{Formal Verification of Memory Preservation of \glsentryname{arch} Binaries}\label{attribute1}
-The first paper covers the Floyd-style verification work described in \cref{ch:cfg} \autocite{bockenek2019preservation}.
-I provided three main contributions to that work.
+\section*{Floyd-Style Verification}\label{attribute1}
+The first main contribution to cover is the Floyd-style verification work described in \cref{ch:cfg} \autocite{bockenek2019preservation}.
+I provided three main contributions to that work, previously published as \citetitle*{bockenek2019preservation}.
+
 The first was a Python package developed to interface with \texttt{angr}
 \autocite{shoshitaishvili2016state}
 for cutpoint identification and skeleton proof generation,
 % TODO: still want to add glossary to explain terms like cutpoint that are more general.
 described in \cref{se:cfg_overview}.
-My second contribution was the development of structured proof strategies
-to flesh out and verify the skeleton proofs,
-including developing the necessary preconditions and postconditions to ensure
-the possibility of function-level composition (\cref{se:cfg_composition}).
+My second contribution was the development of structured proof strategies to flesh out and verify the skeleton proofs.
+This included developing the necessary preconditions and postconditions to ensure the possibility of function-level composition (\cref{se:cfg_composition}).
 
-I did not contribute as much to the work on recursive verification, however;
-my focus was primarily on the non-recursive (but still potentially looping) functions.
+My third contribution was the analysis of more than seventy functions that I selected as suitable case studies.
+\Cref{sse:pow2_example} presents one such function,
+and the rest of the verification effort is described in \cref{se:cfg_application}.
+These functions were non-recursive (but still potentially looping).
 The two recursive functions handled in the process of validating the work,
 including the factorial function presented in \cref{sse:factorial_example},
-were primarily verified by Dr.~Verbeek as well.
-This does lead to my third contribution to the work, however:
-the more than seventy functions that I selected and analyzed as suitable case studies.
-\cref{sse:pow2_example} presents one such function,
-and the rest of the verification effort is described in \cref{se:cfg_application}.
+were primarily verified by Dr.~Verbeek.
 
-As an additional note of attribution, the symbolic execution engine
-used in the work was initially provided and developed by Dr.~Peter Lammich.
-Also, while the machine model we ended up using in the work was provided to us,
-the semantics was not fully suitable for efficient formal verification
-due to their status as bitvector formulas,
-and so I also assisted in the development of simplification rules
-to enable higher-level reasoning on multiple instructions.
-The rules were implemented in \gls{isabelle} and formally proven correct.
-
-\section*{Highly Automated Formal Proofs over Memory Usage of Assembly Code}
+\section*{Hoare-Style Verification}
 \label{attribute2}
-Following on from that work is a paper
-that built on our experiences from the previous verification
-work \autocite{verbeek2020automated}. This work,
-which introduces the generation and verification of
-\acp{fmuc}, is described in \cref{ch:syntax}.
+Following on from that work is a paper that built on our experiences from the previous verification work \autocite{verbeek2020automated}, \citetitle*{verbeek2020automated}.
+This work, which introduces the generation and verification of \acp{fmuc}, is described in \cref{ch:syntax}.
 
 Most of my primary contributions to this work were on the verification side of things.
 The first two big ones were application and development of syntactic rules
@@ -73,32 +60,25 @@ I did most of the work on translating the Haskell \acp{fmuc}
 into the theorems and data types required to verify the \acp{fmuc} in \gls{isabelle},
 which included adapting the syntactic control flow used in \ac{fmuc} generation
 into a suitable form for the \gls{isabelle} work (\cref{isabelle_scf}).
-I also made some significant contributions to invariant generation in \cref{sse:inv_gen}.
+I also made some significant contributions to invariant generation in \cref{sse:inv_gen} and contributed some entries in the implemented Haskell semantics for additional instructions encountered in the process of \ac{fmuc} generation.
 
-The person who did most of the work on the \ac{fmuc} generation in general,
-however, was again Dr.~Verbeek.
+Dr.~Verbeek's contributions to the \ac{fmuc} generation are as follows.
 In order to properly generate \ac{fmuc} preconditions and postconditions,
-he formulated a symbolic execution machine model in Haskell
-for many common \gls{arch} instructions
-as well as additional ones encountered in the course of our case studies.
-Dr.~Verbeek also developed the Z3\index{Z3} interface
+he formulated a symbolic execution machine model in Haskell for many common \gls{arch} instructions as well as additional ones encountered in the course of our case studies.
+Dr.~Verbeek also developed the \gls{z3} \autocite{de2008z3} interface
 for handling the memory region separation and enclosure decision problems,
 mentioned in \cref{se:fmuc_gen},
 and did most of the work for control flow extraction (\cref{sse:cfg_extract}).
 
-I did contribute some entries in the implemented Haskell semantics
-for additional instructions encountered in the process of \ac{fmuc} generation,
-as well.
+\section*{Hoare Graphs}
+The first of two control flow recovery papers, \citetitle*{verbeek2022lifting} was again a collaboration with Dr.~Verbeek and others, with him and me being the major contributors to the work.
+It introduced the concept of \acp{hg} and provided formalisms, pen-and-paper proofs, a case study, and formal verification of some produced \acp{hg} \autocite{verbeek2022lifting}.
 
-\section*{Formally Verified Lifting of C-compiled \glsentryname{arch} Binaries}
-The first of two control flow recovery papers, this work was again a collaboration with Dr.~Verbeek and others, with him and me being the major contributors to the work.
-It introduces the concept of \acp{hg} and provides formalisms, pen-and-paper proofs, a case study, and formal verification of some produced \acp{hg} \autocite{verbeek2022lifting}.
-
-The initial codebase and basic step function, memory model framework, and such was developed by Dr.~Verbeek, but I took ownership of it after that.
+The initial codebase and basic step function as well as the memory model framework were developed by Dr.~Verbeek, but I took ownership of it after that.
 While Dr.~Verbeek did contribute further adjustments during the process, most of the development from that point on was done by me.
 This includes fleshing out the step function with the semantics of more instructions as we encountered them in the case study, as well as larger decisions about implementation structure.
 For example, I made the decision to switch the individual instruction parsing over to use Capstone \autocite{capstone} via the \texttt{hapstone} package \autocite{hapstone} when a collaborator uncovered a bug in the parsing library that was originally chosen.
-I also transitioned the work from relying on unbounded integers in the Z3 interface to utilizing Z3's bitvector formulas, providing more accuracy and precision.
+I also transitioned the work from relying on unbounded integers in the \gls{z3} interface to utilizing \gls{z3}['s] bitvector formulas, providing more accuracy and precision.
 Additionally, development of instrumentation for and application of the tool to the real-world programs and libraries of the case study was all done by me.
 
 Finally, the formal proofs of \acp{hg} in \gls{isabelle} were performed entirely by Dr.~Verbeek.
@@ -106,7 +86,7 @@ They have been documented in this dissertation for completion's sake.
 Most of the pen-and-paper proofs were also refined or completed by Dr.~Verbeek, but I did assist with those and provided some of the initial ones.
 
 \section*{Exceptional Interprocedural Control Flow Graphs}
-The second of the control flow recovery papers and the final work in this dissertation, this paper presents the concept of \acp{eicfg} and provides formalism, pen-and-paper proofs, a case study, and fuzzed validation of some of the relevant \ac{eh} library functions.
+The second of the control flow recovery papers and the final work in this dissertation, this currently-unpublished paper presents the concept of \acp{eicfg} and provides formalism, pen-and-paper proofs, a case study, and fuzzed validation of some of the relevant \ac{eh} library functions.
 The work in paper form is not yet published, but this dissertation will be updated with a proper citation once it has been accepted by a conference.
 
 While this work was also done in collaboration with Dr.~Verbeek, I did most of the actual development.
