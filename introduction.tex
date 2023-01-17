@@ -48,16 +48,13 @@ The tradeoff for lower-level analysis is less abstraction.
 This is because even software written in a relatively low-level language like \gls{c} has abstractions on memory for local variables and function calls.
 How and where memory is allocated may be compiler, \ac{abi}, and \ac{isa}-specific.
 It can even depend on what compiler options are in use, including the level of optimization.
-\begin{example}[Control Flow Integrity]\label{ex:rop}
-  As a further illustration, consider formulating a property that a function cannot overwrite its own return address (something done in this dissertation).
-  Doing so requires knowledge of the layout of the stack, including the values of the stack and frame pointers, thus making it an \emph{assembly-level} or lower property.
-\end{example}
+As a further illustration, consider formulating a property that a function cannot overwrite its own return address (something done in this dissertation).
+Doing so requires knowledge of the layout of the stack, including the values of the stack and frame pointers, thus making it an \emph{assembly-level} or lower property.
 On the flip side, this also means that \emph{such low-level properties can be precisely stated even if they are not evident on the source level}.
+
 One such property is \emph{\gls{memuse}}.
-\begin{definition}[Memory Usage (informal)]
-  Informally, \gls{memuse} describes the memory a program writes and reads (in other words, \emph{uses}) in terms of prespecified regions.
-  If verified correct, all memory utilized by the program is bounded to those regions.
-\end{definition}
+Informally, \gls{memuse} describes the memory a program writes and reads (in other words, \emph{uses}) in terms of prespecified regions.
+If verified correct, all memory utilized by the program is bounded to those regions.
 
 Another property is \emph{actual control flow recovered from the binary}.
 The control flow one can identify from source code is not necessarily the actual control flow a program will take due to the binary-source semantic gap.
@@ -157,8 +154,7 @@ This allows for more abstraction, but does require a lot of groundwork.
 
 \subsubsection{Patching}
 Non-trivial, smart binary patching or rewriting requires control flow information as well.
-If you are instrumenting binaries to dynamically randomize their own basic blocks, you cannot do so without knowing the bounds those blocks must abide by \autocite{wartell2012binary}.
-\autocite{,kim2017revarm}
+If you are instrumenting binaries to dynamically randomize their own basic blocks, you cannot do so without knowing the bounds those blocks must abide by \autocite{wartell2012binary,kim2017revarm}.
 
 \Textcite{duck2020binary} did recently provide a way to patch binaries without control flow information.
 However, that work requires potentially inefficient program modification such as extra instruction padding to accomplish that task.
@@ -229,7 +225,7 @@ Determining the target of a \inlineasm{ret} can be non-trivial even when the cal
 At a minimum, a disassembler that supports calls and indirect jump traversals in a structured setting needs to ensure the following properties:
 \begin{description}
   \item[Return Address Integrity] Functions cannot overwrite their own return addresses, or if they do the target must be known.%
-  \footnote{assuming a standard structured programming methodology}
+  \footnote{This assumes a standard structured programming methodology.}
   This requires the absence of stack overflows or similar inappropriate stack manipulation.
   \item[Bounded Control Flow] All indirect, or non-immediate, branches transfer control flow to fixed, statically-calculated, bounded sets of addresses. This requires the ability to determine upper bounds on array indices.
   \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \ac{abi} considers non-volatile.
@@ -274,12 +270,12 @@ This representation can then be used for verification efforts in a theorem prove
 As a specific example, it was utilized in the verification of the \gls{sel4} microkernel \autocite{klein2009sel4,klein2014comprehensive,sel4}.
 However, though the usage of \ac{dil} enabled automatic binary lifting for much of \gls{sel4}, that verification effort still required significant manual effort.
 
-Then, in 2014, \textcite{goel2014syscalls,goelphd} produced formal semantics for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
+In \textcite{goel2014syscalls,goelphd} produced formal semantics for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
 That work allows mechanized reasoning over compiled programs in the ACL2 theorem prover \autocite{ACL2}.
 Further previous and later efforts for a variety of assembly-level analyses and targets are documented later in \cref{se:previous_assembly}.
 The ones mentioned here are also described in more detail.
 
-Switching topics, the \textsc{Strata}\index{Strata} tool by \textcite{heule2016stratified} provides a technique using machine learning to derive bitvector semantics from actual \acp{cpu}.
+Tackling the issue of instruction semantics from another angle, the \gls{strata} tool by \textcite{heule2016stratified} provides a technique using machine learning to derive bitvector semantics from actual \acp{cpu}.
 This allows for more accurate semantics than previous approaches relying on human-interpreted specification documents even when when working with \ac{cisc} \acp{isa}.
 As evidence, the Heule team identified mistakes and bugs in the human-readable Intel\index{Intel} documentation of the instructions they derived semantics for.
 Of course, even \ac{risc} specifications, despite ostensibly being simpler, are not always implemented accurately in emulators or other tools not synthesized directly from a structured specification \autocite{jiang2022examiner}.
@@ -289,7 +285,7 @@ Despite the accomplishments of the Heule work, it still has some drawbacks. Most
 This means that there is still potential for bugs in the specification or synthesis of semantics to go unnoticed.
 That gap was filled by the work of \textcite{roessle2019verified}.
 That work establishes a methodology for generating formal equivalence theorems between assembly code and big-step semantics in an interactive theorem prover (specifically, \gls{isabelle}).
-This was accomplished by using \textsc{Strata}\index{Strata} to extract per-instruction small-step semantics and then performing tests in a formal framework against actual hardware to validate them.
+This was accomplished by using \gls{strata} to extract per-instruction small-step semantics and then performing tests in a formal framework against actual hardware to validate them.
 The validated semantics were then used in \iac{dil} methodology to lift full programs into a form that could be easily reasoned over, even in the presence of floating-point operations.
 Though we did not directly build on the works of \textcite{heule2016stratified} or \textcite{roessle2019verified}, they served as inspiration and influence in developing our instruction semantics as well as for the validation performed in \cref{ch:eicfg-validation}.
 
@@ -463,9 +459,9 @@ The only case where overapproximation is not guaranteed is when an indirection c
 Such cases are clearly marked in the \ac{eicfg}.
 
 % RESULTS
-We applied the tool to \totalbins\ off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and Fortran source code.
+We applied the tool to \gls{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
 %The implemented tool was able to reach an average of \coveredpercent\ of the instructions from the \satisfactorybins\ binaries we examined that had satisfactory analyses (for our purposes, \cutoffpercent).
-The implemented tool was able to identify \uniquethrows\ unique throws and successfully trace the exceptional control flow for every one of them.
+The implemented tool was able to identify \glssymbol{unique-throws} unique throws and successfully trace the exceptional control flow for every one of them.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
 Those edges are ones tools such as Ghidra \autocite{ghidra} do not produce.
 

@@ -68,7 +68,7 @@ but even then it's a significant difference.
 
 Building on the rely-guarantee\footnote{or ``assume-guarantee'', as the paper calls it} scheme for verification of concurrent systems introduced by \textcite{xu1997rely-guarantee} some years before,
 \textcite{yu2004concurrent} developed a logic-based type system for analysis of concurrency on the assembly level.
-It received a fully mechanized implementation verified for soundness in Coq\index{Coq}.
+It received a fully mechanized implementation verified for soundness in \gls{coq}.
 This mechanization allows for the semi-automated verification of undecidable safety properties such as mutual exclusion, deadlock freedom, and partial correctness, much like the usage of semi-interactive proving to deal with undecidable properties in \cref{ch:cfg,ch:syntax,hg}.
 
 Following that, \textcite{matthews2006verification}
@@ -110,7 +110,7 @@ This is again due to the amount of intricate user interaction required.
 Fully automated approaches to formal verification, however,
 do not necessarily scale either.
 The automated approach AUSPICE provided by \textcite{tan2015auspice}
-takes about \SI6\hour\ to run on a \num{533}-instruction string search algorithm.
+takes about six hours to run on a \num{533}-instruction string search algorithm.
 This is despite the fact that, similar to our approaches, % todo: this sounds weird
 they were targeting weaker safety properties
 rather than going for functional correctness.
@@ -119,8 +119,8 @@ they too used a full set of Hoare rules in their analysis.
 % todo: check the Hoare rules thing?
 
 Though it is not a verification methodology by itself,
-there is also \ac{dil}.
-Developed by Myreen et al.\ in the HOL4 theorem prover \autocite{slind2008brief},
+\ac{dil} provides the means by which a program can be verified in a theorem prover.
+Developed by Myreen et al.\ in the \gls{hol4} theorem prover \autocite{slind2008brief},
 \ac{dil} uses operational semantics of machine code
 to lift programs into a functional form.
 That functional form can then be used in \pgls{hoare-logic} framework
@@ -135,7 +135,7 @@ over the seL4 microkernel \autocite{sewell2013tvv}.
 
 Also, \textcite{feng2006modular,feng2005sbca} presented stack abstractions
 for modular verification of assembly code
-in the Coq theorem prover \autocite{chlipala2013certified}.
+in the \gls{coq} theorem prover \autocite{chlipala2013certified}.
 Their work allows for integration
 of various proof-carrying code systems \autocite{necula1997proof}.
 As with the work presented in \cref{ch:syntax},
@@ -149,17 +149,15 @@ manual annotations are required to provide information
 regarding invariants and memory layout.
 
 \Textcite{schlich2008phd} worked on the development of a model checker for analysis
-of microcontroller assembly, \mcsquare.
-Implemented in Java and supporting several microcontroller \acp{isa},
-it uses multiple methods of state space reduction in order to avoid state space explosion
-as much as possible. While it was applied to multiple case studies,
+of microcontroller assembly, \gls{mcsquare}.
+Though not designed formally from the ground up (it was implemented in \gls{java} rather than a theorem prover), it supports several microcontroller \acp{isa} and uses multiple methods of state space reduction in order to avoid state space explosion as much as possible.
+While it was applied to multiple case studies,
 some of those case studies were only to analyze the effectiveness
 of the various abstraction techniques used for state space reduction.
 
 The most relevant case study to this dissertation was its application
 to software compiled for an automotive microcontroller \autocite{schlich2007automotive}.
-The three programs they focused on for their case study
-were designed to record speed measurements from sensors on four wheels,
+The three programs \citeauthor{schlich2007automotive} focused on for their case study were designed to record speed measurements from sensors on four wheels,
 calculate the actual speed, and then transmit it over \pgls{can} bus.
 Some of the programs required simplification to be checkable,
 so for consistency they applied, or at least attempted to apply,
@@ -180,9 +178,9 @@ for the Atmel ATmega16 and Intel MCS-51 microcontrollers
 in order to verify a lack of stack overflows.
 Their work was applied to eight programs, four compiled for each microcontroller.
 The functions compiled for the ATmega16 \ac{isa}
-had previously been used to evaluate the effectiveness of \mcsquare.
-They then embedded their static analysis in \mcsquare\ as a means to
-improve the accuracy of \ac{dvr}, which \mcsquare\ uses for state space reduction.
+had previously been used to evaluate the effectiveness of \gls{mcsquare}.
+They then embedded their static analysis in \gls{mcsquare} as a means to
+improve the accuracy of \ac{dvr}, which \gls{mcsquare} uses for state space reduction.
 While this stack safety approach is similar in focus to the \gls{memuse} works
 I present here, the scope is much smaller.
 Their focus was specifically on stack memory rather than memory in general.
@@ -238,7 +236,7 @@ we could guide the \ac{vc} generation and discharging as needed.
 
   More recently, the Sail \ac{isa} specification language,
   which supports automatic generation of emulation code
-  and of proof definitions for \gls{isabelle}, HOL4\index{HOL4}, and in some cases Coq\index{Coq},
+  and of proof definitions for \gls{isabelle}, \gls{hol4}, and in some cases \gls{coq},
   has been used to provide rigorous semantic models of various \ac{risc} \acp{isa}
   \autocite{armstrong2018models,armstrong2019isa}.
   The \acp{isa} in question are \gls{arm}[v8.3-A], CHERI-\ac{mips}, and \gls{riscv}.
@@ -293,12 +291,12 @@ PROSPER, at the assembly level.
 Separation kernels are similar to hypervisors,
 providing isolation for individual components of a system and ensuring
 only those components that are allowed to communicate do \autocite{rushby1981dvss}.
-Their methodology integrated HOL4 with \ac{bap}.
+Their methodology integrated \gls{hol4} with \ac{bap}.
 \Ac{bap} utilizes a custom intermediate language
 that provides an architecture-agnostic representation of machine instructions
 and their side effects.
 First, the formal model of the \gls{arm} \ac{isa} provided by \textcite{fox2010arm} was used
-in an HOL4 tool to translate the \gls{arm} binary into \ac{bap}'s intermediate language.
+in an \gls{hol4} tool to translate the \gls{arm} binary into \ac{bap}'s intermediate language.
 Following that, the \ac{smt} solver \ac{stp}  \autocite{ganesh2007stp}
 was used to determine the targets of indirect branches
 and to perform weakest-precondition computation with Hoare triples
@@ -348,9 +346,9 @@ of that language's FM8502 implementation.
   The main difference between \gls{c} and Clight is that Clight is \emph{pure};
   none of its operations have side effects. It also provides only one loop structure,
   an infinite loop that must be broken out of to exit.
-  Clight has been mechanized in the Coq theorem prover with established
+  Clight has been mechanized in the \gls{coq} theorem prover with established
   big-step operational semantics, making it a useful subset of C
-  for program verification work in Coq.
+  for program verification work in \gls{coq}.
 
   The full proof of \emph{semantic preservation},
   as it is called in the CompCert documentation,
@@ -377,7 +375,7 @@ of that language's FM8502 implementation.
   This was previously a challenge due to the non-local and asynchronous behavior
   of hardware interrupts. Their approach uses a general certified device model
   with multiple instantiations and provides an effective model of device interrupts.
-  The verification was done in Coq with the kernel written in Clight.
+  The verification was done in \gls{coq} with the kernel written in Clight.
   Once verification was complete, the source code was compiled using a modified version
   of CompCert to ensure the semantics were maintained.
   They showed the value of their work by taking a preexisting,
@@ -429,14 +427,14 @@ of that language's FM8502 implementation.
   it also looks for memory leaks, performs linting for violations of coding conventions,
   and checks for calls to mobile device \acp{api} that are not available
   for the target device \ac{os}.
-  In Android code and Java in general, it ensures annotations can be reached,
+  In Android code and \gls{java} in general, it ensures annotations can be reached,
   looks out for mutability issues, and checks for resource leaks.
 
-  The static analysis tool FindBugs, written for Java code,
+  The static analysis tool FindBugs, written for \gls{java} code,
   takes a bit of a different approach from those other two
   \autocite{hovemeyer2004findbugs}.
   Rather than performing control flow or dataflow analyses,
-  it searches Java bytecode for common (bad practice) code idioms
+  it searches \gls{java} bytecode for common (bad practice) code idioms
   in order to detect likely bugs. Much like Infer,
   some of the common errors it highlights include null pointer dereferences,
   objects that compare equal not having equal hash codes,
@@ -660,7 +658,7 @@ In fact, it performs a similar sort of syntactic control flow reconstruction as 
 That does leave it with similar limitations to that work, however.
 \Textcite{cifuentes1998assembly} also provided a similar translator for \ac{sparc} assembly, \lstinline|asm2c|, soon after.
 
-Decompiling Java bytecode to source code was of interest starting in the 90s as well, with tools such as Mocha \autocite{mocha} and Krakatoa \autocite{proebsting1997krakatoa}.
+Decompiling \gls{java} bytecode to source code was of interest starting in the 90s as well, with tools such as Mocha \autocite{mocha} and Krakatoa \autocite{proebsting1997krakatoa}.
 Both tools utilize graph transformations to extract information, with Krakatoa providing additional rewriting rules and greater coverage.
 These tools are interesting as, unlike many register-based \acp{isa}, including the one we target here (\gls{arch}), the \ac{jvm} is a stack-based architecture with pseudo-register local variables for method arguments and other purposes.
 
@@ -699,9 +697,9 @@ This does require some additional functionality, with both the compiler and the 
 
 In contrast, our \ac{hg} lifting approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
 In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019refinement}.
-Even our Hoare-style work presented in \cref{ch:syntax}, tailored to \gls{memuse} properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \cite{verbeek2020automated}.
-\Textcite{tan2015auspice} provided a fully automated method, AUSPICE, that takes about \SI6\hour\ for a \num{533}-instruction string search algorithm.
-Our \ac{hg} lifting approach \emph{complements} formal verifiers that generate invariants for proving functional correctness.
+Even our Hoare-style work presented in \cref{ch:syntax}, tailored to \gls{memuse} properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \autocite{verbeek2020automated}.
+While the earlier-mentioned AUSPICE is fully automated, it is also very slow \textcite{tan2015auspice}.
+Our \ac{hg} lifting approach therefore \emph{complements} formal verifiers that generate invariants for proving functional correctness.
 \begin{remark}[Lifting in the \acs*{tcb}]
   The invariants this lifting approach generates do not contain enough information to prove full functional correctness; they are tailored for control flow and pointer relations.
   The tool instead serves to remove the lifting process from the \ac{tcb}.
@@ -821,7 +819,7 @@ These \acp{iecfg} are much like our \acp{eicfg}, but for source code.
 Unlike our work, however, \acp{iecfg} are used to \emph{eliminate} exceptions when compiling to a binary to make static analysis easier.
 They cannot be used to analyze already-compiled programs with exceptions.
 
-Java programs use exceptions as well. \Textcite{kechagia2019misuse} provide a tool for identifying unhandled \ac{api} misuses via static exception propagation and test case generation. This differs from our work as we detect in-program exceptional behavior, not exceptions produced by \ac{api} or other external calls.
+\Gls{java} programs use exceptions as well. \Textcite{kechagia2019misuse} provide a tool for identifying unhandled \ac{api} misuses via static exception propagation and test case generation. This differs from our work as we detect in-program exceptional behavior, not exceptions produced by \ac{api} or other external calls.
 
 \subsection{Tools that use \texttt{libunwind}}
 A standard library for instrumented/dynamic unwinding is \lstinline|libunwind| \autocite{libunwind}.

@@ -697,7 +697,7 @@ Joining states that contain immediate values that turn out to be necessary to as
 It will merely lead to unresolved indirections or errors being reported by the analysis, and soundness will still not be affected.
 
 Concretely, if two states have assignments of different immediate pointers to instructions%
-\footnote{Concrete pointer values that fall within the range of the text section of the binary}
+\footnote{concrete pointer values that fall within the range of the text section of the binary}
 to the same state part, then we do not join those pointers to an abstract value.
 Instead, we continue exploration from both states.
 This is because those immediate values are highly likely to influence future control flow.

@@ -54,8 +54,7 @@
 % Defined after it's used in commands above but looks like that's okay in LaTeX.
 \newcommand*\mathasm[1]{\text{\inlineasm{#1}}}
 
-\newcommand*\mcsquare{\textsc{[mc]square}}
-
+% TODO: get rid of these?
 \newcommand*\keywordstyle{\ttfamily\bfseries\color{blue}}
 \newcommand\keyword[1]{{\keywordstyle#1}}
 \newcolumntype{A}{>{\begingroup\ttfamily\bfseries\color{blue}}l<{\endgroup}}
@@ -226,7 +225,6 @@
 
 \includeonly{related}
 
-%\makeindex[intoc]
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
 %  \maketitle
@@ -243,7 +241,7 @@
   \printacronyms[heading=chapter]
   \printunsrtabbreviations[style=altlist] % better style for abbreviations with descs than tree/index; what's the difference between tree and index, anyway?
   \printunsrtglossary[type=symbols]
-  \printunsrtglossary[type=numbers]
+  % Freek doesn't think the numbers one is worth it. I was mainly using it for the cross-referencing anyway but that's okay, maybe it'll end up in the ``main''/index glossary? How do I manage that?
 
   \include{attribution} % prefaces go in front matter
 

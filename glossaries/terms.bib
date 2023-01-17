@@ -85,19 +85,34 @@
   parent = {formal}
 }
 
-
-@index{programming}
+%TODO:should be a group?
+@index{language,
+  name = {Programming Language}
+}
 @entry{c,
   name = {C},
   description = {A classic low-level programming language},
-  seealso = {cpp}
+  seealso = {cpp},
+  parent = {language}
 }
 
 %% C++ formatting similar to https://isocpp.org/wiki/faq/misc-environmental-issues#latex-macros but nicer and with the plus signs slightly more defined than \cpluspluslogo from the texlogos package
 @entry{cpp,
   name = {C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\relsize{-1}{\textbf{++}}}},
   description = {A classic low-level programming language, \todo{more}},
-  seealso = {c}
+  seealso = {c},
+  parent = {language}
+}
+
+@entry{fortran,
+  name = {Fortran},
+  description = {A classic language for mathematical computing and optimization},
+  parent = {language}
+}
+
+@entry{java,
+  name = {Java},
+  descripton = {A common high-level programming language designed to be run on many platforms using a bytecode interpreter, the \ac{jvm}}
 }
 
 @entry{llvm,
@@ -133,4 +148,25 @@
 @entry{xen,
   name = {the Xen Project},
   description = {A fully-featured, production-capable hypervisor}
+}
+
+@entry{strata,
+  name = {\textsc{Strata}},
+  description = {A machine learning tool to extract instruction semantics developed by \textcite{heule2016stratified}},
+  seealso = {arch}
+}
+
+@entry{hol4,
+  name = {HOL4},
+  description = {A theorem prover using \ac{hol}}
+}
+
+@entry{coq,
+  name = {Coq},
+  description = {An interactive theorem prover}
+}
+
+@entry{mcsquare,
+  name = {\textsc{[mc]square}},
+  description = {A model checker for microprocessors implemented in Java}
 }
