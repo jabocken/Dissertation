@@ -3,10 +3,8 @@ This \lcnamecref{ch:hg-results} covers our real-world exploration of the \ac{hg}
 It also includes a verification methodology for the generated \acp{hg}.
 Finally, it discusses some of the potential error cases that would prevent successful verification.
 
-As a recap, I performed the real-world analysis on the Xen case study in \cref{hg-extraction}.
-However, I did not contribute to the work on formal verification of our \acp{hg} or the development of examples of failures in \cref{sec:not-me-proofs,sec:not-me-failures}.
-Those \lcnamecrefs{sec:not-me-proofs} are credited primarily to Dr.~Freek Verbeek.
-I have included them in this dissertation for completeness and consistency, as well as to have a space where they can be seen without the restrictions of a limited-page paper format.
+The work in \cref{sec:not-me-proofs,sec:not-me-failures} is credited primarily to Dr.~Freek Verbeek.
+I have included it in this dissertation for completeness and consistency, as well as to have a space where it can be seen without the restrictions of a limited-page paper format.
 
 \section{Hoare Graph Extraction}\label{hg-extraction}
 We applied \ac{hg} extraction to:
@@ -183,7 +181,6 @@ The unprovable return address cases can also be broken down further:
 \end{itemize}
 
 \section{Formal Proofs in \gls{isabelle}[/HOL]}\label{sec:not-me-proofs}
-\todo{put more in Josh words}
 For several CoreUtils binaries, we extracted \iac{hg} and exported it to the \gls{isabelle}[/HOL] theorem prover.
 The binaries are closed-source, taken from a standard MacOS 11.5.2 distribution.
 \Cref{tab:isa} provides an overview of the binaries, the number of instructions and Hoare triples, and the number of resolved indirections (there are no unresolved indirections).

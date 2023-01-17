@@ -523,26 +523,26 @@ To the best of our knowledge, the only existing work that has a similar focus on
     Jakstab & Yes & No & AbsInt & Windows drivers \\
     \texttt{objdump} & No & No & linear sweep & \\
     BYTEWEIGHT & No & No & Probabilistic & Various bins \\
-    Wartell et al. & No & No & Probabilistic & Handpicked bins \\
-    Miller et al. & No & No & Probabilistic & Various bins \\
+    \Citeauthor{wartell2011differentiating} & No & No & Probabilistic & Handpicked bins \\
+    \Citeauthor{miller2019probabilistic} & No & No & Probabilistic & Various bins \\
     Spedi & No & No & Probabilistic & Benchmarks \\
-    \lstinline|dcc| & No\todo? & No & \todo\dots & \todo\dots \\
-    \lstinline|asm2c| & No\todo? & No & \todo\dots & \todo\dots \\
+    \lstinline|dcc| & No & No & Dataflow+\acs*{cfg}+idiom & Handcrafted bins \\
+    \lstinline|asm2c| & No & No & Dataflow+\acs*{cfg}+idiom & Benchmarks \\
     Mocha & No & No & Graph manip. & \\
-    Krakatoa & No & No & Graph manip.+rewriting & Handpicked files \\
-    RetDec & No & No & \todo\dots & \todo\dots \\
-    Phoenix & No & No & \todo\dots & \todo\dots \\
-    FoxDec & Yes & \todo{No?} & \todo\dots & \todo\dots \\
-    SmartDec & No & No & \todo\dots & \todo\dots \\
-    McSema & No & No & \todo{Recursive Descent} & \todo\dots \\
-    Ramblr & No & No & \todo\dots & \todo\dots \\
-    CodeSurfer/\gls{x86} & No & No & Interactive & \todo\dots \\
+    Krakatoa & No & No & Graph manip.+rewrite & Handpicked files \\
+    RetDec & No & No & Recursive traversal & \\
+    Phoenix & No & No & Semantic preservation & Coreutils \\
+    FoxDec & Yes & Semi & Rewriting & recompilation \\
+    SmartDec & No & No & \gls{cpp}-specific & \\
+    McSema & No & No & \acs*{cfg} analysis & \\
+    Ramblr & No & No & \acs*{cfg} analysis & \\
+    CodeSurfer/\gls{x86} & No & No & Interactive & \\
     IDA Pro & No & No & Heuristics & \\
     Binary Ninja & No & No & Heuristics & \\
     Ghidra & No & No & Heuristics & \\
-    Katz & No & No & \acsp*{rnn} & \todo\dots \\
-    \acs*{dil} & Yes & No & \todo\dots & \\
-    \textbf{\Cref{hg}} & Yes & Yes & Non-det.\ mem+joining & Xen Project \\
+    \Citeauthor*{katz2018recurrent} & No & No & \acsp*{rnn} & \\
+    \acs*{dil} & Yes & No & Rewriting & \\
+    \textbf{\Cref{hg}} & Yes & Yes & Non-det.\ mem+join & Xen Project \\
     \textbf{\Cref{eicfg}} & Semi & Yes & \acs*{eh} handling & Various bins \\
     \bottomrule
   \end{tabular}

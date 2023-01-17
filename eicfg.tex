@@ -4,7 +4,7 @@
 \Acp{hg} work well for \gls{c} programs or others that do not use structured \ac{eh}, but they do not provide the full picture for programs that do.
 For this purpose, we provide \emph{\acp{eicfg}}.
 These \acp{eicfg} contain control flow edges for the process of structured \ac{eh}.
-Those edges are obtained by modeling the \gls{cpp} \ac{eh} \ac{abi} \todo{cite}.
+Those edges are obtained by modeling the \gls{cpp} \ac{eh} \ac{abi} \autocite{cxxEhAbi}.
 The states used in \acp{eicfg} are specifically targeted to the process of \ac{eh}, focusing on information about the exception objects and global exception info.
 Enough additional information and context are included to support indirect jumps and calls.
 
@@ -18,7 +18,6 @@ The goal of that demonstration is to show that \acp{eicfg} provide improved cove
   This contribution was primarily my own effort.
 \end{comment}
 All code produced for this \lcnamecref{eicfg}, to be published as an artifact, is available at \url{https://drive.google.com/file/d/1mFjHT0p-w9YbyRjcBCQ8sPHp3eboUdM2/view?usp=sharing}.
-\todo{making a proper artifact eventually}
 
 \section{Extended Motivation}\label{eicfg-motivation}
 A normal \ac{cfg} provides a user with information on control flow transfers induced by \emph{jumps} and \emph{calls}.

@@ -5,9 +5,6 @@ then detailed coverage of our state predicates and memory models in \cref{sec:pr
 and finally the lifting algorithm itself in \cref{sec:algorithm}.
 These concepts are accompanied by explanations and proofs.
 
-The concepts and definitions presented here were developed in concert with Dr.~Freek Verbeek.
-In particular, he was a significant contributor to the initial algorithmic setup and the proofs in this \lcnamecref{ch:hg-formulation}.
-
 \section{Starting Concepts}\label{hg-concepts}
 For this \lcnamecref{hg}, we have the following types:
 \begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries \glsentryname{mem}}]
@@ -92,8 +89,7 @@ Finally, as a symbolic state consists of a predicate and a memory model, we defi
 \emph{Predicates}\index{state!predicate} are assertions on state.
 A predicate~$P$\nomenclature{$P$}{A state predicate}
 consists of a set of \emph{clauses}\index{state!predicate!clause}.
-$P$ holds in state~\gls{concrete-state}%
-\nomenclature{\gls{concrete-state}}{A concrete state \todo{give better clarification for this elative to the Hoare Graphs; gets introduced earlier though so maybe not?}}
+$P$ holds in state~\gls{concrete-state}
 ($\gls{concrete-state}\gls{holds}P$) if and only if all clauses hold.
 
 % TODO: maybe put more here? Connect to logical predicates
@@ -379,7 +375,6 @@ which is then supplied to the below function.
       \mbox{destroy}(t_0, M)  & \text{otherwise}
     \end{cases}
   \end{align*}
-  \todo{fix the formatting! though switching to equation* already got me halfway thebre}
   Notation $a \cons X$ denotes $\{a\} \cup X$ % TODO: put this in glossary
   \begin{equation*}
     \begin{array}{lcl}
@@ -447,10 +442,8 @@ An important quality our insertion function must possess is \emph{completeness}.
 \index{completeness}
 That is, the produced memory models should cover any possible relation between inserted region~$r$ and any region~$r'$ already present in the memory model.
 To formulate completeness, we use~$R(M)$ to denote the set of regions in memory model~$M$ and $\mathcal{R}(M)$ to denote the set of relations.
-\todo{I still want to revise this into my own words and notation if possible}
 For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)$ for the memory model in \cref{fig:memA}.
 
-\todo{This lemma and proof are the most important things to put in my own words}
 \begin{lemma}\label{lem:insert}
   Let~$r_0$ and~$M$ be a region and a memory model, respectively.
   Also let~$f$ of type $\gls{constant}\times\gls{nat}\mapsto \{ \gls{alias},  \gls{separate}, \gls{enclosed},\gls{encloses}\}$ be some mapping that provides a relation between~$r_0$ and~$r'$ for any region~$r'$ currently in memory model~$M$.
@@ -573,7 +566,6 @@ To strengthen our arguments, we prove that the join over memory models we have p
   \end{equation*}
 \end{lemma}
 \begin{proof}
-  \todo{will look through this proof again for more my terms}
   Let $r_0\mathbin{\square}r_1$ be a relation in $\mathcal{R}(M_0\gls{join}M_1)$.
   If $\square$ is \gls{alias}, then both regions $r_0$ and $r_1$ must have been present in all trees in the corresponding equivalence class.
   The relation thus held in either $M_0$ or $M_1$.
