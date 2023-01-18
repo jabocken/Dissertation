@@ -27,7 +27,7 @@ Binary patching typically either involves some stages of decompilation, or repla
 We argue that lifting both an original binary and its patched version to \acp{hg} would increase the trustworthiness of the patch effort.
 Both the \acp{hg}---but also the assumptions required for lifting the binaries---could be mutually compared, and this comparison may expose unexpected effects of the patch.
 
-\section{Don't Forget to Check Your Disassembler!}
+\section{Do Not Forget to Check Your Disassembler!}
 The library we were originally using to interpret the binary representation of individual instructions did not correctly identify the size of operands for certain instructions, such as some \ac{simd} ones.
 That size differential had the potential to cause bad semantics or even errors in \gls{z3} usage due to incorrect typing and value truncations or lack thereof.
 However, we did not uncover this issue until a compatriot (Ian Roessle) noticed incorrect disassembly output while working on a separate project using a portion of our codebase.

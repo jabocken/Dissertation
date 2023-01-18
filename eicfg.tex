@@ -43,7 +43,7 @@ The diamond in the graph indicates the indirect call location, but the only edge
 IDA Pro and Binary Ninja produce similar results; they can identify landing pad locations intraprocedurally, but they cannot trace exceptional control flow interprocedurally.
 We have verified that this holds for more complicated programs as well (some of the programs used in \cref{eicfg-results}).
 
-% graphdrawing library gives better automatic arrangements but requires LuaLaTeX and I don't know if IEEE Transactions or LNCS support that. Could use for dissertation though.
+% graphdrawing library gives better automatic arrangements but requires LuaLaTeX and I do not know if IEEE Transactions or LNCS support that. Could use for dissertation though.
 \begin{figure}
   \centering
   \begin{tikzpicture}
@@ -186,7 +186,7 @@ We here provide a formal definition of \iac{eicfg}.
   \end{tikzpicture}
   \caption{Throwing an exception.}\label{fig:example-unwinding}
 \end{figure}
-% It's annoying but I have to compress the assembly all the way if I want to include the annotations
+% It is annoying but I have to compress the assembly all the way if I want to include the annotations
 \begin{lstlisting}[
   %    float,
   style=x64,

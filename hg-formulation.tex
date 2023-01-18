@@ -151,7 +151,7 @@ Those special predicates respectively indicate always true (holds for any state)
   notation $P\gls{join}Q$,
   is performed by doing a form of range abstraction for symbolic bit-vector values \autocite{rugina2000symbolic}.\index{symbolic!bit vector}
   This is implemented as:
-  \begin{align*} % \gls{defeq} doesn't seem right here since we already have \gls{equiv}; also don't we have \coloneqq already anyway? Good to be consistent though.
+  \begin{align*} % \gls{defeq} doesn't seem right here since we already have \gls{equiv}; also do we not have \coloneqq already anyway? Good to be consistent though.
     P\gls{join}Q &\gls{defeq} \bigcup\{\merge(p,q) \mid \langle p,q\rangle\in P\times Q\} \\
     \merge(l=r_1,l=r_2) &\gls{defeq} \{l\ge\min(r_1,r_2),l\le\max(r_1,r_2)\} \\
     \merge(l<r_1,l<r_2) &\gls{defeq} \{l<\max(r_1,r_2)\} \\

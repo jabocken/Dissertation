@@ -14,7 +14,7 @@ in a larger verification context, \cref{se:integrated_assembly}.
 and integrated projects.
 It also includes the first two works presented in this dissertation.
 
-Switching tracks to a more categorical representation for the second half of this dissertation, we have the following two \lcnamecrefs{related-lifting}.
+Switching tracks to a more structural organization for the second half of this dissertation, we have the following two \lcnamecrefs{related-lifting}.
 First, a set of works covering the lifting or extraction of control flow and state machines in \cref{related-lifting}, followed by a coverage of tools that perform exception analysis in \cref{related-exceptions} (with bottom-up approaches summarized in \cref{tab:eicfg-comparisons}).
 
 \section{Assembly-Level Verification}\label{se:previous_assembly}
@@ -52,7 +52,7 @@ and one module received a code fix to improve its performance.
 
 Similarly, \textcite{yu1993automated,boyer1996automated}
 presented operational semantics and mechanized reasoning
-for approximately \SI{80}\percent\ of the instructions of the MC68020 microprocessor, over \num{85}.
+for approximately \SI{80}\percent, or around \num{85}, of the instructions of the \gls{mc68020} microprocessor \ac{isa}.
 They implemented those semantics and mechanized their approach
 in \ac{nqthm}, a precursor to the theorem prover ACL2 \autocite{ACL2}.
 They then applied their mechanized reasoning to check functional correctness
@@ -64,7 +64,7 @@ Compare this to the \num{1047} lines of manual proof
 required to prove \gls{memuse} over \num{12252} assembly instructions.
 Admittedly, they were verifying stronger properties,
 which would greatly increase the amount of work required for verification,
-but even then it's a significant difference.
+but even then that is a significant difference.
 
 Building on the rely-guarantee\footnote{or ``assume-guarantee'', as the paper calls it} scheme for verification of concurrent systems introduced by \textcite{xu1997rely-guarantee} some years before,
 \textcite{yu2004concurrent} developed a logic-based type system for analysis of concurrency on the assembly level.
@@ -279,7 +279,7 @@ and bounded response time in the presence of interrupts \autocite{shi2012interru
 A similarity with our work was the usage of \gls{hoare-logic},
 while the difference is that we performed verification solely on the assembly level
 and with a more complex \ac{isa}.
-We ultimately handled over \num{14631} \gls{arch} instructions compared to their \num{60}.
+We ultimately handled over \num{14631} lines of \gls{arch} assembly compared to their \num{60}.
 While they did handle \num{8000} lines of \gls{c} as well,
 that is still a higher-level language than \gls{arch} assembly.
 
@@ -471,13 +471,13 @@ of that language's FM8502 implementation.
     \midrule
     Clutterbuck,Carr\'e & \gls{space8080} & \acs*{itp}+\acs*{vcg} & Example func & \num{33} insts \\
     O'Neill et al. & Z8002 & \acs*{itp}+\acs*{vcg} & Jet engine code & \\
-    Yu \& Boyer & MC68020 & \acs*{itp} & String funcs & \num{863} insts \\
-    Matthews et al. & Tiny/JVM & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
+    Yu \& Boyer & \gls{mc68020} & \acs*{itp} & String funcs & \num{863} insts \\
+    Matthews et al. & Tiny/\acs*{jvm} & \acs*{itp}+\acs*{vcg} & CBC enc/dec & \num{631} insts \\
     Goel et al. & \gls{arch} & \acs*{itp} & word-count  & \num{186} insts \\
     Tan et al. & \gls{arm}[v7] & ATP & String search & \num{983} insts \\
     Myreen et al. & \gls{arm}/\gls{x86} & \acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
     Feng et al. & \acs*{mips}-like & \acs*{itp} & Example funcs & \\
-    Schlich et al. & ATmega16 & MC & Auto funcs & Around 8k insts \\
+    Schlich et al. & ATmega16 & \acs*{mc} & Auto funcs & Around 8k insts \\
     Brauer et al. & \makecell[l]{ATmega16\\Intel MCS-51} & SA+\acs*{mc} & Example progs &
       \makecell[l]{\num{2630} \acs{sloc}\\
         \num{935} \acs{sloc}} \\
@@ -485,7 +485,7 @@ of that language's FM8502 implementation.
     \textbf{\Cref{ch:cfg}} & \gls{arch} & \acs*{itp}+\acs{vcg} & HermitCore & \num{2379}+ insts \\
     \textbf{\Cref{ch:syntax}} & \gls{arch} & CG,\acs*{itp},\acs{vcg} & Xen & \num{12252} insts \\
     \midrule
-%    Reid et al. & \acs*{asl} & MC+others & \gls{arm} \acp{isa} & \num{2209191}+ \acs{sloc} \\
+%    Reid et al. & \acs*{asl} & \acs*{mc}+others & \gls{arm} \acp{isa} & \num{2209191}+ \acs{sloc} \\
     Sewell et al. & \gls{c} & \acs*{tv}+\acs*{dil} & seL4 & \num{9500} \acs{sloc} \\
     Shi et al. & \gls{c}/\gls{arm}[9] & \acs*{atp}+\acs*{mc} & ORIENTAIS & 8k \acs{sloc}, 60 insts \\
     Dam et al. & \gls{arm}[v7] & \acs*{atp}+UC & PROSPER & \num{3000} insts \\
