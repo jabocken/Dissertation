@@ -3,6 +3,33 @@
   escapechar=|, % if you want to embed LaTeX stuff in the source; escapeinside={A}{B} is more flexible. Also not good for code with | and || as OR.
 }
 
+\lstdefinelanguage{Isabelle}{
+  keywords={assumes,shows,and,imports,begin,end,infix,where,fixes,uses,conclusion,in,for},
+  keywords=[2]{section,subsection,theory,lemmas,lemma,proof,hence,using,moreover,have,by,ultimately,qed,unfolding,definition,notation,typedef,setup_lifting,lift_definition,bnf,next,then,also,locale,declare,text,txt,from,with,let,finally,interpretation,abbreviation,method,function,fun,value},
+  keywords=[3]{fix,assume,show,obtain,thus,define,case,+,?},
+  keywords=[4]{simp,add,split,intro,arbitrary,rule,elim},
+  keywords=[5]{apply,done},
+  keywordstyle={\bfseries\color{teal}},
+  keywordstyle=[2]{\bfseries\color{blue}},
+  keywordstyle=[3]{\bfseries\color{cyan}},
+  keywordstyle=[4]{\color{magenta}},
+  keywordstyle=[5]{\bfseries\color{red}},
+  keepspaces, % So literate mappings don't gobble the following space
+  literate= % For Isabelle notation
+  {\\<times>}{$\times$}1
+  {\\<open>}{\guilsinglleft}1
+  {\\<close>}{\guilsinglright}1
+  {\\<sigma>}{$\sigma$}1
+  {\\<triangleq>}{$\triangleq$}1
+  {\\<and>}{$\wedge$}1
+  {\\<forall>}{$\forall$}1
+  {\\<langle>}{$\langle$}1
+  {\\<rangle>}{$\rangle$}1
+  {\\<^sub>0}{$_0$}1
+  {\\<longrightarrow>}{$\longrightarrow$}2
+}
+
+
 \lstdefinelanguage
 [x64]{Assembler}     % add an "x64" dialect of Assembler
 [x86masm]{Assembler} % based on the "x86masm" dialect
@@ -29,3 +56,4 @@
 
 \newcommand*\inlineasm[1]{\lstinline[style=x64]|#1|}
 \newcommand*\inlinehaskell[1]{\lstinline[style=Haskell]|#1|}
+\newcommand*\inlineisabelle[1]{\lstinline[language=Isabelle]|#1|}

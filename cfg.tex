@@ -320,12 +320,12 @@ even in non-loop situations, a form of internal compositionality.
 Consider the following pseudocode,
 which sequentially executes an if-statement and some program~$P$:
 \begin{lstlisting}[
-  escapechar=|,
   gobble=2,
+  mathescape,
   caption=Simple pseudocode,
   label=compositional_pseudocode
 ]
-  if |$b$| then |$x$| else |$y$|; |$P$|
+  if $b$ then $x$ else $y$; $P$
 \end{lstlisting}
 The assembly corresponding to this code can be verified using symbolic execution.
 If executed in full, the symbolic execution engine
@@ -371,7 +371,7 @@ Doing so is still possible, however.
   while~$l_P$ denotes the initial location of program~$P$.
   \Cref{thm:comp} can be used by instantiating~$H$ to halt
   at either location~$l_f$ or~$l_P$ and instantiating~$H'$ to halt at~$l_f$.
-  As long as programs~$x$ and~$y$ do not contain \lstinline[language=C]|goto|s
+  As long as programs~$x$ and~$y$ do not contain \lstinline|goto|s
   or some other instruction that violates expected control flow,
   condition~$H$ will ultimately be equivalent to just halting at~$l_P$.
   As~$H'$ is stronger than~$H$, compositionality is possible.
@@ -395,17 +395,17 @@ is treated as part of the callee.
   This means the return address for the call is $l_\var{call}+5$.%
   \footnote{the \texttt{call} instruction is five bytes long}
   After execution of \inlineasm{call f}, the program will be at location~$l_0$
-  and the stack pointer, \inlineasm{rsp}, will have some value $\rspo$.
+  and the stack pointer, \rsp, will have some value $\rspo$.
   In order to apply compositionality to function calls,
   the pre- and postcondition have to meet the following requirements.
   First, the precondition must imply that the return address is pushed on the stack
-  (a task performed by \lstinline{call}):
+  (a task performed by \inlineasm{call}):
   $\readmem{\rspo}{8}=l_\var{call}+5\land\mathrsp=\rspo$.
-  Second, the postcondition must imply that after \lstinline{ret},
+  Second, the postcondition must imply that after \inlineasm{ret},
   the net effect of the function body
   is that the stack pointer has been incremented by 8:
   $\mathrsp=\rspo+8\land\loc=l_\var{call}+5$.
-  Note that \lstinline{call} itself decrements the stack pointer by~8,
+  Note that \inlineasm{call} itself decrements the stack pointer by~8,
   so this implies the net effect, from the point of view of the caller,
   is that the stack pointer is unchanged.
   The postcondition must also show
@@ -413,12 +413,12 @@ is treated as part of the callee.
 \end{example}
 Besides the stack pointer, modern calling conventions have other \emph{callee-saved}%
 \index{register!callee-saved}
-registers, such as \lstinline{rbp} and \lstinline{r12-r15}.
+registers, such as \rbp\ and \inlineasm{r12-r15}.
 It is generally assumed that the net effect of a function call
 does not touch these registers.
-Consider a situation in which \lstinline{rbp} contains an address,
+Consider a situation in which \rbp\ contains an address,
 which will be used as the target of a write after a function call.
-In order to prove \gls{memuse}, \lstinline{rbp} must be shown to be preserved.
+In order to prove \gls{memuse}, \rbp\ must be shown to be preserved.
 Generally, this is easy to prove
 by strengthening the pre- and postcondition with a conjunct $\mathrbp=\rbpo$.
 The proof is generally not complicated,
@@ -453,12 +453,12 @@ raises two to the power of its argument.
 The assembly code was obtained by compiling a \gls{c} program containing the function
 with \ac{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
-mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
+mentioned in \cref{se:cfg_overview}. The input is stored in \inlineasm{edi}.
 \begin{lstlisting}[
   language=C,
   gobble=2,
   float=*,
-  caption=\texttt{pow2} in C,
+  caption=\lstinline|pow2| in C,
   label=lst:pow2
 ]
   unsigned long pow2(unsigned exponent) {
@@ -475,7 +475,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
   style=x64,
   gobble=2,
   float=*,
-  caption=\texttt{pow2} in \glsentryname{arch} assembly,
+  caption=\lstinline|pow2| in \glsentryname{arch} assembly,
   label=lst:pow2a,
   firstnumber=0
 ]
@@ -500,7 +500,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \lstinline{edi}.
 The function uses memory in five places, all on the stack.
 These are expressed relative to the original value of the stack pointer $\rspo$:
 \begin{enumerate*}%[label=\alph*.)]
-  \item the caller's \lstinline|rbp| at $\mathrbp=\rspo-8$ (eight bytes);
+  \item the caller's \rbp\ at $\mathrbp=\rspo-8$ (eight bytes);
   \item the argument to the function at $\mathrbp-\mathtt{0x14}$ (four bytes);
   \item the accumulation variable and return value at $\mathrbp-8$ (eight bytes);
   \item the counter variable at $\mathrbp-\mathtt{0xc}$ (four bytes);
@@ -590,13 +590,12 @@ The assembly snippet shown in \cref{lst:factasm} is again
 the result of a function compiled with \ac{gcc} 7.2.0
 and disassembled by the tweaked \lstinline|reassembly| analysis \autocite{wang2017ramblr}.
 In this case, the function performs a recursive factorial calculation on the value~$n$
-stored in~\lstinline|dil| (the lowest eight bits of~\lstinline|edi|/\lstinline|rdi|).
+stored in~\inlineasm{dil} (the lowest eight bits of~\inlineasm{edi}/\rdi).
 \begin{lstlisting}[
   style=x64,
   caption=\glsentryname{arch} assembly of factorial example,
   label=lst:factasm,
   float,
-  escapechar=|,
   firstnumber=0
 ]
   factorial:
@@ -630,8 +629,7 @@ is called recursively
 and the second to multiply all those values together as each call returns.
 
 As with \lstinline|pow2|, the proof for this function relies on an~$\rspo$,
-though in this case that value specifically refers to the value of \lstinline|rsp|
-for the first/topmost call to the recursive function.
+though in this case that value specifically refers to the value of \rsp\ for the first/topmost call to the recursive function.
 The memory locations operated on by this function
 are similar to those of \lstinline|pow2|,
 but the memory locations themselves cannot be directly offset
@@ -667,14 +665,14 @@ from~$\rspo$ due to the function's recursive nature.
       a ->[out=-17, in=17, swap, align=left, looseness=2,
         "$\text{if }\mathdil\neq 0$ \\
         $\mathrsp\coloneqq\mathrsp-48$ \\
-        push \lstinline|rbx| \\
+        push \rbx \\
         $\mathrbx\coloneqq\mathdil$ \\
         $\mathrdi\coloneqq\mathdil-1$"
       ] a;
       b ->[out=-17, in=17, swap, align=left, looseness=2,
         "$\text{if }\mathrbx\neq n$ \\
         $\mathrsp\coloneqq\mathrsp+48$ \\
-        pop \lstinline|rbx|"
+        pop \rbx"
       ] b;
     };
   \end{tikzpicture}
@@ -736,7 +734,7 @@ at which point there are no more recursive stack frames to pop
 and the final result of the factorial operation can be returned.
 
 A Hoare triple can now be derived from the the Floyd invariant.
-This is done by instantiating variable~$n$ with \lstinline|dil|.
+This is done by instantiating variable~$n$ with \inlineasm{dil}.
 Doing so simplifies the precondition,
 as initially, no values or return addresses are pushed
 other than the upmost return address. The resulting Hoare triple becomes:

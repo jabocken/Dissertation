@@ -247,19 +247,6 @@
   keywordstyle=\bfseries\color{blue}, % bold blue keywords
   commentstyle=\color{gray},
   stringstyle=\color{brown},
-%  keepspaces, % So literate mappings don't gobble the following space
-  literate= % For Isabelle notation
-    {\\<times>}{$\times$}1
-    {\\<open>}{\guilsinglleft}1
-    {\\<close>}{\guilsinglright}1
-    {\\<sigma>}{$\sigma$}1
-    {\\<triangleq>}{$\triangleq$}1
-    {\\<and>}{$\wedge$}1
-    {\\<forall>}{$\forall$}1
-    {\\<langle>}{$\langle$}1
-    {\\<rangle>}{$\rangle$}1
-    {\\<^sub>0}{$_0$}1
-    {\\<longrightarrow>}{$\longrightarrow$}2
 }
 
 % \author,\title are defined in book; here are the rest of the front matter defining macros:
