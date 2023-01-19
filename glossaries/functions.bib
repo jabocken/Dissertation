@@ -1,7 +1,22 @@
 @symbol{step,
   name = {\ensuremath{\operatorname{\textproc{step}}}},
-  description = {General form for a step function (used by the \ac{cfg}-driven and syntax-driven works)},
+  description = {General form for a step function (used by the Floyd-style and Hoare-style works)},
   parent = {state}
+}
+@symbol{run,
+  name = {\ensuremath{\operatorname{\textproc{runUntil}}}},
+  description = {A function that performs symbolic execution until the supplied halting condition holds},
+  parent = {state}
+}
+
+%% Hoare-style work
+@symbol{sextend,
+  name = {\ensuremath{\operatorname{sxtnd}}},
+  description = {Bitvector sign extension}
+}
+@symbol{prop,
+  name = {\ensuremath{\operatorname{{prop}}}},
+  description = {Invariant propagation function for Hoare-style work}
 }
 
 %% HG work

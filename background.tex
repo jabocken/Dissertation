@@ -453,7 +453,7 @@ the rest of the contents will be preserved.
         \index{register!data}
         was used for I/O port access, arithmetic, some interrupt calls
       \item[e] Formerly destination index for string and memory array operations,
-        was also used for far pointer addressing with \inlineasm{es}
+        was also used for far pointer addressing with \reg{es}
       \item[f] Formerly source index for string and memory array operations
     \end{tablenotes}
   \end{threeparttable}
@@ -519,17 +519,17 @@ This section covers some of the important \gls{arch} instructions.
 \paragraph{Function and Stack}
 \begin{description}[align=right, font=\keywordstyle]
   \item[call] Pushes the address of the next instruction onto the stack,
-    decrementing \inlineasm{rsp}, and then jumps to its operand.
+    decrementing \rsp, and then jumps to its operand.
   \item[enter] Modifies stack for entry to procedure
     for high level language. Takes two operands: the amount of storage to be allocated on the stack and the nesting level of the procedure.
   \item[push] Pushes its operand onto the stack,
-    decrementing \inlineasm{rsp}.
+    decrementing \rsp.
   \item[pop] Pops the current value off the stack,
-    incrementing \inlineasm{rsp}, and stores the popped value in its operand.
+    incrementing \rsp, and stores the popped value in its operand.
   \item[leave] Releases local stack storage created by the previous
     \inlineasm{enter} instruction.
   \item[ret] Pops the current value off the stack,
-    incrementing \inlineasm{rsp}, and jumps to it.
+    incrementing \rsp, and jumps to it.
 \end{description}
 
 \paragraph{Jumps}
@@ -564,8 +564,8 @@ This section covers some of the important \gls{arch} instructions.
   \item[jpe] Jump if parity even
   \item[jnp] Jump if not parity ($\neg\mathtt{PF}$)
   \item[jpo] Jump if parity odd
-  \item[jcxz] Jump if \inlineasm{cx} register is 0
-  \item[jecxz] Jump if \inlineasm{ecx} register is 0
+  \item[jcxz] Jump if \reg{cx} register is 0
+  \item[jecxz] Jump if \reg{ecx} register is 0
 \end{description}
 
 \paragraph{\Acf{simd}}
@@ -596,28 +596,28 @@ The relevant aspects are the calling convention and the fact that the System~V \
 The important aspects of the calling convention for this \ac{abi}
 are the following:
 
-The first six integer or pointer arguments are stored in \inlineasm{rdi},
-\inlineasm{rsi}, \inlineasm{rdx}, \inlineasm{rcx}, \inlineasm{r8},
-and \inlineasm{r9}, in that order.
-\inlineasm{r10} is used as a static chain pointer when there are nested functions.
+The first six integer or pointer arguments are stored in \rdi,
+\rsi, \rdx, \rcx, \reg{r8},
+and \reg{r9}, in that order.
+\reg{r10} is used as a static chain pointer when there are nested functions.
 Certain floating-point arguments will be stored in
 \keyword{xmm0-7}. Any additional arguments will be passed along on the stack.
 
-Integral values up to 64 bits are stored in \inlineasm{rax} while those up to 128 bits
-are split between \inlineasm{rax} and \inlineasm{rdx}.
-Floating-point return values are stored in \inlineasm{xmm0} and \inlineasm{xmm1}.
+Integral values up to 64 bits are stored in \rax\ while those up to 128 bits
+are split between \rax\ and \rdx.
+Floating-point return values are stored in \reg{xmm0} and \reg{xmm1}.
 
-Registers \inlineasm{rbx}, \inlineasm{rbp}, and \keyword{r12-r15} are
+Registers \rbx, \rbp, and \inlineasm{r12-r15} are
 \emph{callee-saved}, meaning they must be pushed and popped locally to preserve their
 values between function calls. All other registers must be saved by the caller.
 
 \subsection{\Ac{gcc}}
 The compiler used to build the case studies in \cref{ch:cfg,ch:syntax} is important,
-as it uses the segment registers \inlineasm{fs} and \inlineasm{gs} for its own purposes.
-\inlineasm{fs} keeps track of the original value of the \emph{stack canary}
+as it uses the segment registers \reg{fs} and \reg{gs} for its own purposes.
+\reg{fs} keeps track of the original value of the \emph{stack canary}
 used to detect stack smashing \autocite{cowan1998stackguard}
-while \inlineasm{gs} is used to access thread-local storage.
-For this dissertation, only \inlineasm{fs} is relevant, as none of the case studies
+while \reg{gs} is used to access thread-local storage.
+For this dissertation, only \reg{fs} is relevant, as none of the case studies
 or examples in \cref{ch:cfg,ch:syntax} used thread-local storage.
 
 \subsection{Basic Blocks}

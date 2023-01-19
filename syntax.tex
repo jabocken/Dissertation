@@ -43,12 +43,12 @@ for 251 Xen functions.
 \section{\acs*{fmuc} Generation}\label{se:fmuc_gen}
 \begin{figure*}
   \centering
-  \begin{tikzpicture}[>=stealth, gnode/.style={draw, rounded corners, text centered}]
-    \graph[grow right=2.8cm]{
+  \begin{tikzpicture}[gnode/.style={draw, rounded corners, text centered}]
+    \graph[grow right=2.88815cm]{
       Assembly[gnode] ->[dashed]
-      "Control Flow Graph"[gnode, text width=1.4cm] ->["\ref{sse:cfg_extract}"]
-      "Syntactic Control Flow"[gnode, text width=1.7cm] ->["\ref{sse:syntax_symb}"]
-      "Memory Regions and \acsp*{mrr}"[gnode, text width=1.5cm]
+      "Control\\Flow\\Graph"[gnode,align=center] ->["\ref{sse:cfg_extract}"]
+      "Syntactic\\Control\\Flow"[gnode,align=center] ->["\ref{sse:syntax_symb}"]
+      "Memory\\Regions\\and\\\acsp*{mrr}"[gnode,align=center]
       ->["\ref{sse:inv_gen}"]
       Invariants[gnode] ->[dashed] Certificate[gnode];
     };
@@ -147,8 +147,8 @@ For loops that have multiple exit points,
 based on which exit was taken as indicated by the \texttt{Break} identifier.
 
 Notably, the above data structure does not explicitly contain
-control flow statements such as \inlineasm|goto| or \inlineasm|throw|/\inlineasm|catch|.
-Unconditional jumps like \inlineasm|goto|s make code harder to reason about
+control flow statements such as \lstinline|goto| or \lstinline|throw|/\lstinline|catch|.
+Unconditional jumps like \lstinline|goto|s make code harder to reason about
 in a structured way and can be modeled by the existing syntactic constructs,
 while structured \ac{eh} as used in \gls{cpp} is generally provided
 by external function calls.%
@@ -172,7 +172,7 @@ by external function calls.%
   \begin{figure*}
     \hspace*\fill
     \subcaptionbox{Example \ac*{cfg}\label{fig:ex_cf_cfg}}{
-      \begin{tikzpicture}[->, >=stealth, node distance=0.75cm]
+      \begin{tikzpicture}[->, node distance=0.75cm]
         \node[draw=none] (0) {0};
         \node[draw=none] (1) [below=of 0] {1};
         \node[draw=none] (2) [below=of 1]{2};
@@ -264,7 +264,7 @@ that can occur even without loops.
   \begin{figure*}
     \hspace*\fill
     \subcaptionbox{\acs*{cfg}}{
-      \begin{tikzpicture}[>=stealth, ->, node distance=0.75cm]
+      \begin{tikzpicture}[->, node distance=0.75cm]
         \node[draw=none] (0) {0};
         \node[draw=none] (1) [right=of 0] {1};
         \node[draw=none] (2) [right=of 1] {2};
@@ -335,7 +335,7 @@ of the equations presented in \cref{def:sep,def:enc};
 the result states the property holds if the resultant problem is \emph{unsatisfiable}.
 These \ac{smt} problems can be solved by \gls{z3} \autocite{de2008z3}
 for a wide range of expressions over bitvectors
-using the \lstinline|QF_UFBV| logic \autocite{smtlib:bitvector-logic,smtlib:bitvector-theory}.
+using the \inlineisabelle{QF_UFBV} logic \autocite{smtlib:bitvector-logic,smtlib:bitvector-theory}.
 \Gls{z3} is also used in this work for determining the sign of two values
 in the region merge algorithm, originally presented in \cref{def:merge}.
 Additionally, reads of overlapping regions may require merging
@@ -364,7 +364,7 @@ The initial precondition of the function as a whole is generated
 by including initial symbolic values for all registers that are read
 before they are written as well as all used memory regions
 that are not enclosed in another.
-The concrete initial value of the instruction pointer, \inlineasm{rip},
+The concrete initial value of the instruction pointer, \rip,
 must also be included,
 and the (symbolic) address to return to after function completion
 must be indicated as stored on the stack.
@@ -480,7 +480,7 @@ until the invariant~$\phi$ stabilizes, possibly by becoming~$\varnothing$.%
 \nomenclature{$\varnothing$}{The empty set}
 This stabilization is identified
 by checking if~$\phi$ is a subset of its propagated self.
-If it is, then \textsc{prop} returns the propagated~$\phi$
+If it is, then \gls{prop} returns the propagated~$\phi$
 and a new loop with the propagated body.
 Otherwise,
 the original loop is propagated again with the intersection of~$\phi$
@@ -508,7 +508,7 @@ the \ac{fmuc}'s \gls{memuse} Hoare triple can be verified.
 
 \begin{figure*}
   \centering
-  \begin{tikzpicture}[->, >=stealth, every node/.style={
+  \begin{tikzpicture}[->, every node/.style={
     draw,
     rounded corners,
     text width=3cm,
@@ -527,7 +527,7 @@ the \ac{fmuc}'s \gls{memuse} Hoare triple can be verified.
   \caption{Overview of \acs*{fmuc} verification}\label{fig:verify}
 \end{figure*}
 
-\subsection{Syntactic Control Flow in \gls{isabelle}[/HOL]}\label{isabelle_scf}
+\subsection{Syntactic Control Flow in \texorpdfstring{\gls{isabelle}[/HOL]}{Isabelle/HOL}}\label{isabelle_scf}
 As described previously, \acl{scf} is a representation of the control flow of a function
 in terms of syntactic structures such as basic blocks,
 loops, and if-then-else statements.
@@ -570,7 +570,7 @@ This allows for proper matching with the Hoare rules presented below.
 \subsection{Symbolic Execution for Verification}\label{sse:syntax_ver_symb}
 \Cref{cfg_symb_exec} previously presented a formal symbolic execution engine
 based on the machine model described in \cref{se:machine_model}.
-It provides a function $\run$ that describes the symbolic execution of
+It provides a function \gls{run} that describes the symbolic execution of
 blocks in a control flow graph.
 
 The formal function for block-level symbolic execution presented in this chapter,%
@@ -595,7 +595,7 @@ The internal step function has type $\gls{step}:A\times\gls{nat}\times S\rightar
 with its first argument being an instruction, its second being the size of the instruction,
 and its third being the current state.
 The function returns the state after instruction execution,
-incrementing \inlineasm{rip} by the supplied size
+incrementing \rip\ by the supplied size
 if it was not changed by a control flow instruction instead.
 
 % TODO: provide the detail of the $\exec$ function if time permits
@@ -830,16 +830,22 @@ for other situations, symbolic region sizes.
 \begin{lstlisting}[
   gobble=2,
   float=*,
+  language=Isabelle,
   caption=VCG step method,
-  label=lst:vcg_step,
-  escapechar=|
+  label=lst:vcg_step
 ]
   method vcg_step =
     ((rule htriples)+, rule blocks)+,
     (simp add: pred_logic Ps Qs)?, |\label{step_simp}|
     (((auto simp: eq_def)[])+)? |\label{step_auto}|
 \end{lstlisting}
-\begin{lstlisting}[gobble=2, float=*, caption=Main VCG method, label=lst:vcg]
+\begin{lstlisting}[
+  gobble=2,
+  float=*,
+  language=Isabelle,
+  caption=Main VCG method,
+  label=lst:vcg
+]
   method vcg uses scf =
     subst scf,
     vcg_step+
@@ -847,10 +853,10 @@ for other situations, symbolic region sizes.
 The \ac{vcg} presented here is a set of Eisbach proof methods,
 the entry point of which is shown in \cref{lst:vcg}.
 It is designed to automatically apply the proper \gls{hoare-logic} rules
-as much as possible via the \lstinline|vcg_step| method in \cref{lst:vcg_step},
+as much as possible via the \inlineisabelle{vcg_step} method in \cref{lst:vcg_step},
 driven by the formal \ac{scf} provided by the \ac{fmuc}.
 
-Internally, \lstinline|vcg_step| repeatedly applies one of the Hoare rules
+Internally, \inlineisabelle{vcg_step} repeatedly applies one of the Hoare rules
 from \cref{fig:rules} (excluding the While, strengthening, and weakening rules)
 to the current state of the \ac{scf} until no more rules can be applied.
 At that point, it assumes that the introduction rule has been applied,
@@ -861,16 +867,16 @@ or the last rule application resulted in a non-block goal.
 At that point, \cref{step_simp} cleans up any preconditions and postconditions
 in the current goal.
 The last step, \cref{step_auto}, then tries to eliminate as many goals as it can,
-one at a time, with \gls{isabelle}'s basic \lstinline|auto| method.
+one at a time, with \gls{isabelle}'s basic \inlineisabelle{auto} method.
 If there are no loops present in the \ac{scf} under consideration,
 this method will complete the proof without any need for user interaction.
 
 \begin{lstlisting}[
   gobble=2,
   float=*,
+  language=Isabelle,
   caption=Alternate step method for $\AWhileResume$ clauses,
-  label=lst:vcg_cases,
-  escapechar=|
+  label=lst:vcg_cases
 ]
   method vcg_step' =
     (rule htriples)+,
@@ -882,6 +888,7 @@ this method will complete the proof without any need for user interaction.
 \begin{lstlisting}[
   gobble=2,
   float=*,
+  language=Isabelle,
   caption=VCG method for loops,
   label=lst:vcg_while,
   escapechar=*
@@ -899,18 +906,18 @@ this method will complete the proof without any need for user interaction.
     )?
 \end{lstlisting}
 In the case where loops are present,
-the \ac{vcg} provides an alternate \lstinline|vcg_while| method,
+the \ac{vcg} provides an alternate \inlineisabelle{vcg_while} method,
 shown in \cref{lst:vcg_while}
 that relies on the loop rule presented in \cref{fig:hoare-loop}.
 That loop rule is structured such that
 the majority of work required to support the loops
 is identifying the preconditions of their exit blocks
-and then supplying their disjunction to \lstinline|vcg_while|.
+and then supplying their disjunction to \inlineisabelle{vcg_while}.
 This method relies on application of the weakening rule
 presented in \cref{fig:hoare-weaken} on \cref{step_weaken}
 to show that the postcondition of the block before entry implies the loop invariant.
 
-The method \lstinline|vcg_step'|, used within \lstinline|vcg_while|,
+The method \inlineisabelle{vcg_step'}, used within \inlineisabelle{vcg_while},
 is provided for those cases where a loop has multiple exit points.
 A $\AWhileResume$ statement will be present in such cases,
 and the process of rule application and simplification must occur
@@ -919,10 +926,10 @@ exit point but gets a $\AWhileResume$ statement anyway
 due to how the control flow extraction algorithm is set up.
 The process of dealing with such statements is roughly the same, however.
 
-After application of \lstinline|vcg_while|,
+After application of \inlineisabelle{vcg_while},
 nested loops and those with multiple exit points may require
-additional applications of condition simplifying or plain \lstinline|simp| usage
-around further applications of \lstinline|vcg_step|.
+additional applications of condition simplifying or plain \inlineisabelle{simp} usage
+around further applications of \inlineisabelle{vcg_step}.
 Nothing beyond that should be necessary.
 
 Without exception, each of the proofs we produced
@@ -957,16 +964,16 @@ Now consider the assembly of a function~$g$ that calls~$f$:
 $P$ and~$Q$ are the pre- and postconditions just before executing \inlineasm{call}
 and just after it returns.
 $P$ contains the equality $\readmem{\rspo^g-8}{8}=\rbpo^g$,
-expressing that~$g$ has pushed the frame pointer \inlineasm{rbp}%
+expressing that~$g$ has pushed the frame pointer \rbp%
 \index{frame!pointer}
 into its own local stack frame.%
 \index{stack!frame}
 The ultimate postcondition of~$g$
-expresses that the callee-saved register \inlineasm{rbp} is properly restored:%
+expresses that the callee-saved register \rbp\ is properly restored:%
 \index{register!callee-saved}
 $\mathrbp=\rbpo^g$.
 That operation is indeed performed by \inlineasm{pop rbp}.
-In order to prove proper restoration of \inlineasm{rbp},
+In order to prove proper restoration of \rbp,
 a proof that function~$f$ did not overwrite any byte in the region%
 \index{memory!region}
 $\region{\rspo^g-8}{8}$ is required.
@@ -1060,19 +1067,19 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
 \begin{figure}
   \begin{subfigure}[b]{.53\linewidth}
     \begin{lstlisting}[language=C, gobble=6]
-      int main(int argc, char* argv[]) {
-          int* a = (int*)argv;
-          int* b = (int*)(argv + 4);
-          *(int*)(argv + 2) = *a + *b;
-          *(char*)argv = 'a';
+      int main(int argc, char** argv) {
+        int* a = (int*)argv;
+        int* b = (int*)(argv + 4);
+        *(int*)(argv + 2) = *a + *b;
+        *(char*)argv = 'a';
 
-          int array[argc];
-          for (int i = 0; i < argc; i++)
-              array[i] = argv[i][0] * 2;
+        int array[argc];
+        for (int i = 0; i < argc; i++)
+          array[i] = argv[i][0] * 2;
 
-          if (is_even(argc))
-              return array[argc];
-          return array[0];
+        if (is_even(argc))
+          return array[argc];
+        return array[0];
       }
     \end{lstlisting}
     \caption{C code}\label{fig:example2-c}
@@ -1114,10 +1121,10 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
         \mathrbp            &= \rspo-8 \\
         \mathrdi            &= \rdio \\
         \mathrsp            &= \rspo-(88+16*((15+4*
-          \sextend(\takebits{31,0}\rdio)/16)) \\
+          \gls{sextend}(\takebits{31,0}\rdio)/16)) \\
         \readmem{\rspo-40}8 &= \rspo-(85+16*((15+4*
-          \sextend(\takebits{31,0}\rdio))/16))\gg 2\ll 2 \\
-        \readmem{\rspo-48}8 &= \sextend(\takebits{31,0}\rdio)-1 \\
+          \gls{sextend}(\takebits{31,0}\rdio))/16))\gg 2\ll 2 \\
+        \readmem{\rspo-48}8 &= \gls{sextend}(\takebits{31,0}\rdio)-1 \\
         \readmem{\rspo-56}8 &= \rsio+32
       \end{aligned}
     \end{equation*}%
@@ -1135,7 +1142,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
     \caption{Assumption due to call of \lstinline|is_even|}
   \end{subfigure}%
   \begin{subfigure}[b]{.5\linewidth}
-    \begin{lstlisting}[gobble=6, mathescape]
+    \begin{lstlisting}[gobble=6, mathescape, language=Isabelle]
       apply (vcg scf: main_scf)
       apply (vcg_while \<open>$P_\mathtt{123e}$ || $P_\mathtt{1246}$\<close>)
       apply vcg_step+
@@ -1147,7 +1154,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
 Zooming in on $\ABB~\Block{123e}{1244}$, we see from \cref{fig:example2-inv}
 that the \ac{fmuc} provides 13 regions, of which four are shown.
 Region~$r_0$ stores the return address
-while region~$r_1$ depends on the segment register~\inlineasm{fs}
+while region~$r_1$ depends on the segment register~\reg{fs}
 and stores the canary value\index{stack!canary}
 used to detect stack buffer overflows \autocite{cowan1998stackguard}.%
 \index{stack!buffer overflow}
@@ -1158,11 +1165,11 @@ The generated \acp{mrr} assume that all these regions are separate.
 The precondition assigned to $\ABB~\Block{123e}{1244}$
 is effectively a loop invariant (see \cref{fig:example2-inv}).%
 \index{loop!invariant}
-The frame pointer \inlineasm{rbp}%
+The frame pointer \rbp%
 \index{frame!pointer}
 is equal to the original stack pointer minus eight.%
 \index{stack!pointer}
-Register \inlineasm{rdi} has not been touched.
+Register \rdi\ has not been touched.
 Some of the more complex assignments are also shown,
 such as the current value of the stack pointer.
 In total, the loop invariant provides information
@@ -1195,15 +1202,15 @@ is assumed to not overlap with regions~$a$ through~$d$, among other things.
 to prove the \ac{fmuc} for this function.
 All it involves is calling the proper predefined Eisbach proof methods,
 previously described in \cref{sse:vcg}.
-The first proof method applied is \lstinline|vcg|,
+The first proof method applied is \inlineisabelle{vcg},
 which initializes the proof with the function's \ac{scf}, applies Hoare rules,
 and proves correctness of all \gls{memuse} up until the loop.
-Following that, the proof method for dealing with loops, \lstinline|vcg_while|,
+Following that, the proof method for dealing with loops, \inlineisabelle{vcg_while},
 is applied with the invariant formed from the disjunction
 of the precondition of the loop's entry block
 and the precondition of the loop's exit block,
 both manually identified from the generated \ac{scf}.
-As the last manual step, \lstinline|vcg_step| is called repeatedly
+As the last manual step, \inlineisabelle{vcg_step} is called repeatedly
 to verify the remainder of the function.
 
 Finally, note that, without any assumptions,
@@ -1213,10 +1220,10 @@ Those relations thus form the preconditions
 under which a return-address exploit is impossible.%
 \index{return-address exploit}
 For example, they assume that regions~$a$ and~$c$ are separate.
-This means that the address stored in argument \lstinline[language=C]|argv|
+This means that the address stored in argument \lstinline|argv|
 (mapped to $\rsio$ on the assembly level)
 is not allowed to point to a region
-within the stack frame of the \lstinline[language=C]|main| function.
+within the stack frame of the \lstinline|main| function.
 
 \section{Application: Xen Project}\label{se:xen}
 The Xen Project \autocite{chisnall2008definitive}%

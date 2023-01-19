@@ -24,10 +24,10 @@ in order to prove \gls{memuse}.
     xor ax, ax
     add al, 1
   \end{lstlisting}
-  These instructions write to the 64-bit register \inlineasm{rax}.
+  These instructions write to the 64-bit register~\rax.
 %  introduced in \cref{par:reg}.
-  Registers \inlineasm{ax} and \inlineasm{al} respectively refer
-  to the low~16 and~8 bits of that register.
+  Registers~\reg{ax} and~\reg{al} refer
+  to the low~16 and~8 bits of that register respectively.
   Symbolic execution produces the following assignment:
   $\mathrax\coloneqq\takebits{63,16}\mathrax\concat 1_{16}$.
   Here $\takebits{63,16}$ denotes taking the higher 48 bits%
@@ -42,7 +42,7 @@ in order to prove \gls{memuse}.
   The aggregate result is overwriting the lower~16 bits of the register
   with the 16-bit representation of the number one.
 
-  Note that if this had used \inlineasm{eax} instead, the upper 32~bits of \inlineasm{rax} would have been zeroed out as well
+  Note that if this had used \reg{eax} instead, the upper 32~bits of \rax\ would have been zeroed out as well
   due to the semantics of operations on 32-bit registers in \gls{arch}.
 \end{example}
 

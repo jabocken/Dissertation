@@ -80,74 +80,70 @@ We explain several of the points made in the introduction using this example.
   caption=Example binary snippet for Hoare graph lifting,
   label=lst:ssm
 ]
-  0x0 : 3dc3000000   cmp eax,c3 |\label{hg-example-cmp}|
-  0x5 : 0f8718000000 ja  1c     |\label{hg-example-ja}|
-  0xb : 8b0485__a___ mov eax,DWORD PTR [eax*4+a] |\label{hg-example-jump-table-read}|
-  0x12: 8907         mov DWORD PTR [edi],eax |\label{hg-example-mov1}|
-  0x14: c70601000000 mov DWORD PTR [esi],1   |\label{hg-example-mov2}|
-  0x1a: ff27         jmp DWORD PTR [edi]     |\label{hg-example-indirect-jump}|
+  0x0 : 3dc3000000    cmp  eax,c3 |\label{hg-example-cmp}|
+  0x5 : 0f8718000000  ja   1c     |\label{hg-example-ja}|
+  0xb : 8b0485__a___  mov  eax,DWORD PTR [eax*4+a] |\label{hg-example-jump-table-read}|
+  0x12: 8907          mov  DWORD PTR [edi],eax |\label{hg-example-mov1}|
+  0x14: c70601000000  mov  DWORD PTR [esi],1   |\label{hg-example-mov2}|
+  0x1a: ff27          jmp  DWORD PTR [edi]     |\label{hg-example-indirect-jump}|
 \end{lstlisting}
 \begin{figure}
   \centering
   % combination insser sep/minimum size ensures all nodes have exactly same size
-  \tikzset{vertex/.style = {shape=circle,draw,inner sep=0pt,minimum size=0.7cm}}
+  \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.4cm}} % inner sep=0pt, <- what does this even do?
   \tikzset{edge/.style = {->,> = latex'}}
   \begin{tikzpicture}
     \node[vertex]    (0)     at  (0,0)  {$\mathtt{0}$};
-    \node[vertex]    (5)     at  (1.5,0)  {$\mathtt{5}$};
-    \node[vertex]    (1c)    at  (3,0.5) {$\mathtt{1c}$};
-    \node[draw=none] (1cret) at  (5,0.5)  {};
-    \node[vertex]    (b)     at  (3,-0.5)  {$\mathtt{b}$};
-    \node[draw=none] (120)   at  (1.6,-1.5)  {};
-    \node[draw=none] (121)   at  (2.3,-1.5)  {};
-    \node[vertex]    (122)   at  (3,-2)  {$\mathtt{12}$};
-    \node[draw=none] (123)   at  (3.7,-1.5)  {};
-    \node[draw=none] (124)   at  (4.4,-1.5)  {};
-    \node[vertex]    (14)    at  (3,-3.5)  {$\mathtt{14}$};
-    \node[vertex]    (1a2)   at  (3.5,-4.75)  {$\mathtt{1a}$};
-    \node[vertex]    (ptr)   at  (3.5,-6)  {$a_\mathtt{jt}$};
-    \node[draw=none] (ptret) at  (5,-6)  {};
-    \node[vertex]    (1a1)   at  (2.5,-4.75)  {$\mathtt{1a}$};
-    \node[vertex]    (1)     at  (2.5,-6)  {$\mathtt{1}$};
-    \node[vertex]    (ret)   at  (1,-6)  {$a_\mathtt{r}$};
+    \node[vertex]    (5)     at  (3,0)  {$\mathtt{5}$};
+    \node[vertex]    (1c)    at  (6,1) {$\mathtt{1c}$};
+    \node[draw=none] (1cret) at  (10,1)  {};
+    \node[vertex]    (b)     at  (6,-1)  {$\mathtt{b}$};
+    \node[draw=none] (120)   at  (3.2,-3)  {};
+    \node[draw=none] (121)   at  (4.6,-3)  {};
+    \node[vertex]    (122)   at  (6,-4)  {$\mathtt{12}$};
+    \node[draw=none] (123)   at  (7.4,-3)  {};
+    \node[draw=none] (124)   at  (8.8,-3)  {};
+    \node[vertex]    (14)    at  (6,-7)  {$\mathtt{14}$};
+    \node[vertex]    (1a2)   at  (7,-9.5)  {$\mathtt{1a}$};
+    \node[vertex]    (ptr)   at  (7,-12)  {$a_\mathtt{jt}$};
+    \node[draw=none] (ptret) at  (10,-12)  {};
+    \node[vertex]    (1a1)   at  (5,-9.5)  {$\mathtt{1a}$};
+    \node[vertex]    (1)     at  (5,-12)  {$\mathtt{1}$};
+    \node[vertex]    (ret)   at  (2,-12)  {$a_\mathtt{r}$};
 
     % right tells tikz to start drawing the node right of the position (instead of centered)
-    \node[right,text width=3.4cm,align=left] at (-1,1) {\begin{align*}
+    \node[right,text width=3.87cm,align=left] at (-2.75,1.25) {\begin{align*}
         P_0 &= *[\reg{rsp},4] == a_\mathtt{r}\\
         M_0 &= \emptyset
     \end{align*}};
 
-    \node[right,text width=3cm,align=left] at (3.3,1) {$
-      \reg{eax} \geq \mathtt{0xc3}
-      $};
-
-    \node[right,text width=3cm,align=left] at (3.3,-0.2) {$
+    \node[right] at (6.8,-.9) {$
       \reg{eax} < \mathtt{0xc3}
       $};
 
-    \node[right,text width=3cm,align=left] at (3.3,-2) {$
+    \node[right] at (6.8,-4) {$
       \reg{eax} == a_\mathtt{jt}
       $};
 
-    \node[right,text width=3cm,align=left] at (3.3,-3.5) {$
+    \node[right] at (6.8,-7) {$
       *[\reg{edi},4] == a_\mathtt{jt}
       $};
 
-    \node[right,text width=3cm,align=left] at (4,-4.75) {$
-      \begin{array}{l}
+    \node[right] at (7.6,-9.5) {$
+      \begin{array}{c}
         [\reg{edi},4] \bowtie [\reg{esi},4] \\
         *[\reg{edi},4] == a_\mathtt{jt}
       \end{array}
       $};
 
-    \node[left,text width=3cm,align=left] at (2.25,-4.75) {$
-      \begin{array}{r}
+    \node[left] at (4.3,-9.5) {$
+      \begin{array}{c}
         [\reg{edi},4] \equiv [\reg{esi},4] \\
         *[\reg{edi},4] == 1
       \end{array}
       $};
 
-    \draw [overlay,decorate,decoration={brace,amplitude=5pt,mirror},xshift=-4pt,yshift=0pt] (5,-1.75) -- (5,-0.5) node [black,midway,xshift=1.2cm] {
+    \draw [overlay,decorate,decoration={brace,amplitude=10pt,mirror},xshift=-8pt] (9.5,-3.5) -- (9.5,-1) node [black,midway,xshift=1.4cm] {
       \begin{tabular}{l}
         up to $\mathtt{0xc3}$\\
         edges: one\\
@@ -159,19 +155,19 @@ We explain several of the points made in the introduction using this example.
     \path[->] (0) edge node [above] {\inlineasm{cmp}} (5);
     \path[->] (5) edge node [above] {\inlineasm{ja}} (1c);
     \path[->] (5) edge node [below] {\inlineasm{ja}} (b);
-    \draw[dotted,->] (1c)  to (1cret);
+    \draw[dotted,->] (1c) edge node [above] {$\reg{eax} \geq \mathtt{0xc3}$} (1cret);
     \draw[dotted,->] (b)   to (120);
     \draw[dotted,->] (b)   to (121);
     \draw[->]        (b)   to (122);
     \draw[dotted,->] (b)   to (123);
-    \path[dotted,->] (b)   edge node [right,xshift=0.1] {\inlineasm{mov}} (124);
+    \path[dotted,->] (b)   edge node [right,xshift=0.2] {\inlineasm{mov}} (124);
     \path[->]        (122) edge node [right] {\inlineasm{mov}} (14);
     \path[->]        (1a2) edge node [right] {\inlineasm{jmp}} (ptr);
     \draw[dotted,->] (ptr) to (ptret);
     \path[->]        (14)  edge node [left]  {\inlineasm{mov}} (1a1);
     \path[->]        (14)  edge node [right] {\inlineasm{mov}} (1a2);
-    \path[line width=2.5pt,->] (1a1) edge node [left] {\inlineasm{jmp}} (1);
-    \path[line width=2.5pt,->] (1) edge node [below] {{\textbf{\inlineasm{ret}}}} (ret);
+    \path[line width=5pt,->] (1a1) edge node [left] {\inlineasm{jmp}} (1);
+    \path[line width=5pt,->] (1) edge node [below] {{\textbf{\inlineasm{ret}}}} (ret);
   \end{tikzpicture}
   \caption{Hoare graph example}\label{fig:ssm}
   %\Description{A diagram illustrating control flow represented by part of a symbolic state machine, representing instructions as edges and showing some predicate information as well as relevant memory model components.

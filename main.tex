@@ -77,7 +77,6 @@
 \newcommand{\mmerge}{\text{ merge }}
 \newcommand{\var}[1]{\mathit{#1}}
 
-\DeclareMathOperator{\run}{\textsc{runUntil}}
 \DeclareMathOperator{\loc}{loc}
 \DeclareMathOperator{\rbxpops}{\textsc{multiplicandsPushed}}
 \DeclareMathOperator{\retsites}{\textsc{retAddrsPushed}}
@@ -86,7 +85,6 @@
 
 \DeclareMathOperator{\blockusage}{block_usage}
 \DeclareMathOperator{\nbo}{\textsc{noBlockOverflow}}
-\DeclareMathOperator{\sextend}{sextend}
 \DeclareMathOperator{\usage}{preserve}
 \DeclareMathOperator{\exec}{\textsc{execScf}}
 \DeclareMathOperator{\execblock}{\textsc{symbExec}}
@@ -223,11 +221,9 @@
 % To hide remaining nomenclature for now
 \newcommand\nomenclature[3][]{}
 
-\includeonly{syntax}
-
 \begin{document}
   \frontmatter % Stuff that goes before the body of the book; all the pages get Roman numerals and there's no chapter numbering
-%  \maketitle
+  \maketitle
 
   \microtypesetup{protrusion=false} % suggested by the docs to avoid the list dots getting misaligned
   \tableofcontents

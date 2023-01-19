@@ -75,7 +75,7 @@ We have verified that this holds for more complicated programs as well (some of 
       bEnd1[< draw] ->[unwind] bar'; bEnd' ->[unwind] catch; % Had to reenable bEnd1's ability to draw outgoing edges here as setting it on the edge itself didn't work.
     };
   \end{tikzpicture}
-  \caption{Ghidra-generated graph (summarized) with basic EICFG edges added.}\label{fig:ghidra-example}
+  \caption{Ghidra-generated graph (summarized) with basic \ac{eicfg} edges added}\label{fig:ghidra-example}
 \end{figure}
 
 \section{\acsp*{eicfg}}\label{sec:eicfg}
@@ -120,41 +120,48 @@ Finally, the landing pad table ($\landingpadtable$) maps from potential unwind s
 \end{example}
 \begin{lstlisting}[
   float,
-  gobble=2,
-  numbers=left,
+  gobble=4,
   caption=Example program,
   label=lst:example
 ]
-  #include <stdexcept>
+    #include <stdexcept>
 
-  int foo(int x) {
-    if (x < 0) return x;
-    while (x > 0) {
-      x--;
-      if (x == 5)
-      throw std::domain_error("5"); |\label{lst:throw}|
+    int foo(int x) {
+        if (x < 0) {
+            return x;
+        }
+        while (x > 0) {
+            x--;
+            if (x == 5) {
+                throw std::domain_error("5"); |\label{lst:throw}|
+            }
+        }
+        return 0;
     }
-    return 0;
-  }
 
-  int bar(int x) {
-    if (x < 0)
-    throw std::out_of_range("negative");
-    else if (x == 0) return 1;
-    return x * bar(x - 1); |\label{lst:recursion}|
-  }
-
-  int (*const FOOBAR[])(int) = {foo, bar};|\label{lst:indirection}|
-
-  int main(int argc, char* argv[]) {
-    try { |\label{lst:try-catch}|
-      if (argc < 2) |\label{lst:example-bounds-check}|
-      return FOOBAR[argc](argc); |\label{lst:example-source-indirect-call}|
-    } catch (const std::exception&) {|\label{lst:catch}|
-      if (argc < 0) throw; |\label{lst:source-rethrow}|
-      return 0; |\label{lst:good-termination}|
+    int bar(int x) {
+        if (x < 0) {
+            throw std::out_of_range("negative");
+        } else if (x == 0) {
+            return 1;
+        }
+        return x * bar(x - 1); |\label{lst:recursion}|
     }
-  }
+
+    int (*const FOOBAR[])(int) = {foo, bar};|\label{lst:indirection}|
+
+    int main(int argc, char* argv[]) {
+        try { |\label{lst:try-catch}|
+            if (argc < 2) { |\label{lst:example-bounds-check}|
+                return FOOBAR[argc](argc); |\label{lst:example-source-indirect-call}|
+            }
+        } catch (const std::exception&) {|\label{lst:catch}|
+            if (argc < 0) {
+                throw; |\label{lst:source-rethrow}|
+            }
+            return 0; |\label{lst:good-termination}|
+        }
+    }
 \end{lstlisting}
 
 We here provide a formal definition of \iac{eicfg}.
@@ -168,7 +175,7 @@ We here provide a formal definition of \iac{eicfg}.
 \begin{figure}
   \centering
   \begin{tikzpicture}[every node/.style={node font=\ttfamily}]
-    \graph[grow down=1.25cm,branch right=4cm,nodes=draw]{
+    \graph[grow down=2cm,branch right=5cm,nodes=draw]{
       0x1286 ->["$\begin{array}{l}
         \stack=[\mathtt{0x137e},\mathtt{0x116e}]\\
         \landingpadtable(\mathtt{0x1286})=\varnothing
@@ -184,30 +191,27 @@ We here provide a formal definition of \iac{eicfg}.
       }
     };
   \end{tikzpicture}
-  \caption{Throwing an exception.}\label{fig:example-unwinding}
+  \caption{Throwing an exception}\label{fig:example-unwinding}
 \end{figure}
-% It is annoying but I have to compress the assembly all the way if I want to include the annotations
 \begin{lstlisting}[
-  %    float,
+  float,
   style=x64,
   gobble=2,
-  multicols=2, % apparently you sometimes have to include the multicol package explicitly?
-  basicstyle=\scriptsize\ttfamily, % needed to fit things in more compactly with multicols in LNCS format!
-  caption=Example throw.,
+  caption=Example throw,
   label=lst:example-throw
-  ]
-  125b:call 10d0 <__cxa_allocate_exception|\label{lst:example-allocate}|
-  1260:mov rbx,rax |\label{lst:example-throw-move}|
-  1263:lea rsi,[rip+0xd9b] # 2005
-  126a:mov rdi,rbx
-  126d:call 10e0#std::domain_error init |\label{lst:example-initialize}|
-  1272:mov rax,QWORD PTR [rip+0x2d4f] |\label{lst:example-global-read}|
-  1279:mov rdx,rax
-  127c:lea rsi,[rip+0x2abd] # 3d40
-  1283:mov rdi,rbx
-  1286:call 1120 <__cxa_throw |\label{lst:example-throw-call}|
+]
+  125b:  call  10d0 <__cxa_allocate_exception>|\label{lst:example-allocate}|
+  1260:  mov   rbx,rax |\label{lst:example-throw-move}|
+  1263:  lea   rsi,[rip+0xd9b] # 2005
+  126a:  mov   rdi,rbx
+  126d:  call  10e0 # std::domain_error init |\label{lst:example-initialize}|
+  1272:  mov   rax,QWORD PTR [rip+0x2d4f] |\label{lst:example-global-read}|
+  1279:  mov   rdx,rax
+  127c:  lea   rsi,[rip+0x2abd] # 3d40
+  1283:  mov   rdi,rbx
+  1286:  call  1120 <__cxa_throw> |\label{lst:example-throw-call}|
   ...
-  129c:call 10f0 <__cxa_free_exception |\label{lst:example-free}|
+  129c:  call  10f0 <__cxa_free_exception> |\label{lst:example-free}|
 \end{lstlisting}
 Some of the additional information provided by \iac{eicfg} is illustrated in \cref{fig:example-unwinding},
 which models the process of throwing an exception from the same example program as \cref{fig:ghidra-example}.
@@ -236,14 +240,14 @@ This is a good termination case as reaching that halting instruction occurred ou
 \begin{figure}
   \centering
   \begin{tikzpicture}[every node/.style={node font=\ttfamily}]
-    \graph[grow down=.9cm,branch right=4cm,nodes=draw]{
+    \graph[grow down=1.5cm,branch right=5cm,nodes=draw]{
       0x135f -> {
         a1/"[0x1362,0x137a]"[>"$j=0$"'] ->["$j=0$"'] a2/0x137c ->["\inlineasm{call tbl[0]}"', dashed] "[0x12b5,0x12cb]",
         b1/"[0x1362,0x137a]"[>"$j=1$"] ->["$j=1$"] b2/0x137c ->["\inlineasm{call tbl[1]}", dashed] "[0x1229,0x123f]"
       }
     };
   \end{tikzpicture}
-  \caption{Identifying indirection.}\label{fig:example-indirect-call}
+  \caption{Identifying indirection}\label{fig:example-indirect-call}
 \end{figure}
 Meanwhile, indirect function call resolution is shown in \cref{fig:example-indirect-call}, which is a representation of \cref{lst:example-indirect-call}.
 This process occurs when we detect a value being read from a part of the state
@@ -258,79 +262,73 @@ This non-deterministically results in \instref{lst:example-indirect-call-call}{1
 
 % replacing the tabs with spaces to try to compress things
 \begin{lstlisting}[
-  %    float,
+  float,
   style=x64,
   gobble=2,
-  multicols=2,
-  basicstyle=\scriptsize\ttfamily, % needed to fit things in more compactly with multicols in LNCS format!
-  caption=Example throw landing pad.,
+  caption=Example throw landing pad,
   label=lst:example-throw-landing-pad
 ]
-  1387: mov eax,ebx
-  1389: jmp 13d7 <main+0x92>
-  138b: endbr64 |\label{lst:landing-pad}|
-  138f: cmp rdx,0x1 |\label{lst:assembly-type-check}|
-  1393: je 139d <main+0x58> |\label{lst:assembly-type-jump}|
-  1395: mov rdi,rax
-  1398: call 1130 <_Unwind_Resume |\label{lst:unwind-resume}|
-  139d: mov rdi,rax |\label{lst:matching-catch-target}|
-  13a0: call 10c0 <__cxa_begin_catch |\label{lst:begin-catch}|
-  13a5: mov QWORD PTR [rbp-0x18],rax
-  13a9: cmp DWORD PTR [rbp-0x24],0x0
-  13ad: jns 13b4 <main+0x6f>
-  13af: call 1100 <__cxa_rethrow |\label{lst:assembly-rethrow}|
-  13b4: mov ebx,0x0
-  13b9: call 1110 <__cxa_end_catch |\label{lst:end-catch}|
-  13be: jmp 1387 <main+0x42>
-  13c0: endbr64
+  1387:  mov     eax,ebx
+  1389:  jmp     13d7 <main+0x92>
+  138b:  endbr64 |\label{lst:landing-pad}|
+  138f:  cmp     rdx,0x1 |\label{lst:assembly-type-check}|
+  1393:  je      139d <main+0x58> |\label{lst:assembly-type-jump}|
+  1395:  mov     rdi,rax
+  1398:  call    1130 <_Unwind_Resume> |\label{lst:unwind-resume}|
+  139d:  mov     rdi,rax |\label{lst:matching-catch-target}|
+  13a0:  call    10c0 <__cxa_begin_catch> |\label{lst:begin-catch}|
+  13a5:  mov     QWORD PTR [rbp-0x18],rax
+  13a9:  cmp     DWORD PTR [rbp-0x24],0x0
+  13ad:  jns     13b4 <main+0x6f>
+  13af:  call    1100 <__cxa_rethrow> |\label{lst:assembly-rethrow}|
+  13b4:  mov     ebx,0x0
+  13b9:  call    1110 <__cxa_end_catch> |\label{lst:end-catch}|
+  13be:  jmp     1387 <main+0x42>
+  13c0:  endbr64
   ...
-  13d7: add rsp,0x28
-  13db: pop rbx
-  13dc: pop rbp
-  13dd: ret |\label{lst:example-ret}|
+  13d7:  add     rsp,0x28
+  13db:  pop     rbx
+  13dc:  pop     rbp
+  13dd:  ret |\label{lst:example-ret}|
 \end{lstlisting}
 \begin{lstlisting}[
-  %    float,
+  float,
   style=x64,
   gobble=2,
-  multicols=2,
-  basicstyle=\scriptsize\ttfamily, % needed to fit things in more compactly with multicols in LNCS format!
-  caption=Example indirect call.,
+  caption=Example indirect call,
   label=lst:example-indirect-call
 ]
-  1359: cmp DWORD PTR [rbp-0x24],0x1 |\label{lst:example-cmp}|
-  135d: jg 1382 <main+0x3d> |\label{lst:example-conditional-jump}|
-  135f: mov eax,DWORD PTR [rbp-0x24] |\label{lst:example-jump-table-index}|
-  1362: cdqe
-  1364: lea rdx,[rax*8+0x0]
-  136c: lea rax,[rip+0x29ad] # 3d20 |\label{lst:example-jumptable-read}|
-  1373: mov rdx,QWORD PTR [rdx+rax*1] |\label{lst:example-jumptable-calculate}|
-  1377: mov eax,DWORD PTR [rbp-0x24]
-  137a: mov edi,eax
-  137c: call rdx |\label{lst:example-indirect-call-call}|
-  137e: mov ebx,eax |\label{lst:unwind-site}|
+  1359:  cmp   DWORD PTR [rbp-0x24],0x1 |\label{lst:example-cmp}|
+  135d:  jg    1382 <main+0x3d> |\label{lst:example-conditional-jump}|
+  135f:  mov   eax,DWORD PTR [rbp-0x24] |\label{lst:example-jump-table-index}|
+  1362:  cdqe
+  1364:  lea   rdx,[rax*8+0x0]
+  136c:  lea   rax,[rip+0x29ad] # 3d20 |\label{lst:example-jumptable-read}|
+  1373:  mov   rdx,QWORD PTR [rdx+rax*1] |\label{lst:example-jumptable-calculate}|
+  1377:  mov   eax,DWORD PTR [rbp-0x24]
+  137a:  mov   edi,eax
+  137c:  call  rdx |\label{lst:example-indirect-call-call}|
+  137e:  mov   ebx,eax |\label{lst:unwind-site}|
 \end{lstlisting}
 \begin{lstlisting}[
-  %    float,
+  float,
   style=x64,
   gobble=2,
-  multicols=2,
-  basicstyle=\scriptsize\ttfamily, % needed to fit things in more compactly with multicols in LNCS format!
-  caption=The \texttt{\_start} function,
+  caption=The \inlineasm{_start} function,
   label=lst:example-start
 ]
-  1140:endbr64 |\label{lst:start-first}|
-  1144:xor ebp,ebp |\label{lst:example-clear-reg}|
-  1146:mov r9,rdx |\label{lst:example-start-move}|
-  1149:pop rsi
-  114a:mov rdx,rsp
-  114d:and rsp,0xfffffffffffffff0
-  1151:push rax
-  1152:push rsp
-  1153:lea r8,[rip+0x2f6] # 1450
-  115a:lea rcx,[rip+0x27f] # 13e0
-  1161:lea rdi,[rip+0x1dd] # 1345<main>
-  1168:call QWORD PTR [rip+0x2e6a]#3fd8|\label{lst:example-libc}|
-  116e:hlt |\label{lst:example-hlt}|
+  1140:  endbr64 |\label{lst:start-first}|
+  1144:  xor     ebp,ebp |\label{lst:example-clear-reg}|
+  1146:  mov     r9,rdx |\label{lst:example-start-move}|
+  1149:  pop     rsi
+  114a:  mov     rdx,rsp
+  114d:  and     rsp,0xfffffffffffffff0
+  1151:  push    rax
+  1152:  push    rsp
+  1153:  lea     r8,[rip+0x2f6] # 1450
+  115a:  lea     rcx,[rip+0x27f] # 13e0
+  1161:  lea     rdi,[rip+0x1dd] # 1345<main>
+  1168:  call    QWORD PTR [rip+0x2e6a] # 3fd8|\label{lst:example-libc}|
+  116e:  hlt |\label{lst:example-hlt}|
 \end{lstlisting}
 % |\label{lst:good-termination}|

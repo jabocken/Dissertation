@@ -410,10 +410,10 @@ As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be ins
   If the current state allows aliasing and separation between $\region\rdi8$ and $\region\rsi8$, then
   these three instructions will result in the two memory models in \cref{fig:mem}.
   Note that region $\region{\rsi+4}4$ is necessarily enclosed in region $\region\rsi8$.
-  \begin{lstlisting}[style=x64]
-    mov qword ptr [rdi],   1000
-    mov dword ptr [rsi+4], 1001
-    mov qword ptr [rsi],   1002
+  \begin{lstlisting}[style=x64,gobble=4]
+    mov    qword ptr [rdi],   1000
+    mov    dword ptr [rsi+4], 1001
+    mov    qword ptr [rsi],   1002
   \end{lstlisting}
 \end{example}
 A memory model~$M$ \emph{holds} in concrete state~\gls{concrete-state} if all siblings are separate and all trees hold.
@@ -519,7 +519,7 @@ and the supremum of their child memory models.
   \hspace*\fill
   \subcaptionbox{Alternate memory model\label{fig:otherMem}}{
     \hspace{3ex}
-    \begin{tikzpicture}[>=stealth, every node/.style={draw}]
+    \begin{tikzpicture}[every node/.style={draw}]
       \node (a) {$\{\region\rdio8,\region\rdxo8\}$};
     \end{tikzpicture}%
     \hspace{3ex}
@@ -527,7 +527,7 @@ and the supremum of their child memory models.
   \hfill
   \subcaptionbox{Join result\label{fig:otherMemJoin}}{
     \hspace{2ex}
-    \begin{tikzpicture}[>=stealth, every node/.style={draw}]
+    \begin{tikzpicture}[every node/.style={draw}]
       \node (a) {$\region\rdio8$};
     \end{tikzpicture}%
     \hspace{2ex}
@@ -609,7 +609,7 @@ When the \gls{bag} is empty, \gls{hg} is the final \ac{hg}.
 Furthermore, the algorithm requires a function~\gls{step-hg-semantics} that models instruction semantics.
 Our implementation supports a wide range of \gls{arch} instructions,
 including (conditional) moves and jumps as well as
-arithmetic, logical and bit-vector operations (sufficient to deal with all \gls{Xen} binaries).
+arithmetic, logical and bit-vector operations (sufficient to deal with all \gls{xen} binaries).
 Given a supported instruction and a suitable memory model,
 function~\gls{step-hg-semantics} transforms its supplied predicate
 into a set of predicates
@@ -640,15 +640,13 @@ That evaluation function is then used by the algorithm in the process of executi
 \begin{definition}
   The \emph{symbolic state step function} for symbolic state $\gls{symbolic-state}=\langle P,M\rangle$, notation $\gls{step-hg}[(\gls{symbolic-state})]$, is defined as:
   \begin{equation*}
-    \begin{array}{l}
-      ~~\gls{step-hg}[(\gls{symbolic-state})]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \land M' \in \gls{insertM}[(R,M)] \} \\
-      \mbox{\normalfont{\textbf{where}}}\\
-      ~~\begin{aligned}
-        R &\gls{defeq} \{ [\gls{eval}[(a,P)],s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\}\\
-        i &\gls{defeq} \gls{fetch}(\gls{eval}[(\rip, P)])
-      \end{aligned}
-    \end{array}
+    \gls{step-hg}[(\gls{symbolic-state})]\gls{defeq}\{ \langle P',M'\rangle \mid P' \in \gls{step-hg-semantics}[(P,M')] \land M' \in \gls{insertM}[(R,M)] \}
   \end{equation*}
+  where
+  \begin{align*}
+    R &\gls{defeq} \{ [\gls{eval}[(a,P)],s] \mid [a,s]\text { used by instruction } i \} - \{\gls{bot}\} \\
+    i &\gls{defeq} \gls{fetch}(\gls{eval}[(\rip, P)])
+  \end{align*}
 \end{definition}
 Given the current symbolic state~\gls{symbolic-state}, the set of next symbolic states is obtained by performing the following two actions:
 \begin{itemize}

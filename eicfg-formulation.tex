@@ -27,7 +27,7 @@ To accomplish reaching those addresses during unwinding, we require a \emph{land
   Formally, with~\gls{pointer} as the type of addresses,~$\landingpadtable$s have type $\gls{pointer}\to\powerset(\gls{pointer})$.
 \end{definition}
 Currently, we overapproximate and do not include exception type when determining landing pads.
-The keys of the table are the ranges of addresses to which the corresponding landing pad entry applies, intervals that are open in the lower bound but closed in the upper bound. This interval layout was chosen to support \rip being incremented at the start of instruction evaluation. It is traditionally represented in the form $(a,b]$, where~$a$ is the lower bound of the interval and~$b$ is the upper bound.
+The keys of the table are the ranges of addresses to which the corresponding landing pad entry applies, intervals that are open in the lower bound but closed in the upper bound. This interval layout was chosen to support \rip\ being incremented at the start of instruction evaluation. It is traditionally represented in the form $(a,b]$, where~$a$ is the lower bound of the interval and~$b$ is the upper bound.
 \begin{example}\label{ex:landing-pad-table}
   One of our running example landing pad entries is  $\landingpadtable(\mathtt{0x137e})=\{\mathtt{0x138b}\}$.
   Thus, when an unwinding routine reaches instruction \inlineasm{0x137e}, % \instref{lst:unwind-site}{137e} of \cref{lst:example-indirect-call},
@@ -65,9 +65,9 @@ In defining this record type, the following elemental types are used, some of wh
 \subsection{Registers}
 %\subsection{$\rmap$: the register map}
 The field~$\rmap$ has type $\gls{register}\to\gls{val}$.
-Reading and writing registers smaller than 64 bits (e.g.\ \inlineasm{ebp} versus \inlineasm{rbp}) requires bit masking and shifting the underlying 64-bit register's value.
+Reading and writing registers smaller than 64 bits (e.g.\ \reg{ebp} versus \rbp) requires bit masking and shifting the underlying 64-bit register's value.
 This behavior is integrated into our symbolic execution engine.
-Larger registers (e.g.\ \inlineasm{xmm}%and other vector registers
+Larger registers (e.g.\ \reg{xmm}%and other vector registers
 ) exist as operands in our instruction representation but are not used for state updates or reads.
 
 \subsection{Call Stack}
@@ -96,7 +96,7 @@ For our purposes, usage of $\peek$ assumes a non-empty list. % would prefer this
   %
   %below hidden to reduce space.
   Instruction \instref{lst:example-libc}{1168} of that \lcnamecref{lst:example-start} calls \inlineasm{__libc_start_main}.
-  We model that call simply as a call to the function pointer in the \inlineasm{rdi} register, the program's \inlineasm{main} function.
+  We model that call simply as a call to the function pointer in the \rdi\ register, the program's \inlineasm{main} function.
   For our purposes, that means pushing the instruction following the call onto the stack as a return address.
   Thus, for some state after the result of transitioning from \instref{lst:example-libc}{1168}, the stack is $[\mathtt{0x116e}]$.
 \end{example}
@@ -207,7 +207,7 @@ The second, in \cref{fig:step-rules2}, does.
 
 \subsection{Non-Unwinding Rules}
 \Cref{fig:start-main} shows the rule for the special starting function \inlineasm{__libc_start_main}.
-For this rule, we require the post-state's current instruction pointer be restricted to whatever was previously stored in \inlineasm{rdi}, \inlineasm{rcx}, or \inlineasm{r8}.
+For this rule, we require the post-state's current instruction pointer be restricted to whatever was previously stored in \rdi, \rcx, or \reg{r8}.
 We also require the stored return address to be on the top of a newly-pushed stack frame.
 
 \begin{example}
@@ -590,7 +590,7 @@ to the exceptional state for control flow representation.
     e,u,c,j,t
     )
   \end{equation*}
-  Where $\operatorname{rip}$ gets the current \inlineasm{rip} from a register map and $\operatorname{retAddrs}$ extracts the list of return addresses from a stack.
+  Where $\operatorname{rip}$ gets the current \rip\ from a register map and $\operatorname{retAddrs}$ extracts the list of return addresses from a stack.
 \end{definition}
 \begin{example}
   Again consider \instref{lst:example-conditional-jump}{135d} of \cref{lst:example-indirect-call}.
@@ -624,7 +624,7 @@ The edge annotations are instructions for edges that follow standard control flo
 \begin{figure}
   \centering
   \begin{tikzpicture}
-    \graph[grow right=5cm,nodes=draw]{
+    \graph[grow right=6cm,nodes=draw]{
       "Address: 0x1140" ->["\inlineasm{endbr64}"]
       "Address: 0x1144"
     };
