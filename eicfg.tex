@@ -75,7 +75,7 @@ We have verified that this holds for more complicated programs as well (some of 
       bEnd1[< draw] ->[unwind] bar'; bEnd' ->[unwind] catch; % Had to reenable bEnd1's ability to draw outgoing edges here as setting it on the edge itself didn't work.
     };
   \end{tikzpicture}
-  \caption{Ghidra-generated graph (summarized) with basic \ac{eicfg} edges added}\label{fig:ghidra-example}
+  \caption{Ghidra-generated graph (summarized) with basic \acs*{eicfg} edges added}\label{fig:ghidra-example}
 \end{figure}
 
 \section{\acsp*{eicfg}}\label{sec:eicfg}
@@ -102,7 +102,7 @@ Next, the caught exception stack provides information to set up implicit rethrow
 Finally, the landing pad table ($\landingpadtable$) maps from potential unwind spots in a binary to locations where unwinding can exit.
 The full formal definition of the abstract states involved can be found later in \cref{sec:abstract-state}.
 
-\begin{definition}[Exceptional State Predicate]
+\begin{definition}[Exceptional state predicate]
   An \emph{exceptional state predicate} is based on an exception object~$E$, a return address stack~$R$, uncaught exception count~$u$, caught exception stack~$C$, and instruction pointer~$I$.
   It is a predicate that, given a state, checks the following things:
   \begin{itemize}
@@ -114,7 +114,7 @@ The full formal definition of the abstract states involved can be found later in
   \end{itemize}
 \end{definition}
 
-\begin{example}[Try and Catch]
+\begin{example}[Try and catch]
   Consider the catch statement on \cref{lst:catch} of \cref{lst:example}.
   Control flow will reach the contents of that catch statement's block if and only if the exceptions propagated to the corresponding \lstinline|try| block are instances of \lstinline|std::exception| or a subclass.
 \end{example}

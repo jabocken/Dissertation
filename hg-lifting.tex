@@ -77,7 +77,7 @@ We explain several of the points made in the introduction using this example.
   float,
   style=x64,
   gobble=2,
-  caption=Example binary snippet for Hoare graph lifting,
+  caption=Example binary snippet for \acs*{hg} lifting,
   label=lst:ssm
 ]
   0x0 : 3dc3000000    cmp  eax,c3 |\label{hg-example-cmp}|
@@ -169,7 +169,7 @@ We explain several of the points made in the introduction using this example.
     \path[line width=5pt,->] (1a1) edge node [left] {\inlineasm{jmp}} (1);
     \path[line width=5pt,->] (1) edge node [below] {{\textbf{\inlineasm{ret}}}} (ret);
   \end{tikzpicture}
-  \caption{Hoare graph example}\label{fig:ssm}
+  \caption{\Acs*{hg} example}\label{fig:ssm}
   %\Description{A diagram illustrating control flow represented by part of a symbolic state machine, representing instructions as edges and showing some predicate information as well as relevant memory model components.
     %It illustrates the overapproximation of the involved jump table
     %and shows a possible ``weird'' edge with the jump to instruction 1.}

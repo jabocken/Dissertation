@@ -154,7 +154,7 @@ while structured \ac{eh} as used in \gls{cpp} is generally provided
 by external function calls.%
 \index{exception handling!function}
 %(\cref{se:structured_exceptions}).
-\begin{example}
+\begin{example}[\Acs*{scf} extraction]
   \Cref{fig:ex_cf} provides an example of \ac{scf} extracted from \iac{cfg}.
   The \ac{cfg} in \cref{fig:ex_cf_cfg} can be seen to have two branching conditions
   that do not involve loops, one from $\ABB~0$ with condition~$f_0$
@@ -244,7 +244,7 @@ due to the duplication of blocks to fit less structured control flow
 into a more structured model. In the worst case,
 it can result in \ac{scf} explosion, described below.
 
-\subsubsection{\acs*{scf} Explosion}\label{sse:scf_explode}
+\subsubsection{\Acs*{scf} Explosion}\label{sse:scf_explode}
 The algorithm is not optimal in terms of generated \ac{scf} size
 as certain basic blocks may be duplicated.
 There are two situations where basic block duplication occurs,
@@ -256,7 +256,7 @@ Such situations are relatively uncommon, even in optimized code.
 If it does happen, the entire loop must be duplicated.
 The more common situation, by contrast, involves complex conditional branching
 that can occur even without loops.
-\begin{example}
+\begin{example}[\Acs*{scf} explosion]
   \Cref{fig:ex_nonopt} shows a small example of branching control flow
   that results in $\ABB~3$ being duplicated.
   That block could itself be an even more complicated subgraph,
@@ -675,7 +675,7 @@ Unlike traditional Hoare triples, however,
 it also explicitly contains the set of memory regions,~$M$,
 that contain the areas of memory read and written by the program the \ac{scf} encodes.
 Syntactic structure is required because \gls{hoare-logic} is a Hoare-style approach.
-\begin{definition}[Hoare triple for \ac{scf}]\label{def:preserve}
+\begin{definition}[Hoare triple for \acs*{scf}]\label{def:preserve}
   \begin{equation}
     \htriple*{P}f{Q}{M}\equiv
     \forall\sigma~\sigma'\cdot P(\sigma)\land\exec(f,\sigma,\sigma')\longrightarrow
@@ -1295,7 +1295,7 @@ Xen uses it to emulate \acp{dm}, which provide interfaces for hardware storage.
     Total & 251/352 & 12252 & 65 & 1047 \\
     \bottomrule
   \end{tabular}
-  \caption{Verified Xen Functions}\label{func-counts}
+  \caption{Verified Xen functions}\label{func-counts}
 \end{table*}
 \begin{figure*}
   \centering

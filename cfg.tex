@@ -364,7 +364,7 @@ Doing so is still possible, however.
   (as it is possible for $H$ to hold when $H'$ does not,
   but not the other way around).
 \end{proof}
-\begin{example}
+\begin{example}[Compositionality]
   Now consider the block of assembly that could be generated for
   \cref{compositional_pseudocode}.
   Let~$l_f$ denote the final location of the block
@@ -388,7 +388,7 @@ This can be proven even for functions with optimized tail calls
 that just swap the final \inlineasm{call}+\inlineasm{ret}
 combo for a jump as long as the body of the called function
 is treated as part of the callee.
-\begin{example}
+\begin{example}[Function calls]
   Consider a function~$f$ starting in a text section at location~$l_0$.
   The function is called from a different text section
   by the instruction \inlineasm{call f} at location~$l_\var{call}$.
@@ -447,7 +447,7 @@ The first, in \cref{sse:pow2_example}, is a non-recursive function that features
 The second, in \cref{sse:factorial_example}, gives an example of a recursive function
 and shows why those are difficult to reason about.
 
-\subsection{Non-recursive Loop Example: \texttt{pow2}}\label{sse:pow2_example}
+\subsection{Non-Recursive Loop Example: \texorpdfstring{\lstinline|pow2|}{\texttt{pow2}}}\label{sse:pow2_example}
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
 The assembly code was obtained by compiling a \gls{c} program containing the function
@@ -458,7 +458,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \reg{edi}.
   language=C,
   gobble=2,
   float=*,
-  caption=\lstinline|pow2| in C,
+  caption=\lstinline|pow2| in \gls{c},
   label=lst:pow2
 ]
   unsigned long pow2(unsigned exponent) {
@@ -475,7 +475,7 @@ mentioned in \cref{se:cfg_overview}. The input is stored in \reg{edi}.
   style=x64,
   gobble=2,
   float=*,
-  caption=\lstinline|pow2| in \glsentryname{arch} assembly,
+  caption=\lstinline|pow2| in \gls{arch} assembly,
   label=lst:pow2a,
   firstnumber=0
 ]
@@ -549,7 +549,7 @@ the function is also shown to preserve the value of the stack pointer.
       b ->[out=-16, in=16, looseness=3] b;
     };
   \end{tikzpicture}
-  \caption{Floyd invariant for \texttt{pow2} in \acs*{cfg} form}\label{fig:pow2cfg}
+  \caption{Floyd invariant for \lstinline|pow2| in \acs*{cfg} form}\label{fig:pow2cfg}
 \end{figure}
 Given the parent regions presented above, the proof that the Floyd invariant holds
 is executed automatically using the symbolic execution engine
@@ -575,7 +575,7 @@ The \gls{c} equivalent of that function is shown in \cref{factorial-c}.
   language=C,
   gobble=2,
   float=*,
-  caption=Factorial in C,
+  caption=Factorial in \gls{c},
   label=factorial-c
 ]
   uint64_t factorial(uint8_t n) {
@@ -592,7 +592,7 @@ In this case, the function performs a recursive factorial calculation on the val
 stored in~\reg{dil} (the lowest eight bits of \reg{edi}/\rdi).
 \begin{lstlisting}[
   style=x64,
-  caption=\glsentryname{arch} assembly of factorial example,
+  caption=\Gls{arch} assembly of factorial example,
   label=lst:factasm,
   float,
   firstnumber=0,

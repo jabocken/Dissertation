@@ -146,9 +146,9 @@ As the \gls{arch} \ac{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation
 are designed with that in mind.
-\begin{example}
-  Given the state $\sigma=\{\region{a}2\coloneqq\mathtt{0xEEFF}\}$,
-  the read $\readmemS\sigma{a}1$ would produce $\mathtt{0xFF}$.
+\begin{example}[Reading part of a region]
+  Given the state $\sigma=\{\region a2\coloneqq\mathtt{0xEEFF}\}$,
+  the read $\readmemS\sigma a1$ would produce $\mathtt{0xFF}$.
 \end{example}
 Support for big-endian architectures would require changing how reads and writes%
 \index{endianness!big}
@@ -337,7 +337,7 @@ using \cref{algo:mem_read} as our guide.
     \EndFunction
   \end{algorithmic}
 \end{algorithm}
-If an assignment to the exact region $\region{a}{s}$
+If an assignment to the exact region $\region as$
 exists in the current set of assignments,
 then the value assigned to that region,~$v$, is returned.
 Otherwise, the algorithm must consider the set of assignments
@@ -403,7 +403,7 @@ It takes as input a set of regions annotated with unique IDs.
 These IDs allow reasoning over (in)equality of regions; without them,
 it would be impossible to determine whether two regions of the same size are equal
 if their addresses are non-trivial expressions.
-\begin{definition}
+\begin{definition}[Separation]
   Let~$M$ be a set of pairs of unique IDs and regions.
   $M$ is \emph{separated} if and only if all of its regions are separated:
   \begin{equation}

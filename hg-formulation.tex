@@ -144,7 +144,7 @@ There are also two special clauseless predicates,~\gls{top}%
 and~\gls{bot}.
 Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
 \Gls{bot} is also used to indicate an unknown~\gls{constant}.%
-\begin{definition}[Predicate Join]\label{def:join}
+\begin{definition}[Predicate join]\label{def:join}
   The aforementioned join\index{lattice!join}
   of two predicates~$P$ and~$Q$,%
   \index{state!predicate}
@@ -185,7 +185,7 @@ contain unrestricted values\index{symbolic!value}.
 In such cases, no clause is produced.
 %The supremum, repeated join over a set of predicates, is denoted by $\bigsqcup\square$. % do we even have a supremum here anymore?
 
-\begin{example}[Predicate Join]
+\begin{example}[Predicate join]
   Let $P=\{a=3,a<\rdio\}$ and $Q=\{a=4,a<\rsio\}$.
   As both predicates\index{state!predicate}
   have equality clauses\index{state!predicate!clause}
@@ -205,7 +205,7 @@ and minimum/maximum%
 \index{maximum}
 are associative operations.
 The join is commutative and idempotent due to the commutativity and idempotency of the merge function. Finally, we have the following for any state~\gls{concrete-state}\index{state}:
-\begin{lemma}[Soundness of the Join]\label{lem:pred_soundness}
+\begin{lemma}[Soundness of the join]\label{lem:pred_soundness}
   $\gls{concrete-state}\gls{holds}P\lor Q\implies s\gls{holds}P\gls{join}Q$.
 \end{lemma}
 \begin{proof}
@@ -271,7 +271,7 @@ Two regions in the same node set alias.
 The child regions are enclosed in their parents.
 Finally, regions in sibling nodes are separate.
 
-\begin{example}
+\begin{example}[Aliasing and non-aliasing]
   Consider the two memory models presented in \cref{fig:mem}.
   These memory models involve three regions: $\region{\rdio}{8}$,
   $\region{\rsio}{8}$ and $\region{\rsio+4}{4}$.
@@ -309,7 +309,7 @@ Finally, regions in sibling nodes are separate.
   \label{fig:mem}
 \end{figure}
 
-\begin{definition}\label{def:memory-relations}
+\begin{definition}[Memory relations]\label{def:memory-relations}
   Let~\gls{concrete-state} be a concrete state and let $r_0=\region{e_0}{n_0}$ and $r_1=\region{e_1}{n_1}$ be two regions in memory.
   Then, the properties of \emph{aliasing}, \emph{separation}, and \emph{enclosure}, notations \gls{alias}, \gls{separate}, and \gls{enclosed}, respectively, are defined as:
   \begin{align*}
@@ -361,7 +361,7 @@ This region is embedded in a minimal memory tree,
 $\langle \{r\},\varnothing\rangle$,
 which is then supplied to the below function.
 
-\begin{definition}[Memory Tree Insertion]\label{def:insert}
+\begin{definition}[Memory tree insertion]\label{def:insert}
   Let $t_0 = \langle R_0,M_0\rangle$ and $t_1 = \langle R_1,M_1\rangle$ be two trees. Function
   \gls{insertM} of type $\gls{memtree}\times\gls{mem}\times\gls{predicate}\rightarrow\{\gls{mem}\}$
   is defined as follows:
@@ -396,7 +396,7 @@ As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be ins
   Each memory model~$M'$ thus obtained is wrapped in a tree $t'=\langle R_0,M'\rangle$.
   That tree is then recursively inserted into memory model~$M$.
 \end{enumerate}
-\begin{example}\label{ex:example_snippet}
+\begin{example}[Potential aliasing in assembly]\label{ex:example_snippet}
   Consider the three-instruction assembly snippet below.
   This snippet first stores the value \num{1000} in the eight-byte memory region
   pointed to by \rsi, then stores the value \num{1001}
@@ -414,7 +414,7 @@ As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be ins
 \end{example}
 A memory model~$M$ \emph{holds} in concrete state~\gls{concrete-state} if all siblings are separate and all trees hold.
 A tree holds if its node contains only aliasing regions and all trees in its sub-forest are enclosed. Formally, this is expressed as:
-\begin{definition}
+\begin{definition}[Memory model holding]
   A memory model~$M$ \emph{holds} in state~\gls{concrete-state}, notation $\gls{concrete-state}\gls{holds}M$,
   if and only if:
   \begin{equation*}
@@ -425,7 +425,7 @@ A tree holds if its node contains only aliasing regions and all trees in its sub
     (\forall r_0,r_1 \in R\sepdot s\gls{holds}r_0\gls{alias}r_1) \land (\forall t'\in M\sepdot s\gls{holds}t'\gls{enclosed}t) \land (s\gls{holds}M)
   \end{equation*}
 \end{definition}
-\begin{example}
+\begin{example}[Memory model holding]
   Consider again the memory models in \cref{fig:mem}
   for the assembly snippet in \cref{ex:example_snippet}.
   The aliasing memory model in \cref{fig:memA}
@@ -440,7 +440,7 @@ That is, the produced memory models should cover any possible relation between i
 To formulate completeness, we use~$R(M)$ to denote the set of regions in memory model~$M$ and $\mathcal{R}(M)$ to denote the set of relations.
 For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)$ for the memory model in \cref{fig:memA}.
 
-\begin{lemma}\label{lem:insert}
+\begin{lemma}[Region insertion and memory model relations]\label{lem:insert}
   Let~$r_0$ and~$M$ be a region and a memory model, respectively.
   Also let~$f$ of type $\gls{constant}\times\gls{nat}\mapsto \{ \gls{alias},  \gls{separate}, \gls{enclosed},\gls{encloses}\}$ be some mapping that provides a relation between~$r_0$ and~$r'$ for any region~$r'$ currently in memory model~$M$.
   Assume that $f$ is possibly true:
@@ -486,7 +486,7 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
 
 \subsection{Joining}
 As with state predicates, memory models have a join operation.
-\begin{definition}[Memory Model Join]\label{def:mem-join}
+\begin{definition}[Memory model join]\label{def:mem-join}
   The join of two memory models~$M_0$ and~$M_1$,
   notation $M_0\gls{join}M_1$, is recursively defined as:
   \begin{align*}
@@ -506,27 +506,22 @@ The operator \gls{join} then performs the join operation
 for each equivalence class of memory trees,
 taking the intersection of all their region sets
 and the supremum of their child memory models.
-\begin{example}
+\begin{example}[Memory model join]
   Consider two memory models~$M_0$ and~$M_1$ where both have the top node $\region\rdio8$.
   We add the distinction that~$M_0$ has an enclosed child $\region\rdio4$ and~$M_1$ has an enclosed child $\region{\rdio+4}4$. The result of joining~$M_0$ and~$M_1$ is a single memory model with $\region\rdio8$ as its top node and the two child regions in separate sibling nodes.
 \end{example}
 
 \begin{figure}
   \hspace*\fill
-  \subcaptionbox{Alternate memory model\label{fig:otherMem}}{
-    \hspace{3ex}
+  \subcaptionbox{Alternate memory model\label{fig:otherMem}}[\widthof{(a) Alternate memory model}]{
     \begin{tikzpicture}[every node/.style={draw}]
       \node (a) {$\{\region\rdio8,\region\rdxo8\}$};
-    \end{tikzpicture}%
-    \hspace{3ex}
-  }
-  \hfill
-  \subcaptionbox{Join result\label{fig:otherMemJoin}}{
-    \hspace{2ex}
+    \end{tikzpicture}
+  }\hfill
+  \subcaptionbox{Join result\label{fig:otherMemJoin}}[\widthof{(b) Join result}]{
     \begin{tikzpicture}[every node/.style={draw}]
       \node (a) {$\region\rdio8$};
-    \end{tikzpicture}%
-    \hspace{2ex}
+    \end{tikzpicture}
   }
   \hspace*\fill
   \caption{Join with alternate memory model}\label{fig:otherJoin}
@@ -537,7 +532,7 @@ and the supremum of their child memory models.
     %resulting in the memory model shown on the right in the figure.
     %(only that shared top-level region is present)}
 \end{figure}
-\begin{example}
+\begin{example}[Memory model join cases]
   First, consider the memory models shown in \cref{fig:mem}.
   Since the top nodes share a region, the two trees belong to the same equivalence class.
   The intersection of all of the region alias sets is:
@@ -555,7 +550,7 @@ and the supremum of their child memory models.
 \end{example}
 
 To strengthen our arguments, we prove that the join over memory models we have provided is sound.
-\begin{lemma}\label{lem:mem_soundness}
+\begin{lemma}[Soundness of the memory model join]\label{lem:mem_soundness}
   Let~\gls{concrete-state} be a state and~$M_0$ and~$M_1$ be memory models. Then:
   \begin{equation*}
     (s\models M_0 \lor M_1) \implies (s\models M_0\gls{join}M_1)
@@ -569,7 +564,7 @@ To strengthen our arguments, we prove that the join over memory models we have p
   Similar reasoning applies for the other cases.
 \end{proof}
 
-\begin{definition}
+\begin{definition}[Symbolic state join]
   The join of two symbolic states $\gls{symbolic-state}[_0]=\langle P_0,M_0\rangle$
   and $\gls{symbolic-state}[_1]=\langle P_1,M_1\rangle$, notation $\gls{symbolic-state}[_0]\gls{join}\gls{symbolic-state}[_1]$, is:
   \begin{equation*}
@@ -577,7 +572,7 @@ To strengthen our arguments, we prove that the join over memory models we have p
   \end{equation*}
 \end{definition}
 
-\begin{remark}[Loss of Information]
+\begin{remark}[Loss of information]
   This join in its full form \emph{loses} information.
   It can thus only be applied in a sound fashion for \emph{postcondition weakening} \autocite{hoare1969axiomatic}.
   In other words, dropping clauses and performing state cleanup
@@ -650,11 +645,11 @@ Given the current symbolic state~\gls{symbolic-state}, the set of next symbolic 
   \item applying predicate transformation to the current predicate.
 \end{itemize}
 The set of regions is obtained by investigating the operands of the current instruction.
-\begin{example}[Regions from Instructions]
+\begin{example}[Regions from instructions]
   The instruction \inlineasm{mov qword ptr [rax + 4*rdi], rax} results in one region, $\region{\rax + 4*\rdi}8$.
 \end{example}
 That region is---given the current predicate---evaluated to a constant.
-\begin{example}[Evaluation of Region Part]
+\begin{example}[Evaluation of region part]
   If the current predicate contains $\rax=\mathtt{0x100}$ and $\rdi=\rsio$, then evaluation of $\rax + 4*\rdi$ produces the constant $0x100 + 4*\rsio$.
 \end{example}
 If the current predicate does not contain enough information to evaluate a state-part-containing region to a constant region,
@@ -693,7 +688,7 @@ In very specific cases it even results in more preciseness.
 \subsection{Base Algorithm}
 
 \begin{algorithm}
-  \caption{Base Version of Hoare Graph Extraction}
+  \caption{Base version of \acs*{hg} extraction}
   \label{alg:invgen}
   \algnewcommand{\IIf}[2]{\State\algorithmicif\ #1\ \algorithmicthen~#2}
   \begin{algorithmic}[1]
@@ -744,14 +739,14 @@ To formulate soundness and present a proof, we first define a relation \gls{rela
 We then prove \cref{lem:simulation}, which shows that this relation is a simulation.
 As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function~\gls{step-hg}.
 
-\begin{definition}
+\begin{definition}[Related to]
   A concrete state~\gls{concrete-state} is \emph{related to} symbolic state $\gls{symbolic-state}=\langle P,M \rangle$, notation $\gls{concrete-state}\gls{related}\gls{symbolic-state}$, if and only if:
   \begin{equation*}
     \gls{concrete-state}\gls{related}\gls{symbolic-state}\gls{defeq} (\gls{concrete-state}\gls{holds}P) \land (\gls{concrete-state}\gls{holds}M)
   \end{equation*}
 \end{definition}
 
-\begin{lemma}\label{lem:simulation}
+\begin{lemma}[''Related to'' is a simulation]\label{lem:simulation}
   Assume that predicate transformation~\gls{step-hg-semantics} is correct:
   \begin{equation*}
     \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \land (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
@@ -769,7 +764,7 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
   Since the step function overapproximates by taking any combination of predicates in $\gls{step-hg-semantics}[(P,M)]$ and generated memory models, there exists at least one symbolic state that is related to~$\gls{concrete-state}[']$.
 \end{proof}
 
-\begin{definition}
+\begin{definition}[\Acs*{hg} soundness]
   The \acl{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to some binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
     \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition-star} \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition}[{}] \gls{symbolic-state}['] \sepdot \gls{concrete-state}\gls{related}\gls{symbolic-state} \land \gls{concrete-state}[']\gls{related}\gls{symbolic-state}[']
@@ -777,7 +772,7 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \end{definition}
 In words, for every reachable transition from~\gls{concrete-state} to~$\gls{concrete-state}[']$ in the binary, there must exist a related transition in the \ac{hg}.
 
-\begin{theorem}[Soundness]\label{thm:algo_soundness}
+\begin{theorem}[Algorithm soundness]\label{thm:algo_soundness}
   \Cref{alg:invgen} constructs a sound \ac{hg}.
 \end{theorem}
 \begin{proof}
