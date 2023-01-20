@@ -1,81 +1,101 @@
+% https://tex.stackexchange.com/a/474902 has a fix for the relation spacing issue but it doesn't work quite right (a little extra spacing in some places). Good enough for me for right now though, will tweak later if need be.
+
 %% Shared types
 @index{state}
 @index{memory}
 @index{lattice}
 
 @symbol{equiv,
-  name = {\ensuremath\equiv},
+  name = {\ensuremath\equiv{}},
   description = {Indicates term equivalence; the term on the left may be replaced by the term on the right}
 }
 
 % Memory relations
 @symbol{separate,
-  name = {\ensuremath\bowtie},
+  name = {\ensuremath\bowtie{}},
   description = {Indicates the two memory region arguments are separate},
   parent = {memory}
 }
 @symbol{enclosed,
-  name = {\ensuremath\preceq},
+  name = {\ensuremath\preceq{}},
   description = {Indicates the first memory region argument is enclosed in the second},
   parent = {memory}
 }
 @symbol{encloses,
-  name = {\ensuremath\succeq},
-  description = {Reverse of \glssymbol{enclosed}},
+  name = {\ensuremath\succeq{}},
+  description = {Reverse of $\preceq$},
   see = {enclosed},
   parent = {memory}
 }
 @symbol{compatible,
-  name = {\ensuremath\cong},
+  name = {\ensuremath\cong{}},
   description = {Indicates the two memory model arguments are compatible},
   parent = {memory}
 }
 @symbol{comparable,
-  name = {\ensuremath{\mathrel{\mathbf{C}}}},
+  name = {\ensuremath{\mathrel{\mathbf{C}}}{}},
   description = {Indicates the two memory model arguments are comparable},
   parent = {memory}
+}
+@symbol{comparable-plus,
+  name = {\ensuremath{\mathrel{\mathbf{C}^+}}{}},
+  description = {The transitive closure of comparability},
+  parent = {memory},
+  seealso = {comparable}
 }
 
 %% FROM PLDI 2022 (Hoare Graph) paper
 @symbol{holds,
-  name = {\ensuremath\vdash},
+  name = {\ensuremath\vdash{}},
   description = {Indicates the predicate on the \ac{rhs} holds in the state on the \ac{lhs}},
   parent = {state}
 }
 @symbol{join,
-  name = {\ensuremath\sqcup},
+  name = {\ensuremath\sqcup{}},
   description = {The join of two states, predicates, or memory models},
   parent = {lattice}
 }
 @symbol{order,
-  name = {\ensuremath\sqsubseteq},
+  name = {\ensuremath\sqsubseteq{}},
   description = {Partial ordering over symbolic states for \ac{hg} work where the \ac{lhs} is ``less abstract'' than the \ac{rhs}},
   parent = {lattice},
   seealso = {abs-state}
 }
 @symbol{defeq,
-  name = {\ensuremath{\stackrel{\text{def}}{=}}},
+  name = {\ensuremath{\stackrel{\text{def}}{=}}{}},
   description = {For \acp{hg}, used in place of \glssymbol{equiv} as that symbol is used to indicate aliasing instead},
   seealso = {alias,equiv}
 }
 @symbol{alias,
-  name = {\ensuremath\equiv},
+  name = {\ensuremath\equiv{}},
   description = {For \acp{hg}, indicates the two memory region arguments alias},
   parent = {memory}
 }
 @symbol{pluseq,
-  name = {\ensuremath{\mathrel{+}=}},
+  name = {\ensuremath{\mathrel{+}=}{}},
   description = {In-place addition}
 }
 @symbol{black-box-transition,
-  name = {\ensuremath{\rightarrow_B}},
+  name = {\ensuremath{\rightarrow_B}{}},
   description = {A deterministic black-box transition relation over concrete states for \acp{hg}},
   parent = {state},
   seealso = {concrete-state}
 }
+@symbol{black-box-transition-star,
+  name = {\ensuremath{\rightarrow_B^\ast}{}},
+  description = {Repeated application of the black-box transition relation},
+  parent = {state},
+  seealso = {black-box-transition}
+}
 @symbol{symbolic-transition,
-  name = {\ensuremath{\rightarrow_\Sigma}},
+  name = {\ensuremath{\rightarrow_\Sigma}{}},
   description = {A nondeterministic transition relation over symbolic states for \acp{hg}},
   parent = {state},
   seealso = {symbolic-state}
+}
+@symbol{related,
+  name = {\ensuremath{\mathrel{\mathbf R}}{}},
+  description = {Indicates the \ac{lhs} is \emph{related to} the \ac{rhs}},
+  parent = {state},
+  seealso = {concrete-state,symbolic-state}
 }

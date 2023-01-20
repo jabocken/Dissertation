@@ -71,7 +71,7 @@ To reuse the previous example, the result would instead be $1\leq x\leq 10$.
 The join must then satisfy the following soundness criterion
 for any concrete state~\gls{concrete-state}:
 \begin{equation}
-  (\gls{concrete-state}\gls{holds}P \lor Q) \implies (\gls{concrete-state}\gls{holds}P\sqcup Q).
+  (\gls{concrete-state}\gls{holds}P \lor Q) \implies (\gls{concrete-state}\gls{holds}P\gls{join}Q).
 \end{equation}
 
 Furthermore, the partial ordering derived from this join is \emph{coarser} than ordering based on implication.
@@ -375,17 +375,13 @@ which is then supplied to the below function.
       \mbox{destroy}(t_0, M)  & \text{otherwise}
     \end{cases}
   \end{align*}
-  Notation $a \cons X$ denotes $\{a\} \cup X$ % TODO: put this in glossary
-  \begin{equation*}
-    \begin{array}{lcl}
-      \gls{insertM}_\text{AL}(t_0,t_1,M) &\gls{defeq}& \\
-      \multicolumn{3}{r}{\{(R_0\cup R_1, M') \cons M \mid M' \in \mathsf{fold}(\gls{insertM}, M_0 \cup M_1) \}} \\
-      \gls{insertM}_\text{SEP}(t_0,t_1,M) &\gls{defeq}& \{t_1\cons M'\mid M'\in\gls{insertM}[(t_0,M)]\} \\
-      \gls{insertM}_\text{ENC}(t_0,t_1,M) &\gls{defeq}& \{\langle R_1,M'\rangle\cons M\mid M'\in\gls{insertM}[(t_0,M_1)]\} \\
-      \gls{insertM}_\text{CON}(t_0,t_1,M) &\gls{defeq}& \\
-      \multicolumn{3}{r}{ \{\gls{insertM}[(t',M)]\mid t'\in\{\langle R_0,M'\rangle\mid M'\in \gls{insertM}[(t_1,M_0)]\}\}}
-    \end{array}
-  \end{equation*}
+  Notation $a \cons X$ denotes $\{a\} \cup X$
+  \begin{align*}
+    \gls{insertM}_\text{AL}(t_0,t_1,M) &\gls{defeq} \{(R_0\cup R_1, M') \cons M \mid M' \in \mathsf{fold}(\gls{insertM}, M_0 \cup M_1) \} \\
+    \gls{insertM}_\text{SEP}(t_0,t_1,M) &\gls{defeq} \{t_1\cons M'\mid M'\in\gls{insertM}[(t_0,M)]\} \\
+    \gls{insertM}_\text{ENC}(t_0,t_1,M) &\gls{defeq} \{\langle R_1,M'\rangle\cons M\mid M'\in\gls{insertM}[(t_0,M_1)]\} \\
+    \gls{insertM}_\text{CON}(t_0,t_1,M) &\gls{defeq} \{\gls{insertM}[(t',M)]\mid t'\in\{\langle R_0,M'\rangle\mid M'\in \gls{insertM}[(t_1,M_0)]\}\}
+  \end{align*}
 \end{definition}
 As further explanation, let $t_0 = \langle R_0,M_0\rangle$ be the tree to be inserted and $t_1 = \langle R_1,M_1\rangle$ be a tree already in the memory model.
 \begin{enumerate}
@@ -494,13 +490,13 @@ As with state predicates, memory models have a join operation.
   The join of two memory models~$M_0$ and~$M_1$,
   notation $M_0\gls{join}M_1$, is recursively defined as:
   \begin{align*}
-    M_0\gls{join}M_1 &\gls{defeq} \left\{\gls{join}(T) \relmiddle| T\in\faktor{M_0 \cup M_1}{\gls{comparable}[^+]}\right\}\notag \\
+    M_0\gls{join}M_1 &\gls{defeq} \left\{\gls{join}(T) \relmiddle| T\in\faktor{M_0 \cup M_1}{\gls{comparable-plus}}\right\}\notag \\
     \langle R_0,.\rangle\gls{comparable}\langle R_1,.\rangle &\gls{defeq} R_0 \cap R_1\neq\varnothing\notag \\
     \gls{join}(T) &\gls{defeq} \left\langle\bigcap\{R\mid\langle R,.\rangle\in T\}, \bigsqcup\{M\mid\langle.,M\rangle\in T\}\right\rangle
   \end{align*}
 \end{definition}
-This operation partitions the memory trees in $M_0$ and $M_1$ based on
-equivalence relation $\gls{comparable}[^+]$.
+This operation partitions the memory trees in~$M_0$ and~$M_1$ based on
+equivalence relation~\gls{comparable-plus}.
 This equivalence relation is the transitive closure
 of relation \gls{comparable}, which determines if
 its two memory trees have any top-level regions in common.
@@ -711,7 +707,7 @@ In very specific cases it even results in more preciseness.
         \State $\gls{symbolic-state}[_j]\coloneqq \gls{symbolic-state}$\label{line:nocompat}
       \EndIf
       \ForAll{$\gls{symbolic-state}[']\in \gls{step-hg}(\gls{symbolic-state}[_j])$}\label{line:forall}
-        \State $\gls{hg} ~\gls{pluseq}~ (\gls{symbolic-state}[_j], \gls{symbolic-state}['])$
+        \State $\gls{hg}\gls{pluseq}(\gls{symbolic-state}[_j], \gls{symbolic-state}['])$
         \If {$\gls{eval}(\rip, \gls{pred}(\gls{symbolic-state}[']))$ is not immediate}
           \State \textbf{annotate, stop further exploration}\label{line:unsound}
         \Else
@@ -744,15 +740,14 @@ In the second case, the state is annotated with an unsoundness warning (\cref{li
 Otherwise, the successor is added to the bag.
 
 \subsubsection{Soundness} % While technically there should be multiple subsubsections for usage of stuff like this, I think it looks better this way than using \paragraph. It should be fine as subsubsections aren't numbered anyway.
-To formulate soundness and present a proof, we first define a relation $\mathbf{R}$
-between the concrete transition system and the \ac{hg}.
+To formulate soundness and present a proof, we first define a relation \gls{related} between the concrete transition system and the \ac{hg}.
 We then prove \cref{lem:simulation}, which shows that this relation is a simulation.
 As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function~\gls{step-hg}.
 
 \begin{definition}
-  A concrete state~\gls{concrete-state} is \emph{related to} symbolic state $\gls{symbolic-state}=\langle P,M \rangle$, notation $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}$, if and only if:
+  A concrete state~\gls{concrete-state} is \emph{related to} symbolic state $\gls{symbolic-state}=\langle P,M \rangle$, notation $\gls{concrete-state}\gls{related}\gls{symbolic-state}$, if and only if:
   \begin{equation*}
-    \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\gls{defeq} (\gls{concrete-state}\gls{holds}P) \land (\gls{concrete-state}\gls{holds}M)
+    \gls{concrete-state}\gls{related}\gls{symbolic-state}\gls{defeq} (\gls{concrete-state}\gls{holds}P) \land (\gls{concrete-state}\gls{holds}M)
   \end{equation*}
 \end{definition}
 
@@ -761,9 +756,9 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
   \begin{equation*}
     \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \land (s\gls{holds}P) \implies \exists Q\in\gls{step-hg-semantics}[(P,M)] \sepdot s'\gls{holds}Q.
   \end{equation*}
-  Then relation $\mathbf{R}$ is a simulation between the concrete transition system and the transition system obtained by abstract step function \gls{step-hg}:
+  Then relation \gls{related} is a simulation between the concrete transition system and the transition system obtained by abstract step function \gls{step-hg}:
   \begin{equation*}
-    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \land \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}\implies \exists \gls{symbolic-state}[']\in \gls{step-hg}[(\gls{symbolic-state})] \sepdot \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
+    \forall\gls{concrete-state}~\gls{concrete-state}['] \sepdot \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \land \gls{concrete-state}\gls{related}\gls{symbolic-state}\implies \exists \gls{symbolic-state}[']\in \gls{step-hg}[(\gls{symbolic-state})] \sepdot \gls{concrete-state}[']\gls{related}\gls{symbolic-state}[']
   \end{equation*}
 \end{lemma}
 \begin{proof}
@@ -777,7 +772,7 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \begin{definition}
   The \acl{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to some binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
-    \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition}[^\ast] \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition} \gls{symbolic-state}['] \sepdot \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \land \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
+    \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition-star} \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition}[{}] \gls{symbolic-state}['] \sepdot \gls{concrete-state}\gls{related}\gls{symbolic-state} \land \gls{concrete-state}[']\gls{related}\gls{symbolic-state}[']
   \end{equation*}
 \end{definition}
 In words, for every reachable transition from~\gls{concrete-state} to~$\gls{concrete-state}[']$ in the binary, there must exist a related transition in the \ac{hg}.
@@ -809,13 +804,13 @@ In words, for every reachable transition from~\gls{concrete-state} to~$\gls{conc
   \end{equation*}
   Now let~\gls{concrete-state} be a reachable concrete state and~$\gls{concrete-state}[']$ be a successor.
   \Cref{lem:simulation} shows that the path from~$\gls{concrete-state}[_0]$ to~\gls{concrete-state} can be simulated by a path of related symbolic states.
-  Let~\gls{symbolic-state} be the symbolic state related to concrete state~\gls{concrete-state}, i.e., $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state}$.
+  Let~\gls{symbolic-state} be the symbolic state related to concrete state~\gls{concrete-state}, i.e., $\gls{concrete-state}\gls{related}\gls{symbolic-state}$.
   Since~\gls{symbolic-state} is reachable, $\suprem(\gls{symbolic-state})$ is explored.
   We thus have
-  $\gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \implies \gls{concrete-state}~\mathbf{R}~\suprem(\gls{symbolic-state})$.
+  $\gls{concrete-state}\gls{related}\gls{symbolic-state} \implies \gls{concrete-state}\gls{related}\suprem(\gls{symbolic-state})$.
   This is a direct implication of \cref{lem:mem_soundness}: since joining makes the states more abstract, it makes the set of related concrete states larger.
   \Cref{line:forall} will then explore some state $\gls{symbolic-state}['] \in \gls{step-hg}(\gls{symbolic-state}[_j])$.
-  By \cref{lem:simulation}, we have $\gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']$.
+  By \cref{lem:simulation}, we have $\gls{concrete-state}[']\gls{related}\gls{symbolic-state}[']$.
 \end{proof}
 
 \subsection{Extension: Function Calls}\label{function-call-extension}
@@ -892,7 +887,6 @@ States in the bag whose reachability field is false are not selected.
 \Cref{line:compat} of the algorithm becomes:
 \\
 
-\noindent
 {
   \centering
   \begin{tabular}{c}\hline
@@ -907,10 +901,9 @@ States in the bag whose reachability field is false are not selected.
 }\\
 
 \noindent
-Moreover, after \cref{line:addbag}, any symbolic state with the same \rip as the newly explored~$\gls{symbolic-state}[']$ is marked as reachable:
+Moreover, after \cref{line:addbag}, any symbolic state with the same \rip\ as the newly explored~$\gls{symbolic-state}[']$ is marked as reachable:
 \\
 
-\noindent
 {
   \centering
   \begin{tabular}{c}\hline
