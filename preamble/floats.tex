@@ -1,0 +1,7 @@
+% Subfigures don't space nice vertically without this
+% As shown in https://tex.stackexchange.com/questions/493087/etoolbox-atbeginenvironment-is-not-at-begin-environment, using \AtBeginEnvironment doesn't work, which is dumb
+% Didn't want to append to \@floatboxreset either as that affects all floats.
+\appto\figure{\setlength\parskip{1em}}
+\csappto{figure*}{\setlength\parskip{1em}} % can't just app to \figure*
+
+\renewcommand*\theadfont{} % not making table text small by default so no need for small heading

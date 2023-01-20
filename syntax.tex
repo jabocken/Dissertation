@@ -694,7 +694,6 @@ Without them, proofs that require symbolically executing
 the related instructions will not complete.
 \begin{figure*}
   \centering
-  \setlength\parskip{1em}
   \subcaptionbox{Introduction rule\label{fig:intro-rule}}{
     \AxiomC{$\begin{multlined}
       \forall\sigma~\sigma'\cdot P(\sigma)\longrightarrow \\
@@ -1133,7 +1132,7 @@ The example has one loop, which starts at instruction address \texttt{0x120}.%
     \caption{Invariant for address \texttt{0x123e}
       (only 7 out of 23 equalities shown)}\label{fig:example2-inv}
   \end{subfigure}
-  \\[1em]
+
   \begin{subfigure}[b]{.5\linewidth}
     \begin{equation*}
       \htriple*{P_\mathtt{124b}}{\fbox{\texttt{is\_even}}}

@@ -116,7 +116,7 @@
 \DeclareFontShape{T1}{lmr}{b}{sc}{<->ssub*cmr/bx/sc}{}
 \DeclareFontShape{T1}{lmr}{bx}{sc}{<->ssub*cmr/bx/sc}{}
 
-\RequirePackage[parfill]{parskip} % for proper parskip that doensn't mess with non-paragraphs, plus extra parfill
+\RequirePackage[parfill]{parskip} % for proper parskip that doesn't mess with non-paragraphs, plus extra parfill
 
 % double space option
 \RequirePackage{setspace}
