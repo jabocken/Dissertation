@@ -1,3 +1,6 @@
+% foreign/display=false used to avoid bug with plural initial forms (leaving out for now as I do not know if this is still an issue); single used to leave out abbreviation if the acronym is only used once. make-links works with hyperref but I do not know if it has issues with XeLaTeX like the old version
+\acsetup{index/use, single, make-links} % Can't seem to get format/first-long to apply to a plural form (this is still an issue!); include-endings should do it but it is not. It also looks silly with single so just leaving out.
+
 \DeclareAcronym{lhs}{
   short            = LHS,
   short-indefinite = an,

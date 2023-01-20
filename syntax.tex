@@ -692,6 +692,7 @@ the regions read must also be included as symbolic execution
 relies on those regions being included.
 Without them, proofs that require symbolically executing
 the related instructions will not complete.
+
 \begin{figure*}
   \centering
   \subcaptionbox{Introduction rule\label{fig:intro-rule}}{
@@ -762,6 +763,7 @@ the related instructions will not complete.
   }\hspace*\fill
   \caption{Hoare rules for \gls{memuse}}\label{fig:rules}
 \end{figure*}
+
 \subsubsection{The Introduction Rule}
 This rule, depicted in \cref{fig:intro-rule},
 is the rule that ties the per-block verification to the function-body verification.
@@ -825,7 +827,6 @@ A weaker invariant, such as $i<20$, would result in a larger set of memory regio
 by relaxing the constraints on symbolic addresses and,
 for other situations, symbolic region sizes.
 
-\subsubsection{Verification Condition Generation}\label{sse:vcg}
 \begin{lstlisting}[
   gobble=2,
   float=*,
@@ -849,6 +850,7 @@ for other situations, symbolic region sizes.
     subst scf,
     vcg_step+
 \end{lstlisting}
+\subsubsection{Verification Condition Generation}\label{sse:vcg}
 The \ac{vcg} presented here is a set of Eisbach proof methods,
 the entry point of which is shown in \cref{lst:vcg}.
 It is designed to automatically apply the proper \gls{hoare-logic} rules

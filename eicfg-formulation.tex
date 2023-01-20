@@ -1,4 +1,4 @@
-\chapter{EICFG Formulation}\label{ch:eicfg-formulation}
+\chapter{\Acs*{eicfg} Formulation}\label{ch:eicfg-formulation}
 
 The derivation of \acp{eicfg} from a binary requires four additional things:
 \begin{enumerate}
@@ -24,13 +24,13 @@ To accomplish reaching those addresses during unwinding, we require a \emph{land
 
 \begin{definition}
   A landing pad table~$\landingpadtable$ is a static map from instruction address to set of possible landing pads.
-  Formally, with~\gls{pointer} as the type of addresses,~$\landingpadtable$s have type $\gls{pointer}\to\powerset(\gls{pointer})$.
+  Formally,~$\landingpadtable$s have type $\gls{pointer}\to\powerset(\gls{pointer})$, where \gls{pointer} denotes \emph{immediate 64-bit addresses}.
 \end{definition}
 Currently, we overapproximate and do not include exception type when determining landing pads.
 The keys of the table are the ranges of addresses to which the corresponding landing pad entry applies, intervals that are open in the lower bound but closed in the upper bound. This interval layout was chosen to support \rip\ being incremented at the start of instruction evaluation. It is traditionally represented in the form $(a,b]$, where~$a$ is the lower bound of the interval and~$b$ is the upper bound.
 \begin{example}\label{ex:landing-pad-table}
   One of our running example landing pad entries is  $\landingpadtable(\mathtt{0x137e})=\{\mathtt{0x138b}\}$.
-  Thus, when an unwinding routine reaches instruction \inlineasm{0x137e}, % \instref{lst:unwind-site}{137e} of \cref{lst:example-indirect-call},
+  Thus, when an unwinding routine reaches instruction \instref{lst:unwind-site}{137e} of \cref{lst:example-indirect-call},
   that routine will jump to \instref{lst:landing-pad}{138b}.
 \end{example}
 
@@ -41,7 +41,6 @@ In defining this record type, the following elemental types are used, some of wh
   \item \Gls{bool} and \gls{nat} denote Booleans and natural numbers respectively;
   \item \Gls{val},
   which may be~\gls{bot}, indicating any or an unknown or undefined value;
-  \item \Gls{pointer} denotes \emph{immediate 64-bit addresses};
   \item \Gls{word} denotes \emph{exception IDs}; and
   \item \Gls{termination} denotes \emph{program termination}, consisting of the set $\{\gls{bot},\good,\bad\}$.
 \end{itemize}
@@ -62,52 +61,42 @@ In defining this record type, the following elemental types are used, some of wh
 \end{definition}
 \Gls{abs-state}, meanwhile, has the following fields:
 
-\subsection{Registers}
-%\subsection{$\rmap$: the register map}
+\subsection{Register Map}
 The field~$\rmap$ has type $\gls{register}\to\gls{val}$.
 Reading and writing registers smaller than 64 bits (e.g.\ \reg{ebp} versus \rbp) requires bit masking and shifting the underlying 64-bit register's value.
 This behavior is integrated into our symbolic execution engine.
-Larger registers (e.g.\ \reg{xmm}%and other vector registers
-) exist as operands in our instruction representation but are not used for state updates or reads.
+Larger registers, such as the \reg{xmm} vector register set, exist as operands in our instruction representation but are not used for state updates or reads.
 
 \subsection{Call Stack}
-%\subsection{$\stack$: the return address stack.}
-%Maintaining the current list of return addresses is necessary in order to perform stack unwinding and handle thrown exceptions.
-%It is also helpful in detecting recursion.
-%With $[X]$ representing a list of type~$X$
-This field has list type $[\gls{pointer}]$.
-The following functions perform standard push/pop/peek stack operations on such lists:
-\(
-\push\colon X\times[X]\to[X],
-\pop\colon[X]\to[X],
-\peek\colon[X]\to X
-\).
-% \begin{align*}
-  %     \push &\colon X\times[X]\to[X] \\
-  %     \pop &\colon [X]\to[X] \\
-  %     \peek &\colon [X]\to X
-  % \end{align*}
-For our purposes, usage of $\peek$ assumes a non-empty list. % would prefer this outside the definition but trying to save space
+Maintaining the current list of return addresses in~$\stack$ is necessary in order to perform stack unwinding and handle thrown exceptions.
+Doing so is also necessary for detecting recursion in our framework.
+With $[X]$ representing a \emph{list} of type~$X$, this field has type $[\gls{pointer}]$.
+The following functions perform standard stack operations on such lists:
+ \begin{align*}
+  \gls{push} &\colon X\times[X]\to[X] \\
+  \gls{pop} &\colon [X]\to[X] \\
+  \gls{peek} &\colon [X]\to X.
+\end{align*}
+For our purposes, usage of \gls{peek}, which looks at the top element of $\stack$, assumes a non-empty list.
 \begin{example}
   \Cref{lst:example-start} illustrates the entry point to our example program.
   For the initial state, we have an empty stack:~$[]$.
   The call at \instref{lst:example-libc}{1168} pushes the return address to the stack.
   Thus, after execution of the call, we have a stack $[\mathtt{0x116e}]$.
-  %
-  %below hidden to reduce space.
-  Instruction \instref{lst:example-libc}{1168} of that \lcnamecref{lst:example-start} calls \inlineasm{__libc_start_main}.
+
+  Additionally, instruction \instref{lst:example-libc}{1168} of that \lcnamecref{lst:example-start} calls \inlineasm{__libc_start_main}.
   We model that call simply as a call to the function pointer in the \rdi\ register, the program's \inlineasm{main} function.
   For our purposes, that means pushing the instruction following the call onto the stack as a return address.
   Thus, for some state after the result of transitioning from \instref{lst:example-libc}{1168}, the stack is $[\mathtt{0x116e}]$.
 \end{example}
 
-\subsection{$\emap$: the exception mapping.}
-This field has type $\gls{word}\to\gls{exception}$.
-When an exception is created, it receives an ID based on its creation location and is stored in $\emap$ with that ID as the key.
+\subsection{Exception Map}
+This field,~$\emap$, has type $\gls{word}\to\gls{exception}$.
+When an exception is created, it receives an ID based on its creation location and is stored in~$\emap$ with that ID as the key.
 
 % Freek wanted this before the auxiliary exception variables so reflecting that in the final record type as well.
-\subsection{$\terminated$: the termination state.}
-This field has type~\gls{termination}.
+\subsection{Termination State}
+This field, $\terminated$, has type~\gls{termination}.
 It defaults to the bottom value~\gls{bot}, indicating the program or function has not terminated yet.
 When a path of execution completes, it is set to either $\good$ or $\bad$, indicating either normal or abnormal termination, respectively.
 We treat cases where an exception propagates to the top of the stack without being caught to be such ``bad'' cases.
@@ -130,8 +119,8 @@ This handling comes into play when dealing with nested catch blocks, exceptions 
       \caught &\colon [\gls{word}]
     \end{cases}
   \end{equation*}
-  To ease register references, for some state $\sigma$ and named register \texttt{r}, the notation $\sigma.\mathtt{r}$ is shorthand for $\sigma.\rmap(\mathtt{r})$, e.g.\ $\sigma.\rdi\equiv\sigma.\rmap(\rdi)$. % would prefer this outside the definition but trying to save space
 \end{definition}
+To ease register references, for some state $\sigma$ and named register \texttt{r}, the notation $\sigma.\mathtt{r}$ is shorthand for $\sigma.\rmap(\mathtt{r})$, e.g.\ $\sigma.\rdi\gls{equiv}\sigma.\rmap(\rdi)$.
 
 \section{Abstract Transition Rules}\label{sec:step-function}
 To go along with our definition of \acp{eicfg} in \cref{def:eicfg},
@@ -147,79 +136,128 @@ Assume a call to another function inside the binary for some state~$\sigma$. The
 The second set of rules provides modeling for exception-related \ac{abi} calls.
 This set of rules is documented in \cref{fig:unwind,fig:step-rules1,fig:step-rules2} and elaborated on below.
 The following abbreviations are utilized in those rules.
-We also have notation for incrementing and decrementing: % moved up to save space
-$\handler(\id,\sigma')\inc$ indicates $\handler(\id,\sigma')=\handler(\id,\sigma)+1$.
-For certain rules, we also have $\handler(\id,\sigma')\inc*$, indicating $\handler(\id,\sigma')=\abs{\handler(\id,\sigma)}+1$,
-and $\handler(\id,\sigma')\dec*$, indicating $\handler(\id,\sigma')=-\operatorname{sign}(\handler(\id,\sigma))*(\abs{\handler(\id,\sigma)}-1)$.
+\begin{align}
+ %    \mathsf{scratch} &\gls{equiv} \{\rax,\rdi,\rsi,\reg{rdx},\reg{rcx},\reg{r8},\reg{r9},\reg{r10},\reg{r11}\}\\
+ %    \csr(\sigma,\sigma') &\gls{equiv} \forall r\not\in\mathsf{scratch}\quad\sigma.r=\sigma'.r\\
+  \handler(\id,\sigma) &\gls{equiv} \sigma.\emap(\id).\handlerCount \\
+  \reth(\id,\sigma) &\gls{equiv} \sigma.\emap(\id).\rethrown \\
+  \pushStack(\mathit{fr},\sigma,\sigma') &\gls{equiv} \sigma'.\stack=\gls{push}(\mathit{fr},\sigma.\stack) \\
+  \popStack(\sigma,\sigma') &\gls{equiv} \sigma'.\stack=\gls{pop}(\sigma.\stack) \\
+  \pushCaught(c,\sigma,\sigma') &\gls{equiv} \sigma'.\caught=\gls{push}(c,\sigma.\caught) \\
+  \popCaught(\sigma,\sigma') &\gls{equiv} \sigma'.\caught=\gls{pop}(\sigma.\caught)
+\end{align}
+We also have notation for incrementing and decrementing and special handling for certain rules:
+\begin{align}
+  &\handler(\id,\sigma')\inc & \gls{equiv}\handler(\id,\sigma') &= \handler(\id,\sigma)+1 \\
+  &\handler(\id,\sigma')\dec & \gls{equiv}\handler(\id,\sigma') &= \handler(\id,\sigma)-1 \\
+  &\handler(\id,\sigma')\inc* & \gls{equiv}\handler(\id,\sigma') &= \abs{\handler(\id,\sigma)}+1 \\
+  &\handler(\id,\sigma')\dec* & \gls{equiv}\handler(\id,\sigma') &= -\operatorname{sign}(\handler(\id,\sigma))*(\abs{\handler(\id,\sigma)}-1)
+\end{align}
 As a special case, $0\dec*=0$.
-%$\dec$ follows the same concept.
-%\begin{align*}
-%  \handler(\id,\sigma) &\equiv \sigma.\emap(\id).\handlerCount &
-%  \reth(\id,\sigma) &\equiv \sigma.\emap(\id).\rethrown \\
-%  \pushStack(\mathit{fr},\sigma,\sigma') &\equiv \sigma'.\stack=\push(\mathit{fr},\sigma.\stack) &
-%  \popStack(\sigma,\sigma') &\equiv \sigma'.\stack=\pop(\sigma.\stack) \\
-%  \pushCaught(c,\sigma,\sigma') &\equiv \sigma'.\caught=\push(c,\sigma.\caught) &
-%  \popCaught(\sigma,\sigma') &\equiv \sigma'.\caught=\pop(\sigma.\caught)
-%\end{align*}
- \begin{align*}
- %    \mathsf{scratch} &\equiv \{\rax,\rdi,\rsi,\reg{rdx},\reg{rcx},\reg{r8},\reg{r9},\reg{r10},\reg{r11}\}\\
- %    \csr(\sigma,\sigma') &\equiv \forall r\not\in\mathsf{scratch}\quad\sigma.r=\sigma'.r\\
-  \handler(\id,\sigma) &\equiv \sigma.\emap(\id).\handlerCount \\
-  \reth(\id,\sigma) &\equiv \sigma.\emap(\id).\rethrown \\
-  \pushStack(\mathit{fr},\sigma,\sigma') &\equiv \sigma'.\stack=\push(\mathit{fr},\sigma.\stack) \\
-  \popStack(\sigma,\sigma') &\equiv \sigma'.\stack=\pop(\sigma.\stack) \\
-  \pushCaught(c,\sigma,\sigma') &\equiv \sigma'.\caught=\push(c,\sigma.\caught) \\
-  \popCaught(\sigma,\sigma') &\equiv \sigma'.\caught=\pop(\sigma.\caught)
-\end{align*}
-
-\begin{figure*}
-  \centering
-  \subfloat[Recursive unwinding]{%
-    % \AxiomC{$\sigma'.\rip=\peek(\sigma.\stack)$}
-    % \AxiomC{$\popStack(\sigma,\sigma')$}
-    \AxiomC{\begin{array}[b]{l}
-        \sigma'.\rip=\peek(\sigma.\stack) \\
-        \popStack(\sigma,\sigma')
-    \end{array}}
-    \AxiomC{$\sigma'\unwindTransition\sigma''$}
-    \BinaryInfC{$\sigma\unwindTransition\sigma''$}
-    \DisplayProof\label{fig:unwind1}% prooftree env doesn't work in subfloat
-  }\hfill
-  \subfloat[Landing pad found]{%
-    \AxiomC{$\sigma'.\rip\in\landingpadtable(\sigma.\rip)$}
-    \UnaryInfC{$\sigma\unwindTransition\sigma'$}
-    \DisplayProof\label{fig:unwind_lpt_found}% prooftree env doesn't work in subfloat
-  }\hfill
-  \subfloat[No landing pad]{%
-    \AxiomC{$\sigma.\stack=[]$}
-    \UnaryInfC{$\sigma\unwindTransition\sigma$}
-    \hspace{1.9ex}
-    \DisplayProof\label{fig:unwind_no_lpt_found}% prooftree env doesn't work in subfloat
-    \hspace{1.9ex}
-  }
-  \caption{Unwinding.}
-  \label{fig:unwind}
-\end{figure*}
 
 The transition rules are placed into two groups.
 Group one, in \cref{fig:step-rules1}, does not involve unwinding.
 The second, in \cref{fig:step-rules2}, does.
 
 \subsection{Non-Unwinding Rules}
+\begin{figure*}
+  \centering
+  \subcaptionbox{\inlineasm{__libc_start_main}\label{fig:start-main}}{%
+    \AxiomC{$\sigma'.\rip\in\sigma.\{\rdi,\rcx,\reg{r8}\}$}
+    \AxiomC{$\pushStack(\sigma.\rip+5,\sigma,\sigma')$}
+    \BinaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
+  }
+
+  \subcaptionbox{\inlineasm{__cxa_allocate_exception}\label{fig:allocate-exception}}{
+%    \AxiomC{$\id=\sigma'.\rip$}
+    \AxiomC{$\sigma'.\rax=\id$}
+    % \sigma'.\rax=\id
+    \AxiomC{$\sigma'.\emap(\id)=e$}
+    % e.\mathsf{size} = \sigma.\rdi
+    \AxiomC{$\neg e.\rethrown$}
+    \AxiomC{$e.\handlerCount=0$}
+    \RightLabel{$\id=\sigma'.\rip$}
+    \QuaternaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
+  }
+
+  \subcaptionbox{\inlineasm{__cxa_free_exception}\label{fig:free-exception}}[\widthof{(c) \inlineasm{__cxa_free_exception}}]{
+%    \AxiomC{$\id=\sigma.\rdi$}
+%    \AxiomC{$\sigma'.\emap(\id)=\gls{bot}$}
+    \AxiomC{$\sigma'.\emap(\sigma.\rdi)=\gls{bot}$}
+    \UnaryInfC{$\sigma \absTransition \sigma'$}
+    \DisplayProof
+  }
+
+  \subcaptionbox{\inlineasm{__cxa_begin_catch} (not already caught)\label{fig:begin-catch1}}{
+    \AxiomC{$\id\not\in\sigma.\caught$}
+    \AxiomC{$\handler(\id,\sigma')\inc*$}
+    \AxiomC{$\pushCaught(\id,\sigma,\sigma')$}
+    \AxiomC{$\sigma'.\uncaught\dec$}
+    \RightLabel{$\id=\sigma.\rdi$}
+    \QuaternaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
+  }
+
+  \subcaptionbox{\inlineasm{__cxa_begin_catch} (already caught)\label{fig:begin-catch2}}{%
+    \AxiomC{$\id\in\sigma.\caught$}
+    \AxiomC{$\handler(\id,\sigma')\inc*$}
+    \AxiomC{$\sigma'.\uncaught\dec$}
+    \RightLabel{$\id=\sigma.\rdi$}
+    \TrinaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
+  }
+
+  \subcaptionbox{\inlineasm{__cxa_end_catch} (have caught exception, last handler, rethrown)\label{fig:end-catch1}}{
+    \AxiomC{$\begin{array}[c]{l}
+      \handler(\id,\sigma)=1 \\
+      \handler(\id,\sigma')=1
+    \end{array}$}
+    \AxiomC{$\begin{array}[c]{c}
+      \reth(\id,\sigma) \\
+      \neg\reth(\id,\sigma')
+    \end{array}$}
+%    \AxiomC{$\handler(\id,\sigma')=1$}
+%    \AxiomC{$\neg\reth(\id,\sigma')$}
+    \AxiomC{$\popCaught(\sigma,\sigma')$}
+    \RightLabel{$\id=\gls{peek}(\sigma.\caught)$}
+    \TrinaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
+  }
+
+  \subcaptionbox{\inlineasm{__cxa_end_catch} (have caught exception, last handler, not rethrown)\label{fig:end-catch2}}{
+    \AxiomC{$\begin{array}[c]{l}
+        \handler(\id,\sigma)=1 \\
+        \handler(\id,\sigma')=1
+      \end{array}$}
+    \AxiomC{$\begin{array}[c]{c}
+      \neg\reth(\id,\sigma) \\
+      \sigma'.\emap(\id)=\gls{bot}
+    \end{array}$}
+    %        \AxiomC{$\handler(\id,\sigma')=1$}
+    %        \AxiomC{$\sigma'.\emap(\id)=\gls{bot}$}
+    \AxiomC{$\popCaught(\sigma,\sigma')$}
+    \RightLabel{$\id=\gls{peek}(\sigma.\caught)$}
+    \TrinaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
+  }
+  \caption{Non-unwinding abstract step rules (unchanged state parts mostly elided)}
+  \label{fig:step-rules1}
+\end{figure*}
 \Cref{fig:start-main} shows the rule for the special starting function \inlineasm{__libc_start_main}.
 For this rule, we require the post-state's current instruction pointer be restricted to whatever was previously stored in \rdi, \rcx, or \reg{r8}.
 We also require the stored return address to be on the top of a newly-pushed stack frame.
-
 \begin{example}
   After the call to \inlineasm{__libc_start_main} that is instruction \instref{lst:example-libc}{1168} of \cref{lst:example-start},
   we will have $\sigma'.\rip\in\{\mathtt{0x1345},\mathtt{0x13e0},\mathtt{0x1450}\}$ and $\sigma'.\stack=[0x116e]$.
 \end{example}
+
 Next, \cref{fig:allocate-exception} illustrates the rule for \inlineasm{__cxa_allocate_exception}.
 Our modeling assumes a system where virtual memory allocations always succeed (and the runtime terminates programs when they use up too much memory).
 It results in an exception object added to the exception map with the post-state $\sigma'$'s instruction pointer as its ID.
 The object starts in a non-rethrown state and with no handlers.
 The ID is also set as the return value of the function in $\sigma'.\rax$.
-
 \begin{example}
   After instruction \instref{lst:example-allocate}{125b} of \cref{lst:example-throw},
   we have:
@@ -229,14 +267,15 @@ The ID is also set as the return value of the function in $\sigma'.\rax$.
     \neg\sigma'.\emap(\mathtt{0x1260}).\rethrown.
   \end{gather*}
 \end{example}
+
 The rule in \cref{fig:free-exception} is for function \inlineasm{__cxa_free_exception}.
 This rule ensures the absence of an exception in the exception map based on the given ID.
 At our level of abstraction, \inlineasm{_Unwind_DeleteException} exhibits the same semantics and is thus elided.
-
 \begin{example}
   Consider instruction \instref{lst:example-free}{129c} of \cref{lst:example-throw}.
   The result of this instruction is $\sigma'.\emap=\varnothing$.
 \end{example}
+
 The rules in \cref{fig:begin-catch1,fig:begin-catch2} define \inlineasm{__cxa_begin_catch} behavior for different cases.
 For an exception not already caught, the associated rule pushes it onto the caught-exception stack.
 The rule for already-caught exceptions does not do this.
@@ -244,11 +283,11 @@ However, both rules increment that exception's handler count and decrement the s
 Though not listed, there is also a rule for an ID not currently in the exception map.
 That rule operates the same as our (elided) rule for unmodeled external calls.
 This allows for safe overapproximation.
-
 \begin{example}\label{ex:begin-catch}
   Consider instruction \instref{lst:begin-catch}{13a0} of \cref{lst:example-throw-landing-pad}.
   Assuming the existence of a valid exception object with ID~$\id$ that was just thrown, the post-state~$\sigma'$ will satisfy $\handler(\id,\sigma')=1$, $\sigma'.\caught=[\id]$, and $\sigma'.\uncaught=0$.
 \end{example}
+
 To complete the above, the rules in \cref{fig:end-catch1,fig:end-catch2} define some \inlineasm{__cxa_end_catch} behavior.
 The first rule applies when an exception ID is available on top of the caught stack, there are no more handlers for the corresponding exception object,
 and it is being rethrown.
@@ -260,267 +299,129 @@ Additionally, the case for an empty $\sigma.\caught$ again operates as an unmode
 \begin{example}
   Consider instruction \instref{lst:end-catch}{13b9} of \cref{lst:example-throw-landing-pad}.
   Assume the statements in \cref{ex:begin-catch} hold for the pre-state.
-  %    Assume the statements for catch beginning hold for the pre-state.
   Then, the post-state~$\sigma'$ for that instruction will satisfy $\sigma'.\emap(\id)=\gls{bot}$ and $\sigma'.\caught=[]$.
 \end{example}
+
 \subsection{Unwinding Rules}
-\Cref{fig:unwind} shows semantics for stack unwinding.
-The stack is recursively popped (\cref{fig:unwind1}) until one of two conditions occurs: a landing path is found (\cref{fig:unwind_lpt_found}) or not (\cref{fig:unwind_no_lpt_found}).
+\begin{figure*}
+  \centering
+  \subcaptionbox{Recursive unwinding\label{fig:unwind1}}{%
+    \AxiomC{$\sigma'.\rip=\gls{peek}(\sigma.\stack)$}
+    \AxiomC{$\popStack(\sigma,\sigma')$}
+    \AxiomC{$\sigma'\unwindTransition\sigma''$}
+    \TrinaryInfC{$\sigma\unwindTransition\sigma''$}
+    \DisplayProof % prooftree env doesn't work in \subcaptionbox
+  }
+
+  \hspace*\fill%
+  \subcaptionbox{Landing pad found\label{fig:unwind_lpt_found}}{%
+    \AxiomC{$\sigma'.\rip\in\landingpadtable(\sigma.\rip)$}
+    \UnaryInfC{$\sigma\unwindTransition\sigma'$}
+    \DisplayProof
+  }\hfill
+  \subcaptionbox{No landing pad\label{fig:unwind_no_lpt_found}}[\widthof{(c) No landing pad}]{%
+    \AxiomC{$\sigma.\stack=[]$}
+    \UnaryInfC{$\sigma\unwindTransition\sigma$}
+    \DisplayProof
+  }\hspace*\fill
+  \caption{Unwinding}
+  \label{fig:unwind}
+\end{figure*}
+\Cref{fig:unwind} shows the rules for stack unwinding transitions, which utilize notation $\unwindTransition$ instead of $\absTransition$.
+In these rules, the stack is repeatedly popped (\cref{fig:unwind1}) until one of two conditions occurs: a landing pad is found (\cref{fig:unwind_lpt_found}) or the stack is completely unwound (\cref{fig:unwind_no_lpt_found}).
 For shorthand notation, we respectively use $\unwindTransitionyes$ and $\unwindTransitionno$ to indicate the compound stack unwinding transition from a state until one of those conditions is met.
-
-%The first transition rule is one for unwinding.
-%This rule, shown in \cref{fig:unwind}, uses special notation for the transition, $\unwindTransition$ instead of $\absTransition$.
-
-% TEXT FOR EXAMPLE IS GOOD, BUT PRUNED FOR SPACE CONSTRAINTS
-%\begin{example}
-%    Assume $\sigma.\stack=[\mathtt{0x116e}]$. Then, for $\sigma\unwindTransition\sigma'$ to hold, we must have %$\sigma'.\stack=\varnothing$ and $\sigma'.\rip=\mathtt{0x116e}$.
-%\end{example}
-
-%The rules featuring stack unwinding utilize repeated application of $\unwindTransition$ until a predicate is satisfied.
-%In essence, they feature an \emph{until} loop.
-%This loop terminates in one of two ways.
-%One, a set of landing pads is found at some point in the process.
-%Two, the stack is completely unwound with no landing pads found.
-%The former case carries through the thrown exception object ID from its function argument register to the %``result'' register $\rax$. % have this repeated below
-%The latter case results in a bad termination.
+\begin{example}
+  Assume $\sigma.\stack=[\mathtt{0x116e}]$. Then, for $\sigma\unwindTransition\sigma'$ to hold, we must have $\sigma'.\stack=\varnothing$ and $\sigma'.\rip=\mathtt{0x116e}$.
+\end{example}
 
 \Cref{fig:unwind-resume1,fig:unwind-resume2} show the simplest unwinding function rules, those for \inlineasm{_Unwind_Resume}.
 The main addition to the general unwinding transition is that, when landing pads are found, the original function argument ($\sigma.\rdi$) is preserved in the result state's return register ($\sigma'.\rax$).
 This models the concrete handling for carrying through exceptions during unwinding.
-
 \begin{example}
   Consider instruction \instref{lst:unwind-resume}{1398} of \cref{lst:example-throw-landing-pad}.
   As previously described in \cref{eicfg-example},
   this instruction is intended to continue unwinding for exceptions that do not satisfy the source code's catch type specification.
-  Assuming no more applicable landing pad table entries, the only valid post-states for the transition here match $\sigma'.\stack=[]$ and $\sigma'.\terminated=\bad$.
+  Assuming no more applicable landing pad table entries, the only valid post-states for the transition here satisfy $\sigma'.\stack=[]$ and $\sigma'.\terminated=\bad$.
 \end{example}
+
 The rules for the initiating function \inlineasm{__cxa_throw}, shown in \cref{fig:throw1,fig:throw2}, expand on those for \inlineasm{_Unwind_Resume}.
 They add the condition that the post-state's uncaught exception count is incremented. At our level of abstraction, the function \inlineasm{_Unwind_RaiseException} is semantically equivalent to \inlineasm{__cxa_throw} and thus shares its rules.
-
 \begin{example}
   Consider instruction \instref{lst:example-throw-call}{1286} of \cref{lst:example-throw}.
   We previously stepped through the process of throwing using this instruction in \cref{eicfg-example}, so we merely state the results here.
   As this is the first throw at this time, we have $\sigma'.\uncaught=1$.
   Additionally, the unwinding process stops for $\sigma'.\rip\in\landingpadtable(\mathtt{0x137e})=\{\mathtt{0x138b}\}$, giving us $\sigma'.\rip=\mathtt{0x138b}$.
 \end{example}
+
 The rules for \inlineasm{__cxa_rethrow} in \cref{fig:rethrow1,fig:rethrow2} add a twist by utilizing the current caught-exception stack.
 When an exception object ID is available on the top of the caught stack,
 unwinding proceeds as usual.
 Futhermore, the corresponding exception object is marked as being rethrown and its ID is stored in $\rax$ for later usage.
 By contrast, when no caught exception objects are available, \inlineasm{__cxa_rethrow} must lead to an abnormal termination for strict modeling.
 However, that second rule can be relaxed for additional overapproximation by using the \inlineasm{_Unwind_Resume} rules instead.
-
 \begin{example}
   Consider instruction \instref{lst:assembly-rethrow}{13af} of \cref{lst:example-throw-landing-pad}.
   Assume caught stack $\sigma.\caught=[\id]$, $\sigma.\emap(\id)=e$, and $\landingpadtable(\mathtt{0x13af})=\{\mathtt{0x13c0}\}$.
   Then we end up with $\sigma'.\rip=\mathtt{0x13c0}$ and $\sigma'.\emap(\id).\rethrown$.
 \end{example}
 
-%\newcommand\clearScratchClause{\AxiomC{$\csr(\sigma,\sigma')$}}
 \begin{figure*}
   \centering
-  \subfloat[\inlineasm{__libc_start_main}]{%
-    % \AxiomC{$\sigma'.\rip=\sigma.\rdi$}
-    % \AxiomC{$\pushStack(\sigma.\rip+5,\sigma,\sigma')$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma'.\rip\in\sigma.\{\rdi,\rcx,\reg{r8}\} \\
-        \pushStack(\sigma.\rip+5,\sigma,\sigma')
-      \end{array}$}
-    \UnaryInfC{$\sigma\absTransition\sigma'$}
-    %        \hspace{1ex}
-    \DisplayProof\label{fig:start-main}% prooftree env doesn't work in subfloat
-    %        \hspace{1ex}
-  }
-  \subfloat[\inlineasm{__cxa_allocate_exception}]{%
-    %        \AxiomC{$\id=\sigma'.\rip$}
-    \AxiomC{$\begin{array}[b]{l}
-        \id=\sigma'.\rip \\
-        \sigma'.\rax=\id % would have preferred this on the other side but I need all the space I can get.
-      \end{array}$}
-    \AxiomC{$\begin{array}[b]{l}
-        %            \sigma'.\rax=\id \\
-        \sigma'.\emap(\id)=e \\
-        %            e.\mathsf{size} = \sigma.\rdi
-        \neg e.\rethrown \\
-        e.\handlerCount=0
-      \end{array}$}
+  \hspace*\fill%
+  \subcaptionbox{\inlineasm{_Unwind_Resume} (have landing pad(s))\label{fig:unwind-resume1}}[\widthof{\inlineasm{_Unwind_Resume} (have landing pad(s))}]{%
+    \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
+    \AxiomC{$\sigma'.\rax=\sigma.\rdi$}
     \BinaryInfC{$\sigma\absTransition\sigma'$}
-    \DisplayProof\label{fig:allocate-exception}%
-  }
-  \subfloat[\inlineasm{__cxa_free_}\\
-  \inlineasm{exception}]{%
-    % \AxiomC{$\id=\sigma.\rdi$}
-    % \AxiomC{$\sigma'.\emap(\id)=\gls{bot}$}
-    \AxiomC{$\sigma'.\emap(\sigma.\rdi)=\gls{bot}$}
-    \UnaryInfC{$\sigma \absTransition \sigma'$}
-    \DisplayProof\label{fig:free-exception}%
-  }\\
-  \subfloat[\inlineasm{__cxa_begin_catch} (not already cght)]{%
-    \AxiomC{$\begin{array}[b]{l}
-        \id=\sigma.\rdi \\
-        \id\not\in\sigma.\caught
-      \end{array}$}
-    % \AxiomC{$\id\not\in\sigma.\caught$}
-    \AxiomC{$\begin{array}[b]{l}
-        \handler(\id,\sigma')\inc* \\
-        \pushCaught(\id,\sigma,\sigma') \\
-        \sigma'.\uncaught\dec
-      \end{array}$}
-    % \AxiomC{$\handler(\id,\sigma')\inc*$}
-    % \AxiomC{$\pushCaught(\id,\sigma,\sigma')$}
-    % \AxiomC{$\sigma'.\uncaught\dec$}
-    % \RightLabel{$\id=\sigma.\rdi$}
-    \BinaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{2ex}
-    \DisplayProof\label{fig:begin-catch1}%
-    \hspace{2ex}
+    \DisplayProof
   }\hfill
-  \subfloat[\inlineasm{__cxa_begin_catch} (already caught)]{%
-    \AxiomC{$\begin{array}[b]{l}
-        \id=\sigma.\rdi \\
-        \id\in\sigma.\caught
-      \end{array}$}
-    % \AxiomC{$\id\in\sigma.\caught$}
-    \AxiomC{$\begin{array}[b]{l}
-        \handler(\id,\sigma')\inc* \\
-        \sigma'.\uncaught\dec
-      \end{array}$}
-    % \AxiomC{$\handler(\id,\sigma')\inc*$}
-    % \AxiomC{$\sigma'.\uncaught\dec$}
-    % \RightLabel{$\id=\sigma.\rdi$}
+  \subcaptionbox{\inlineasm{_Unwind_Resume} (no landing pads)\label{fig:unwind-resume2}}{%
+    \AxiomC{$\sigma\unwindTransitionno\sigma'$}
+    \AxiomC{$\sigma'.\terminated=\bad$}
     \BinaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{1.7ex}
-    \DisplayProof\label{fig:begin-catch2}%
-    \hspace{1.7ex}
-  }\\
-  \subfloat[\inlineasm{__cxa_end_catch} (cghts, last hndl, rt)]{%
-    \AxiomC{$\begin{array}[b]{l}
-        \id=\peek(\sigma.\caught) \\
-        %            \sigma.\caught\neq[]\\
-        \handler(\id,\sigma)=1\\
-        \reth(\id,\sigma)
-      \end{array}$}
-    \AxiomC{$\begin{array}[b]{l}
-        \handler(\id,\sigma')=1 \\
-        \neg\reth(\id,\sigma') \\
-        \popCaught(\sigma,\sigma') \\
-      \end{array}$}
-    %        \AxiomC{$\handler(\id,\sigma')=1$}
-    %        \AxiomC{$\neg\reth(\id,\sigma')$}
-    %        \AxiomC{$\popCaught(\sigma,\sigma')$}
-    %        \RightLabel{$\id=\peek(\sigma.\caught)$}
-    \BinaryInfC{$\sigma\absTransition\sigma'$}
-    \DisplayProof\label{fig:end-catch1}%
-  }\hfill
-  \subfloat[\inlineasm{__cxa_end_catch} (\dots, not rethrown)]{%
-    \AxiomC{$\begin{array}[b]{l}
-        \id=\peek(\sigma.\caught) \\
-        \handler(\id,\sigma)=1\\
-        \neg\reth(\id,\sigma)
-      \end{array}$}
-    \AxiomC{$\begin{array}[b]{l}
-        \handler(\id,\sigma')=1 \\
-        \sigma'.\emap(\id)=\gls{bot} \\
-        \popCaught(\sigma,\sigma')
-      \end{array}$}
-    %        \AxiomC{$\handler(\id,\sigma')=1$}
-    %        \AxiomC{$\sigma'.\emap(\id)=\gls{bot}$}
-    %        \AxiomC{$\popCaught(\sigma,\sigma')$}
-    %        \RightLabel{$\id=\peek(\sigma.\caught)$}
-    \BinaryInfC{$\sigma\absTransition\sigma'$}
-    \DisplayProof\label{fig:end-catch2}%
-  }%
-  \caption{Non-unwinding abstract step rules (unchanged state parts mostly elided).}
-  \label{fig:step-rules1}
-\end{figure*}
+    \DisplayProof
+  }\hspace*\fill
 
-\begin{figure*}
-  \centering
-  \subfloat[\inlineasm{_Unwind_Resume} (LP(s))]{%
-    %        \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
-    %        \AxiomC{$\sigma'.\rax=\sigma.\rdi$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma\unwindTransitionyes\sigma' \\
-        \sigma'.\rax=\sigma.\rdi
-      \end{array}$}
-    \UnaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{4ex}
-    \DisplayProof\label{fig:unwind-resume1}%
-    \hspace{4ex}
+  \hspace*\fill%
+  \subcaptionbox{\inlineasm{__cxa_throw} (landing pad(s))\label{fig:throw1}}{% also \inlineasm{_Unwind_RaiseException}
+    \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
+    \AxiomC{$\sigma'.\uncaught\inc$}
+    \AxiomC{$\sigma'.\rax=\sigma.\rdi$}
+    \TrinaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
   }\hfill
-  \subfloat[\inlineasm{_Unwind_Resume} (no LPs)]{%
-    %        \AxiomC{$\sigma\unwindTransitionno\sigma'$}
-    %        \AxiomC{$\sigma'.\terminated=\bad$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma\unwindTransitionno\sigma' \\
-        \sigma'.\terminated=\bad
-      \end{array}$}
-    \UnaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{5ex}
-    \DisplayProof\label{fig:unwind-resume2}%
-    \hspace{5ex}
-  }\hfill
-  \subfloat[\inlineasm{__cxa_throw} (LP(s))]{%. % \inlineasm{_Unwind_RaiseException}
-    % \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
-    % \AxiomC{$\sigma'.\uncaught\inc$}
-    % \AxiomC{$\sigma'.\rax=\sigma.\rdi$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma\unwindTransitionyes\sigma' \\
-        \sigma'.\uncaught\inc \\
-        \sigma'.\rax=\sigma.\rdi
-      \end{array}$}
-    \UnaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{2ex}
-    \DisplayProof\label{fig:throw1}%
-    \hspace{2ex}
-  }\\
-  \subfloat[\inlineasm{__cxa_throw} (no LPs)]{%. % \inlineasm{_Unwind_RaiseException}
-    % \AxiomC{$\sigma\unwindTransitionno\sigma'$}
-    % \AxiomC{$\sigma'.\terminated=\bad$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma\unwindTransitionno\sigma' \\
-        \sigma'.\terminated=\bad
-      \end{array}$}
-    \UnaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{3ex}
-    \DisplayProof\label{fig:throw2}%
-    \hspace{3ex}
-  }
-  \subfloat[\inlineasm{__cxa_rethrow} (caught+LP(s))]{%
-    % \AxiomC{$\sigma.\caught\neq[]$}
-    % \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
-    % \AxiomC{$\reth(\id,\sigma')$}
-    % \AxiomC{$\sigma'.\rax=\id$}
-    % \AxiomC{$\sigma'.\uncaught\inc$}
-    % \AxiomC{$\handler(\id,\sigma')\dec*$}
-    \AxiomC{$\begin{array}[b]{l}
-        %            \sigma.\caught\neq[] \\
-        \sigma\unwindTransitionyes\sigma' \\
-        \id=\peek(\sigma.\caught)
-      \end{array}$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma'.\uncaught\inc \\
-        \handler(\id,\sigma')\dec* \\
-        \reth(\id,\sigma') \\
-        \sigma'.\rax=\id
-      \end{array}$}
-    %        \RightLabel{$\id=\peek(\sigma.\caught)$}
+  \subcaptionbox{\inlineasm{__cxa_throw} (no landing pads)\label{fig:throw2}}{% also \inlineasm{_Unwind_RaiseException}
+    \AxiomC{$\sigma\unwindTransitionno\sigma'$}
+    \AxiomC{$\sigma'.\terminated=\bad$}
     \BinaryInfC{$\sigma\absTransition\sigma'$}
-    \DisplayProof\label{fig:rethrow1}%
+    \DisplayProof
+  }\hspace*\fill
+
+  \subcaptionbox{\inlineasm{__cxa_rethrow} (caught exception+landing pad(s))\label{fig:rethrow1}}{%
+    \AxiomC{$\sigma\unwindTransitionyes\sigma'$}
+%    \AxiomC{$\sigma'.\uncaught\inc$}
+%    \AxiomC{$\handler(\id,\sigma')\dec*$}
+    \AxiomC{$\begin{array}[c]{l}
+      \sigma'.\uncaught\inc \\
+      \handler(\id,\sigma')\dec*
+    \end{array}$}
+    \AxiomC{$\reth(\id,\sigma')$}
+    \AxiomC{$\sigma'.\rax=\id$}
+%    \AxiomC{$\begin{array}[c]{l}
+%      \reth(\id,\sigma') \\
+%      \sigma'.\rax=\id
+%    \end{array}$}
+    \RightLabel{$\id=\gls{peek}(\sigma.\caught)$}
+    \QuaternaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
   }
-  \subfloat[\inlineasm{__cxa_rethrow} alt]{%
-    % \AxiomC{$\sigma.\caught=[]$}
-    % \AxiomC{$\sigma'.\terminated=\bad$}
-    \AxiomC{$\begin{array}[b]{l}
-        \sigma.\caught=[] \\
-        \sigma'.\terminated=\bad
-      \end{array}$}
-    \UnaryInfC{$\sigma\absTransition\sigma'$}
-    \hspace{1ex}
-    \DisplayProof\label{fig:rethrow2}%
-    \hspace{1ex}
+
+  \subcaptionbox{\inlineasm{__cxa_rethrow} without a caught exception\label{fig:rethrow2}}[\widthof{(f) \inlineasm{__cxa_rethrow} without a caught exception}]{%
+    \AxiomC{$\sigma.\caught=[]$}
+    \AxiomC{$\sigma'.\terminated=\bad$}
+    \BinaryInfC{$\sigma\absTransition\sigma'$}
+    \DisplayProof
   }
-  \caption{Abstract transition rules with unwinding (unchanged state parts are elided).}% At this level of abstraction, function \inlineasm{_Unwind_RaiseException} is semantically equivalent to \inlineasm{__cxa_throw}.}
+  \caption{Abstract transition rules involving unwinding (unchanged state parts are elided)}
 \label{fig:step-rules2}
 \end{figure*}
 
@@ -546,8 +447,7 @@ All other state parts are combined, with priority given to the first equivalent 
 For a more aggressive join, $\emap$, $\uncaught$, and $\caught$ can be excluded from the preserved state parts. The abstract transition rules are also simplified to support this exclusion.
 
 \section{Argument for Overapproximation}
-%Formally, correctness of the produced \ac{eicfg} can be proven by showing that the abstract transition relation overapproximates the concrete one (see \cref{def:simulation}).
-We consider a formal definition of the concrete transition rules our abstract ones overapproximate outside the scope of this paper.
+We consider a formal definition of the concrete transition rules our abstract ones overapproximate outside the scope of this dissertation.
 This is because our abstraction focuses on the domain of exceptional control flow in terms of its \ac{abi}-level definition. By contrast, concrete rules require a concrete implementation.
 Instead, we provide an informal argument for why our abstract transition rules are overapproximative.
 
@@ -565,7 +465,7 @@ In these cases, we do not apply additional heuristics or guesses.
 Instead, we stop further exploration at the indirection, if a jump, and clearly annotate the output accordingly.
 Unresolved indirect calls are treated as unmodeled external calls, but the same principle applies.
 We thus informally argue that the produced \ac{eicfg} is overapproximative \emph{modulo} unresolved indirections.
-If the \ac{eicfg} is not annotated with any unresolved indirections, it is an overapproximation. % in the sense of \cref{def:simulation}.
+If the \ac{eicfg} is not annotated with any unresolved indirections, it is an overapproximation.
 
 \section{Graphs}
 We have a specific node state for the \acp{eicfg} produced by our toolchain,
@@ -582,7 +482,7 @@ We further have a function $\stateToNode\colon\gls{abs-state}\rightarrow\gls{nod
 that maps from the more specific and detailed abstract states for execution
 to the exceptional state for control flow representation.
 
-\begin{definition}
+\begin{definition}[Abstract State to Exceptional State]
   \begin{equation*}
     \stateToNode(r,s,\_,e,u,c,j,t,\_)=(
     \operatorname{rip}(r),
@@ -610,7 +510,6 @@ to the exceptional state for control flow representation.
 The \acp{eicfg} themselves are represented in a slightly different form from that described in \cref{sec:eicfg}.
 They consist of a set of nodes and a set of annotated edges that connect those nodes: $\gls{graph}\colon\{\gls{node}\}\times\{\gls{edge}\}$.
 The edge annotations are instructions for edges that follow standard control flow.
-
 \begin{example}
   Consider the simple graph shown in \cref{fig:simple-graph}.
   This graph is the graph you would get after analyzing \cref{lst:start-first} of \cref{lst:example-start}.

@@ -43,7 +43,7 @@ The diamond in the graph indicates the indirect call location, but the only edge
 IDA Pro and Binary Ninja produce similar results; they can identify landing pad locations intraprocedurally, but they cannot trace exceptional control flow interprocedurally.
 We have verified that this holds for more complicated programs as well (some of the programs used in \cref{eicfg-results}).
 
-% graphdrawing library gives better automatic arrangements but requires LuaLaTeX and I do not know if IEEE Transactions or LNCS support that. Could use for dissertation though.
+% graphdrawing library gives better automatic arrangements but requires LuaLaTeX and I do not know if IEEE Transactions or LNCS support that. No time to reformat for dissertation either, oh well.
 \begin{figure}
   \centering
   \begin{tikzpicture}
@@ -85,7 +85,6 @@ These additional edges are the dotted blue ones in \cref{fig:ghidra-example}.
 We also illustrate the edges for standard interprocedural control flow as dashed red ones.
 
 Instead of simple labels, \acp{eicfg} use \emph{exceptional state predicates} as labels.
-%A formal definition will follow in \cref{sec:abstract-state}.
 Informally, the information on which exceptional control flow is based is:
 \begin{enumerate}
   \item the exception object, e.g., type info and rethrown state;
@@ -101,6 +100,7 @@ The uncaught exception count keeps track of how many thrown exceptions are curre
 This is useful for diagnostic information.
 Next, the caught exception stack provides information to set up implicit rethrowing.
 Finally, the landing pad table ($\landingpadtable$) maps from potential unwind spots in a binary to locations where unwinding can exit.
+The full formal definition of the abstract states involved can be found later in \cref{sec:abstract-state}.
 
 \begin{definition}[Exceptional State Predicate]
   An \emph{exceptional state predicate} is based on an exception object~$E$, a return address stack~$R$, uncaught exception count~$u$, caught exception stack~$C$, and instruction pointer~$I$.
@@ -167,7 +167,6 @@ Finally, the landing pad table ($\landingpadtable$) maps from potential unwind s
 We here provide a formal definition of \iac{eicfg}.
 \begin{definition}[EICFGs]\label{def:eicfg}
   \Iac{eicfg} is a directed graph with instruction addresses as vertices and edges labelled with exceptional state predicates.
-  %    Instruction addresses are pointers of type $\pointer$.
   There is an edge between instruction addresses $a_0$ and $a_1$ with label $P$ if the instruction at address $a_0$ leads to instruction address $a_1$ for any state that satisfies predicate $P$.
 \end{definition}
 
@@ -221,13 +220,8 @@ The landing pad table of the binary, $\landingpadtable$, directs the unwinding p
 when stack unwinding reaches address~$i$ and $j\in\landingpadtable(i)$,
 control flow branches to address~$j$.
 Otherwise, another frame is popped off the stack.
-This will be elaborated on in
-%\cref{sec:landing-pad-table}.
-\cref{sec:abstract-state}.
-For this example, we get unwinding from address (\instref{lst:example-throw-call}{1286}) to
-%\instref{lst:unwind-site}{137e}
-\inlineasm{0x137e}
-to \instref{lst:landing-pad}{138b}.
+This will be elaborated on in \cref{sec:landing-pad-table}.
+For this example, we get unwinding from address (\instref{lst:example-throw-call}{1286}) to \instref{lst:unwind-site}{137e} to \instref{lst:landing-pad}{138b}.
 
 Due to overapproximation, there are two possible paths from that point.
 One is the path for an exception object that is not of the caught type,
@@ -260,7 +254,6 @@ In the compiled assembly of the program, the jump table index selection occurs a
 Such values can then be used later on in the calculation of jump table addresses, in this case by \instref{lst:example-jumptable-read}{136c} and \instref{lst:example-jumptable-calculate}{1373}.
 This non-deterministically results in \instref{lst:example-indirect-call-call}{137c} going to different address ranges, as shown in the graph.
 
-% replacing the tabs with spaces to try to compress things
 \begin{lstlisting}[
   float,
   style=x64,
@@ -331,4 +324,3 @@ This non-deterministically results in \instref{lst:example-indirect-call-call}{1
   1168:  call    QWORD PTR [rip+0x2e6a] # 3fd8|\label{lst:example-libc}|
   116e:  hlt |\label{lst:example-hlt}|
 \end{lstlisting}
-% |\label{lst:good-termination}|
