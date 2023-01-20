@@ -322,9 +322,9 @@ using \cref{algo:mem_read} as our guide.
         \State\Return $(\alpha,v)$
       \Else
         \State $\var{ovl}\gets\{(\region{a'}{s'}\coloneqq v)\in
-        \alpha\mid\region{a'}{s'}\not\gls{separate}\region{a}{s}\}$
+        \alpha\mid\region{a'}{s'}\mathrel{\glslink{separate}{\not\bowtie}}\region as\}$
         \State $\var{sep}\gets\{(\region{a'}{s'}\coloneqq v)\in
-        \alpha\mid\region{a'}{s'}\gls{separate}\region{a}{s}\}$
+        \alpha\mid\region{a'}{s'}\gls{separate}\region as\}$
         \State $\region{a_l}{s_l},\region{a_r}{s_r}\gets
         \text{the left- and rightmost regions in }\{\region{a}{s}\}\cup\var{ovl}$
         \State $r\gets\region{a_l}{a_r-a_l+s_r}$
