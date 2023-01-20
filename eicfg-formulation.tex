@@ -362,7 +362,9 @@ By contrast, when no caught exception objects are available, \inlineasm{__cxa_re
 However, that second rule can be relaxed for additional overapproximation by using the \inlineasm{_Unwind_Resume} rules instead.
 \begin{example}[\inlineasm{__cxa_rethrow}]
   Consider instruction \instref{lst:assembly-rethrow}{13af} of \cref{lst:example-throw-landing-pad}.
-  Assume caught stack $\sigma.\caught=[\id]$, $\sigma.\emap(\id)=e$, and $\landingpadtable(\mathtt{0x13af})=\{\mathtt{0x13c0}\}$.
+  Assume a caught stack $\sigma.\caught=[\id]$,
+  an exception object $\sigma.\emap(\id)=e$,
+  and landing pad table $\landingpadtable(\mathtt{0x13af})=\{\mathtt{0x13c0}\}$.
   Given those conditions, we end up with $\sigma'.\rip=\mathtt{0x13c0}$ and $\sigma'.\emap(\id).\rethrown$.
 \end{example}
 

@@ -196,9 +196,9 @@ Better pointer inference support would be beneficial as well.
 By that we mean identifying which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling.
 This could allow for reduction of infeasible memory models.
 
-\subsection{Integrating Later Contributions into Formal Frameworks}
+\subsection{Integrating \Acs*{cfr} into Formal Frameworks}
 Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique, including decompilation, binary verification and binary patching.
-However, while some of the \acp{hg} we generated have been validated, this validation is a manual approach.
+However, while the \acp{hg} we generate can be validated in \gls{isabelle}, this validation is a manual approach.
 Furthermore, the validation done for \acp{eicfg} applies to individual steps and, while done as a concrete analysis, does not integrate with formal tools.
 
 Therefore, in order to increase reliability and trustworthiness of \cref{hg,eicfg}, full integration with \iac{itp} approach is desirable.

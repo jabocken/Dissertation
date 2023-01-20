@@ -74,12 +74,12 @@ We provide two contributions for each, summarized here and expanded on later in 
 
 \paragraph{Control Flow Recovery}
 \begin{itemize}
-  \item A methodology for formally verified disassembly and control flow recovery for binaries compiled from \gls{c} source code.
+  \item A methodology for formally verified disassembly and \ac{cfr} for binaries compiled from \gls{c} source code.
   \item A methodology or recovering \emph{exceptional}, \emph{interprocedural} control flow from \gls{cpp} binaries.
 \end{itemize}
 
 \section{Motivation}
-Now that we have introduced the concepts of \gls{memuse} and control flow recovery, we here provide some motivation for their usage.
+Now that we have introduced the concepts of \gls{memuse} and \ac{cfr}, we here provide some motivation for their usage.
 
 \subsection{Memory Usage}
 As a basic property, \gls{memuse} has potential applications to security analyses, compositional reasoning, and even concurrency.
@@ -127,7 +127,7 @@ Usage of shared memory can result in \emph{unintended} interactions between thre
 \Gls{memuse} could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
 
 \subsection{Control Flow Recovery}
-The process of control flow recovery is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
+The process of \ac{cfr} is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
 This is because all of those applications, discussed below, require \emph{lifting} raw unstructured data to a form that allows reasoning over behavior and semantics.
 
 \subsubsection{Decompilation}
@@ -143,9 +143,9 @@ Under ideal circumstances, it produces human- or machine-readable source code th
 It also allows for easier reconstruction or modification of the program, if that is the intent.
 
 \subsubsection{Verification}
-As seen later on in \cref{ch:cfg,ch:syntax}, control flow recovery is also very important for the process of verification.
+As seen later on in \cref{ch:cfg,ch:syntax}, \ac{cfr} is also very important for the process of verification.
 Many, if not all, binary verification efforts require an understanding of program control flow.
-Without in-depth control flow recovery, you end up with tools that cannot handle complex control flow such compiled \lstinline|switch| statements \autocite{myreen2008dil,tan2015auspice}.
+Without in-depth \ac{cfr}, you end up with tools that cannot handle complex control flow such compiled \lstinline|switch| statements \autocite{myreen2008dil,tan2015auspice}.
 This is also evident in the aforementioned \lcnamecrefs{ch:cfg}.
 
 Multiple verification efforts utilize the above-mentioned decompilation approach as well rather than directly validating or verifying assembly semantics.
@@ -168,7 +168,7 @@ At other times, it is because that information about control flow is necessary t
 For example, dead code removal, the elimination of code that is never executed, is sometimes used to lessen the attack surface of a program.
 However, knowing what code is dead requires reachability analysis, which inherently requires control flow.
 
-In fact, platforms for binary analysis often provide control flow recovery themselves \autocite{song2008bitblaze,wang2017angr}.
+In fact, platforms for binary analysis often provide \ac{cfr} themselves \autocite{song2008bitblaze,wang2017angr}.
 Some even implement their own decompilation or use existing tools in order to simplify those analyses.
 This allows developers to focus on the actual analyses and not deal with all of the low-level details.
 However, that does require a deep understanding of what information can be abstracted away and what cannot.
@@ -244,7 +244,7 @@ These include \inlineasm{__cxa_throw}, \inlineasm{__cxa_begin_catch},
 and \inlineasm{__cxa_end_catch}.
 Determining that target requires knowing the current function call stack, the current caught exception stack, and various other details stored within the exception objects themselves.
 It also requires modeling the semantics of those library functions.
-Notably, that need for the current call stack means control flow recovery with exceptions is inherently \emph{interprocedural}.
+Notably, that need for the current call stack means \ac{cfr} with exceptions is inherently \emph{interprocedural}.
 Interprocedural analysis is challenging, as one cannot simply isolate individual functions or blocks of machine code but must instead consider the binary as a whole.
 
 \section{State of the Art}
@@ -298,7 +298,7 @@ Their weakness is that their outputs are untrustworthy; thus, any analyses built
 There have been some efforts to resolve this issue.
 For example, \textcite{brumley2013native} developed Phoenix, a tool for decompilation to \gls{c}.
 This tool ensures the preservation of semantics of binaries even in the presence of unstructured control flow.
-However, it relies on an external tool, \ac{bap}, to perform the control flow recovery and they encountered multiple situations where it did not work due to its lack of support for floating point and other ``exotic'' instructions.
+However, it relies on an external tool, \ac{bap}, to perform the \ac{cfr} and they encountered multiple situations where it did not work due to its lack of support for floating point and other ``exotic'' instructions.
 \Textcite{kinder2010static,kinder2012alternating,kinder2012virtualization} also provided the tool Jakstab, which performs formal binary lifting using abstract interpretation.
 However, it is targeted at a different, more limited set of applications from our works; specifically, small obfuscated programs such as Windows device drivers and malware.
 It also often requires an external harness in order to validate those drivers which must be included in the \ac{tcb} if it is not itself validated.
@@ -322,7 +322,7 @@ In contrast, our \ac{eicfg} generator does not.
 \section{Contributions}
 This dissertation consists of four main contributions.
 Two of them are formal approaches to per-function verification of the assembly-level property we call \gls{memuse}.
-The other two are methods for control flow recovery from binaries.
+The other two are methods for \ac{cfr} from binaries.
 
 The first two contributions are the \gls{memuse} approaches: \emph{\gls{floyd}} verification and \emph{\gls{hoare}} verification.
 Both approaches use some form of control flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
@@ -335,7 +335,7 @@ Meanwhile, the second approach, Hoare-style verification, has a significantly hi
 Symbolic execution is also more efficient in the Floyd-style approach as it more closely follows the structure of the function's \ac{cfg}.
 In contrast, the Hoare-style approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
-We also provide two trustworthy approaches to sound control flow recovery: \ac{hg} generation and \ac{eicfg} generation.
+We also provide two trustworthy approaches to sound \ac{cfr}: \ac{hg} generation and \ac{eicfg} generation.
 Both approaches target binaries specifically rather than relying on external tools for assembly extraction.
 They also both provide \emph{assurance} that \emph{if} unannotated output is produced, that output is a sound representation of the binary.
 
@@ -415,7 +415,7 @@ That is \SI{9.7}{insts\per\minute} compared to \SI{1.48}{insts\per\minute} for A
 We did have some functions that took an overly long period of time due to the suboptimality of \acl*{scf} with respect to minimizing symbolic execution, but those were atypical.
 
 \subsection{Hoare-Logic-Based Control Flow Recovery}
-Changing focus to the contributions for control flow recovery, we have an algorithm (and implementation) for lifting \iac{hg} out of \pgls{arch} binary.
+Changing focus to the contributions for \ac{cfr}, we have an algorithm (and implementation) for lifting \iac{hg} out of \pgls{arch} binary.
 \Acp{hg} are \gls{hoare-logic}-based \acp{cfg}
 The vertices of those \acp{hg} are symbolic states that consist of the following:
 \begin{enumerate}

@@ -674,7 +674,7 @@ Some decompilers even rely on techniques of machine learning, much like disassem
 The field of natural language processing in particular has provided inspiration for the processing of formal languages.
 For example, \textcite{katz2018recurrent} applied recurrent neural networks, which are often used for text processing and generation, to the problem of decompilation.
 
-Despite all this, a key factor in many decompilation approaches, and also in other approaches that aim at producing \acp{cfg} or dataflow analyses, is that they rely on the disassembly and control flow recovery being done by an external tool that is assumed to be sound.
+Despite all this, a key factor in many decompilation approaches, and also in other approaches that aim at producing \acp{cfg} or dataflow analyses, is that they rely on the disassembly and \ac{cfr} being done by an external tool that is assumed to be sound.
 Our algorithm thus \emph{complements} these works.
 For example, McSema requires an external source of control flow information, which could be generated from our solution.
 Many loop-identifying algorithms used by decompilers require \iac{cfg} as well \autocite{hecht1974reducible,wei2007loops}.
