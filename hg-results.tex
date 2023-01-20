@@ -251,7 +251,7 @@ The called function executes a compiler-generated technique called \emph{stack p
 That function traverses the stack and reads-then-discards individual bytes below the current stack pointer at intervals of \texttt{0x1000} bytes.
 The instruction at address \texttt{0x100009ff0} eventually causes a verification error, since the tool cannot establish whether register \rax\ has been modified during that function call.
 
-\subsection{Non-standard Stackpointer Restoration}
+\subsection{Nonstandard Stack Pointer Restoration}
 Normally, a function restores the stackpointer \rsp\ to its initial value, plus eight due to the pushing of the return address. That is, after a \inlineasm{ret} statement the symbolic state is verified for:
 \begin{equation*}
   \mathtt{RSP} == \mathtt{RSP_0} + 8
