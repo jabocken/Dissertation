@@ -775,7 +775,7 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
 \end{proof}
 
 \begin{definition}
-  \Ac{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
+  The \acl{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to some binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
     \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition}[^\ast] \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition} \gls{symbolic-state}['] \sepdot \gls{concrete-state}~\mathbf{R}~\gls{symbolic-state} \land \gls{concrete-state}[']~\mathbf{R}~\gls{symbolic-state}[']
   \end{equation*}
@@ -848,34 +848,37 @@ If the operand of a \inlineasm{call} can be resolved to an address inside the ex
 Consider the following assembly code:
 
 \begin{center}
+  \renewcommand*\theadfont\bfseries
+  \lstset{
+    style=x64,
+    gobble=8,
+    numbers=none,
+    frame=none
+  }
   \begin{tabular}{ccc}
-    \textbf{Function Call} & \textbf{Return} & \textbf{Exit} \\\hline
-    \begin{minipage}{0.3\linewidth}
-      \vspace{0.5ex}
-      \begin{verbatim}
+    \thead{Function Call} & \thead{Return} & \thead{Exit} \\
+    \midrule
+    \begin{minipage}{.3\linewidth}
+      \begin{lstlisting}
         100: call 400
         105: ...
-      \end{verbatim}
-      \vspace{-0.2ex}
+      \end{lstlisting}
     \end{minipage}
     &
-    \begin{minipage}{0.2\linewidth}
-      \vspace{0.5ex}
-      \begin{verbatim}
+    \begin{minipage}{.3\linewidth}
+      \begin{lstlisting}
         400: ...
         450: ret
-      \end{verbatim}
-      \vspace{-0.2ex}
+      \end{lstlisting}
     \end{minipage}
-    &\begin{minipage}{0.3\linewidth}
-      \vspace{0.5ex}
-      \begin{verbatim}
+    &
+    \begin{minipage}{.3\linewidth}
+      \begin{lstlisting}
         400: ...
         450: call exit
-      \end{verbatim}
-      \vspace{-0.2ex}
+      \end{lstlisting}
     \end{minipage}
-    \\\hline
+    \\\bottomrule
   \end{tabular}
 \end{center}
 Intuitively, exploration from address \texttt{0x100} can proceed both at addresses \texttt{0x400} (entering the function) and at \texttt{0x105} (after the function).
