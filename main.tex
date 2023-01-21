@@ -36,9 +36,6 @@
 \usepackage{makecell}              % For table heading cells and cells with line breaks
 \usepackage{threeparttable}        % For tables with notes
 
-\usepackage{acro}                  % For acronyms
-
-\input{preamble/acronyms}
 \input{preamble/listingsetup}
 \input{preamble/numbers}
 \input{preamble/registers}
@@ -223,15 +220,15 @@
   \listoftheorems
   \microtypesetup{protrusion=true}
 
-  \printacronyms[heading=chapter]
-  \printunsrtabbreviations[style=altlist] % better style for abbreviations with descs than tree/index; what's the difference between tree and index, anyway?
-  \printunsrtglossary[type=symbols]
-  % Freek doesn't think the numbers one is worth it. I was mainly using it for the cross-referencing anyway but that is okay, maybe it will end up in the ``main''/index glossary? How do I manage that?
+  \printunsrtabbreviations[style=index,nopostdot] % default style is indexgroup, but that's not really needed, the default spacing works fine for that
+  \printunsrtglossary[type=abbrevdescs,style=altlist] % altlist better style for abbreviations with descs than index as it puts the desc on a new line
+  \printunsrtsymbols
+  % Freek doesn't think \printunsrtnumbers is worth it. I was mainly using it for the cross-referencing anyway but that is okay, maybe it will end up in the ``main''/index glossary? How do I manage that?
 
   \include{attribution} % prefaces go in front matter
 
   \mainmatter % The body chapters get proper numbering.
-  \acresetall % Any acronyms used inside the front matter should start over here. No easy gls replacement as there is only \glsreset, which is annoying.
+  \glsresetall % This actually does exist! I could unset all for the front matter too but I do like having the full abbrevs in the abstracts/acknowledgements.
 
   \part{Prologue}
   \include{introduction}
@@ -260,9 +257,8 @@
   {% appendices do not work right with \backmatter due to it getting rid of counters
     \backmatter % All the stuff that comes after the body chapters
     \printbibliography[heading=bibintoc]
-%    \printindex % Interferes with glossaries-extra index
     \printunsrtglossary % Default glossary (this stuff normally goes in back matter)
-%    \printunsrtglossary[type=index,style=bookindex] % default style not good for index; don't actually have any proper indices yet with this style though
+%    \printunsrtindex[style=bookindex] % default style not good for index; don't actually have any proper indices yet with this style though. Package documentation suggests using bib2gls's dual entries for this purpose.
   }
 %  \appendix % formats the chapter name to appendix to properly define the headers
 %  \begin{appendices}

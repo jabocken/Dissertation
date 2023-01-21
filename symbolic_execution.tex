@@ -1,7 +1,7 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
 This chapter covers the methodology used in \cref{ch:cfg,ch:syntax}
 to formally determine the state changes caused by individual basic blocks.
-This methodology relies on a formal big-step semantics of the \gls{arch} \ac{isa}
+This methodology relies on a formal big-step semantics of the \gls{arch} \gls{isa}
 provided by \textcite{roessle2019verified}, described in \cref{se:machine_model}.
 We then extended those semantics with additional rewrite rules
 to increase efficiency and properly reason about memory.
@@ -9,7 +9,7 @@ Those rules are documented in \cref{se:rewrite}.
 The rules involving reading and writing from memory
 form the basis for the \gls{memuse} methodologies
 in \cref{ch:cfg,ch:syntax}.
-They essentially generate memory region \acp{vc} that must be discharged
+They essentially generate memory region \glspl{vc} that must be discharged
 in order to prove \gls{memuse}.
 
 \begin{comment}
@@ -52,8 +52,8 @@ you must first have some sort of \emph{machine model}.%
 \index{symbolic!execution!machine model}
 The machine model used in this dissertation for the work in \gls{isabelle}[/HOL] is an extension of the work of \textcite{roessle2019verified}.
 They embedded a bitvector-based, big-step semantics
-machine-learned from a modern version of the \gls{arch} \ac{isa} in \gls{isabelle}[/HOL].
-That semantics included instruction set extensions such as the \ac{sse} family
+machine-learned from a modern version of the \gls{arch} \gls{isa} in \gls{isabelle}[/HOL].
+That semantics included instruction set extensions such as the \gls{sse} family
 to increase the possible programs the semantics could execute.
 To improve reliability of their work,
 it was tested against an actual, live \gls{arch} machine to prove semantic equivalence.
@@ -142,7 +142,7 @@ Notation $\sigma(x\coloneqq e)$ or $\sigma\alpha$ indicates applying that assign
 or set of assignments to the supplied state.
 
 \subsection{Restrictions of the Model}
-As the \gls{arch} \ac{isa} is a little-endian architecture,%
+As the \gls{arch} \gls{isa} is a little-endian architecture,%
 \index{endianness!little}
 all operations on memory presented in this dissertation
 are designed with that in mind.
@@ -154,9 +154,9 @@ Support for big-endian architectures would require changing how reads and writes
 \index{endianness!big}
 are performed, as both the formal \gls{isabelle} and informal Haskell models
 assume little-endianness in their implementation.
-Some \acp{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
+Some \glspl{isa} are even \emph{bi-endian}, allowing both big- and little-endian%
 \index{endianness!bi}
-memory operations. These include modern versions of \gls{arm}, \ac{ppc}, \ac{sparc}, and \ac{mips}.
+memory operations. These include modern versions of \gls{arm}, \gls{ppc}, \gls{sparc}, and \gls{mips}.
 Supporting bi-endianness would require additional complexity in memory handling.
 
 Additionally,

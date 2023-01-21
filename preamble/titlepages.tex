@@ -39,11 +39,11 @@
   Though academic efforts make maintaining such ties difficult, I hope to maintain or even strengthen them moving into the future.%
   \vfill
   {\footnotesize % Have to wrap this with extra group to prevent it from making everything after footnotesize
-  The bulk of this work was supported by a mix of \ac{darpa} and \ac{niwcp} under Contract No.\ N66001-21-C-4028, \ac{darpa} under Agreement No.\ HR.00112090028, \ac{onr} under grant N00014-17-1-2297, \ac{navsea}/\ac{neec} under grant N00174-16-C-0018, and \ac{nswcdd} under grant N00174-20-1-0009.
+  The bulk of this work was supported by a mix of \gls{darpa} and \gls{niwcp} under Contract No.\ N66001-21-C-4028, \gls{darpa} under Agreement No.\ HR.00112090028, \gls{onr} under grant N00014-17-1-2297, \gls{navsea}/\gls{neec} under grant N00174-16-C-0018, and \gls{nswcdd} under grant N00174-20-1-0009.
 
   Any opinions, findings, and conclusions or recommendations expressed
   in this dissertation are those of the author
-  and do not necessarily reflect the views of \ac{darpa}, \ac{niwcp}, \ac{onr}, \ac{navsea}/\ac{neec}, or \ac{nswcdd}.%
+  and do not necessarily reflect the views of \gls{darpa}, \gls{niwcp}, \gls{onr}, \gls{navsea}/\gls{neec}, or \gls{nswcdd}.%
 }}
 
 % The abstract is required and should be <=250 words for thesis, <=350 words for dissertation.
@@ -70,22 +70,22 @@
   When such dynamic control flow cannot be overapproximatively resolved, it is clearly noted in the resultant output.
   In the first approach to control flow recovery, a structured memory representation allows for general analysis of control flow in the presence of indirection, gaining scalability by utilizing context-free function analysis.
   It supports various aliasing conditions via the usage of nondeterminism, with multiple output states potentially being produced from a given input state.
-  The second approach adds function context and abstract interpretation-inspired modeling of the \gls{cpp} \acs{eh} \acs{abi}, allowing for the discovery of previously-unknown paths while maintaining or increasing automation.%
+  The second approach adds function context and abstract interpretation-inspired modeling of the \gls{cpp} \gls{eh} \gls{abi}, allowing for the discovery of previously-unknown paths while maintaining or increasing automation.%
 }
 
 % The general audience abstract is required. There are currently no word limits.
 \abstractgenaud{%
   Modern computer programs are so complicated that individual humans cannot manually check all but the smallest programs to make sure they are correct and secure.
-  This is even worse if you want to reduce the \acf{tcb}, the stuff that you have to assume is working right in order to say a program will execute correctly.
-  The \acs{tcb} includes your computer itself, but also whatever tools were used to take the programs written by programmers and transform them into a form suitable for running on a computer. Such tools are often called \emph{compilers}.
+  This is even worse if you want to reduce the \gls{tcb}, the stuff that you have to assume is working right in order to say a program will execute correctly.
+  The \gls{tcb} includes your computer itself, but also whatever tools were used to take the programs written by programmers and transform them into a form suitable for running on a computer. Such tools are often called \emph{compilers}.
 
-  One method of reducing the \acs{tcb} is to examine the lowest-level representation of that program, the assembly or even machine code that is actually run by your computer.
+  One method of reducing the \gls{tcb} is to examine the lowest-level representation of that program, the assembly or even machine code that is actually run by your computer.
   This poses unique challenges, because operating on such a low level means you do not have a lot of the structure that a more abstract, higher-level representation provides.
   Also, sometimes you want to \emph{formally} state things about a program's behavior; that is, say things about what it does with a high degree of confidence based on mathematical principles.
   You may also want to \emph{verify} that one or more of those statements are true.
-  If you want to be detailed about that behavior, you may need to know all of the chunks, or \emph{regions}, in \acf{ram} that are used by that program.
-  \Acs{ram}, henceforth referred to as just ``memory'', is your computer's first place of storage for the information used by running programs.
-  This is distinct from long-term storage devices like \acsp{hdd} or \acsp{ssd}, which programs do not normally have direct access to.
+  If you want to be detailed about that behavior, you may need to know all of the chunks, or \emph{regions}, in \gls{ram} that are used by that program.
+  \Gls{ram}, henceforth referred to as just ``memory'', is your computer's first place of storage for the information used by running programs.
+  This is distinct from long-term storage devices like \glspl{hdd} or \glspl{ssd}, which programs do not normally have direct access to.
 
   Unfortunately, there is no one single approach that can automatically determine with absolute certainty for all cases the exact regions of memory that are read or written.
   This is called \emph{undecidability}, and means that you need to \emph{approximate} those memory regions a lot of the time if you want to have a significant degree of automation.
@@ -100,12 +100,12 @@
 
   The second contribution automated a lot of the manual work done for the first approach.
   It is based on the work of Charles Antony Richard Hoare, who developed a verification approach focusing on the \emph{syntax}\footnote{the textual form} of programs.
-  This contribution produces what we call \emph{\acfp{fmuc}}, which are formal statements that the regions of memory they describe are the only ones possibly affected by the functions under test.
-  These statements also come with \emph{proofs}, which for our work are like scripts used to verify that the things the \acsp{fmuc} assert about the corresponding functions can be shown to be true given the assumptions our \acsp{fmuc} have.
+  This contribution produces what we call \emph{\glspl{fmuc}}, which are formal statements that the regions of memory they describe are the only ones possibly affected by the functions under test.
+  These statements also come with \emph{proofs}, which for our work are like scripts used to verify that the things the \glspl{fmuc} assert about the corresponding functions can be shown to be true given the assumptions our \glspl{fmuc} have.
   Sometimes those proofs are incomplete, though, such as when there is a \emph{loop}\footnote{repeated bit of code} in a function under test or one function \emph{calls}\footnote{executes} another.
   In those cases, a user has to finish the proof, in the first case by \emph{weakening}%
   \footnote{removing information from}
-  the \acs{fmuc}'s statements about the loop and in the second by \emph{composing}, or combining, the \acsp{fmuc} of the two functions.
+  the \gls{fmuc}['s] statements about the loop and in the second by \emph{composing}, or combining, the \glspl{fmuc} of the two functions.
 
   Additionally, this second approach cannot handle \emph{dynamic control flow}.
   Such control flow occurs when the low-level instructions a program uses to move to another place in that program do not have a pre-stored location to go to.
@@ -115,7 +115,7 @@
   \footnote{value-holding components}
   of a program contain the same value and that value is used as the numeric address or identifier of a location in memory.
   Specifically, it cannot deal with \emph{potential} aliasing, when there is not enough information available to determine if the state parts alias or not.
-  Because of that, we had to add extra assumptions to the \acsp{fmuc} that limited them to those cases where ambiguous memory-referencing state parts referred to \emph{separate} memory locations.
+  Because of that, we had to add extra assumptions to the \glspl{fmuc} that limited them to those cases where ambiguous memory-referencing state parts referred to \emph{separate} memory locations.
   Finally, it specifically requires assembly as input; you cannot directly supply a binary to it.
   This is also true of the first contribution.
   Because of this, we were able to test on more functions than before, but not a lot more.
@@ -130,13 +130,13 @@
   That can require knowing where you came from in the program, which means that analysis of dynamic control flow requires \emph{context}\footnote{in this context, information previously obtained in the program}.
   Even worse, it is another undecidable problem that requires overapproximation.
 
-  To soundly recover control flow, we developed \emph{\acfp{hg}}, the third contribution of this dissertation.
-  \Acsp{hg} use \emph{memory models} that take the form of \emph{forests}, or collections of tree data structures.
+  To soundly recover control flow, we developed \emph{\glspl{hg}}, the third contribution of this dissertation.
+  \Glspl{hg} use \emph{memory models} that take the form of \emph{forests}, or collections of tree data structures.
   A single tree represents a region in memory that may have multiple \emph{symbolic} references, or abstract representations of a value.
   The children of the tree represent regions used in the program that are \emph{enclosed} within their parent tree elements.
   Now, instead of assuming that all ambiguous memory regions are separate, we can use them under various aliasing conditions.
   We have also implemented support for some forms of dynamic control flow.
-  Those that are not supported are clearly marked in the resultant \acs{hg}.
+  Those that are not supported are clearly marked in the resultant \gls{hg}.
   No user interaction is required even when loops are present thanks to a methodology that automatically reduces the amount of information present at a re-executed instruction until the information stabilizes.
   Function composition is also automatic now thanks to a method that treats each function as its own context in a safe and automated way, reducing memory consumption of our tool and allowing larger programs to be examined.
   In the process we did lose the ability to deal with \emph{recursion},%
@@ -147,13 +147,13 @@
   needed.
   This all allowed much greater testing than before, with applications to multiple programs and program libraries.
 
-  The fourth and final contribution of this dissertation iterates on the \acs{hg} work by narrowing focus to the concept of \emph{exceptional control flow}.
+  The fourth and final contribution of this dissertation iterates on the \gls{hg} work by narrowing focus to the concept of \emph{exceptional control flow}.
   Specifically, it models the kind of exception handling used by \gls{cpp} programs.
   This is important as, if you want to explore a program's behavior, you need to know all the places it goes to.
   If you use a tool that does not model exception handling, you may end up missing paths of execution caused by \emph{unwinding}.
   This is when an exception is thrown and propagates up through the program's current \emph{stack} of function calls, potentially reaching programmer-supplied handling for that exception.
   Despite this, commonplace tools for static, low-level program analysis do not model such unwinding.
-  The \acfp{cfg} produced by our exception-aware tool are called \emph{\acfp{eicfg}}.
+  The \glspl{cfg} produced by our exception-aware tool are called \emph{\glspl{eicfg}}.
   These provide information about the exceptions being thrown and what paths they take in the program when they are thrown.
   Additional improvements are a better methodology for handling dynamic control flow as well adding back in support for recursion.
   All told, this allowed us to explore even more programs than ever before.%

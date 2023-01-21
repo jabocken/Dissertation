@@ -1,5 +1,7 @@
-\glsxtrsetgrouptitle{hg}{\acp{hg}}
-\glsxtrsetgrouptitle{eicfg}{\acp{eicfg}}
+\renewcommand*\glsprefixsep~ % I don't use other kinds of prefixes so this is fine
+
+\glsxtrsetgrouptitle{hg}{\Glsxtrshortpl{hg}}
+\glsxtrsetgrouptitle{eicfg}{\Glsxtrshortpl{eicfg}}
 
 \glsxtrsetgrouptitle{element}{Elements}
 \glsxtrsetgrouptitle{function}{Functions}
@@ -51,10 +53,30 @@
   break-at=none
 ]
 
-\setabbreviationstyle{long-short-desc} % for getting full info in (alt)tree glossary
+%% Abbreviation stuff, fancy fancy
+\newglossary*{abbrevdescs}{Abbreviations with Descriptions}
+
+% To emulate package acro's cite-on-first-use behavior; not sure how this will interact with \glsxtrshort, \glsfmtshort, etc.
+\glsdefpostlink{abbreviation}{%
+  \glsxtrifwasfirstuse{%
+    \ifglshasfield{useri}\glslabel{%
+      ~\autocite\glscurrentfieldvalue%
+    }{}%
+  }{}%
+}
 \GlsXtrLoadResources[
   src=glossaries/abbrevs,
-  type=abbreviations
+  type=abbreviations,
+  field-aliases={cite=user1},
+  match={description} % Only want the abbrevs without descriptions here!
+]
+% For getting full info in altlist glossary
+\setabbreviationstyle{long-short-desc}
+\GlsXtrLoadResources[
+  src=glossaries/abbrevs,
+  type=abbrevdescs,
+  field-aliases={cite=user1},
+  not-match={description}
 ]
 
 %\nomenclature{\region ab}{When not being used for list notation,

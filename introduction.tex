@@ -19,23 +19,23 @@ Even pen-and-paper proofs can provide guarantees that purely informal analysis d
 Unfortunately, formal verification of software is still a difficult task.
 Many useful properties are \emph{undecidable}\index{undecidable} \autocite{rice1953classes,horspool1980approach,ouimet2008formal}.
 There are no single, fully-automated methods that are guaranteed to determine them for all possible programs \autocite{bonacina2010theoremproving}.
-One alternative is to use \ac{itp} \autocite{harrison2014itp,maric2015itp,schopf2018itp}.
+One alternative is to use \gls{itp}.
 However, that does not scale well due to the amount of intricate user interaction and development involved.
 
 \section{Assembly and Binary Analysis}\label{intro-analysis}
 Source-code-level formal verification has another issue.
-It requires a large \emph{\ac{tcb}}
+It requires a large \emph{\gls{tcb}}
 % autocites requires manual sorting, darn
 \autocites[270]{lampson1992authentication}{orange-book}[13]{rushby1981dvss}.
 Without a verified compiler \autocite{leroy:compcert}, one must trust the semantics of a binary reflect its original source.
-Even then, one must assume that the \ac{isa} in use has been correctly specified, that all libraries work correctly, and even that there are no firmware or hardware flaws in the physical computer being used to execute the program.
-Ultimately, it is not possible to eliminate the \ac{tcb} completely.
+Even then, one must assume that the \gls{isa} in use has been correctly specified, that all libraries work correctly, and even that there are no firmware or hardware flaws in the physical computer being used to execute the program.
+Ultimately, it is not possible to eliminate the \gls{tcb} completely.
 However, it is possible to \emph{reduce} it, and not just via the usage of non-mainstream compilers that can only handle a subset of programs for their given language.
 
 This is where the field of \emph{low-level analysis} comes into play.
 We focus here on assembly and binary analysis done \emph{statically}.
 That is, analyzing programs ``offline'' with the usage of external tools rather than instrumenting or hooking into a running program.
-This automatically eliminates the compiler and any optimizations it may do from the \ac{tcb}.
+This automatically eliminates the compiler and any optimizations it may do from the \gls{tcb}.
 
 An additional benefit is that it allows for the analysis of programs when source code is not available.
 This is useful for reverse engineers and legacy code maintainers.
@@ -46,7 +46,7 @@ In such cases it may be more cost-efficient to just get the compiled version and
 However, there is no such thing as a free lunch.
 The tradeoff for lower-level analysis is less abstraction.
 This is because even software written in a relatively low-level language like \gls{c} has abstractions on memory for local variables and function calls.
-How and where memory is allocated may be compiler, \ac{abi}, and \ac{isa}-specific.
+How and where memory is allocated may be compiler, \gls{abi}, and \gls{isa}-specific.
 It can even depend on what compiler options are in use, including the level of optimization.
 As a further illustration, consider formulating a property that a function cannot overwrite its own return address (something done in this dissertation).
 Doing so requires knowledge of the layout of the stack, including the values of the stack and frame pointers, thus making it an \emph{assembly-level} or lower property.
@@ -74,12 +74,12 @@ We provide two contributions for each, summarized here and expanded on later in 
 
 \paragraph{Control Flow Recovery}
 \begin{itemize}
-  \item A methodology for formally verified disassembly and \ac{cfr} for binaries compiled from \gls{c} source code.
+  \item A methodology for formally verified disassembly and \gls{cfr} for binaries compiled from \gls{c} source code.
   \item A methodology or recovering \emph{exceptional}, \emph{interprocedural} control flow from \gls{cpp} binaries.
 \end{itemize}
 
 \section{Motivation}
-Now that we have introduced the concepts of \gls{memuse} and \ac{cfr}, we here provide some motivation for their usage.
+Now that we have introduced the concepts of \gls{memuse} and \gls{cfr}, we here provide some motivation for their usage.
 
 \subsection{Memory Usage}
 As a basic property, \gls{memuse} has potential applications to security analyses, compositional reasoning, and even concurrency.
@@ -92,11 +92,11 @@ Heartbleed was caused by a lack of bounds checking on a string array requested a
 This, combined with a custom memory manager that also had no security protections against out-of-bounds memory accesses, lead to potential leakage of sensitive data such as passwords and encryption keys.
 \Gls{memuse} analysis could serve as a foundation for formal security analyses that could be used to expose vulnerabilities involving malicious writes.
 
-Another important property that \gls{memuse} could help with is \ac{cfi}.
-\Ac{cfi} ensures that software execution follows a predetermined \ac{cfg} using static analysis and runtime checks.
+Another important property that \gls{memuse} could help with is \gls{cfi}.
+\Gls{cfi} ensures that software execution follows a predetermined \gls{cfg} using static analysis and runtime checks.
 At a minimum, this requires proving that a program cannot overwrite its stack pointer or that a called function does not overwrite local variables of its caller.
 In other words, it must be proven that the memory writes of a program are confined to prespecified regions, which is part of what the property of \gls{memuse} states.
-This can aid in avoiding \ac{rop} attacks without excessive runtime overhead.
+This can aid in avoiding \gls{rop} attacks without excessive runtime overhead.
 
 The property of \emph{noninterference} is also a useful one for security.
 On a high level, it states that a group of users using a certain set of commands \emph{does not interfere} with another group of users if the first group's actions have no effect on what the second group of users can see
@@ -121,20 +121,20 @@ This could then serve as a basis for a larger proof effort over multi-function a
 
 \subsubsection{Concurrency}
 Reasoning over concurrent programs is complicated due to the potential interactions between threads.
-While there are ways of handling such interactions in a structured manner via kernel- or library-provided \ac{ipc}, one method commonly used for the sake of efficiency is \emph{shared memory}.
+While there are ways of handling such interactions in a structured manner via kernel- or library-provided \gls{ipc}, one method commonly used for the sake of efficiency is \emph{shared memory}.
 Shared memory, in the context of this work, refers to threads or processes sharing either a full memory space or portions of one (via memory mapping) that can be written to and read from freely by any thread or process with access to it.
 Usage of shared memory can result in \emph{unintended} interactions between threads.
 \Gls{memuse} could be adapted to show the absence of such interactions by proving that multiple threads only write to specifically-allowed regions of shared memory.
 
 \subsection{Control Flow Recovery}
-The process of \ac{cfr} is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
+The process of \gls{cfr} is a vital component of many binary analyses and transformations. It has applications in the field of decompilation, verification, patching, and security.
 This is because all of those applications, discussed below, require \emph{lifting} raw unstructured data to a form that allows reasoning over behavior and semantics.
 
 \subsubsection{Decompilation}
 The process of \emph{decompilation} is the reverse of compilation \autocite{cifuentes1994reverse}.
 It attempts to \emph{lift} low-level code, possibly even machine code, to a higher-level representation.
-That representation can be something like \gls{llvm} \ac{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \gls{cpp} \autocite{fokin2011smartdec}.
-\Ac{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well, or are used to provide the control flow for one \autocite{mcsema}.
+That representation can be something like \gls{llvm} \gls{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \gls{cpp} \autocite{fokin2011smartdec}.
+\Gls{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well, or are used to provide the control flow for one \autocite{mcsema}.
 Those decompilers generally target a source language such as \gls{c}.
 
 Decompilation is most important to the field of \emph{reverse engineering}.
@@ -143,13 +143,13 @@ Under ideal circumstances, it produces human- or machine-readable source code th
 It also allows for easier reconstruction or modification of the program, if that is the intent.
 
 \subsubsection{Verification}
-As seen later on in \cref{ch:cfg,ch:syntax}, \ac{cfr} is also very important for the process of verification.
+As seen later on in \cref{ch:cfg,ch:syntax}, \gls{cfr} is also very important for the process of verification.
 Many, if not all, binary verification efforts require an understanding of program control flow.
-Without in-depth \ac{cfr}, you end up with tools that cannot handle complex control flow such compiled \lstinline|switch| statements \autocite{myreen2008dil,tan2015auspice}.
+Without in-depth \gls{cfr}, you end up with tools that cannot handle complex control flow such compiled \lstinline|switch| statements \autocite{myreen2008dil,tan2015auspice}.
 This is also evident in the aforementioned \lcnamecrefs{ch:cfg}.
 
 Multiple verification efforts utilize the above-mentioned decompilation approach as well rather than directly validating or verifying assembly semantics.
-Generally they lift to \iac{ir} that is then verified \autocite{myreen2007hoare,myreen2012dil,brumley2011bap}.
+Generally they lift to \pgls{ir} that is then verified \autocite{myreen2007hoare,myreen2012dil,brumley2011bap}.
 This allows for more abstraction, but does require a lot of groundwork.
 
 \subsubsection{Patching}
@@ -168,7 +168,7 @@ At other times, it is because that information about control flow is necessary t
 For example, dead code removal, the elimination of code that is never executed, is sometimes used to lessen the attack surface of a program.
 However, knowing what code is dead requires reachability analysis, which inherently requires control flow.
 
-In fact, platforms for binary analysis often provide \ac{cfr} themselves \autocite{song2008bitblaze,wang2017angr}.
+In fact, platforms for binary analysis often provide \gls{cfr} themselves \autocite{song2008bitblaze,wang2017angr}.
 Some even implement their own decompilation or use existing tools in order to simplify those analyses.
 This allows developers to focus on the actual analyses and not deal with all of the low-level details.
 However, that does require a deep understanding of what information can be abstracted away and what cannot.
@@ -177,7 +177,7 @@ The choice of model for analysis, whether formal or informal, affects what prope
 \section{Challenges}\label{challenges}
 As mentioned, the biggest challenge in assembly-level verification specifically is the semantic gap between compiled and source code.
 Higher-level languages hide details of their implementation behind layers of abstraction, which makes it easier to reason about them on that level but makes it harder to formally show equivalence with the semantics of lower abstraction levels.
-Meanwhile, assembly languages are close to direct interfaces with their corresponding \acp{isa}, having minimal differences in semantics but not being easy to reason about directly.
+Meanwhile, assembly languages are close to direct interfaces with their corresponding \glspl{isa}, having minimal differences in semantics but not being easy to reason about directly.
 
 As an example of the semantic gap, assembly code generally lacks the structured control flow found in languages on a higher level of abstraction.
 Instead, all control flow on the assembly level is performed using conditional or unconditional branches (jumps and calls), either to a predetermined location or to a calculated label.
@@ -185,12 +185,12 @@ Some lower-level languages such as \gls{c} do allow for direct jumps to explicit
 However, modern best practices discourage the usage of those constructs as they do indeed complicate control flow analysis and can often be transformed into a more structured style without significant code growth.
 
 A further example would be source code containing division operations being compiled to run on a processor that does not provide hardware division.
-Many \acp{cpu} for embedded systems lack support for hardware division as efficient division algorithms require a lot of logic gates.
+Many \glspl{cpu} for embedded systems lack support for hardware division as efficient division algorithms require a lot of logic gates.
 For such processors, runtime division must be calculated using an algorithm implemented in assembly rather than via a specific instruction.
 
 \subsection{Types and Memory}
 Even the basic concept of numeric types is minimal on the assembly level, much less more abstract data types like lists or trees.
-While most \acp{isa} do have different instructions for signed versus unsigned integer arithmetic, as well as distinct instructions for floating-point operations, individual values in memory have no type.
+While most \glspl{isa} do have different instructions for signed versus unsigned integer arithmetic, as well as distinct instructions for floating-point operations, individual values in memory have no type.
 They are merely lists of bytes starting at some address, and even the number of bytes and the address to read from or write to can be variable.
 A user could go as far as supplying the result of a floating-point computation as the address operand of an instruction that loads or stores memory.
 Historically, there have been computers that associated type information with memory locations in hardware \autocite{feustel1972rice,feustel1973advantages,thornton2008rice}, but we do not have that luxury on typical modern systems.
@@ -199,7 +199,7 @@ Tagged memory could also serve that purpose \autocite{bradbury2014tagged,song201
 An additional issue with assembly, and the one most significant for the memory-related properties in this dissertation, lies in the simplicity of the user-exposed memory model.
 The vast majority of high-level, structured languages with scoping, including \gls{c}, prevent functions from accessing the local variables of other functions without significant effort or explicit notation or argument passing, but the same is not true for assembly.
 An assembly instruction that operates on memory can refer to any address within range of its address operands even if it is not supposed to.
-Most modern runtime libraries and \acp{os} do provide some form of memory protection, but those generally rely on runtime detection of invalid accesses for unallocated memory and are often not fine-grained enough for reasoning about individual stack frames or local variables.
+Most modern runtime libraries and \glspl{os} do provide some form of memory protection, but those generally rely on runtime detection of invalid accesses for unallocated memory and are often not fine-grained enough for reasoning about individual stack frames or local variables.
 They also do not work if the program manually manages its memory in large chunks, as happened with Heartbleed\index{heartbleed}.
 Any verification effort that wishes to reason about low-level memory properties therefore must provide its own abstractions and assumptions on layout.
 
@@ -220,7 +220,7 @@ However, in order to determine those instructions, you have to know how the one 
 In other words, you need the \emph{control flow} of the program.
 Such information is not necessarily statically available. For example, jump targets may need to be dynamically computed, the stored return addresses for \inlineasm{ret} instructions change based on context, and even the bounds on jump table indices themselves may not be fixed.
 Thrown exceptions and callbacks supplied to external functions are also non-obvious sources of control flow.
-Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \ac{rop}.}
+Determining the target of a \inlineasm{ret} can be non-trivial even when the call graph is nominally static as well, because there is always the possibility of an instruction within the returning function having overwritten the return address.\footnote{When used purposely, this is the core of the previously-mentioned \gls{rop}.}
 
 At a minimum, a disassembler that supports calls and indirect jump traversals in a structured setting needs to ensure the following properties:
 \begin{description}
@@ -228,7 +228,7 @@ At a minimum, a disassembler that supports calls and indirect jump traversals in
   \footnote{This assumes a standard structured programming methodology.}
   This requires the absence of stack overflows or similar inappropriate stack manipulation.
   \item[Bounded Control Flow] All indirect, or non-immediate, branches transfer control flow to fixed, statically-calculated, bounded sets of addresses. This requires the ability to determine upper bounds on array indices.
-  \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \ac{abi} considers non-volatile.
+  \item[Calling Convention Adherence] All called functions properly restore the set of registers the 64-bit System~V \gls{abi} considers non-volatile.
 \end{description}
 
 % CHALLENGE: EXCEPTIONAL CONTROL FLOW
@@ -236,7 +236,7 @@ This problem is exacerbated when dealing with \emph{exceptional control flow}, s
 Such control flow does not respect traditional structured programming paradigms.
 Modern methods also require a significant amount of auxiliary knowledge that may not be directly present in the compiled code itself.
 Debugging builds have it to provide support for stack unwinding during debugging.
-Programs with structured \ac{eh} require it even when debugging information is excluded.
+Programs with structured \gls{eh} require it even when debugging information is excluded.
 
 Furthermore, that control flow is \emph{dynamic}.
 The target of a throw, which instruction address the process of unwinding ends up at, is decided at runtime by standard library functions \autocite{cxxEhAbi}.
@@ -244,7 +244,7 @@ These include \inlineasm{__cxa_throw}, \inlineasm{__cxa_begin_catch},
 and \inlineasm{__cxa_end_catch}.
 Determining that target requires knowing the current function call stack, the current caught exception stack, and various other details stored within the exception objects themselves.
 It also requires modeling the semantics of those library functions.
-Notably, that need for the current call stack means \ac{cfr} with exceptions is inherently \emph{interprocedural}.
+Notably, that need for the current call stack means \gls{cfr} with exceptions is inherently \emph{interprocedural}.
 Interprocedural analysis is challenging, as one cannot simply isolate individual functions or blocks of machine code but must instead consider the binary as a whole.
 
 \section{State of the Art}
@@ -257,36 +257,36 @@ As there are currently no state-of-the-art methods that specifically aim to form
 
 % basic context
 One of the first major efforts in assembly verification was that of \textcite{clutterbuck1986validation,clutterbuck1988verification}.
-That work involved analysis of a subset of the \gls{8080} \ac{isa}, \gls{space8080}, using the software suite \ac{spade}.
-\Ac{spade} was an early software suite for the development of high-integrity software.
+That work involved analysis of a subset of the \gls{8080} \gls{isa}, \gls{space8080}, using \gls{spade}.
+\Gls{spade} was an early software suite for the development of high-integrity software.
 Their work utilized an interactive \gls{floyd} verification approach to prove functional correctness of very small functions.
 It was quickly followed by a real-world application of the approach in the field of aeronautics \autocite{oneill1988verification}.
 That application involved the verification of the firmware of a jet engine's fuel control unit.
 
 % add back in citations if you lose the ability to use them in the acronym first use when switching to \gls
 Another big breakthrough was the development by Myreen et al.\ of an initial approach to formal binary lifting.
-Known as \emph{\ac{dil}}, it converts machine code into \iac{hol} representation.
+Known as \emph{\gls{dil}}, it converts machine code into \pgls{hol} representation.
 This representation can then be used for verification efforts in a theorem prover.
 As a specific example, it was utilized in the verification of the \gls{sel4} microkernel \autocite{klein2009sel4,klein2014comprehensive,sel4}.
-However, though the usage of \ac{dil} enabled automatic binary lifting for much of \gls{sel4}, that verification effort still required significant manual effort.
+However, though the usage of \gls{dil} enabled automatic binary lifting for much of \gls{sel4}, that verification effort still required significant manual effort.
 
 In \textcite{goel2014syscalls,goelphd} produced formal semantics for most user-mode \gls{arch} instructions as well as for commonly-used system calls.
 That work allows mechanized reasoning over compiled programs in the ACL2 theorem prover \autocite{ACL2}.
 Further previous and later efforts for a variety of assembly-level analyses and targets are documented later in \cref{se:previous_assembly}.
 The ones mentioned here are also described in more detail.
 
-Tackling the issue of instruction semantics from another angle, the \gls{strata} tool by \textcite{heule2016stratified} provides a technique using machine learning to derive bitvector semantics from actual \acp{cpu}.
-This allows for more accurate semantics than previous approaches relying on human-interpreted specification documents even when when working with \ac{cisc} \acp{isa}.
+Tackling the issue of instruction semantics from another angle, the \gls{strata} tool by \textcite{heule2016stratified} provides a technique using machine learning to derive bitvector semantics from actual \glspl{cpu}.
+This allows for more accurate semantics than previous approaches relying on human-interpreted specification documents even when when working with \gls{cisc} \glspl{isa}.
 As evidence, the Heule team identified mistakes and bugs in the human-readable Intel\index{Intel} documentation of the instructions they derived semantics for.
-Of course, even \ac{risc} specifications, despite ostensibly being simpler, are not always implemented accurately in emulators or other tools not synthesized directly from a structured specification \autocite{jiang2022examiner}.
-This indicates that \ac{tcb} reduction is desirable for all architectures if the goal is to maximize reliability and trustworthiness of the final product.
+Of course, even \gls{risc} specifications, despite ostensibly being simpler, are not always implemented accurately in emulators or other tools not synthesized directly from a structured specification \autocite{jiang2022examiner}.
+This indicates that \gls{tcb} reduction is desirable for all architectures if the goal is to maximize reliability and trustworthiness of the final product.
 
 Despite the accomplishments of the Heule work, it still has some drawbacks. Most importantly, their approach was not formally verified.
 This means that there is still potential for bugs in the specification or synthesis of semantics to go unnoticed.
 That gap was filled by the work of \textcite{roessle2019verified}.
 That work establishes a methodology for generating formal equivalence theorems between assembly code and big-step semantics in an interactive theorem prover (specifically, \gls{isabelle}).
 This was accomplished by using \gls{strata} to extract per-instruction small-step semantics and then performing tests in a formal framework against actual hardware to validate them.
-The validated semantics were then used in \iac{dil} methodology to lift full programs into a form that could be easily reasoned over, even in the presence of floating-point operations.
+The validated semantics were then used in \pgls{dil} methodology to lift full programs into a form that could be easily reasoned over, even in the presence of floating-point operations.
 Though we did not directly build on the works of \textcite{heule2016stratified} or \textcite{roessle2019verified}, they served as inspiration and influence in developing our instruction semantics as well as for the validation performed in \cref{ch:eicfg-validation}.
 
 \subsection{Control Flow Recovery}
@@ -298,31 +298,31 @@ Their weakness is that their outputs are untrustworthy; thus, any analyses built
 There have been some efforts to resolve this issue.
 For example, \textcite{brumley2013native} developed Phoenix, a tool for decompilation to \gls{c}.
 This tool ensures the preservation of semantics of binaries even in the presence of unstructured control flow.
-However, it relies on an external tool, \ac{bap}, to perform the \ac{cfr} and they encountered multiple situations where it did not work due to its lack of support for floating point and other ``exotic'' instructions.
+However, it relies on an external tool, \gls{bap}, to perform the \gls{cfr} and they encountered multiple situations where it did not work due to its lack of support for floating point and other ``exotic'' instructions.
 \Textcite{kinder2010static,kinder2012alternating,kinder2012virtualization} also provided the tool Jakstab, which performs formal binary lifting using abstract interpretation.
 However, it is targeted at a different, more limited set of applications from our works; specifically, small obfuscated programs such as Windows device drivers and malware.
-It also often requires an external harness in order to validate those drivers which must be included in the \ac{tcb} if it is not itself validated.
+It also often requires an external harness in order to validate those drivers which must be included in the \gls{tcb} if it is not itself validated.
 Furthermore, we argue that it is not actually an overapproximative tool later in \cref{related-jakstab}.
 
 % EXISTING TOOLS DO NOT SOLVE THE PROBLEM (eicfg)
-Furthermore, existing state-of-the-art disassemblers/decompilers, such as IDA Pro \autocite{ida}, Ghidra \autocite{ghidra}, and Binary Ninja \autocite{binary-ninja}, do not document exceptional control flow between procedures.
+Additionally, existing state-of-the-art disassemblers/decompilers, such as IDA Pro \autocite{ida}, Ghidra \autocite{ghidra}, and Binary Ninja \autocite{binary-ninja}, do not document exceptional control flow between procedures.
 They are able to extract the exception information statically available in binaries, including landing pad locations.
-They can even provide interprocedural \acp{cfg}.
+They can even provide interprocedural \glspl{cfg}.
 However, they do not perform the interprocedural static analysis required for reconstructing \emph{exceptional} control flow.
 That is, they cannot trace the path from an exception throw site to the landing pad instructions the thrown exception goes to in the process of unwinding.
-\Acp{cfg} under such analyses do not have any outgoing edges from throw sites.
+\Glspl{cfg} under such analyses do not have any outgoing edges from throw sites.
 They are portrayed as non-returning, or terminating, functions.
 
-Therefore, in order to analyze the stack unwinding caused by an exception being thrown, one must typically utilize a runtime debugger such as \ac{gdb}.
+Therefore, in order to analyze the stack unwinding caused by an exception being thrown, one must typically utilize a runtime debugger such as \gls{gdb}.
 In fact, many state-of-the-art disassembly tools, IDA Pro and Ghidra included,
-rely on \ac{gdb} to perform dynamic analysis via debugging.
+rely on \gls{gdb} to perform dynamic analysis via debugging.
 That is, they require runtime information in order to trace exceptional state.
-In contrast, our \ac{eicfg} generator does not.
+In contrast, our \gls{eicfg} generator does not.
 
 \section{Contributions}
 This dissertation consists of four main contributions.
 Two of them are formal approaches to per-function verification of the assembly-level property we call \gls{memuse}.
-The other two are methods for \ac{cfr} from binaries.
+The other two are methods for \gls{cfr} from binaries.
 
 The first two contributions are the \gls{memuse} approaches: \emph{\gls{floyd}} verification and \emph{\gls{hoare}} verification.
 Both approaches use some form of control flow analysis over functions in \gls{arch} assembly to generate incomplete proofs.
@@ -331,16 +331,16 @@ The proof strategies for both approaches involve \emph{symbolic execution} of th
 
 The main differences between the two approaches lie in their degrees of automation, the strengths of their invariants, and how they perform symbolic execution.
 The first approach, Floyd-style verification, requires significantly more user user input but has the potential for much stronger invariants.
-Meanwhile, the second approach, Hoare-style verification, has a significantly higher level of proof automation via the generation of \acp{fmuc} but is not as suited for stronger invariant production.
-Symbolic execution is also more efficient in the Floyd-style approach as it more closely follows the structure of the function's \ac{cfg}.
+Meanwhile, the second approach, Hoare-style verification, has a significantly higher level of proof automation via the generation of \glspl{fmuc} but is not as suited for stronger invariant production.
+Symbolic execution is also more efficient in the Floyd-style approach as it more closely follows the structure of the function's \gls{cfg}.
 In contrast, the Hoare-style approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
-We also provide two trustworthy approaches to sound \ac{cfr}: \ac{hg} generation and \ac{eicfg} generation.
+We also provide two trustworthy approaches to sound \gls{cfr}: \gls{hg} generation and \gls{eicfg} generation.
 Both approaches target binaries specifically rather than relying on external tools for assembly extraction.
 They also both provide \emph{assurance} that \emph{if} unannotated output is produced, that output is a sound representation of the binary.
 
-However, they differ in their degree of scalability, their degree of context-sensitivity, and the sort of information lifted for their individual \acp{cfg}.
-For example, the \ac{hg} work generates proofs of output assurance while the \ac{eicfg} work uses informal proofs combined with concrete validation of its \ac{eh}-related abstract transition rules.
+However, they differ in their degree of scalability, their degree of context-sensitivity, and the sort of information lifted for their individual \glspl{cfg}.
+For example, the \gls{hg} work generates proofs of output assurance while the \gls{eicfg} work uses informal proofs combined with concrete validation of its \gls{eh}-related abstract transition rules.
 
 \begin{comment}
   % \gls{memuse} result summary
@@ -348,13 +348,13 @@ For example, the \ac{hg} work generates proofs of output assurance while the \ac
 
   % cf recovery result summary
   To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
-  First, a more general \emph{\ac{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\acp{eicfg}}.
-  We have found no other approaches that lift binaries to \ac{eicfg}-like constructs.
+  First, a more general \emph{\gls{hg}} approach, followed by one focused specifically on \emph{exceptional control flow}, \emph{\glspl{eicfg}}.
+  We have found no other approaches that lift binaries to \gls{eicfg}-like constructs.
 \end{comment}
 
 \subsection{Floyd-Style Memory Usage}
-This methodology for verification of \gls{memuse} relies on treating function bodies as \acp{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
-In order to reason about the \acp{cfg}, they are annotated with predicates on state at specific locations, between which the program will be symbolically executed.
+This methodology for verification of \gls{memuse} relies on treating function bodies as \glspl{cfg} with basic blocks as the nodes, much as compilers do when performing their analyses.
+In order to reason about the \glspl{cfg}, they are annotated with predicates on state at specific locations, between which the program will be symbolically executed.
 While it is possible to reason about full functional correctness with this methodology, doing so takes a significant amount of effort due to the very low level of abstraction assembly provides, even with proven-correct formal simplification rules in \gls{isabelle}.
 This is why we focused on the aforementioned property of \gls{memuse}.
 
@@ -374,7 +374,7 @@ The two steps remaining, however, are up to the user.
 Those steps are formulating any remaining memory regions necessary for successfully completing symbolic execution and fleshing out the annotations on state so that the symbolic execution of later blocks can continue from that of earlier ones.
 
 %Analysis of HermitCore Functions
-This methodology was applied to \num{63} functions extracted from the HermitCore \autocite{lankes2016hermitcore} unikernel library \autocite{madhavapeddy2014unikernels}, covering \num{760} \ac{sloc} or over \num{2379} assembly instructions.
+This methodology was applied to \num{63} functions extracted from the HermitCore \autocite{lankes2016hermitcore} unikernel library \autocite{madhavapeddy2014unikernels}, covering \num{760} \gls{sloc} or over \num{2379} assembly instructions.
 Of those functions,~\num{18} had loops and~\num{33} had subcalls.
 Optimized variants were also verified for~\num{12} of the functions involved, resulting in \num{75} functions verified.
 There was even one function that featured recursion, which turned out to be the most challenging function to handle.
@@ -383,7 +383,7 @@ Formulating annotations that must hold for all loop iterations is not easy when 
 
 The closest related work to this, that of \textcite{matthews2006verification}, resulted in the verification of only \num{20} functions, with \num{631} assembly-level instructions in total.
 That is only \SI{26.67}{\percent} of the functions, or under \SI{26.5}{\percent} of the instructions, that we verified here.
-On top of that, the \acp{isa} they worked with are not as low-level as the \gls{arch} \ac{isa}.
+On top of that, the \glspl{isa} they worked with are not as low-level as the \gls{arch} \gls{isa}.
 While they verified functional correctness instead of a weaker property like \gls{memuse}, they also specifically reduced the complexity of the most complicated set of functions they verified by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
 
 \subsection{Hoare-Style Memory Usage}
@@ -398,7 +398,7 @@ This greatly simplified our proof strategies for proving \gls{memuse}.
 
 The change in methodology alone would not have been enough, however.
 As stated, we also generate much more information.
-That additional information consists of the full set of memory regions for each basic block, the corresponding \acp{mrr}, and the block's preconditions and postconditions.
+That additional information consists of the full set of memory regions for each basic block, the corresponding \glspl{mrr}, and the block's preconditions and postconditions.
 Having that information generated for them greatly reduces the work an end user must put in compared to our initial approach.
 
 %Analysis of Xen Binaries
@@ -412,17 +412,17 @@ While the aforementioned methodology produced by \textcite{tan2015auspice} is fu
 This means it would take longer to cover the same amount of functions we did even though it technically has more automation.
 Under normal circumstances, this approach can complete the proofs for two functions with a total of \num{97} assembly instructions in less than ten minutes.
 That is \SI{9.7}{insts\per\minute} compared to \SI{1.48}{insts\per\minute} for AUSPICE, \num{6.55} times as fast.
-We did have some functions that took an overly long period of time due to the suboptimality of \acl*{scf} with respect to minimizing symbolic execution, but those were atypical.
+We did have some functions that took an overly long period of time due to the suboptimality of \gls{scf} with respect to minimizing symbolic execution, but those were atypical.
 
 \subsection{Hoare-Logic-Based Control Flow Recovery}
-Changing focus to the contributions for \ac{cfr}, we have an algorithm (and implementation) for lifting \iac{hg} out of \pgls{arch} binary.
-\Acp{hg} are \gls{hoare-logic}-based \acp{cfg}
-The vertices of those \acp{hg} are symbolic states that consist of the following:
+Changing focus to the contributions for \gls{cfr}, we have an algorithm (and implementation) for lifting \pgls{hg} out of \pgls{arch} binary.
+\Glspl{hg} are \gls{hoare-logic}-based \glspl{cfg}
+The vertices of those \glspl{hg} are symbolic states that consist of the following:
 \begin{enumerate}
   \item \emph{predicates} containing information on registers, memory locations and flags and
   \item \emph{memory models} that provide pointer aliasing information.
 \end{enumerate}
-Each \ac{hg} edge is labeled with the corresponding assembly instruction.
+Each \gls{hg} edge is labeled with the corresponding assembly instruction.
 Our key intuition here is that those edges are one-step \emph{inductive}:
 each edge forms a \emph{Hoare triple}\index{Hoare!triple}
 \autocite{hoare1969axiomatic}.
@@ -432,31 +432,31 @@ This includes indirect branches, jump tables, and function calls/returns.
 The soundness of this overapproximation is ultimately shown with pen-and-paper proofs in \cref{ch:hg-formulation}.
 
 Additionally, \cref{hg-example} contains an example where instructions are potentially overlapping, which is often an arrangement found in obfuscated code.
-That example exhibits a \iac{rop} gadget that depends on whether two pointers alias or not, with the aliasing case resulting in an unexpected \inlineasm{ret} being executed. That aspect of the example is discussed further in \cref{weird}.
+That example exhibits \pgls{rop} gadget that depends on whether two pointers alias or not, with the aliasing case resulting in an unexpected \inlineasm{ret} being executed. That aspect of the example is discussed further in \cref{weird}.
 
 This work proved to be more scalable than Jakstab, recovering the control flow for \glssymbol{inst-total-lifted} instructions.
 
 \subsection{Exceptional Interprocedural Control Flow Recovery}
 The final contribution of this dissertation is a tool for static, interprocedural, automated \gls{cpp}-exception-aware \autocite{cxxEhAbi} binary-level control flow analysis.
-That tool produces \emph{\acp{eicfg}} using an abstract interpretation-inspired \autocite{cousot1976static,cousot1977abstract}, recursive-descent methodology \autocite{nagy2022bobw}.
+That tool produces \emph{\glspl{eicfg}} using an abstract interpretation-inspired \autocite{cousot1976static,cousot1977abstract}, recursive-descent methodology \autocite{nagy2022bobw}.
 It can do this even in the presence of recursion and some forms of indirect control flow.
-To accomplish this, the \acp{eicfg} document program state in a restricted domain that only concerns itself with the components of program state necessary to perform function calls and \ac{eh}.
+To accomplish this, the \glspl{eicfg} document program state in a restricted domain that only concerns itself with the components of program state necessary to perform function calls and \gls{eh}.
 This includes exception objects currently allocated, number of uncaught exceptions, and which exceptions are currently in a caught state.
 
 % LIMITATIONS
 Symbol-stripped binaries are supported, but may not perform well if they contain unresolvable indirections or unmodeled callbacks.
-Non-\gls{cpp} binaries, or \gls{cpp} ones that do not use \ac{eh}, are supported as well for flexibility.
+Non-\gls{cpp} binaries, or \gls{cpp} ones that do not use \gls{eh}, are supported as well for flexibility.
 
 % VALIDATION
-As with the other contributions in this dissertation, the produced \acp{eicfg} are \emph{overapproximative}.
-Every concrete path in a program, every path possible during dynamic execution, is included in its corresponding \ac{eicfg}.
+As with the other contributions in this dissertation, the produced \glspl{eicfg} are \emph{overapproximative}.
+Every concrete path in a program, every path possible during dynamic execution, is included in its corresponding \glspl{eicfg}.
 We informally argue that the abstract semantics that are symbolically executed overapproximate their corresponding concrete semantics \autocite{cousot1996abstract}.
-To strengthen this claim, we validated our abstract transition rules for \ac{eh} against the concrete implementations of the corresponding library functions.
+To strengthen this claim, we validated our abstract transition rules for \gls{eh} against the concrete implementations of the corresponding library functions.
 This was done by \emph{fuzzing} dynamically instrumented test binaries using generated abstract start and end states.
-In this fuzzing process, abstract start states are first concretized to actual \ac{cpu} states, then run against the function under test in an instrumented binary.
-Observation of the resultant \ac{cpu} state allows verifying whether or not the end state from abstract execution corresponds to that of actual concrete execution.
+In this fuzzing process, abstract start states are first concretized to actual \gls{cpu} states, then run against the function under test in an instrumented binary.
+Observation of the resultant \gls{cpu} state allows verifying whether or not the end state from abstract execution corresponds to that of actual concrete execution.
 The only case where overapproximation is not guaranteed is when an indirection cannot be resolved.
-Such cases are clearly marked in the \ac{eicfg}.
+Such cases are clearly marked in the \gls{eicfg}.
 
 % RESULTS
 We applied the tool to \gls{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
@@ -468,11 +468,11 @@ Those edges are ones tools such as Ghidra \autocite{ghidra} do not produce.
 \section{Limitations and Scope}
 None of the contributions in this dissertation cover the usage of concurrency or multithreaded code.
 We have scoped it out due to its complicated nature.
-Our \ac{isa} coverage is restricted to \gls{arch}, as targeting multiple \ac{isa} would require additional state modeling or further levels of abstraction.
-Our \ac{abi} coverage is restricted to System~V, as that requires assumptions about register invalidation during/after function calls.
+Our \gls{isa} coverage is restricted to \gls{arch}, as targeting multiple \gls{isa} would require additional state modeling or further levels of abstraction.
+Our \gls{abi} coverage is restricted to System~V, as that requires assumptions about register invalidation during/after function calls.
 We also assume that the per-instruction semantics in use and the state changes they express are sound (for example, that they are semantics that have been machine-learned from actual hardware \autocite{heule2016stratified,roessle2019verified}).
-This addition to the \ac{tcb} is required as for the most part we do not directly validate those semantics ourselves.
-Completely eliminating semantics from the \ac{tcb} would require testing against actual hardware, as done for some library functions in \cref{eicfg-validation}.
+This addition to the \gls{tcb} is required as for the most part we do not directly validate those semantics ourselves.
+Completely eliminating semantics from the \gls{tcb} would require testing against actual hardware, as done for some library functions in \cref{eicfg-validation}.
 
 Additionally, due to the aforementioned undecidability, none of these approaches are universal.
 They may fail on certain functions/binaries or need to annotate certain instructions with unsoundness warnings.
@@ -480,20 +480,20 @@ They may fail on certain functions/binaries or need to annotate certain instruct
 \subsection{Memory Usage}
 Due to the amount of user effort required, the memory-usage-focused contributions in this dissertation only target individual functions or small collections of functions.
 They also require an external tool to generate the disassembly under test.
-This disassembly must be loaded into the theorem prover from an external file or manually copied for the \ac{cfg}-driven work.
+This disassembly must be loaded into the theorem prover from an external file or manually copied for the \gls{cfg}-driven work.
 In the case of the Hoare-style work, it is directly copied into the generated theory files.
-Neither approach has support for \ac{eh} either, though the relevant library functions can be modeled as no-ops or terminators as needed.
+Neither approach has support for \gls{eh} either, though the relevant library functions can be modeled as no-ops or terminators as needed.
 For modeled functions, we assume
 
 Additionally, for the Hoare-style work specifically, we had to rule out \emph{recursion} as it was not a feature well-suited to automation in that framework.
-Usage of \inlineasm|goto| is also not supported due to not easily fitting into \ac{scf} structure.
+Usage of \inlineasm|goto| is also not supported due to not easily fitting into \gls{scf} structure.
 On the plus side, recursion seems to be uncommon in systems code, as we encountered only one function with it in the case study for that contribution.
 Further limitations of the Hoare-style approach can be found in \cref{se:xen}.
 
 \subsection{Control Flow Recovery}\label{cfr-assumptions}
 In order to reduce state space complexity, provide focus, and provide scalability when recovering control flow, we also:
 \begin{enumerate}
-  \item target potentially stripped \ac{cots} \ac{elf} binaries compiled with various levels of optimization;
+  \item target potentially stripped \gls{cots} \gls{elf} binaries compiled with various levels of optimization;
   \item do not deal with any functions executed after an exit or termination; and
   \item assume that all memory regions accessed by the binary are either aliasing, separate or enclosed \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}.
 \end{enumerate}
@@ -505,7 +505,7 @@ That allowed us to reduce the state space and also reuse previous executions.
 However, it also means that if a function pointer is passed as a parameter, its concrete value will be unknown.
 
 External functions also require some assumptions.
-Specifically, we assume that external calls properly follow the System~V \ac{abi} and do not interfere with their parent stack frames.
+Specifically, we assume that external calls properly follow the System~V \gls{abi} and do not interfere with their parent stack frames.
 This means that those registers considered volatile are invalidated when we encounter such calls, but we do not have to invalidate most other components of the state.
 An in-depth exploration of function call handling comes later in \cref{function-call-extension}.
 
@@ -514,9 +514,9 @@ In cases where we cannot obtain clean arrangements of regions and would instead 
 This ensures that the result of accessing such regions will just be \gls{bot}, allowing us to avoid engaging in generating innumerable states for all possible overlapping arrangements.
 From our experiments, this did not result in significant loss of the information necessary to successfully complete our analyses.
 
-For \acp{eicfg} specifically, we assume that no external calls throw exceptions themselves.
-We also do not model \inlineasm{setjmp}/\inlineasm{longjmp}, as they do not interact well with structured \ac{eh} \autocite{using-setjmp-and-longjmp}.
-Of course, the \ac{hg} work does not support \ac{eh}, though it can still analyze binaries containing the corresponding library calls.
+For \glspl{eicfg} specifically, we assume that no external calls throw exceptions themselves.
+We also do not model \inlineasm{setjmp}/\inlineasm{longjmp}, as they do not interact well with structured \gls{eh} \autocite{using-setjmp-and-longjmp}.
+Of course, the \gls{hg} work does not support \gls{eh}, though it can still analyze binaries containing the corresponding library calls.
 
 % no need for an Impact section
 
@@ -528,5 +528,5 @@ see \cref{ch:symbolic_execution}.
 
 After that, the Floyd-style approach to verification of \gls{memuse} mentioned above is presented in \cref{ch:cfg} while the Hoare-style approach is presented in \cref{ch:syntax}.
 I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
-followed by the interprocedural, exception-aware \ac{cfg} extractor in \cref{eicfg}.
+followed by the interprocedural, exception-aware \gls{cfg} extractor in \cref{eicfg}.
 Finally, this dissertation wraps up in \cref{ch:conclusions}.

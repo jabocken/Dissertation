@@ -58,7 +58,7 @@ That modified version was provided by \textcite{roessle2019verified}
 for generating assembly usable with their \gls{isabelle} parser.%
 \index{\texttt{angr}!\texttt{reassembly}}
 By building on \texttt{angr},
-the work of abstracting from binary to \ac{cfg} is handled with minimal user input.
+the work of abstracting from binary to \gls{cfg} is handled with minimal user input.
 
 To achieve minimal symbolic execution, cutpoints%
 \index{cutpoint}
@@ -143,7 +143,7 @@ is true. Whenever an exception occurs, it stops and returns~$\err$.
 If the execution were to continue forever
 without an exception or reaching the halting condition
 (as would happen with an infinite loop), the function returns $\infloop$.
-Formally, this is achieved by a standard \ac{lfp} construction.
+Formally, this is achieved by a standard \gls{lfp} construction.
 
 \subsection{Hoare Triples for Memory Usage}
 Unlike the usual formulation of
@@ -271,7 +271,7 @@ as a whole:
 \end{proof}
 In essence, Floyd-style verification%
 \index{Floyd!verification}
-models a program as \iac{cfg} where each edge is an implication.
+models a program as \pgls{cfg} where each edge is an implication.
 
 \subsection{Definition of Memory Usage}\label{sse:mem_pres}
 The formal definition of \gls{memuse}
@@ -431,7 +431,7 @@ These may be system calls or simply functions not currently under consideration
 due to unsupported features or lack of time.
 External functions are simply assumed to have correct behavior
 and are thus left out of the existing analysis,
-leaving those functions in the \ac{tcb}.
+leaving those functions in the \gls{tcb}.
 One issue that may occur is a desired function
 making an optimized tail call to an external function,
 which cannot be treated as part of the callee and prevents verification.
@@ -451,7 +451,7 @@ and shows why those are difficult to reason about.
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
 The assembly code was obtained by compiling a \gls{c} program containing the function
-with \ac{gcc} 7.2.0
+with \gls{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
 mentioned in \cref{se:cfg_overview}. The input is stored in \reg{edi}.
 \begin{lstlisting}[
@@ -520,7 +520,7 @@ For the \gls{memuse} proof of this function, we chose to associate annotations
 at the start of the function, an instruction that broke the loop,
 and the return address of the function
 (a logical variable, as the caller of the function is unspecified for this proof).
-\Cref{fig:pow2cfg} shows the Floyd invariant in \ac{cfg} form for this function.
+\Cref{fig:pow2cfg} shows the Floyd invariant in \gls{cfg} form for this function.
 The invariant carries through the preservation of memory,
 showing that region $\region{a}{1}$ maintains its value throughout.
 The equalities over \rbp\ and \rsp\ are used by the memory region reasoner.
@@ -549,7 +549,7 @@ the function is also shown to preserve the value of the stack pointer.
       b ->[out=-16, in=16, looseness=3] b;
     };
   \end{tikzpicture}
-  \caption{Floyd invariant for \lstinline|pow2| in \acs*{cfg} form}\label{fig:pow2cfg}
+  \caption{Floyd invariant for \lstinline|pow2| in \glsfmtshort{cfg} form}\label{fig:pow2cfg}
 \end{figure}
 Given the parent regions presented above, the proof that the Floyd invariant holds
 is executed automatically using the symbolic execution engine
@@ -586,7 +586,7 @@ The \gls{c} equivalent of that function is shown in \cref{factorial-c}.
   }
 \end{lstlisting}
 The assembly snippet shown in \cref{lst:factasm} is again
-the result of a function compiled with \ac{gcc} 7.2.0
+the result of a function compiled with \gls{gcc}[ 7.2.0]
 and disassembled by the tweaked \lstinline|reassembly| analysis \autocite{wang2017ramblr}.
 In this case, the function performs a recursive factorial calculation on the value~$n$
 stored in~\reg{dil} (the lowest eight bits of \reg{edi}/\rdi).
@@ -676,7 +676,7 @@ from~$\rspo$ due to the function's recursive nature.
       ] b;
     };
   \end{tikzpicture}
-  \caption{Floyd invariant for factorial in \acs*{cfg} form}\label{fig:factcfg}
+  \caption{Floyd invariant for factorial in \glsfmtshort{cfg} form}\label{fig:factcfg}
 \end{figure*}
 The set~$M$ of separated parent regions is characterized by the following assumptions:
 \begin{subequations}
@@ -755,7 +755,7 @@ for over five years now.%
 The term ``unikernel'' can refer to any single-address-space program.
 All that is required is that it be compiled with a library
 that provides all kernel code necessary to run the program.
-This bypasses the need for a separate \ac{os} \autocite{madhavapeddy2014unikernels},
+This bypasses the need for a separate \gls{os} \autocite{madhavapeddy2014unikernels},
 allowing the program to be used directly with a hypervisor%
 \index{hypervisor}
 or even run on a bare metal system with no additional support.
@@ -763,7 +763,7 @@ This allows for reduced overall size and a reduction in attack surface
 by leaving out those kernel components that are not necessary.
 
 Slightly implied by the mention of hypervisors,
-unikernels are intended for use in the same situations as traditional \acp{vm}
+unikernels are intended for use in the same situations as traditional \glspl{vm}
 or Docker containers.
 They are meant for simultaneous juxtaposed execution in a virtualized setting,
 with many single-purpose unikernels all performing their own tasks in isolation.
@@ -774,7 +774,7 @@ The unikernel library HermitCore \autocite{lankes2016hermitcore} was chosen%
 \index{HermitCore}
 to demonstrate the applicability of this methodology
 due to its established functionality and decent size.
-Designed for the \gls{arch} \ac{isa}, HermitCore is mostly written in C.
+Designed for the \gls{arch} \gls{isa}, HermitCore is mostly written in C.
 While it does use some inline assembly, not uncommon in kernel code,
 that is no issue for the assembly-level methodology presented here.
 The subset of HermitCore functions that were verified feature features
@@ -838,7 +838,7 @@ as most of the functions would otherwise have their bodies inlined.
     \label{tbl:functions}
     \begin{tabular}{lSSSSSSSS S[table-figures-integer=2]}
       \toprule
-      \thead{Functions} & {\thead{Count}} & {\thead{\acs*{sloc}}} &
+      \thead{Functions} & {\thead{Count}} & {\thead{\glsxtrshort{sloc}}} &
       {\thead{Insts\tnote{\dag}}} & {\thead{Loops}} & {\thead{Rec.}} &
       {\thead{Pointer\\args}} & {\thead{Globals}} & {\thead{Subcalls}} &
       {\thead{\texttt{-O3}}} \\
@@ -860,7 +860,7 @@ as most of the functions would otherwise have their bodies inlined.
   \end{threeparttable}
 \end{table*}
 
-\Cref{fig:dequeue_push,fig:buddy_large_avail} show the \acp{cfg} for two of
+\Cref{fig:dequeue_push,fig:buddy_large_avail} show the \glspl{cfg} for two of
 the HermitCore functions verified here,
 \lstinline|dequeue_push| and \lstinline|buddy_large_avail|.
 The former pushes a value onto a generic array-based queue
@@ -921,7 +921,7 @@ requires a loop invariant in addition to the pre- and postconditions.
     \end{tikzpicture}
     \caption{\lstinline|buddy_large_avail|}\label{fig:buddy_large_avail}
   \end{subfigure}
-  \caption{Floyd invariants for the described case study functions in \acs*{cfg} form}
+  \caption{Floyd invariants for the described case study functions in \glsfmtshort{cfg} form}
 \end{figure*}
 
 \section{On Usability}\label{se:usability}
@@ -999,11 +999,11 @@ a proof that the resulting symbolic state satisfies the Floyd invariant
 is generally required.
 In most cases, that proof can be handled by \gls{isabelle}[/HOL]
 using standard off-the-shelf libraries,
-either ones included with \gls{isabelle} or ones from the \ac{afp}
+either ones included with \gls{isabelle} or ones from the \gls{afp}
 (though not necessarily efficiently).
 Recursion is the primary exception,
 with the proofs of stack and frame pointer preservation
-requiring significant \ac{itp} over word arithmetic.
+requiring significant \gls{itp} over word arithmetic.
 
 \section{Summary}
 This chapter covered one method for formal verification
@@ -1015,14 +1015,14 @@ As a semi-automated approach,
 it requires setting up an invariant, which traditionally is a hard problem in itself.
 Requirements for \gls{memuse} invariants were provided for several examples.
 For recursive functions, more involved invariants are required,
-along with \ac{itp} to show preservation of the stack and frame pointers.
+along with \gls{itp} to show preservation of the stack and frame pointers.
 Invariants may include preconditions necessary for excluding exceptional behavior,
 which can include stack or buffer overflows.
 Such preconditions can be exposed directy
 by applying the methodology to a disassembled binary
 instead of deriving them from documents or source code annotations.
 
-The approach was applied to functions of HermitCore, a unikernel~\ac{os}.
+The approach was applied to functions of HermitCore, a unikernel~\gls{os}.
 \Gls{memuse} was formally proven for functions with loops, recursion,
 \gls{c} structs and unions, and dynamic memory operations.
 All verified functions were verified with non-optimized compilation,

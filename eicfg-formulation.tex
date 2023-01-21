@@ -1,6 +1,5 @@
-\chapter{\Acs*{eicfg} Formulation}\label{ch:eicfg-formulation}
-
-The derivation of \acp{eicfg} from a binary requires four additional things:
+\chapter{\Glsfmtshort{eicfg} Formulation}\label{ch:eicfg-formulation}
+The derivation of \glspl{eicfg} from a binary requires four additional things:
 \begin{enumerate}
     \item a static landing pad table,
     \item an abstract state model,
@@ -11,9 +10,9 @@ We describe those here.
 
 \section{Landing Pad Table}\label{sec:landing-pad-table}
 This information describes how unwinding should proceed given the unwinding reaching specific locations in a binary.
-It is extracted from the \acp{cie}, \acp{fde}, and \acp{lsda} of the binary under test and assumed to be correct.
+It is extracted from the \glspl{cie}, \glspl{fde}, and \glspl{lsda} of the binary under test and assumed to be correct.
 In our current formulation, an entry in the catch table is merely a pointer to the corresponding landing pad for this entry.
-While type pointers and exception specifications exist within the \acp{lsda} as well, we do not currently utilize that information.
+While type pointers and exception specifications exist within the \glspl{lsda} as well, we do not currently utilize that information.
 % I did try to get things working but the implementation was buggy in some edge cases and properly doing type matching requires some other work.
 % Plus there's a combination with the typeinfo indices that needs work.
 
@@ -124,17 +123,17 @@ This handling comes into play when dealing with nested catch blocks, exceptions 
 To ease register references, for some state $\sigma$ and named register \texttt{r}, the notation $\sigma.\mathtt{r}$ is shorthand for $\sigma.\rmap(\mathtt{r})$, e.g.\ $\sigma.\rdi\gls{equiv}\sigma.\rmap(\rdi)$.
 
 \section{Abstract Transition Rules}\label{sec:step-function}
-To go along with our definition of \acp{eicfg} in \cref{def:eicfg},
+To go along with our definition of \glspl{eicfg} in \cref{def:eicfg},
 we have defined our abstract transition relation in terms of logical rules.
 There are two sets of those rules.
 
-The first set of rules defines behavior for the instructions from the \gls{arch} \ac{isa}.
+The first set of rules defines behavior for the instructions from the \gls{arch} \gls{isa}.
 This includes non-deterministic conditional jump handling as well as handling for unknown external functions and a subset of indirect jumps and calls.
 Those rules and the additional state parts required to model them are elided here.
 The exception is how we deal with recursion, as that can be explained informally using elements already in~\gls{abs-state}.
 Assume a call to another function inside the binary for some state~$\sigma$. Then, if the return address to be pushed on the stack is already in $\sigma.\stack$, we instead treat that call as an unmodeled external call and continue execution past it.
 
-The second set of rules provides modeling for exception-related \ac{abi} calls.
+The second set of rules provides modeling for exception-related \gls{abi} calls.
 This set of rules is documented in \cref{fig:unwind,fig:step-rules1,fig:step-rules2} and elaborated on below.
 The following abbreviations are utilized in those rules.
 \begin{align}
@@ -437,7 +436,7 @@ Finally, the other helper function \inlineasm{_Unwind_GetRegionStart} stores the
 \section{Symbolic Execution}
 % TODO: maybe describe this as an alternative in the Symbolic Execution chapter? Or tie this into the work from \cref{hg}.
 We perform symbolic execution by application of the rules making up our abstract transition relation.
-For some initial abstract state $\sigma_0$, $\sigma_0.\rip$ is either manually provided or obtained from the binary's \ac{elf} info.
+For some initial abstract state $\sigma_0$, $\sigma_0.\rip$ is either manually provided or obtained from the binary's \gls{elf} info.
 Then we iteratively fetch the instruction at that address, increment~$\rip$ appropriately, and apply the applicable abstract transition rule to obtain successor states.
 If the transition rule results in multiple possible continuing states, we apply the symbolic execution step to each successor state.
 If no non-terminating states result, this path of execution ends.
@@ -451,7 +450,7 @@ For a more aggressive join, $\emap$, $\uncaught$, and $\caught$ can be excluded 
 
 \section{Argument for Overapproximation}
 We consider a formal definition of the concrete transition rules our abstract ones overapproximate outside the scope of this dissertation.
-This is because our abstraction focuses on the domain of exceptional control flow in terms of its \ac{abi}-level definition. By contrast, concrete rules require a concrete implementation.
+This is because our abstraction focuses on the domain of exceptional control flow in terms of its \gls{abi}-level definition. By contrast, concrete rules require a concrete implementation.
 Instead, we provide an informal argument for why our abstract transition rules are overapproximative.
 
 First, for normal (non-exception-related) assembly instructions, our abstract transition rules default to assigning~\gls{bot} to destination operands, overapproximating their effect.
@@ -467,11 +466,11 @@ Furthermore, not all indirections are resolvable.
 In these cases, we do not apply additional heuristics or guesses.
 Instead, we stop further exploration at the indirection, if a jump, and clearly annotate the output accordingly.
 Unresolved indirect calls are treated as unmodeled external calls, but the same principle applies.
-We thus informally argue that the produced \ac{eicfg} is overapproximative \emph{modulo} unresolved indirections.
-If the \ac{eicfg} is not annotated with any unresolved indirections, it is an overapproximation.
+We thus informally argue that the produced \gls{eicfg} is overapproximative \emph{modulo} unresolved indirections.
+If the \gls{eicfg} is not annotated with any unresolved indirections, it is an overapproximation.
 
 \section{Graphs}
-We have a specific node state for the \acp{eicfg} produced by our toolchain,
+We have a specific node state for the \glspl{eicfg} produced by our toolchain,
 previously described in \cref{sec:eicfg}.
 The graph node type~\gls{node} contains the following information:
 The current program counter,
@@ -503,14 +502,14 @@ to the exceptional state for control flow representation.
   \begin{equation*}
     (\mathtt{0x133d},[\mathtt{0x114e}],[],0,[],\gls{bot},\gls{bot}),
   \end{equation*}
-  which is what is shown in the \ac{eicfg} in full-detail mode.
-  In basic block mode, performed via postprocessing of the \ac{eicfg}, we can have a range of addresses instead of a single address for the node state. For this specific case, the basic block node representation is
+  which is what is shown in the \gls{eicfg} in full-detail mode.
+  In basic block mode, performed via postprocessing of the \gls{eicfg}, we can have a range of addresses instead of a single address for the node state. For this specific case, the basic block node representation is
   \begin{equation*}
     ([\mathtt{0x1325},\mathtt{0x133d}],[\mathtt{0x114e}],[],0,[],\gls{bot},\gls{bot}).
   \end{equation*}
 \end{example}
 
-The \acp{eicfg} themselves are represented in a slightly different form from that described in \cref{sec:eicfg}.
+The \glspl{eicfg} themselves are represented in a slightly different form from that described in \cref{sec:eicfg}.
 They consist of a set of nodes and a set of annotated edges that connect those nodes: $\gls{graph}\colon\{\gls{node}\}\times\{\gls{edge}\}$.
 The edge annotations are instructions for edges that follow standard control flow.
 \begin{example}[Full graph]

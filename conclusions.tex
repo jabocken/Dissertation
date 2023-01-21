@@ -7,13 +7,13 @@ This is due to
 \end{enumerate}
 Unfortunately, assembly-level verification, or analysis in general, is a fundamentally harder problem than source-level analysis due to the low level of abstraction.
 However, it can also produce highly reliable claims over software.
-Furthermore, by eliminating the need to trust the compiler and the semantics of whatever source language the program was written in, you can drastically decrease the \ac{tcb} in use.
+Furthermore, by eliminating the need to trust the compiler and the semantics of whatever source language the program was written in, you can drastically decrease the \gls{tcb} in use.
 
 Additionally, the set of properties mentioned above cannot be determined automatically under all circumstances. They are \emph{undecidable} properties.
-Because of this and the overheads that \ac{itp} can have, we designed
+Because of this and the overheads that \gls{itp} can have, we designed
 \begin{enumerate}
   \item \emph{semi-automated} methodologies for \gls{memuse} and later
-  \item non-\ac{itp} \emph{fully automated} methodologies for targeted control flow analyses.
+  \item non-\gls{itp} \emph{fully automated} methodologies for targeted control flow analyses.
 \end{enumerate}
 Those methodologies are briefly revisited below.
 
@@ -38,8 +38,8 @@ with automatically-selected cutpoints.
 It is very similar to the work of \textcite{matthews2006verification},
 but with a focus on \gls{memuse} specifically.
 The rewrite rules over memory accesses from \cref{memory_rewrite}
-result in additional \acp{vc} that would not be present in Matthews' framework.
-Those \acp{vc} would require time-consuming word arithmetic if the appropriate preconditions/assumptions were not present.
+result in additional \glspl{vc} that would not be present in Matthews' framework.
+Those \glspl{vc} would require time-consuming word arithmetic if the appropriate preconditions/assumptions were not present.
 The preconditions/assumptions simply establish separation and enclosure relations for the necessary memory regions.
 
 As a case study, we applied the methodology to \num{63} functions extracted from the HermitCore unikernel library.
@@ -47,14 +47,14 @@ Each function was compiled without optimizations, but for \num{12} we also targe
 In total, more than \num{2379} assembly instructions were verified in this way.
 
 \subsection{Hoare-Style Verification}
-Rather than using a more general \ac{cfg} to guide the verification,
-this methodology extracts more structured \acp{scf} from the function(s) under test.
-Such \iac{scf} is used as one of the proof ingredients for a generated \ac{fmuc}.
-The other proof ingredients are the generated memory regions, \acp{mrr}, and block conditions.
+Rather than using a more general \gls{cfg} to guide the verification,
+this methodology extracts more structured \glspl{scf} from the function(s) under test.
+Such \pgls{scf} is used as one of the proof ingredients for a generated \gls{fmuc}.
+The other proof ingredients are the generated memory regions, \glspl{mrr}, and block conditions.
 With the invariant generation as it currently is, user interaction is minimal.
 Under normal circumstances, users only need to weaken the condition for a loop entry block by merging it with the conditions of all of the loop's exit blocks.
 
-This methodology was applied to \num{251} functions from the Xen Project binaries examined, \xenpercentage\ of the total functions from those binaries.
+This methodology was applied to \num{251} functions from \gls{xen} binaries examined, \xenpercentage\ of the total functions from those binaries.
 Ultimately, \num{12252} instructions were covered with only \num{1047} manual lines of proof required.
 
 \subsection{Hoare Graphs}
@@ -65,7 +65,7 @@ They also include all of the ``weird'' behaviors that may arise due to the conve
 As an example, any potential stack overflow that could overwrite a return address must be represented in the end product, even if not intended by the programmers or even not visible in the source code.
 This also applies to control flow that could change depending on whether or not two pointers alias.
 To achieve that goal, the method here takes a potentially-stripped binary as input, with no debugging information or address labeling required.
-It produces \iac{hg} that contains:
+It produces \pgls{hg} that contains:
 \begin{enumerate}
   \item the assembly instructions found in the binary;
   \item the binary's control flow; and
@@ -78,22 +78,22 @@ Full success occurs when our technique completes and the proof obligations are d
 Such cases indicate that, under those assumptions, the lifted representation is a provable overapproximation of the binary.
 
 We have applied our approach to most of the binaries and shared objects of the Xen Hypervisor, covering \glssymbol{inst-total-lifted} instructions in total.
-This case study shows that our methodology is scalable and applicable to \ac{cots} software written without verification in mind.
-Though not my work, \acp{hg} can then be exported to the \gls{isabelle}[/HOL] theorem prover, where they can be formally verified.
+This case study shows that our methodology is scalable and applicable to \gls{cots} software written without verification in mind.
+Though not my work, \glspl{hg} can then be exported to the \gls{isabelle}[/HOL] theorem prover, where they can be formally verified.
 This second step essentially validates any inference made by the algorithms during step one.
 
 \subsection{Exceptional Interprocedural Control Flow Graphs}
-Many \gls{cpp} programs exhibit exceptional control flow that standard \ac{cfg} extraction tools in disassemblers and decompilers do not identify.
-To deal with that issue, we have provided \acp{eicfg} and a tool for generating them.
-\acp{eicfg} extend and narrow the focus of standard \acp{cfg} extracted from binaries.
+Many \gls{cpp} programs exhibit exceptional control flow that standard \gls{cfg} extraction tools in disassemblers and decompilers do not identify.
+To deal with that issue, we have provided \glspl{eicfg} and a tool for generating them.
+\Glspl{eicfg} extend and narrow the focus of standard \glspl{cfg} extracted from binaries.
 They do this by including nodes and edges for exceptional control flow while limiting the abstract state to only that domain required for exceptional info.
 
 Our abstract transition relation for exceptional control flow has been informally shown to overapproximate the concrete versions of those edges.
-This was achieved by fuzzing many of the individual functions of the \gls{cpp} \ac{eh} \ac{abi}.
+This was achieved by fuzzing many of the individual functions of the \gls{cpp} \gls{eh} \gls{abi}.
 The functions tested were each executed with \glssymbol{fuzz-count} test cases generated with arbitrary exceptional state.
-This approach also helped identify edge cases that were not specified in the \gls{cpp} \ac{eh} \ac{abi} \cite{cxxEhAbi}.
+This approach also helped identify edge cases that were not specified in the \gls{cpp} \gls{eh} \gls{abi} \cite{cxxEhAbi}.
 
-Furthermore, we have applied our \ac{eicfg} generator to \glssymbol{total-bins} real-world programs and libraries.
+Furthermore, we have applied our \gls{eicfg} generator to \glssymbol{total-bins} real-world programs and libraries.
 We identified \glssymbol{unique-throws} unique throws and were able to trace each one's exceptional control flow: \glssymbol{caught-throws} were potentially caught while \glssymbol{uncaught-throws} had no identified potential for being caught.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
@@ -125,9 +125,9 @@ That determination has yet to be made.
 
 \subsection{Memory Model Realism}
 Most applications do not run in isolation.
-Their behavior is limited by the kernel of whatever \ac{os} is in use, and that includes limits on the amount of memory they are allowed to use.
+Their behavior is limited by the kernel of whatever \gls{os} is in use, and that includes limits on the amount of memory they are allowed to use.
 
-In particular, process and thread stacks are limited by how they are laid out in (virtual) memory, and on top of that most modern \ac{os} kernels put limits on stack size as sanity checks.
+In particular, process and thread stacks are limited by how they are laid out in (virtual) memory, and on top of that most modern \gls{os} kernels put limits on stack size as sanity checks.
 The kernel limits are generally configurable, both at compile time as well as at runtime, but can require privileged access.
 Properly modeling those restrictions would potentially require formulating a more in-depth memory model.
 This is because the stack limits that are changed at runtime come in two forms:
@@ -142,17 +142,17 @@ Another restriction that would be interesting to model would be the practical re
 This could potentially reduce the state spaces of all of the contributions in this dissertation, as it would be a global restriction on memory operations.
 However, it could also complicate things instead.
 That is because dereferenced addresses must be \emph{canonical}: they must have their remaining 16 bits be equal in value to their 48\textsuperscript{th} bit.
-Usage of non-canonical addresses results in \acp{gpf} \autocite{intel2019manual}.
+Usage of non-canonical addresses results in \glspl{gpf} \autocite{intel2019manual}.
 We would thus have to add another termination condition to our symbolic execution engines.
 If achieved efficiently, however, it would more closely model concrete execution and potentially uncover further weird behavior.
 
 \subsection{Dealing with Contextual Information}
-Moreover, we find that the context-free nature of our \ac{hg} approach in \cref{hg} limits the number of function callbacks that are properly dealt with.
+Moreover, we find that the context-free nature of our \gls{hg} approach in \cref{hg} limits the number of function callbacks that are properly dealt with.
 Passing around immediates between functions as done in \cref{eicfg} does not significantly increase support for function callbacks either.
-This is because the \ac{eicfg} work currently requires the significant manual effort of building up a list of functions that take callbacks and their argument lists.
+This is because the \gls{eicfg} work currently requires the significant manual effort of building up a list of functions that take callbacks and their argument lists.
 That choice was made as treating all possible immediate-value function arguments as potential callbacks, even just ones within text section range, would cause too much overapproximation.
 Even then, with an abstract model that involves overapproximation, non-immediate values are sometimes passed to external or internal calls.
-One can check all not-known-to-be-executed function symbols in a binary, as also done for the \ac{eicfg} work, but that is unsound due to analyzing the functions out of context.
+One can check all not-known-to-be-executed function symbols in a binary, as also done for the \gls{eicfg} work, but that is unsound due to analyzing the functions out of context.
 
 The situation becomes even worse when stripped programs are involved, even ones that do not perform indirect calls or jumps.
 Such scenarios mean there are no function symbols available to check!
@@ -178,36 +178,36 @@ Semantics are not provided for interrupt-triggering instructions, which are inst
 While in principle simpler than modeling concurrency, this would still add additional complexity.
 Interrupts can be in both enabled and disabled states, and handlers can be changed.
 Both active interrupt handlers and signal handlers can be triggered at any point in a program when set.
-Neither of our \ac{cfg}-lifting approaches would be able to support state spaces of such sizes.
+Neither of our \gls{cfg}-lifting approaches would be able to support state spaces of such sizes.
 They would require further enhancement of their state space reduction techniques, which leads into the next \lcnamecref{conclusion-state-space}.
 
 \subsection{State Space Reduction}\label{conclusion-state-space}
 Additionally, it is, in theory, possible to craft a program that would result in state explosion via sufficiently complex indirect control flow.
 This is due to the overapproximation and prevention of early joining we do in order to deal with jump tables.
-The \ac{eicfg} work in particular suffers from such issues.
-While we were able to target programs with over \num{400000} instructions, our \acp{eicfg} generally do not scale far beyond that.
+The \gls{eicfg} work in particular suffers from such issues.
+While we were able to target programs with over \num{400000} instructions, our \glspl{eicfg} generally do not scale far beyond that.
 Even for smaller programs, we experienced timeouts and out-of-memory cases when a significant number of control flow nodes and edges were generated.
 
 Methods of reducing the state space while maintaining interprocedural exceptional analysis would provide for increased scalability and the ability to target even larger programs.
-For example, modeling of exception type info and integrating it into the $\landingpadtable$ determinations would allow pruning of dead branches, reducing the \ac{eicfg} tool's overapproximation.
+For example, modeling of exception type info and integrating it into the $\landingpadtable$ determinations would allow pruning of dead branches, reducing the \gls{eicfg} tool's overapproximation.
 % Wanted to use this to begin with but I couldn't get types table parsing fully working right
 
 Better pointer inference support would be beneficial as well.
 By that we mean identifying which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling.
 This could allow for reduction of infeasible memory models.
 
-\subsection{Integrating \Acs*{cfr} into Formal Frameworks}
+\subsection{Integrating \Glsfmtshort{cfr} into Formal Frameworks}
 Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique, including decompilation, binary verification and binary patching.
-However, while the \acp{hg} we generate can be validated in \gls{isabelle}, this validation is a manual approach.
-Furthermore, the validation done for \acp{eicfg} applies to individual steps and, while done as a concrete analysis, does not integrate with formal tools.
+However, while the \glspl{hg} we generate can be validated in \gls{isabelle}, this validation is a manual approach.
+Furthermore, the validation done for \glspl{eicfg} applies to individual steps and, while done as a concrete analysis, does not integrate with formal tools.
 
-Therefore, in order to increase reliability and trustworthiness of \cref{hg,eicfg}, full integration with \iac{itp} approach is desirable.
-For the \ac{hg} work, this would start off with increasing automation for the loading of \acp{hg} into a theorem prover and discharging the proofs.
-For the \ac{eicfg} work, this would involve providing \iac{itp} infrastructure for validating the work as a whole given the validation of individual steps.
+Therefore, in order to increase reliability and trustworthiness of \cref{hg,eicfg}, full integration with \pgls{itp} approach is desirable.
+For the \gls{hg} work, this would start off with increasing automation for the loading of \glspl{hg} into a theorem prover and discharging the proofs.
+For the \gls{eicfg} work, this would involve providing \pgls{itp} infrastructure for validating the work as a whole given the validation of individual steps.
 
 Both contributions would also benefit from a full formal implementation.
 That, however, would require the most work of all.
 Development of a rigorous, properly formal model is not a trivial task.
 This is the case even with access to mechanized proofs.
 As such, it would likely best be accomplished by breaking the task down into individual, reusable components.
-This may involve the development of a formal library for semantics that is specifically intended to lift machine code or assembly to \iac{ir} designed for the various tasks presented in this dissertation.
+This may involve the development of a formal library for semantics that is specifically intended to lift machine code or assembly to \pgls{ir} designed for the various tasks presented in this dissertation.

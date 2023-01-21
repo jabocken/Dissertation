@@ -43,27 +43,27 @@ were primarily verified by Dr.~Verbeek.
 \section*{Hoare-Style Verification}
 \label{attribute2}
 Following on from that work is a paper that built on our experiences from the previous verification work \autocite{verbeek2020automated}, \citetitle*{verbeek2020automated}.
-This work, which introduces the generation and verification of \acp{fmuc}, is described in \cref{ch:syntax}.
+This work, which introduces the generation and verification of \glspl{fmuc}, is described in \cref{ch:syntax}.
 
 Most of my primary contributions to this work were on the verification side of things.
 The first two big ones were application and development of syntactic rules
 for axiomatic reasoning over \gls{memuse}
 as applied to structured control flow (\cref{scf_hoare})
-as well as a method to automate the process of doing so, \iacf*{vcg}
+as well as a method to automate the process of doing so, \pgls{vcg}
 as described in \cref{sse:vcg}.
 The methodology for function-level compositionality in \cref{sse:fmuc_comp}
 was also a primary contribution of mine,
 as was the case study analysis in \cref{se:xen}.
 
-On the \ac{fmuc} generation side of things,
-I did most of the work on translating the Haskell \acp{fmuc}
-into the theorems and data types required to verify the \acp{fmuc} in \gls{isabelle},
-which included adapting the syntactic control flow used in \ac{fmuc} generation
+On the \gls{fmuc} generation side of things,
+I did most of the work on translating the Haskell \glspl{fmuc}
+into the theorems and data types required to verify the \glspl{fmuc} in \gls{isabelle},
+which included adapting the syntactic control flow used in \gls{fmuc} generation
 into a suitable form for the \gls{isabelle} work (\cref{isabelle_scf}).
-I also made some significant contributions to invariant generation in \cref{sse:inv_gen} and contributed some entries in the implemented Haskell semantics for additional instructions encountered in the process of \ac{fmuc} generation.
+I also made some significant contributions to invariant generation in \cref{sse:inv_gen} and contributed some entries in the implemented Haskell semantics for additional instructions encountered in the process of \gls{fmuc} generation.
 
-Dr.~Verbeek's contributions to the \ac{fmuc} generation are as follows.
-In order to properly generate \ac{fmuc} preconditions and postconditions,
+Dr.~Verbeek's contributions to the \gls{fmuc} generation are as follows.
+In order to properly generate \gls{fmuc} preconditions and postconditions,
 he formulated a symbolic execution machine model in Haskell for many common \gls{arch} instructions as well as additional ones encountered in the course of our case studies.
 Dr.~Verbeek also developed the \gls{z3} \autocite{de2008z3} interface
 for handling the memory region separation and enclosure decision problems,
@@ -71,8 +71,8 @@ mentioned in \cref{se:fmuc_gen},
 and did most of the work for control flow extraction (\cref{sse:cfg_extract}).
 
 \section*{Hoare Graphs}
-The first of two \ac{cfr} papers, \citetitle*{verbeek2022lifting} was again a collaboration with Dr.~Verbeek and others, with him and me being the major contributors to the work.
-It introduced the concept of \acp{hg} and provided formalisms, pen-and-paper proofs, a case study, and formal verification of some produced \acp{hg} \autocite{verbeek2022lifting}.
+The first of two \gls{cfr} papers, \citetitle*{verbeek2022lifting} was again a collaboration with Dr.~Verbeek and others, with him and me being the major contributors to the work.
+It introduced the concept of \glspl{hg} and provided formalisms, pen-and-paper proofs, a case study, and formal verification of some produced \glspl{hg} \autocite{verbeek2022lifting}. % would be fun to include this in the citation but that's kind of silly for the work that's discussing it
 
 The initial codebase and basic step function as well as the memory model framework were developed by Dr.~Verbeek, but I took ownership of it after that.
 While Dr.~Verbeek did contribute further adjustments during the process, most of the development from that point on was done by me.
@@ -81,12 +81,12 @@ For example, I made the decision to switch the individual instruction parsing ov
 I also transitioned the work from relying on unbounded integers in the \gls{z3} interface to utilizing \gls{z3}['s] bitvector formulas, providing more accuracy and precision.
 Additionally, development of instrumentation for and application of the tool to the real-world programs and libraries of the case study was all done by me.
 
-Finally, the formal proofs of \acp{hg} in \gls{isabelle} were performed entirely by Dr.~Verbeek.
+Finally, the formal proofs of \gls{hg} in \gls{isabelle} were performed entirely by Dr.~Verbeek.
 They have been documented in this dissertation for completion's sake.
 Most of the pen-and-paper proofs were also refined or completed by Dr.~Verbeek, but I did assist with those and provided some of the initial ones.
 
 \section*{Exceptional Interprocedural Control Flow Graphs}
-The second of the \ac{cfr} papers and the final work in this dissertation, this paper presents the concept of \acp{eicfg} and provides formalism, pen-and-paper proofs, a case study, and fuzzed validation of some of the relevant \ac{eh} library functions.
+The second of the \gls{cfr} papers and the final work in this dissertation, this paper presents the concept of \glspl{eicfg} and provides formalism, pen-and-paper proofs, a case study, and fuzzed validation of some of the relevant \gls{eh} library functions.
 
 While this work was also done in collaboration with Dr.~Verbeek, I did most of the actual development.
 This includes the implementation, formalisms, selection and analysis of the case study, and validation of components.

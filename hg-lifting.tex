@@ -1,16 +1,15 @@
 \chapter{Lattice-Based Formal Lifting and Hoare Graphs}\label{ch:hg-lifting}
-\acreset{hg} % for now
 The previous works in this dissertation provided ways of lifting binaries to some abstract representation using Floyd-style and Hoare-style methodologies.
 While the second method was an improvement on the first in terms of efficiency, automation, and coverage, there was plenty of room for improvement.
 Loops still required manual effort to deal with, memory regions that potentially aliased were not supported, and both recursion and indirect branches were scoped out.
-Furthermore, our \acp{scf} were susceptible to explosion, resulting in significant overheads for certain functions.
+Furthermore, our \glspl{scf} were susceptible to explosion, resulting in significant overheads for certain functions.
 Additionally, while possible, function composition was difficult to accomplish without further manual effort.
 Finally, that work still relied on assembly dumps and assumed programs could not jump into instructions, which is not always the case.
 
-To deal with those issues, we introduce the concept of \emph{\acp{hg}}.
-These \acp{hg} return to \iac{cfg}-style analysis, but with significant improvements.
+To deal with those issues, we introduce the concept of \emph{\glspl[prereset]{hg}}. % resetting for reintroduction
+These \glspl{hg} return to \pgls{cfg}-style analysis, but with significant improvements.
 First, the analysis itself is fully automated, much like the Hoare-style approach.
-Furthermore, \acp{hg} provide structured, nondeterministic memory models to deal with the memory aliasing problem.
+Furthermore, \glspl{hg} provide structured, nondeterministic memory models to deal with the memory aliasing problem.
 Loops and similar control flow structures requiring fixed points utilize an improved stabilization process involving a \emph{join-semilattice}, which also assists in reducing state space explosion.
 Support for some indirect calls and jumps was added in the form of overapproximative jump table calculations.
 Context-free function composition is included as well, reducing time and space consumption while allowing larger programs to be analyzed.
@@ -21,10 +20,10 @@ Identifying such edges is important for the detection of unexpected and unintend
 
 In short, this \lcnamecref{hg} of the dissertation contains the following contributions:
 \begin{itemize}
-  \item a trustworthy, automated approach to binary lifting via \acp{hg}, which provide a formal overapproximative relation between the binary and the lifted output;
+  \item a trustworthy, automated approach to binary lifting via \glspl{hg}, which provide a formal overapproximative relation between the binary and the lifted output;
   \item a demonstration that overapproximative binary lifting can be used to find ``weird'' edges in binaries; and
   \item the application of that binary lifting approach to all non-concurrent \gls{arch} executables of the Xen hypervisor.
-  In total, we successfully lifted \glssymbol{bin-success} binaries and \glssymbol{lib-func-success} library functions to \acp{hg}.
+  In total, we successfully lifted \glssymbol{bin-success} binaries and \glssymbol{lib-func-success} library functions to \glspl{hg}.
   \glssymbol{inst-total-lifted} % siunitx doesn't like trying to make a number capital, interesting
   assembly instructions were reached by the analyses.
 \end{itemize}
@@ -33,13 +32,13 @@ In short, this \lcnamecref{hg} of the dissertation contains the following contri
 \end{comment}
 We have made the associated code artifact for this contribution publicly available \autocite{bockenek2022artifact}.
 
-Below is an example of \iac{hg} and properties of interest within it.
-This \lcnamecref{ch:hg-lifting} is followed by an in-depth exploration of the technical formulation of \acp{hg} and their generation (\cref{ch:hg-formulation}).
+Below is an example of \pgls{hg} and properties of interest within it.
+This \lcnamecref{ch:hg-lifting} is followed by an in-depth exploration of the technical formulation of \glspl{hg} and their generation (\cref{ch:hg-formulation}).
 A practical application follows in \cref{ch:hg-results}.
 Finally, we wrap up in \cref{ch:hg-discussion}.
 
 \section{Example}\label{hg-example}
-\Cref{lst:ssm,fig:ssm} show a snippet of a binary in assembly form and a sample of its lifted \ac{hg}, respectively.
+\Cref{lst:ssm,fig:ssm} show a snippet of a binary in assembly form and a sample of its lifted \gls{hg}, respectively.
 For the sake of presentation, the example uses 32-bit instructions.
 Additionally, the symbolic value~\texttt{a} is used to represent the base address of some jump table. % TODO: referencing symbolic value gls entry would be nice
 The operations of that assembly snippet are as follows.
@@ -77,7 +76,7 @@ We explain several of the points made in the introduction using this example.
   float,
   style=x64,
   gobble=2,
-  caption=Example binary snippet for \acs*{hg} lifting,
+  caption=Example binary snippet for \glsfmtshort{hg} lifting,
   label=lst:ssm
 ]
   0x0 : 3dc3000000    cmp  eax,c3 |\label{hg-example-cmp}|
@@ -169,7 +168,7 @@ We explain several of the points made in the introduction using this example.
     \path[line width=5pt,->] (1a1) edge node [left] {\inlineasm{jmp}} (1);
     \path[line width=5pt,->] (1) edge node [below] {{\textbf{\inlineasm{ret}}}} (ret);
   \end{tikzpicture}
-  \caption{\Acs*{hg} example}\label{fig:ssm}
+  \caption{\Glsfmtshort{hg} example}\label{fig:ssm}
   %\Description{A diagram illustrating control flow represented by part of a symbolic state machine, representing instructions as edges and showing some predicate information as well as relevant memory model components.
     %It illustrates the overapproximation of the involved jump table
     %and shows a possible ``weird'' edge with the jump to instruction 1.}
@@ -193,7 +192,7 @@ The program would then jump to address~$\mathtt{1}$ instead of performing the in
 
 \subsection{Disassembly Requires Bounds Checking}
 Another symbolic value,~$a_\mathtt{r}$, represents the address initially stored at the top of the stack frame.
-The \ac{hg} contains an edge to a final vertex\footnote{state} where the instruction pointer is set to that address.
+The \gls{hg} contains an edge to a final vertex\footnote{state} where the instruction pointer is set to that address.
 To obtain that result, every other vertex on the path from vertex~$\mathtt{0}$ to that final vertex must contain enough information preserve the stack.
 Specifically, they must show that the return address has not been modified and that the frame and stack pointers (\rbp\ and \rsp) are managed properly throughout function execution.
 
@@ -211,9 +210,9 @@ In \cref{fig:ssm}, they are denoted with bold arrows.
 \end{remark}
 
 \subsection{Hoare Graphs Facilitate Formal Verification}
-The \ac{hg} is generated by the algorithm presented in \cref{sec:algorithm}.
+The \gls{hg} is generated by the algorithm presented in \cref{sec:algorithm}.
 While that algorithm has been proven sound with pencil-and-paper proofs for \cref{thm:algo_soundness}, stronger guarantees can be provided by formal verification.\index{formal!verification}
-To that end, \acp{hg} can be exported to the interactive theorem prover \gls{isabelle}[/HOL].
+To that end, \glspl{hg} can be exported to the interactive theorem prover \gls{isabelle}[/HOL].
 In that formulation, akin to our Floyd-style work from \cref{ch:cfg} or Hoare-style work from \cref{ch:syntax}, each vertex becomes its own lemma.
 \begin{example}[Vertices as lemmas]
   Vertex~\texttt{14} is translated to a Hoare triple\index{Hoare!triple} that states that the invariant associated with instruction address~\texttt{14} ensures, as a postcondition, the disjunction of the invariants associated with address~\texttt{1a}.
@@ -227,5 +226,5 @@ we apply joining of states to reduce the state space whenever possible.
 % Probably do not need a summary for this chapter, but leaving the stub just in case.
 \begin{comment}
   \section{Summary}
-  This \lcnamecref{ch:hg-lifting} provided an introduction to \acp{hg}, the motivation for their development, and a small example explaining their usage.
+  This \lcnamecref{ch:hg-lifting} provided an introduction to \glspl{hg}, the motivation for their development, and a small example explaining their usage.
 \end{comment}

@@ -1,18 +1,16 @@
 \chapter{Exceptional Interprocedural Control Flow Graphs}\label{ch:eicfg}
-\acreset{eicfg} % For now
-
-\Acp{hg} work well for \gls{c} programs or others that do not use structured \ac{eh}, but they do not provide the full picture for programs that do.
-For this purpose, we provide \emph{\acp{eicfg}}.
-These \acp{eicfg} contain control flow edges for the process of structured \ac{eh}.
-Those edges are obtained by modeling the \gls{cpp} \ac{eh} \ac{abi} \autocite{cxxEhAbi}.
-The states used in \acp{eicfg} are specifically targeted to the process of \ac{eh}, focusing on information about the exception objects and global exception info.
+\Glspl{hg} work well for \gls{c} programs or others that do not use structured \gls{eh}, but they do not provide the full picture for programs that do.
+For this purpose, we provide \emph{\glspl[prereset]{eicfg}}.
+These \glspl{eicfg} contain control flow edges for the process of structured \gls{eh}.
+Those edges are obtained by modeling the \gls{cpp} \gls{eh} \gls{abi} \autocite{cxxEhAbi}.
+The states used in \glspl{eicfg} are specifically targeted to the process of \gls{eh}, focusing on information about the exception objects and global exception info.
 Enough additional information and context are included to support indirect jumps and calls.
 
-We first provide more motivation for \acp{eicfg} in \cref{eicfg-motivation}.
-This is followed by an abbreviated explanation of \acp{eicfg} in \cref{sec:eicfg}, which is illustrated by a running example in \cref{eicfg-example}.
+We first provide more motivation for \glspl{eicfg} in \cref{eicfg-motivation}.
+This is followed by an abbreviated explanation of \glspl{eicfg} in \cref{sec:eicfg}, which is illustrated by a running example in \cref{eicfg-example}.
 After that is the technical formulation of our tool in \cref{ch:eicfg-formulation}.
 \Cref{ch:eicfg-validation} contains single-step validation in \cref{eicfg-validation} and a practical demonstration in \cref{eicfg-results}.
-The goal of that demonstration is to show that \acp{eicfg} provide improved coverage compared to a non-exceptional baseline analysis.
+The goal of that demonstration is to show that \glspl{eicfg} provide improved coverage compared to a non-exceptional baseline analysis.
 
 \begin{comment}
   This contribution was primarily my own effort.
@@ -20,17 +18,17 @@ The goal of that demonstration is to show that \acp{eicfg} provide improved cove
 All code produced for this \lcnamecref{eicfg}, to be published as an artifact, is available at \url{https://drive.google.com/file/d/1mFjHT0p-w9YbyRjcBCQ8sPHp3eboUdM2/view?usp=sharing}.
 
 \section{Extended Motivation}\label{eicfg-motivation}
-A normal \ac{cfg} provides a user with information on control flow transfers induced by \emph{jumps} and \emph{calls}.
-Given a specific jump or call instruction, one can look up in the \ac{cfg} the set of successor instructions and the information on which that successor selection is based.
+A normal \gls{cfg} provides a user with information on control flow transfers induced by \emph{jumps} and \emph{calls}.
+Given a specific jump or call instruction, one can look up in the \gls{cfg} the set of successor instructions and the information on which that successor selection is based.
 For sets with more than one element, such decisions are typically represented by expressions over flags (for example, $\mathasm{CF}$ and $\mathasm{ZF}$ for the carry and zero flag) or a jump table calculation.
 
-The labels of \iac{cfg} can be seen as \emph{state predicates}.
+The labels of \pgls{cfg} can be seen as \emph{state predicates}.
 That is, when an edge is labeled with a flag such as \inlineasm{ZF},
 that notation can be seen as a predicate on the value of the zero flag in the state of the originating node.
 More complex predicates can consist of logical expressions such as $\mathasm{CF}\land\mathasm{ZF}$, which checks if both \inlineasm{CF} and \inlineasm{ZF} are set.
 Higher-level predicates can have clauses such as $\mathasm{rax}=0$ or $\mathasm{DWORD PTR [rdi]}<5$.
 
-However, traditional \acp{cfg} produced by existing static analysis tools lack information on interprocedural indirect control flow.
+However, traditional \glspl{cfg} produced by existing static analysis tools lack information on interprocedural indirect control flow.
 This includes stack unwinding due to exception throwing, try-catch handling, and \gls{cpp}-style object cleanup.
 This information is not present because their analyses do not model the semantics of throw operations, even when static try-catch information is available.
 
@@ -75,16 +73,16 @@ We have verified that this holds for more complicated programs as well (some of 
       bEnd1[< draw] ->[unwind] bar'; bEnd' ->[unwind] catch; % Had to reenable bEnd1's ability to draw outgoing edges here as setting it on the edge itself didn't work.
     };
   \end{tikzpicture}
-  \caption{Ghidra-generated graph (summarized) with basic \acs*{eicfg} edges added}\label{fig:ghidra-example}
+  \caption{Ghidra-generated graph (summarized) with basic \glsfmtshort{eicfg} edges added}\label{fig:ghidra-example}
 \end{figure}
 
-\section{\acsp*{eicfg}}\label{sec:eicfg}
-Therefore, we produce \iac{eicfg}, which augments a normal \ac{cfg} with edges produced by \lstinline|try|, \lstinline|catch|, and \lstinline|throw| behavior.
+\section{\Glsfmtshortpl{eicfg}}\label{sec:eicfg}
+Therefore, we produce \pgls{eicfg}, which augments a normal \gls{cfg} with edges produced by \lstinline|try|, \lstinline|catch|, and \lstinline|throw| behavior.
 Specifically, it contains the edges for control flow produced by the execution of the compiled form of the \gls{cpp} \lstinline|throw| command.
 These additional edges are the dotted blue ones in \cref{fig:ghidra-example}.
 We also illustrate the edges for standard interprocedural control flow as dashed red ones.
 
-Instead of simple labels, \acp{eicfg} use \emph{exceptional state predicates} as labels.
+Instead of simple labels, \glspl{eicfg} use \emph{exceptional state predicates} as labels.
 Informally, the information on which exceptional control flow is based is:
 \begin{enumerate}
   \item the exception object, e.g., type info and rethrown state;
@@ -164,9 +162,9 @@ The full formal definition of the abstract states involved can be found later in
     }
 \end{lstlisting}
 
-We here provide a formal definition of \iac{eicfg}.
-\begin{definition}[EICFGs]\label{def:eicfg}
-  \Iac{eicfg} is a directed graph with instruction addresses as vertices and edges labelled with exceptional state predicates.
+We here provide a formal definition of \pgls{eicfg}.
+\begin{definition}[\Glsfmtshortpl{eicfg}]\label{def:eicfg}
+  \Pgls{eicfg} is a directed graph with instruction addresses as vertices and edges labelled with exceptional state predicates.
   There is an edge between instruction addresses $a_0$ and $a_1$ with label $P$ if the instruction at address $a_0$ leads to instruction address $a_1$ for any state that satisfies predicate $P$.
 \end{definition}
 
@@ -212,7 +210,7 @@ We here provide a formal definition of \iac{eicfg}.
   ...
   129c:  call  10f0 <__cxa_free_exception> |\label{lst:example-free}|
 \end{lstlisting}
-Some of the additional information provided by \iac{eicfg} is illustrated in \cref{fig:example-unwinding},
+Some of the additional information provided by \pgls{eicfg} is illustrated in \cref{fig:example-unwinding},
 which models the process of throwing an exception from the same example program as \cref{fig:ghidra-example}.
 The representation in the figure indicates the process of unwinding from one throw site in the control flow graph to a try-catch block or cleanup landing pad.
 This path was triggered by the snippet of assembly shown in \cref{lst:example-throw}, which allocates (\instref{lst:example-allocate}{125b}), initializes (\instref{lst:example-initialize}{126d}), and throws (\instref{lst:example-throw-call}{1286}) an exception.

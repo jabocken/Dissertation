@@ -1,20 +1,20 @@
 \chapter{Experimental Results}\label{ch:hg-results}
-This \lcnamecref{ch:hg-results} covers our real-world exploration of the \ac{hg} generation algorithm.
-It also includes a verification methodology for the generated \acp{hg}.
+This \lcnamecref{ch:hg-results} covers our real-world exploration of the \gls{hg} generation algorithm.
+It also includes a verification methodology for the generated \glspl{hg}.
 Finally, it discusses some of the potential error cases that would prevent successful verification.
 
 The work in \cref{sec:not-me-proofs,sec:not-me-failures} is credited primarily to Dr.~Freek Verbeek.
 I have included it in this dissertation for completeness and consistency, as well as to have a space where it can be seen without the restrictions of a limited-page paper format.
 
 \section{Hoare Graph Extraction}\label{hg-extraction}
-We applied \ac{hg} extraction to:
+We applied \gls{hg} extraction to:
 \begin{enumerate}
   \item several stripped binaries of CoreUtils as found in a standard Ubuntu distribution;
-  \item a binary with a manually induced buffer overflow, confirming that no \ac{hg} is extracted; and
+  \item a binary with a manually induced buffer overflow, confirming that no \gls{hg} is extracted; and
   \item all \glssymbol{bin-total} \gls{arch} binaries and all \glssymbol{lib-func-total} functions from the 25 shared objects we identified in the \gls{xen} hypervisor.
 \end{enumerate}
 This \lcnamecref{hg-extraction} focuses on the Xen case study specifically.
-The Xen Project is a mature, industrial-strength hypervisor used in many production systems, including Amazon's cloud platforms \autocite{chisnall2008definitive}.
+\Gls{xen} is a mature, industrial-strength hypervisor used in many production systems, including Amazon's cloud platforms \autocite{chisnall2008definitive}.
 Hypervisors provide a method for managing multiple virtual instances of operating systems (guests) on a physical host.
 Xen is a suitable case study because of two things:
 \begin{itemize}
@@ -57,13 +57,13 @@ Xen is a suitable case study because of two things:
   \end{tabular}
 \end{table}
 
-The analysis was performed on a machine with a six-core (twelve logical cores), \SI{2.9}{\giga\hertz} Intel Core i9-8950HK \ac{cpu}.
-That machine had \SI{31}{\gibi\byte} of \ac{ram}
-and \SI{32}{\gibi\byte} of swap space on a KXG50PNV1T02 NVMe \ac{ssd}.
-Its \ac{os} was Linux Mint 20.1 Cinnamon.
+The analysis was performed on a machine with a six-core (twelve logical cores), \SI{2.9}{\giga\hertz} Intel Core i9-8950HK \gls{cpu}.
+That machine had \SI{31}{\gibi\byte} of \gls{ram}
+and \SI{32}{\gibi\byte} of swap space on a KXG50PNV1T02 NVMe \gls{ssd}.
+Its \gls{os} was Linux Mint 20.1 Cinnamon.
 The version of Xen under test was 4.12.
 \begin{remark}[Parallelization]
-  Our tool for \ac{hg} extraction is not in itself parallelized.
+  Our tool for \gls{hg} extraction is not in itself parallelized.
   That means the core count listed above did not directly affect the execution times shown below.
   However, the only restriction on running multiple instances of the tool simultaneously is the availability of system resources.
   Thus, in the published artifact \autocite{bockenek2022artifact} we provided examples of using GNU\index{GNU} parallel \autocite{Tange2011a} to perform analyses efficiently.
@@ -71,15 +71,15 @@ The version of Xen under test was 4.12.
 
 \Cref{tab:xen} shows an overview of the results.
 The upper part of the table shows binaries.
-Lifting of the binaries was done by starting the extraction algorithm at each binary's \ac{elf} entry point and exploring all reachable assembly instructions.
+Lifting of the binaries was done by starting the extraction algorithm at each binary's \gls{elf} entry point and exploring all reachable assembly instructions.
 This includes all resolvable internal function calls.
-The lower part shows library functions in \acp{so}.
-For every \ac{so} file, all externally exposed functions as reported by the \lstinline|nm| utility were considered.
+The lower part shows library functions in \glspl{so}.
+For every \gls{so} file, all externally exposed functions as reported by the \lstinline|nm| utility were considered.
 Lifting individual functions required starting the extraction algorithm at the function's address and exploring all reachable assembly instructions from that point.
 As with the binaries, that included resolvable calls to other internal functions.
 
 \subsection{Failure Cases}\label{sec:failure}
-Three issues may prevent lifting a binary to \iac{hg}, shown in the second column of \cref{tab:xen}.
+Three issues may prevent lifting a binary to \pgls{hg}, shown in the second column of \cref{tab:xen}.
 These issues are explained below.
 
 \subsubsection{Unprovable Return Addresses}
@@ -88,7 +88,7 @@ When a \inlineasm{ret} instruction is encountered,
 the current precondition\footnote{symbolic state predicate}
 must be strong enough to prove that the return address at the top of the current stack frame has not been modified.
 Furthermore, that precondition must also be strong enough to show that the value of the stack pointer has been restored to the initial value it held on function entry.
-If the current precondition is not strong enough to satisfy those conditions, the algorithm does not produce \iac{hg}.
+If the current precondition is not strong enough to satisfy those conditions, the algorithm does not produce \pgls{hg}.
 This is because it cannot prove return address integrity.
 A breakdown of these cases occurs later in \cref{hg-results-summary}.
 
@@ -106,9 +106,9 @@ Further discussion of the function timeouts can be found later in \cref{sec:timi
 
 \subsection{Successful Cases}\label{hg-successes}
 As a reminder, the basic sanity properties being checked were return address integrity, bounded control flow, and calling convention adherence.
-In total, those properties could be proven and \iac{hg} could be generated for \glssymbol{bin-success} out of \glssymbol{bin-total} binaries and \glssymbol{lib-func-success} out of \glssymbol{lib-func-total} library functions.
+In total, those properties could be proven and \pgls{hg} could be generated for \glssymbol{bin-success} out of \glssymbol{bin-total} binaries and \glssymbol{lib-func-success} out of \glssymbol{lib-func-total} library functions.
 
-The third and fourth columns of \cref{tab:xen} show the number of instructions lifted and the number of states of the \ac{hg}.
+The third and fourth columns of \cref{tab:xen} show the number of instructions lifted and the number of states of the \gls{hg}.
 Taking both the binaries and shared objects into account, \glssymbol{inst-total-lifted} instructions were lifted.
 As states belonging to the same address are joined whenever compatible, the number of resultant states is close to the number of instructions.
 State overhead scales with the amount of predicted control flow-related immediate values.
@@ -124,7 +124,7 @@ Similarly, unresolved indirect calls are often caused by a lack of context for f
 In such cases, a function pointer is passed as a parameter (or through a global variable) from function to function.
 Programmer-supplied function arrays are another source of non-resolution.
 As function calls are handled without context, the specific function pointer to select is unknown at call time.
-The utilized jump table heuristic cannot deal with such cases either as it cannot process the programmer-provided \ac{elf} data sections.
+The utilized jump table heuristic cannot deal with such cases either as it cannot process the programmer-provided \gls{elf} data sections.
 
 \subsection{Timing}\label{sec:timing}
 \begin{figure}
@@ -162,18 +162,18 @@ In general, while some correlation exists between instruction count and verifica
 It can thus be inferred that complexity of the control flow itself is a major contributor to analysis time.
 
 \subsection{Summary}\label{hg-results-summary}
-To reiterate, we lifted \iac{hg} for \glssymbol{lib-func-success} out \glssymbol{lib-func-total} functions (\SI{98}\percent).
+To reiterate, we lifted \pgls{hg} for \glssymbol{lib-func-success} out \glssymbol{lib-func-total} functions (\SI{98}\percent).
 We can account for why this number is relatively high:
 \begin{itemize}
   \item For many functions, any pair of pointers \emph{to the local stack frame} abided by any of the four relations for which we accurately model memory relations (aliasing, separations, enclosed within, encloses).
   As a result, even if the heap and the global memory space were grossly overapproximated, the local stack frame was modeled accurately and return address integrity could be proven.
   \item In the case of an unresolved function call, we treated the function overapproximatively as an unknown external function, allowing continued analysis.
   Typical reasons for unresolved indirections include callbacks: a function pointer is set by some function~$f$ and is retrieved and called back in function~$g$. A context-sensitive approach would be able to increase the number of supported indirect calls, but this would need to be done in a sufficiently scalable way.
-  \item Even though not all instructions of the \gls{arch} \ac{isa} are supported, all instructions occurring in the case study are, so this is not a reason why functions were rejected.
+  \item Even though not all instructions of the \gls{arch} \gls{isa} are supported, all instructions occurring in the case study are, so this is not a reason why functions were rejected.
 \end{itemize}
 The unprovable return address cases can also be broken down further:
 \begin{itemize}
-  \item Some of the rejections constitute functions that do not adhere to the calling conventions of the System~V \ac{abi}.
+  \item Some of the rejections constitute functions that do not adhere to the calling conventions of the System~V \gls{abi}.
   Manual analysis of these cases shows that these are all compiler-generated functions that are not required to follow calling conventions.
   \item Other rejections were caused by preconditions that were insufficiently strong enough for the derivation of overapproximative bounded sets of concrete values for the next instruction pointers.
   This may occur when an array or struct is stored on the stack and accessed via variable offset.
@@ -182,7 +182,7 @@ The unprovable return address cases can also be broken down further:
 \end{itemize}
 
 \section{Formal Proofs in \texorpdfstring{\gls{isabelle}[/HOL]}{Isabelle/HOL}}\label{sec:not-me-proofs}
-For several CoreUtils binaries, we extracted \iac{hg} and exported it to the \gls{isabelle}[/HOL] theorem prover.
+For several CoreUtils binaries, we extracted \pgls{hg} and exported it to the \gls{isabelle}[/HOL] theorem prover.
 The binaries are closed-source, taken from a standard MacOS 11.5.2 distribution.
 \Cref{tab:isa} provides an overview of the binaries, the number of instructions and Hoare triples, and the number of resolved indirections (there are no unresolved indirections).
 Without exception, all Hoare triples could be proven automatically.
@@ -216,7 +216,7 @@ This engine is based on a library of formally proven correct simplification theo
 Finally, we support automatic generation of implicit assumptions necessary for formal proofs.
 The informal algorithm can implicitly make assumptions that, e.g., regions in the global memory space are not overlapping with regions from the stack frame.
 A formal proof must explicitly assume that.
-Effectively, each and any implicit assumption made during \ac{hg} generation is formalized and exported to \gls{isabelle}[/HOL].
+Effectively, each and any implicit assumption made during \gls{hg} generation is formalized and exported to \gls{isabelle}[/HOL].
 
 \section{Examples of Failures}\label{sec:not-me-failures}
 This \lcnamecref{sec:not-me-failures} covers some specific failure cases for our verification tool.

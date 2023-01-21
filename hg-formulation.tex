@@ -1,5 +1,5 @@
 \chapter{Technical Formulation}\label{ch:hg-formulation}
-This \lcnamecref{ch:hg-formulation} contains the details of \ac{hg} lifting and the necessary \emph{symbolic states}.
+This \lcnamecref{ch:hg-formulation} contains the details of \gls{hg} lifting and the necessary \emph{symbolic states}.
 First with some introductory concepts for our symbolic states in \cref{hg-concepts},
 then detailed coverage of our state predicates and memory models in \cref{sec:predicates,sec:memory-models},
 and finally the lifting algorithm itself in \cref{sec:algorithm}.
@@ -7,13 +7,13 @@ These concepts are accompanied by explanations and proofs.
 
 \section{Starting Concepts}\label{hg-concepts}
 For this \lcnamecref{hg}, we have the following types:
-\begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries \glsentryname{mem}}]
+\begin{description}[leftmargin=!,labelwidth=\widthof{\bfseries\glsentryname{mem}}]
   \item[\gls{inst2}] a structured representation of assembly instructions
   \item[\gls{predicate}] state predicates (\cref{sec:predicates})
   \item[\gls{mem}] memory models (\cref{sec:memory-models})
   \item[\glsxtrfmt{word}n] words of bit length~$n$, with a default of \SI{64}\bit
 \end{description}
-The vertices of \iac{hg} are represented by the aforementioned symbolic states, which are tuples of type
+The vertices of \pgls{hg} are represented by the aforementioned symbolic states, which are tuples of type
 \begin{equation*}
   \gls{predicate}\times\gls{mem}.
 \end{equation*}
@@ -29,7 +29,7 @@ where~$X$ can be either a predicate or a memory model.
   The behavior of the binary is modeled by some set of concrete states~\gls{concrete-state} and some deterministic black-box transition relation~\gls{black-box-transition} over concrete states.
 \end{definition}
 \begin{definition}[Hoare graphs]
-  \Iac{hg} is defined as a tuple
+  \Pgls{hg} is defined as a tuple
   \begin{equation*}
     \langle\gls{abs-state}, \gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle,
   \end{equation*}
@@ -38,7 +38,7 @@ where~$X$ can be either a predicate or a memory model.
 
 Furthermore, the algorithm requires the definition of a \emph{join} operation over symbolic states.
 This operation soundly merges the information stored in two such states.
-It is required because the algorithm explores the \ac{hg} state space by recursively adding new vertices/states and edges on the fly.
+It is required because the algorithm explores the \gls{hg} state space by recursively adding new vertices/states and edges on the fly.
 Joining serves two purposes:
 \begin{enumerate}
   \item to prevent state space explosion and
@@ -47,7 +47,7 @@ Joining serves two purposes:
 If an instruction address is visited more than once,
 the \emph{supremum}\footnote{equivalent of summation for joining}
 of all symbolic states associated with that address
-is computed until \iac{lfp} is reached.
+is computed until \pgls{lfp} is reached.
 
 We therefore define an algebraic \emph{join-semilattice}
 %as discussed in \cref{lattice-background}
@@ -59,8 +59,8 @@ This join-semilattice is depicted as the tuple $\langle\gls{abs-state},\gls{join
 where~\gls{abs-state} is the type of symbolic states
 and~\gls{join} denotes the join operation.
 The desired partial ordering over~\gls{abs-state}, \gls{order}, is then derived
-by defining $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1]$ as $\gls{symbolic-state}[_1] = \gls{symbolic-state}[_0] \sqcup \gls{symbolic-state}[_1]$.
-Intuitively, $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1]$ denotes that $\gls{symbolic-state}[_0]$ is ``less abstract'' tha	n $\gls{symbolic-state}[_1]$.
+by defining $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1]$ as $\gls{symbolic-state}[_1] = \gls{symbolic-state}[_0]\gls{join}\gls{symbolic-state}[_1]$.
+Intuitively, $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1]$ denotes that $\gls{symbolic-state}[_0]$ is ``less abstract'' than $\gls{symbolic-state}[_1]$.
 
 In a typical setting, the join operation would be implemented by a disjunction.
 However, using plain disjunction as a join does not provide sufficient abstraction for our purposes; it is too precise.
@@ -76,12 +76,12 @@ for any concrete state~\gls{concrete-state}:
 
 Furthermore, the partial ordering derived from this join is \emph{coarser} than ordering based on implication.
 That is, $P\gls{order}Q\implies(s\gls{holds}P\implies Q)$.
-As \gls{order} is used as a termination condition during \ac{lfp} computation,
+As \gls{order} is used as a termination condition during \gls{lfp} computation,
 its coarseness is important both to ensure termination of the algorithm and to reduce running time.
 In other words, the join must be of sufficient coarseness to ensure that there are no infinitely descending chains of symbolic states $\gls{symbolic-state}[_0] \gls{order} \gls{symbolic-state}[_1] \gls{order} \dotsb$.
 However, too much coarseness is undesirable.
 An overly coarse join, such as one that just produces an always-true predicate,
-would result in \iac{hg} that is too abstract and over which no properties could be proven.
+would result in \pgls{hg} that is too abstract and over which no properties could be proven.
 
 Finally, as a symbolic state consists of a predicate and a memory model, we define a subjoin for both.
 
@@ -117,7 +117,7 @@ In formal notation, this is:
   \gls{expression}\times\gls{nat}\mid
   \mathsf{Op}\times[\gls{expression}]
 \end{equation}
-\nomenclature[operator]{$\coloneqq$}{Indicates that the \ac{rhs} defines the \ac{lhs} for \ac{hg} and \ac{eicfg} work}%
+%\nomenclature[operator]{$\coloneqq$}{Indicates that the \gls{rhs} defines the \gls{lhs} for \gls{hg} and \gls{eicfg} work}%
 We identify a subset of these symbolic expressions called \emph{constant expressions} (\gls{constant}).
 These expressions cannot contain state parts\index{state!part}
 such as registers, flags, or memory regions.%
@@ -135,15 +135,14 @@ This value does not change during symbolic execution\index{symbolic!execution}.
 In notation, clauses\index{state!predicate!clause}
 take the form $\gls{expression} \mathbin{\square} \gls{constant}$,%
 \nomenclature[operator]{$\square$}{A placeholder for some binary relation}%
-\nomenclature[operator]{$\in$}{Indicates that the \ac{lhs} is an element of the set on the \ac{rhs}}
+%\nomenclature[operator]{$\in$}{Indicates that the \gls{lhs} is an element of the set on the \gls{rhs}}
 where $\square\in\{=,\neq,<,<_s,\ge,\ge_s\}$.
 The~$\square_s$ relations treat their operands as signed,
 while the corresponding non-subscripted versions treat their operands as unsigned.
 
-There are also two special clauseless predicates,~\gls{top}%
-and~\gls{bot}.
+There are also two special clauseless predicates,~\gls{top} and~\gls{bot}.
 Those special predicates respectively indicate always true (holds for any state) and always false (holds for no state).
-\Gls{bot} is also used to indicate an unknown~\gls{constant}.%
+\gls{bot} is also used to indicate an unknown~\gls{constant}. % For some reason \Gls{bot} isn't working
 \begin{definition}[Predicate join]\label{def:join}
   The aforementioned join\index{lattice!join}
   of two predicates~$P$ and~$Q$,%
@@ -320,7 +319,7 @@ Finally, regions in sibling nodes are separate.
 \end{definition}
 Such relations hold \emph{necessarily} if and only if they hold in all concrete states~\gls{concrete-state}.
 For example, $\region{\rsio}{4}\gls{separate}\region{\rsio+4}{4}$ is a necessarily-separate relation as there are no values of~$\rsio$ for which those two regions are not separate.
-The \ac{smt} solver/theorem prover \gls{z3} \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses\index{symbolic!address}
+The \gls{smt} solver/theorem prover \gls{z3} \autocite{de2008z3} is used to establish whether these ``necessarily''-relations hold for symbolic addresses\index{symbolic!address}
 given the current state predicate\index{state!predicate}.
 This is done via expression translation directly to \gls{z3}['s] bit-vector\index{numeric!bit vector}
 representations, meaning no information is lost in the conversion
@@ -466,18 +465,18 @@ For example, we have $(\region\rdio8\gls{alias}\region\rsio8) \in \mathcal{R}(M)
     \item Region $r_0$ is necessarily separate from $t_1$.
     In this case, since mapping $f$ is possibly true, it must assign \gls{separate} to any region in $t_1$.
     Thus, tree $t_1$ is not modified and region $r_0$ is recursively inserted into $M$.
-    The \ac{ih} then finishes the proof.
+    The \gls{ih} then finishes the proof.
     \item Region $r_0$ is necessarily enclosed by a top-level region of $t_1$.
     Since mapping $f$ is possibly true, it must assign \gls{separate} to all regions of $M$.
     Therefore, the insertion function does not modify $M$.
     Since $r_0$ and $r_1$ do not alias, the top-level regions $R_1$ of tree $t_1$ can remain unmodified as well.
-    Region $r_0$ is recursively inserted into a child of $t_1$, proof follows from the \ac{ih}.
+    Region $r_0$ is recursively inserted into a child of $t_1$, proof follows from the \gls{ih}.
     \item Tree $r_1$ is necessarily enclosed into region $r_0$.
     In this case, since mapping $f$ is possibly true, it must assign \gls{encloses} to all regions of $t_1$.
     Therefore, tree $t_1$ is recursively inserted as subtree of $r_0$, producing a set of trees.
     For the remaining regions not in $t_1$, $f$ can hold arbitrary relations.
     Therefore any $t'$ in the produced set is recursively inserted into $M$.
-    Again, the \ac{ih} then finishes the proof.
+    Again, the \gls{ih} then finishes the proof.
     \item As an extra case, consider when no relation can necessarily be established. In that case, all of the above proofs apply, as memory models are generated for each possible case within this set.\footnote{%
       This does \emph{not} include partially overlapping cases, as described in the previous \lcnamecref{ch:hg-lifting}.%
     }\qedhere % including this last case for now just in case
@@ -585,7 +584,7 @@ To strengthen our arguments, we prove that the join over memory models we have p
 \end{remark}
 
 \section{Algorithm}\label{sec:algorithm}
-\Cref{alg:invgen} provides the base functionality for \ac{hg} extraction.
+\Cref{alg:invgen} provides the base functionality for \gls{hg} extraction.
 That base functionality is then extended in two ways:
 \begin{enumerate}
   \item the addition of a context-free approach to function calls (see \cref{function-call-extension}) and
@@ -594,8 +593,8 @@ That base functionality is then extended in two ways:
 In order to do this, the algorithm maintains two objects.
 First, \pgls{bag} of the produced symbolic states that have yet to be explored.
 Function \gls{explore} is repeatedly called until that \gls{bag} is empty.
-Second, the current \ac{hg} \gls{hg}.
-When the \gls{bag} is empty, \gls{hg} is the final \ac{hg}.
+Second, the current \gls{hg} \gls{hg-var}.
+When the \gls{bag} is empty, \gls{hg-var} is the final \gls{hg}.
 
 Furthermore, the algorithm requires a function~\gls{step-hg-semantics} that models instruction semantics.
 Our implementation supports a wide range of \gls{arch} instructions,
@@ -688,21 +687,21 @@ In very specific cases it even results in more preciseness.
 \subsection{Base Algorithm}
 
 \begin{algorithm}
-  \caption{Base version of \acs*{hg} extraction}
+  \caption{Base version of \glsfmtshort{hg} extraction}
   \label{alg:invgen}
   \algnewcommand{\IIf}[2]{\State\algorithmicif\ #1\ \algorithmicthen~#2}
   \begin{algorithmic}[1]
     \Function{explore}{}
       \State pop \gls{symbolic-state} from \gls{bag}\label{line:pop}
-      \If{$\exists\gls{symbolic-state}[_c]\in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state}$}\label{line:compat}
+      \If{$\exists\gls{symbolic-state}[_c]\in\gls{hg-var}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state}$}\label{line:compat}
         \IIf{$\gls{symbolic-state}\gls{order} \gls{symbolic-state}[_c]$}{\Return}\label{line:terminate}
         \State $\gls{symbolic-state}[_j]\coloneqq \gls{symbolic-state}\gls{join}\gls{symbolic-state}[_c]$\label{line:join}
-        \State $\gls{hg}{}[\gls{symbolic-state}[_c]\coloneqq\gls{symbolic-state}[_j]]$
+        \State $\gls{hg-var}{}[\gls{symbolic-state}[_c]\coloneqq\gls{symbolic-state}[_j]]$
       \Else
         \State $\gls{symbolic-state}[_j]\coloneqq \gls{symbolic-state}$\label{line:nocompat}
       \EndIf
       \ForAll{$\gls{symbolic-state}[']\in \gls{step-hg}(\gls{symbolic-state}[_j])$}\label{line:forall}
-        \State $\gls{hg}\gls{pluseq}(\gls{symbolic-state}[_j], \gls{symbolic-state}['])$
+        \State $\gls{hg-var}\gls{pluseq}(\gls{symbolic-state}[_j], \gls{symbolic-state}['])$
         \If {$\gls{eval}(\rip, \gls{pred}(\gls{symbolic-state}[']))$ is not immediate}
           \State \textbf{annotate, stop further exploration}\label{line:unsound}
         \Else
@@ -714,17 +713,17 @@ In very specific cases it even results in more preciseness.
 \end{algorithm}
 
 Let~\gls{symbolic-state} be some symbolic state from the~\gls{bag} (\cref{line:pop}).
-Function \gls{explore} first searches for a current symbolic state~$\gls{symbolic-state}[_c]$ already in the current~\gls{hg} that is compatible (\cref{line:compat}).
+Function \gls{explore} first searches for a current symbolic state~$\gls{symbolic-state}[_c]$ already in the current~\gls{hg-var} that is compatible (\cref{line:compat}).
 If such a state exists and it is more abstract (based on ordering~\gls{order})
 % TODO: glossary entry for this ordering maybe? and also probably needs to be explained earlier or in the background chapter section on lattices!
 than state~\gls{symbolic-state}, no further exploration is necessary (\cref{line:terminate}).
 Otherwise,~\gls{symbolic-state} and~$\gls{symbolic-state}[_c]$ are joined (\cref{line:join}).
-The~\gls{hg} is modified by replacing the current state with the joined one.
+The~\gls{hg-var} is modified by replacing the current state with the joined one.
 This replacement maintains all current edges: only the state is modified.
 Symbolic state~$\gls{symbolic-state}[_j]$ is the state to be explored further.
-If no compatible state exists in the current~\gls{hg}, then~\gls{symbolic-state} is the state to be explored further (\cref{line:nocompat}).
+If no compatible state exists in the current~\gls{hg-var}, then~\gls{symbolic-state} is the state to be explored further (\cref{line:nocompat}).
 Exploration occurs at \crefrange{line:forall}{line:endforall}.
-For every successor~$\gls{symbolic-state}[']$ (possibly none), an edge is added to the~\gls{hg}.
+For every successor~$\gls{symbolic-state}[']$ (possibly none), an edge is added to the~\gls{hg-var}.
 If, for some successor evaluation of the instruction pointer,~$\rip$ does not produce an immediate concrete value, there are two possibilities.
 Either
 \begin{enumerate}
@@ -735,7 +734,7 @@ In the second case, the state is annotated with an unsoundness warning (\cref{li
 Otherwise, the successor is added to the bag.
 
 \subsubsection{Soundness} % While technically there should be multiple subsubsections for usage of stuff like this, I think it looks better this way than using \paragraph. It should be fine as subsubsections aren't numbered anyway.
-To formulate soundness and present a proof, we first define a relation \gls{related} between the concrete transition system and the \ac{hg}.
+To formulate soundness and present a proof, we first define a relation \gls{related} between the concrete transition system and the \gls{hg}.
 We then prove \cref{lem:simulation}, which shows that this relation is a simulation.
 As a direct result of this lemma, any concrete path can be simulated by a path consisting of symbolic steps produced by function~\gls{step-hg}.
 
@@ -764,23 +763,23 @@ As a direct result of this lemma, any concrete path can be simulated by a path c
   Since the step function overapproximates by taking any combination of predicates in $\gls{step-hg-semantics}[(P,M)]$ and generated memory models, there exists at least one symbolic state that is related to~$\gls{concrete-state}[']$.
 \end{proof}
 
-\begin{definition}[\Acs*{hg} soundness]
-  The \acl{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to some binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
+\begin{definition}[\Glsfmtshort{hg} soundness]
+  The \gls{hg} $H = \langle\gls{abs-state},\gls{symbolic-state}[_I], \gls{symbolic-transition}\rangle$ is \emph{sound} with respect to some binary $B = \langle a_e, \gls{fetch}, \gls{conc-state},\gls{black-box-transition}\rangle$, notation $\gls{sound}(H,B)$, if and only if:
   \begin{equation*}
     \gls{sound}(H,B) \gls{equiv} \forall s_0 \gls{black-box-transition-star} \gls{concrete-state} \gls{black-box-transition} \gls{concrete-state}['] \sepdot \exists \gls{symbolic-state} \gls{symbolic-transition}[{}] \gls{symbolic-state}['] \sepdot \gls{concrete-state}\gls{related}\gls{symbolic-state} \land \gls{concrete-state}[']\gls{related}\gls{symbolic-state}[']
   \end{equation*}
 \end{definition}
-In words, for every reachable transition from~\gls{concrete-state} to~$\gls{concrete-state}[']$ in the binary, there must exist a related transition in the \ac{hg}.
+In words, for every reachable transition from~\gls{concrete-state} to~$\gls{concrete-state}[']$ in the binary, there must exist a related transition in the \gls{hg}.
 
 \begin{theorem}[Algorithm soundness]\label{thm:algo_soundness}
-  \Cref{alg:invgen} constructs a sound \ac{hg}.
+  \Cref{alg:invgen} constructs a sound \gls{hg}.
 \end{theorem}
 \begin{proof}
-  The structure of the algorithm is close to \iac{dfs}.
+  The structure of the algorithm is close to \pgls{dfs}.
   For that reason, the white-path lemma is used to prove soundness \autocite{cormen2009introduction}.
-  For a normal \ac{dfs}, the white-path lemma states that the \ac{dfs} will eventually explore some state~$\gls{concrete-state}[']$ if and only if there exists some state~\gls{concrete-state} currently in the bag \emph{and} there exists a ``white'' path from~\gls{concrete-state} to~$\gls{concrete-state}[']$.
-  A key difference between \cref{alg:invgen} and a normal \ac{dfs} is that states are joined.
-  For the sake of this proof, a state is therefore considered ``white'' if the current \ac{hg} contains no compatible state that is equal or more abstract (under~\gls{order}).
+  For a normal \gls{dfs}, the white-path lemma states that the \gls{dfs} will eventually explore some state~$\gls{concrete-state}[']$ if and only if there exists some state~\gls{concrete-state} currently in the bag \emph{and} there exists a ``white'' path from~\gls{concrete-state} to~$\gls{concrete-state}[']$.
+  A key difference between \cref{alg:invgen} and a normal \gls{dfs} is that states are joined.
+  For the sake of this proof, a state is therefore considered ``white'' if the current \gls{hg} contains no compatible state that is equal or more abstract (under~\gls{order}).
   We reformulate the white-path lemma as follows:
   \begin{equation*}
     \begin{array}{l}
@@ -818,7 +817,7 @@ We present an extension to the algorithm that treats internal function calls com
 
 \subsubsection{External Functions}
 %An assembly instruction of the form \texttt{call op} is recognized as an external call as soon as the operand can be resolved as an address that belongs to some \texttt{.plt} section.
-%This is specific to the \ac{elf} format.
+%This is specific to the \gls{elf} format.
 %Instead of symbolically executing the instructions found in the \texttt{.plt} section, these instructions are used to derive a function address.
 %That address is looked up in the symbol table of the binary.
 %If that table associates a name with the address, then that name is the function name of the external function.
@@ -826,7 +825,7 @@ We present an extension to the algorithm that treats internal function calls com
 The function name is matched against a list of hard-coded function names that are known to be terminating, such as \inlineasm{exit} and \inlineasm{stack_chk_fail}.
 In case of a terminating function, function \gls{step-hg} will produce the empty set, stopping further exploration from the current state.
 Otherwise, the function is some unknown external function.
-We make the assumption that this unknown function adheres to the 64-bit System~V \ac{abi}'s calling convention.
+We make the assumption that this unknown function adheres to the 64-bit System~V \gls{abi}['s] calling convention.
 Function \gls{step-hg} therefore modifies the current state by assigning~\gls{bot} to all registers, flags and heap regions currently in the state that may not be assumed to be preserved by a function call.
 In other words, only the clauses concerning the stack frame and callee-saved non-volatile registers are kept.
 Similarly, all relations in the memory model concerning the heap are removed.
@@ -888,7 +887,7 @@ States in the bag whose reachability field is false are not selected.
     \begin{minipage}{0.94\linewidth}
       \begin{algorithmic}[1]
         \setcounter{ALG@line}{2}
-        \State \algorithmicif\ {$\exists \gls{symbolic-state}[_c] \in\gls{hg}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state} \land \mathsf{reachable}(\gls{symbolic-state}[_c])$}\ \algorithmicthen
+        \State \algorithmicif\ {$\exists \gls{symbolic-state}[_c] \in\gls{hg-var}\sepdot \gls{symbolic-state}[_c]\gls{compatible}\gls{symbolic-state} \land \mathsf{reachable}(\gls{symbolic-state}[_c])$}\ \algorithmicthen
       \end{algorithmic}
     \end{minipage}
     \\\hline
