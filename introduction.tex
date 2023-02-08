@@ -133,7 +133,7 @@ This is because all of those applications, discussed below, require \emph{liftin
 \subsubsection{Decompilation}
 The process of \emph{decompilation} is the reverse of compilation \autocite{cifuentes1994reverse}.
 It attempts to \emph{lift} low-level code, possibly even machine code, to a higher-level representation.
-That representation can be something like \gls{llvm} \gls{ir} or bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \gls{cpp} \autocite{fokin2011smartdec}.
+That representation can be something like \gls{llvm}['s] \gls{ir}/bitcode \autocite{dinaburg2014mcsema}, \gls{c} \autocite{brumley2013native}, or even \gls{cpp}~\autocite{fokin2011smartdec}.
 \Gls{cots} tools such as Ghidra \autocite{ghidra}, IDA Pro \autocite{ida-decompiler}, and Binary Ninja \autocite{binary-ninja-decompiler} often integrate or offer as a plugin such a decompiler as well, or are used to provide the control flow for one \autocite{mcsema}.
 Those decompilers generally target a source language such as \gls{c}.
 
@@ -416,7 +416,7 @@ We did have some functions that took an overly long period of time due to the su
 
 \subsection{Hoare-Logic-Based Control Flow Recovery}
 Changing focus to the contributions for \gls{cfr}, we have an algorithm (and implementation) for lifting \pgls{hg} out of \pgls{arch} binary.
-\Glspl{hg} are \gls{hoare-logic}-based \glspl{cfg}
+\Glspl{hg} are \gls{hoare-logic}-based \glspl{cfg}.
 The vertices of those \glspl{hg} are symbolic states that consist of the following:
 \begin{enumerate}
   \item \emph{predicates} containing information on registers, memory locations and flags and
@@ -459,7 +459,7 @@ The only case where overapproximation is not guaranteed is when an indirection c
 Such cases are clearly marked in the \gls{eicfg}.
 
 % RESULTS
-We applied the tool to \gls{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
+We applied the tool to \glssymbol{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
 %The implemented tool was able to reach an average of \coveredpercent\ of the instructions from the \satisfactorybins\ binaries we examined that had satisfactory analyses (for our purposes, \cutoffpercent).
 The implemented tool was able to identify \glssymbol{unique-throws} unique throws and successfully trace the exceptional control flow for every one of them.
 On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
@@ -493,7 +493,7 @@ Further limitations of the Hoare-style approach can be found in \cref{se:xen}.
 \subsection{Control Flow Recovery}\label{cfr-assumptions}
 In order to reduce state space complexity, provide focus, and provide scalability when recovering control flow, we also:
 \begin{enumerate}
-  \item target potentially stripped \gls{cots} \gls{elf} binaries compiled with various levels of optimization;
+  \item target potentially-stripped \gls{cots} \gls{elf} binaries compiled with various levels of optimization;
   \item do not deal with any functions executed after an exit or termination; and
   \item assume that all memory regions accessed by the binary are either aliasing, separate or enclosed \autocite{balakrishnan2004analyzing,balakrishnan2005codesurfer}.
 \end{enumerate}
