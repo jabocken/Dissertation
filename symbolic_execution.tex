@@ -258,9 +258,9 @@ To combine those writes, the regions must be \emph{merged}.%
   $r_0=\region{a_0}{s_0}\coloneqq v_0$ and $r_1=\region{a_1}{s_1}\coloneqq v_1$,
   where the write to~$r_0$ occurs before the write to~$r_1$,
   is defined as
-  \begin{equation}
+  \begin{equation*}
     r=\region{a}s\coloneqq b_0\concat b_1\concat b_2,
-  \end{equation}
+  \end{equation*}
   where:
   \begin{align*}
     a   &= \min(a_0, a_1) \\
@@ -426,7 +426,7 @@ rules that infer properties over smaller regions from larger ones are needed.
     r_0\gls{enclosed}r_2\land r_1\gls{enclosed}r_3\land r_2\gls{separate}r_3 &\longrightarrow r_0\gls{separate}r_1 \\
     r_0\gls{enclosed}r_1\land r_1\gls{enclosed}r_0 &\longrightarrow r_0=r_1 \\
     r_0\gls{enclosed}r_1\land r_1\gls{enclosed}r_2 &\longrightarrow r_0\gls{enclosed}r_2 \\
-    r_0\bowtie r_1\land\snd{r_0}\neq 0\land\snd{r_1}\neq 0 &\longrightarrow r_0 \not\sqsubseteq r_1 \\
+    r_0\gls{separate}r_1\land\snd{r_0}\neq 0\land\snd{r_1}\neq 0 &\longrightarrow r_0 \mathrel{\glslink{enclosed}{\not\sqsubseteq}}r_1 \\
     \seps(M)\land(i_0,r_0),(i_1,r_1)\in M\land i_0\neq i_1 &\longrightarrow r_0\gls{separate}r_1
   \end{align}
 \end{subequations}
@@ -437,7 +437,7 @@ However, they \emph{cannot} infer enclosure.
 
 Often, the only way to prove enclosure is to unfold its definition.
 This introduces two inequalities over words, as shown in \cref{def:enc}.
-Such inequalities can be solved using the \gls{isabelle}[/HOL] tool \lstinline{unat_arith}, which is an arithmetic equation solver for bitvectors \autocite{dawson2009isabelle,isabelle-word-session}.
+Such inequalities can be solved using the \gls{isabelle}[/HOL] tool \lstinline|unat_arith|, which is an arithmetic equation solver for bitvectors \autocite{dawson2009isabelle,isabelle-word-session}.
 That tool is augmented with several heuristics
 and auxiliary lemmas to facilitate enclosure proofs.
 However, such proofs are time-consuming
