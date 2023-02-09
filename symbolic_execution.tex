@@ -1,7 +1,7 @@
 \chapter{Symbolic Execution}\label{ch:symbolic_execution}
-This chapter covers the methodology used in \cref{ch:cfg,ch:syntax}
+This \lcnamecref{ch:symbolic_execution} covers the methodology used in \cref{ch:cfg,ch:syntax}
 to formally determine the state changes caused by individual basic blocks.
-This methodology relies on a formal big-step semantics of the \gls{arch} \gls{isa}
+That methodology relies on a formal big-step semantics of the \gls{arch} \gls{isa}
 provided by \textcite{roessle2019verified}, described in \cref{se:machine_model}.
 We then extended those semantics with additional rewrite rules
 to increase efficiency and properly reason about memory.
@@ -9,7 +9,7 @@ Those rules are documented in \cref{se:rewrite}.
 The rules involving reading and writing from memory
 form the basis for the \gls{memuse} methodologies
 in \cref{ch:cfg,ch:syntax}.
-They essentially generate memory region \glspl{vc} that must be discharged
+Essentially, they generate memory region \glspl{vc} that must be discharged
 in order to prove \gls{memuse}.
 
 \begin{comment}
@@ -129,7 +129,7 @@ operations including
 taking subsets of bits, bitstring concatenation, logical operators, casting,
 and floating-point, signed, and unsigned arithmetic.
 
-In this dissertation,
+In this \lcnamecref{memory-usage},
 modifications to state are represented as sets of assignments,~$\powerset(\gls{assign})$,
 formulated as $\alpha=\{x_0\coloneqq e_0,x_1\coloneqq e_1,\dotsc\}$.
 These assignments are all independent; their initial conditions
