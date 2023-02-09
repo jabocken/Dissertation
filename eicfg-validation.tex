@@ -1,7 +1,11 @@
 \chapter{Validation and Results}
 \label{ch:eicfg-validation}
 
+\todo{small intro?}
+
 \section{Validation}\label{eicfg-validation}
+\todo{discuss \emph{why} we do per-step validation here instead of top-to-bottom verification and contrast to the \gls{hg} approach}
+
 To increase trustworthiness, we validated some of our abstract transition rules against the corresponding real-world implementations. Specifically, we generated abstract states $\sigma$, and validated that:
 \begin{equation}
     \sigma\absTransition\sigma'\land\gamma(\sigma)\concTransition s'\implies\alpha(s')=\sigma' \label{eq:validation}
@@ -226,6 +230,8 @@ This indicates that the instruction after a terminating function call is include
 The specific cause is within the implementation, an interaction of when \rip\ is incremented during step function execution with how termination conditions are handled.
 
 A simple fix for this issue is to post-process the final \gls{eicfg} and remove from the instruction coverage count the states that have unique \rip\ combined with termination conditions.
+
+\todo{mention that verification could help here but we would have to assume correctness of the rules, so it would serve to \emph{complement} the validation}
 
 \section{Summary}
 This \lcnamecref{eicfg} covered the generation of \glspl{eicfg}.
