@@ -196,6 +196,18 @@ Better pointer inference support would be beneficial as well.
 By that we mean identifying which registers/memory locations hold pointers and what types of memory they point to, similar to Jakstab's handling.
 This could allow for reduction of infeasible memory models.
 
+\todo{\subsection{Complexity and General Scalability}
+We have already discussed ways of increasing scalability by reducing nondeterminism and the like.
+However, predicting the asymptotic performance of the contributions in this dissertation is not a trivial task in itself.
+While the analysis of \gls{hg} generation timing with respect to instruction in \cref{fig:distr} shows a generally linear scaling, the presence of outliers indicates it is not so simple.
+We did not provide a similar distribution for \glspl{eicfg} generation, but its performance was similar.
+
+Furthermore, three of these contributions rely on \gls{smt} solvers.
+In the case of the final two (\cref{hg,eicfg}), they are used to solve problems expressed in first-order logic.
+Thus, the computational complexity of our algorithms are tied to the complexity of those logical expressions.
+The formulation of those calculations and specific analyses of nondeterministic growth were judged out of scope of this dissertation, but would be useful for future work.
+}
+
 \subsection{Integrating \Glsfmtshort{cfr} into Formal Frameworks}
 Provably sound binary lifting can be the base for \emph{any} trustworthy binary-level technique, including decompilation, binary verification and binary patching.
 However, while the \glspl{hg} we generate can be validated in \gls{isabelle}, this validation is a manual approach.
