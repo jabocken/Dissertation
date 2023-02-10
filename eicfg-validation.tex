@@ -1,16 +1,21 @@
 \chapter{Validation and Results}
 \label{ch:eicfg-validation}
 
-\todo{small intro?}
+\todo{This \lcnamecref{ch:eicfg-validation} wraps up \cref{eicfg} with coverage of the parts of our tool that we validated, the results from our case study, and a discussion of some challenges.}
 
 \section{Validation}\label{eicfg-validation}
-\todo{discuss \emph{why} we do per-step validation here instead of top-to-bottom verification and contrast to the \gls{hg} approach}
-
-To increase trustworthiness, we validated some of our abstract transition rules against the corresponding real-world implementations. Specifically, we generated abstract states $\sigma$, and validated that:
+To increase trustworthiness, we validated some of our abstract transition rules against the corresponding real-world implementations.
+Specifically, we generated abstract states $\sigma$, and validated that:
 \begin{equation}
     \sigma\absTransition\sigma'\land\gamma(\sigma)\concTransition s'\implies\alpha(s')=\sigma' \label{eq:validation}
 \end{equation}
 Here $\alpha$ and $\gamma$ denote abstraction and concretization functions, and $\concTransition$ denotes concrete execution.
+
+\todo{\begin{remark}[Why rule validation instead of full verification?]
+  This process was used instead of a more formal verification approach as there are no formal specifications for the functions under examination.
+  Thus, the closest we can get to a baseline is to compare the results of our abstract rules against concrete executions.
+  Because of this, we did not do a full to-to-bottom verification effort as was done for \glspl{hg}.
+\end{remark}}
 
 Abstract states $\sigma$ are obtained through via \emph{fuzzing} \autocite{quickcheck}.
 For each rule under validation, we generated \glssymbol{fuzz-count} arbitrary initial abstract states ($\sigma$) and then applied the rule to obtain the corresponding abstract post states ($\sigma'$).
@@ -230,8 +235,9 @@ This indicates that the instruction after a terminating function call is include
 The specific cause is within the implementation, an interaction of when \rip\ is incremented during step function execution with how termination conditions are handled.
 
 A simple fix for this issue is to post-process the final \gls{eicfg} and remove from the instruction coverage count the states that have unique \rip\ combined with termination conditions.
-
-\todo{mention that verification could help here but we would have to assume correctness of the rules, so it would serve to \emph{complement} the validation}
+\todo{Further such issues could be avoided or identified by doing verification of various example \glspl{eicfg}.
+However, that would require assuming the correctness of our abstract transition rules, as our validation provides high assurance of their correctness but does not provide a formal proof of such.
+Furthermore, it would also require manual analysis of the programs under test in order to determine the expected \glspl{eicfg}, as we again do not have a full formal specification to model and produce expected results with.}
 
 \section{Summary}
 This \lcnamecref{eicfg} covered the generation of \glspl{eicfg}.
