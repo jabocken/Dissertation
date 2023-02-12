@@ -202,10 +202,10 @@ However, predicting the asymptotic performance of the contributions in this diss
 While the analysis of \gls{hg} generation timing with respect to instruction in \cref{fig:distr} shows a generally linear scaling, the presence of outliers indicates it is not so simple.
 We did not provide a similar distribution for \glspl{eicfg} generation, but its performance was similar.
 
-Furthermore, three of these contributions rely on \gls{smt} solvers.
-In the case of the final two (\cref{hg,eicfg}), they are used to solve problems expressed in first-order logic.
+Furthermore, the Hoare-style verification and \gls{hg} works rely on \gls{smt} solvers.
+They are used to solve problems expressed in first-order logic to determine if memory regions necessarily alias, are separate, or are enclosed.
 Thus, the computational complexity of our algorithms are tied to the complexity of those logical expressions.
-The formulation of those calculations and specific analyses of nondeterministic growth were judged out of scope of this dissertation, but would be useful for future work.
+The impact of those region calculations and specific analyses of nondeterministic growth were judged out of scope of this dissertation, but would be useful for future work.
 }
 
 \subsection{Integrating \Glsfmtshort{cfr} into Formal Frameworks}

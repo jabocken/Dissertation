@@ -13,8 +13,8 @@ Here $\alpha$ and $\gamma$ denote abstraction and concretization functions, and 
 
 \todo{\begin{remark}[Why rule validation instead of full verification?]
   This process was used instead of a more formal verification approach as there are no formal specifications for the functions under examination.
-  Thus, the closest we can get to a baseline is to compare the results of our abstract rules against concrete executions.
-  Because of this, we did not do a full to-to-bottom verification effort as was done for \glspl{hg}.
+  Thus, the closest we can get to establishing soundness of our abstract transition rules is to compare the results of those rules against concrete executions.
+  Because of this, we did not do a full top-to-bottom verification effort as was done for \glspl{hg}.
 \end{remark}}
 
 Abstract states $\sigma$ are obtained through via \emph{fuzzing} \autocite{quickcheck}.
