@@ -66,9 +66,9 @@ We provide two contributions for each, summarized here and expanded on later in 
 % Tried description environment but it didn't work right
 \paragraph{Memory Usage of Assembly Programs via Formal Verification}
 \begin{itemize}
-  \item A methodology based on Floyd-style verification \autocite{floyd1967assigning}.
+  \item A methodology based on \gls{floyd} verification \autocite{floyd1967assigning}.
   It requires manual interaction during specification of the used memory regions as well as during proof completion.
-  \item A methodology based on Hoare-style verification \autocite{hoare1969axiomatic} that adds verification of \emph{return address integrity}.
+  \item A methodology based on \gls{hoare} verification \autocite{hoare1969axiomatic} that adds verification of \emph{return address integrity}.
   The generation of assumptions made during verification as well as the proofs themselves are mostly automated.
 \end{itemize}
 
@@ -330,10 +330,10 @@ Those proofs are then loaded into the interactive theorem prover \gls{isabelle}[
 The proof strategies for both approaches involve \emph{symbolic execution} of the underlying assembly code \autocite{king1976symbolic}, albeit in different ways.
 
 The main differences between the two approaches lie in their degrees of automation, the strengths of their invariants, and how they perform symbolic execution.
-The first approach, Floyd-style verification, requires significantly more user user input but has the potential for much stronger invariants.
-Meanwhile, the second approach, Hoare-style verification, has a significantly higher level of proof automation via the generation of \glspl{fmuc} but is not as suited for stronger invariant production.
-Symbolic execution is also more efficient in the Floyd-style approach as it more closely follows the structure of the function's \gls{cfg}.
-In contrast, the Hoare-style approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
+The first approach, \gls{floyd} verification, requires significantly more user user input but has the potential for much stronger invariants.
+Meanwhile, the second approach, \gls{hoare} verification, has a significantly higher level of proof automation via the generation of \glspl{fmuc} but is not as suited for stronger invariant production.
+Symbolic execution is also more efficient in the \gls{floyd} approach as it more closely follows the structure of the function's \gls{cfg}.
+In contrast, the \gls{hoare} approach must deal with operating on a restricted set of control flow constructs, which can result in extra symbolic execution.
 
 We also provide two trustworthy approaches to sound \gls{cfr}: \gls{hg} generation and \gls{eicfg} generation.
 Both approaches target binaries specifically rather than relying on external tools for assembly extraction.
@@ -387,7 +387,7 @@ On top of that, the \glspl{isa} they worked with are not as low-level as the \gl
 While they verified functional correctness instead of a weaker property like \gls{memuse}, they also specifically reduced the complexity of the most complicated set of functions they verified by using a simple \inlineasm{xor} cipher instead of a proper block cipher.
 
 \subsection{Hoare-Style Memory Usage}
-Taking our experiences from the Floyd-style verification work into account, we chose a slightly different path for the other \gls{memuse} work presented in this dissertation.
+Taking our experiences from the \gls{floyd} verification work into account, we chose a slightly different path for the other \gls{memuse} work presented in this dissertation.
 This approach focuses on relating symbolically-executed basic blocks with a syntactic representation of program control flow.
 It also involves significantly more information generation than the previously-discussed approach.
 
@@ -481,14 +481,14 @@ They may fail on certain functions/binaries or need to annotate certain instruct
 Due to the amount of user effort required, the memory-usage-focused contributions in this dissertation only target individual functions or small collections of functions.
 They also require an external tool to generate the disassembly under test.
 This disassembly must be loaded into the theorem prover from an external file or manually copied for the \gls{cfg}-driven work.
-In the case of the Hoare-style work, it is directly copied into the generated theory files.
+In the case of the \gls{hoare} work, it is directly copied into the generated theory files.
 Neither approach has support for \gls{eh} either, though the relevant library functions can be modeled as no-ops or terminators as needed.
 For modeled functions, we assume
 
-Additionally, for the Hoare-style work specifically, we had to rule out \emph{recursion} as it was not a feature well-suited to automation in that framework.
+Additionally, for the \gls{hoare} work specifically, we had to rule out \emph{recursion} as it was not a feature well-suited to automation in that framework.
 Usage of \inlineasm|goto| is also not supported due to not easily fitting into \gls{scf} structure.
 On the plus side, recursion seems to be uncommon in systems code, as we encountered only one function with it in the case study for that contribution.
-Further limitations of the Hoare-style approach can be found in \cref{se:xen}.
+Further limitations of the \gls{hoare} approach can be found in \cref{se:xen}.
 
 \subsection{Control Flow Recovery}\label{cfr-assumptions}
 In order to reduce state space complexity, provide focus, and provide scalability when recovering control flow, we also:
@@ -526,7 +526,7 @@ Following this introduction in \cref{ch:related} is a review of tools and work r
 For an in-depth exploration of the basis for the symbolic execution engines and formal memory reasoning used by the contributions of this work,
 see \cref{ch:symbolic_execution}.
 
-After that, the Floyd-style approach to verification of \gls{memuse} mentioned above is presented in \cref{ch:cfg} while the Hoare-style approach is presented in \cref{ch:syntax}.
+After that, the \gls{floyd} approach to verification of \gls{memuse} mentioned above is presented in \cref{ch:cfg} while the \gls{hoare} approach is presented in \cref{ch:syntax}.
 I then have the aforementioned work for the lifting of formal control flow graphs in \cref{hg}
 followed by the interprocedural, exception-aware \gls{cfg} extractor in \cref{eicfg}.
 Finally, this dissertation wraps up in \cref{ch:conclusions}.

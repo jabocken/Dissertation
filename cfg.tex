@@ -1,13 +1,13 @@
 \chapter{Floyd-Style Verification}\label{ch:cfg}
 The \gls{memuse} analysis approach presented in this chapter
-provides a Floyd-style methodology featuring annotations on specific instructions.
+provides \pgls{floyd} methodology featuring annotations on specific instructions.
 It is designed for the proving of \gls{memuse}
 over individual assembly functions.
 That property ensures that only documented regions of memory are read and written;%
 \index{memory!region}
 anything outside of those regions remains unchanged.
 
-This Floyd-style verification
+This \gls{floyd} verification
 can be applied to functions with loops and subcalls,
 including directly-recursive calls.
 It can be used to prove the absence of common memory-related issues,
@@ -109,7 +109,7 @@ The work is still not trivial, however.
     \draw[transform canvas={yshift=1em}] (isa) -- node[above] {\footnotesize invariant} (mem);
     \draw[transform canvas={yshift=-1em}] (isa) -- node[above] {\footnotesize regions} (mem);
   \end{tikzpicture}
-  \caption{Overview of Floyd-style \gls{memuse} verification}\label{fig:cfg_overview}
+  \caption{Overview of \gls{floyd} \gls{memuse} verification}\label{fig:cfg_overview}
 \end{figure}
 
 \section{Formal Definitions}\label{se:cfg_defs}
@@ -269,8 +269,7 @@ as a whole:
   \end{equation*}
   which is trivial.
 \end{proof}
-In essence, Floyd-style verification%
-\index{Floyd!verification}
+In essence, \gls{floyd} verification
 models a program as \pgls{cfg} where each edge is an implication.
 
 \subsection{Definition of Memory Usage}\label{sse:mem_pres}
@@ -450,7 +449,7 @@ and shows why those are difficult to reason about.
 \subsection{Non-Recursive Loop Example: \texorpdfstring{\lstinline|pow2|}{\texttt{pow2}}}\label{sse:pow2_example}
 This simple loop-based function, shown in \cref{lst:pow2},
 raises two to the power of its argument.
-The assembly code was obtained by compiling a \gls{c} program containing the function
+The assembly code was obtained by compiling \pgls{c} program containing the function
 with \gls{gcc} 7.2.0
 and disassembling it using the modified \lstinline|reassembly| analysis
 mentioned in \cref{se:cfg_overview}. The input is stored in \reg{edi}.

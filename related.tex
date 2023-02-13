@@ -88,7 +88,7 @@ In total, they covered \num{631} assembly instructions,
 less than that handled by any of the methodologies presented in this dissertation.
 Of course, they were targeting a stronger property than those works,
 but they also did not perform any significant work to automate their approach.
-All in all, however, this work is the closest to the Floyd-style approach
+All in all, however, this work is the closest to the \gls{floyd} approach
 presented in \cref{ch:cfg} of any of the works presented in this chapter,
 as they even implemented a version in \gls{isabelle}. Their \gls{isabelle} version did not support compositionality, however.
 
@@ -139,7 +139,7 @@ in the \gls{coq} theorem prover \autocite{chlipala2013certified}.
 Their work allows for integration
 of various proof-carrying code systems \autocite{necula1997proof}.
 As with the work presented in \cref{ch:syntax},
-it utilizes a Hoare-style framework for its verification.
+it utilizes \pgls{hoare} framework for its verification.
 The authors applied their work to multiple example functions,
 such as two factorial implementations
 as well as \lstinline|setjmp| and \lstinline|longjmp|.
@@ -640,7 +640,7 @@ The cost of our approach is that it may fail, whereas other approaches are able 
 As mentioned in the introduction to this dissertation, a decompiler takes a binary or other low-level source as input and lifts it to a higher-level representation.
 An early attempt at such lifting to full source code level was that of \textcite{cifuentes1995decompilation}.
 The \lstinline|dcc| tool resulting from that work lifts \gls{80286} assembly to \gls{c} code, though its internal representation can support multiple higher-level languages.
-In fact, it performs a similar sort of syntactic control flow reconstruction as the Hoare-style work presented in this dissertation.
+In fact, it performs a similar sort of syntactic control flow reconstruction as the \gls{hoare} work presented in this dissertation.
 That does leave it with similar limitations to that work, however.
 \Textcite{cifuentes1998assembly} also provided a similar translator for \gls{sparc} assembly, \lstinline|asm2c|, soon after.
 
@@ -683,7 +683,7 @@ This does require some additional functionality, with both the compiler and the 
 
 In contrast, our \gls{hg} lifting approach is targeted at the scenario where a higher-level artifact such as source code or a specification is not available.
 In such contexts, most approaches are interactive \autocite{goel2014syscalls,goelphd,verbeek2019refinement}.
-Even our Hoare-style work presented in \cref{ch:syntax}, tailored to \gls{memuse} properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \autocite{verbeek2020automated}.
+Even our \gls{hoare} work presented in \cref{ch:syntax}, tailored to \gls{memuse} properties, has a ``manual effort vs. instruction count ratio'' of roughly 1 to 11 \autocite{verbeek2020automated}.
 While the earlier-mentioned AUSPICE is fully automated, it is also very slow \textcite{tan2015auspice}.
 Our \gls{hg} lifting approach therefore \emph{complements} formal verifiers that generate invariants for proving functional correctness.
 \begin{remark}[Lifting in the \glsfmtshort{tcb}]

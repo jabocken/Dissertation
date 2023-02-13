@@ -19,7 +19,7 @@ Those methodologies are briefly revisited below.
 
 \section{Contributions Revisited}
 This dissertation presented two methods for proving \gls{memuse},
-Floyd-style verification and Hoare-style verification.
+\gls{floyd} verification and \gls{hoare} verification.
 Both approaches rely on the same symbolic execution model and memory-related rewrite rules documented in \cref{ch:symbolic_execution}, but differ in several major aspects.
 \begin{comment}
   \begin{remark}[Hoare triple usage]
@@ -33,7 +33,7 @@ The former aims for general control flow in the absence of structured exceptions
 Neither can resolve all indirect branches, however.
 
 \subsection{Floyd-Style Verification}
-This methodology uses a Floyd-style approach \autocite{floyd1967assigning}
+This methodology uses \pgls{floyd} approach \autocite{floyd1967assigning}
 with automatically-selected cutpoints.
 It is very similar to the work of \textcite{matthews2006verification},
 but with a focus on \gls{memuse} specifically.
@@ -202,7 +202,7 @@ However, predicting the asymptotic performance of the contributions in this diss
 While the analysis of \gls{hg} generation timing with respect to instruction in \cref{fig:distr} shows a generally linear scaling, the presence of outliers indicates it is not so simple.
 We did not provide a similar distribution for \glspl{eicfg} generation, but its performance was similar.
 
-Furthermore, the Hoare-style verification and \gls{hg} works rely on \gls{smt} solvers.
+Furthermore, the \gls{hoare} verification and \gls{hg} works rely on \gls{smt} solvers.
 They are used to solve problems expressed in first-order logic to determine if memory regions necessarily alias, are separate, or are enclosed.
 Thus, the computational complexity of our algorithms are tied to the complexity of those logical expressions.
 The impact of those region calculations and specific analyses of nondeterministic growth were judged out of scope of this dissertation, but would be useful for future work.

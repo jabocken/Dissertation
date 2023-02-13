@@ -73,13 +73,10 @@
   parent = {assembly}
 }
 
-% TODO: not sure how best to represent this one, usually index levels leave out the top word but I'm not sure how to do that with glossaries
-@index{hoare, name={Hoare}}
 @entry{hoare-logic,
   name = {Hoare logic},
   description = {An axiomatic framework for reasoning over the semantics of computer programs \autocite{hoare1969axiomatic}},
-  prefix = {a},
-  parent = {hoare}
+  prefix = {a}
 }
 
 
@@ -116,7 +113,8 @@
   name = {C},
   description = {A classic low-level programming language},
   seealso = {cpp},
-  parent = {language}
+  parent = {language},
+  prefix = {a}
 }
 
 %% C++ formatting similar to https://isocpp.org/wiki/faq/misc-environmental-issues#latex-macros but nicer and with the plus signs slightly more defined than \cpluspluslogo from the texlogos package
@@ -170,16 +168,19 @@
 
 @entry{xen,
   name = {the Xen Project},
+  sort = {Xen},
   description = {A fully-featured, production-capable hypervisor}
 }
 
 @entry{strata,
   name = {\textsc{Strata}},
+  sort = {Strata},
   description = {A machine learning tool to extract instruction semantics developed by \textcite{heule2016stratified}},
   seealso = {arch}
 }
 
 @entry{mcsquare,
   name = {\textsc{[mc]square}},
+  sort = {mcsquare},
   description = {A model checker for microprocessors implemented in Java}
 }
