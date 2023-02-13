@@ -72,7 +72,7 @@ The test harness then verifies that the abstracted end state parts match the exp
 \section{Results}\label{eicfg-results}
 Here we present the results of generating \glspl{eicfg} for \glssymbol{total-bins} real-world programs and libraries.
 These programs and libraries have a variety of sizes and use cases and were sourced from places like GitHub and the \gls{apt} repositories.
-\exceptbins\ of these programs utilize \gls{cpp} \gls{eh} (several despite the lack of \gls{eh} tables) while all have been compiled for the \gls{arch} \gls{isa} and the System~V \gls{abi}.
+\glssymbol{except-bins} of these programs utilize \gls{cpp} \gls{eh} (several despite the lack of \gls{eh} tables) while all have been compiled for the \gls{arch} \gls{isa} and the System~V \gls{abi}.
 %\strippedbins\ of the binaries were stripped of symbols.
 The \gls{eicfg} generation for each binary was executed on a server with four Intel\textregistered\ Xeon\textregistered\ E7-8890v4 \glspl{cpu} (for a total of 96 cores) running at \SI{2.20}{\giga\hertz} with \SI{252}{\gibi\byte} of \gls{ram}.
 The server's \gls{os} was Ubuntu 18.04.5 \gls{lts}.
@@ -136,7 +136,7 @@ That baseline version functions as our regular tool but without the unwinding-re
 
 We identified \glssymbol{unique-throws} unique throws and traced the exceptional control flow of each one.
 Based on our analysis, we were able to identify \glssymbol{uncaught-throws} of them as uncaught; the remaining \glssymbol{caught-throws} all had a potential catch block in their unwinding path.
-On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
+On average, dealing with exceptional control flow can increase coverage by \glssymbol{avg-diff-inst} per unique throw, with each throw averaging \glssymbol{avg-unwinds} unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
 Note the Xen binaries exhibited no change, as none contained any exceptional control flow.
 
@@ -252,4 +252,4 @@ For increased assurance, a subset of the abstract transition rules were subseque
 We also performed a real-world case study on \glssymbol{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
 Our tool was able to successfully execute on \glssymbol{eicfg-bin-success} of those binaries.
 Furthermore, it was able to identify \glssymbol{unique-throws} unique throws and successfully trace the exceptional control flow for every one of them.
-On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
+On average, dealing with exceptional control flow can increase coverage by \glssymbol{avg-diff-inst} per unique throw, with each throw averaging \glssymbol{avg-unwinds} unwind edges.

@@ -54,7 +54,7 @@ The other proof ingredients are the generated memory regions, \glspl{mrr}, and b
 With the invariant generation as it currently is, user interaction is minimal.
 Under normal circumstances, users only need to weaken the condition for a loop entry block by merging it with the conditions of all of the loop's exit blocks.
 
-This methodology was applied to \num{251} functions from \gls{xen} binaries examined, \xenpercentage\ of the total functions from those binaries.
+This methodology was applied to \num{251} functions from \gls{xen} binaries examined, \gls{xen-percentage} of the total functions from those binaries.
 Ultimately, \num{12252} instructions were covered with only \num{1047} manual lines of proof required.
 
 \subsection{Hoare Graphs}
@@ -95,7 +95,7 @@ This approach also helped identify edge cases that were not specified in the \gl
 
 Furthermore, we have applied our \gls{eicfg} generator to \glssymbol{total-bins} real-world programs and libraries.
 We identified \glssymbol{unique-throws} unique throws and were able to trace each one's exceptional control flow: \glssymbol{caught-throws} were potentially caught while \glssymbol{uncaught-throws} had no identified potential for being caught.
-On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
+On average, dealing with exceptional control flow can increase coverage by \glssymbol{avg-diff-inst} per unique throw, with each throw averaging \glssymbol{avg-unwinds} unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
 
 \section{Future Work}

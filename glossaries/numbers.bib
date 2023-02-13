@@ -1,4 +1,20 @@
-% Apparently group should not be explicitly assigned to in the bib files, but I don't know how else to do this grouping the way I want it.
+% Apparently group should not be explicitly assigned to in the bib files because it messes up sorting if they are out of order, but I don't know how else to do this grouping the way I want it without filtering or using multiple files
+
+% Hoare-style (TACAS 2020)
+@number{xen-percentage,
+  name = {Successful Xen percent},
+  symbol = {\SI{71}\percent},
+  description = {Percentage of targeted Xen functions successfully analyzed},
+  group = {hoare},
+  seealso = {xen}
+}
+@number{xen-percentage-not,
+  name = {Unsuccessful Xen percent},
+  symbol = {\SI{29}\percent},
+  description = {Percentage of targeted Xen functions not successfully analyzed},
+  group = {hoare},
+  seealso = {xen}
+}
 
 % Hoare graph numbers
 @number{bin-success,
@@ -88,5 +104,31 @@
   name = {Uncaught throws},
   symbol = {\num{994}},
   description = {The total number of definitely uncaught throws identified for the \ac{eicfg} case study},
+  group = {eicfg}
+}
+% one extra thanks to openmw-launcher failing for the control
+@number{resource-bins,
+  name = {Resource binaries},
+  symbol = {\num{26}},
+  description = {The total number of resource(?) binaries},
+  group = {eicfg}
+}
+@number{except-bins,
+  name = {Exceptional binaries},
+  symbol = {\num{49}},
+  description = {The total number of binaries with exception handling},
+  group = {eicfg},
+  seealso = {cpp}
+}
+@number{avg-diff-inst,
+  name = {Average difference},
+  symbol = {\num{13} instructions},
+  description = {The average difference in binary reachability with exception handling enabled},
+  group = {eicfg}
+}
+@number{avg-unwinds,
+  name = {Average number of unwind edges},
+  symbol = {\num{379}},
+  description = {The average number of unwind edges uncovered for each unique throw},
   group = {eicfg}
 }

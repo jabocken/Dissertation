@@ -403,7 +403,7 @@ Having that information generated for them greatly reduces the work an end user 
 
 %Analysis of Xen Binaries
 Unlike the previous work, this one was applied to assembly obtained by running \texttt{objdump} on three \emph{unmodified} binaries resulting from the Xen Project hypervisor build process \autocite{chisnall2008definitive}.
-Of the \num{352} functions present in those binaries, \num{251} or \xenpercentage\ were verified.
+Of the \num{352} functions present in those binaries, \num{251} or \gls{xen-percentage} were verified.
 Ultimately, over \num{12252} optimized instructions were covered with only \num{1047} manual lines of proof required.
 That is an approximate ratio of one manual line of proof for every \num{12} instructions handled, or an average of \num{16} manual lines of proof for each of the \num{65} loops handled.
 
@@ -462,7 +462,7 @@ Such cases are clearly marked in the \gls{eicfg}.
 We applied the tool to \glssymbol{total-bins} off-the-shelf binaries compiled from \gls{cpp}, \gls{c}, and \gls{fortran} source code.
 %The implemented tool was able to reach an average of \coveredpercent\ of the instructions from the \satisfactorybins\ binaries we examined that had satisfactory analyses (for our purposes, \cutoffpercent).
 The implemented tool was able to identify \glssymbol{unique-throws} unique throws and successfully trace the exceptional control flow for every one of them.
-On average, dealing with exceptional control flow can increase coverage by \avgdiffinst\ per unique throw, with each throw averaging \avgunwinds\ unwind edges.
+On average, dealing with exceptional control flow can increase coverage by \glssymbol{avg-diff-inst} per unique throw, with each throw averaging \glssymbol{avg-unwinds} unwind edges.
 Those edges are ones tools such as Ghidra \autocite{ghidra} do not produce.
 
 \section{Limitations and Scope}
