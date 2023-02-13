@@ -169,8 +169,8 @@ and prove both functional and non-functional properties of those programs.
 On average they covered around \num{700} lines of \gls{c} or \num{2666} assembly instructions.
 \begin{remark}[Function isolation in our works]
   The case study on HermitCore in \cref{se:cfg_application} did involve isolating the functions under test before compiling them and covered less instructions.
-  By contrast, the analyzed Xen functions in \cref{se:xen} were handled without any modification whatsoever to the Xen build process and covered even more instructions.
-  Building on that, \cref{hg} had a combination of full-binary and per-function analyses with even more instructions for its Xen case study (\cref{hg-extraction}), while \cref{eicfg} was primarily per-binary but had unsound additional coverage via per-function fallbacks and went far beyond just Xen for its case study (\cref{eicfg-results}).
+  By contrast, the analyzed \glslink{xen}{Xen} functions in \cref{se:xen} were handled without any modification whatsoever to the \glslink{xen}{Xen} build process and covered even more instructions.
+  Building on that, \cref{hg} had a combination of full-binary and per-function analyses with even more instructions for its \glslink{xen}{Xen} case study (\cref{hg-extraction}), while \cref{eicfg} was primarily per-binary but had unsound additional coverage via per-function fallbacks and went far beyond just \glslink{xen}{Xen} for its case study (\cref{eicfg-results}).
 \end{remark}
 
 \Textcite{brauer2009sba} intially performed static analysis of stack bounds
@@ -528,7 +528,7 @@ To the best of our knowledge, the only existing work that has a similar focus on
     Ghidra & No & No & Heuristics & \\
     \Citeauthor*{katz2018recurrent} & No & No & \glsxtrshortpl{rnn} & \\
     \glsxtrshort{dil} & Yes & No & Rewriting & \\
-    \textbf{\Cref{hg}} & Yes & Yes & Non-det.\ mem+join & Xen Project \\
+    \textbf{\Cref{hg}} & Yes & Yes & Non-det.\ mem+join & \glslink{xen}{Xen Project} \\
     \textbf{\Cref{eicfg}} & Semi & Yes & \glsxtrshort{eh} handling & Various bins \\
     \bottomrule
   \end{tabular}
@@ -710,7 +710,7 @@ Our \gls{hg} lifting approach therefore \emph{complements} formal verifiers that
   Other properties of assembly programs are not a consideration.
   These include security properties such as control flow integrity (return addresses are not overwritten and jumps/calls go where they are supposed to), avoidance of stack overflows, etc.
   BinTrimmer also does not provide invariants with sufficient strength to serve as evidence for overapproximation.
-  Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \gls{sloc}, in contrast to the \gls{hg} Xen Hypervisor case study presented in \cref{hg-extraction}.
+  Moreover, BinTrimmers' case studies are six hand-picked binaries containing up to \num{555} \gls{sloc}, in contrast to the \gls{hg} \glslink{xen}{Xen hypervisor} case study presented in \cref{hg-extraction}.
 
   Finally, while not a binary lifting approach, the tool Crab \autocite{crab}, uses abstract interpretation for loop invariant restriction \autocite{gange2016abstract}.
   This tool is part of the SeaHorn verification framework for \gls{llvm} \gls{ir} \autocite{seahorn}.

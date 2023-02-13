@@ -77,7 +77,7 @@ Additionally, calls to external functions require explicit assumptions represent
 Full success occurs when our technique completes and the proof obligations are discharged (proven true).
 Such cases indicate that, under those assumptions, the lifted representation is a provable overapproximation of the binary.
 
-We have applied our approach to most of the binaries and shared objects of the Xen Hypervisor, covering \glssymbol{inst-total-lifted} instructions in total.
+We have applied our approach to most of the binaries and shared objects of \glslink{xen}{the Xen hypervisor}, covering \glssymbol{inst-total-lifted} instructions in total.
 This case study shows that our methodology is scalable and applicable to \gls{cots} software written without verification in mind.
 Though not my work, \glspl{hg} can then be exported to the \gls{isabelle}[/HOL] theorem prover, where they can be formally verified.
 This second step essentially validates any inference made by the algorithms during step one.

@@ -23,9 +23,9 @@ its own return address due to its pointer arguments, causing \gls{cfi} issues.
 The associated \gls{fmuc} provides preconditions to prevent such cases
 along with a formal proof of return address preservation under those conditions.
 Following the example in \cref{se:xen} is an in-depth case study
-on the Xen Project hypervisor \autocite{chisnall2008definitive}.
+on \gls{xen} hypervisor \autocite{chisnall2008definitive}.
 In total, \glspl{fmuc} were generated and proofs discharged in \gls{isabelle}
-for 251 Xen functions.
+for 251 \glslink{xen}{Xen} functions.
 
 \begin{comment}
   My primary contributions to the certificate generation and verification approach%
@@ -244,9 +244,9 @@ into a more structured model. In the worst case,
 it can result in \gls{scf} explosion, described below.
 
 \subsubsection{\Glsfmtshort{scf} Explosion}\label{sse:scf_explode}
-The algorithm is not optimal in terms of generated \gls{scf} size
-as certain basic blocks may be duplicated.
-There are two situations where basic block duplication occurs,
+As stated, the algorithm is not optimal in terms of generated \gls{scf} size
+due to the possibility of certain basic blocks being duplicated.
+There are two situations where such basic block duplication occurs,
 one less common than the other.
 The less common situation is when loop having multiple entry points,
 which can occur in situations that involve less-structured control flow,
@@ -1231,13 +1231,12 @@ within the stack frame of the \lstinline|main| function.
 \Gls{xen} \autocite{chisnall2008definitive} is a mature, widely-used \gls{vmm}, also known as a \emph{hypervisor}.%
 \index{hypervisor}
 Hypervisors provide a method of managing multiple
-\glspl{vm} (called domains in the Xen documentation) on a physical host.%
+\glspl{vm} (called domains in the \glslink{xen}{Xen} documentation) on a physical host.%
 \index{domain}
 %Xen has support for hardware-assisted virtualization, referred to as \glspl{hvm}.
 % Relevant because of QEMU
 
-The Xen hypervisor is a suitable case study because of its security relevance%
-\index{Xen}
+\glslink{xen}{The Xen hypervisor} is a suitable case study because of its security relevance
 and its complex build process involving real production code.
 Security is a significant issue in environments where hypervisors are used,
 such as the \gls{aec2}, Rackspace Cloud, and many other cloud service providers.
@@ -1245,10 +1244,10 @@ For example, when one or more hosts support guest domains
 for any number of distinct users,
 ensuring isolation of the domains is important.
 
-The Xen build process produces multiple binaries
-that contain functions not present in the Xen source itself.
+The \glslink{xen}{Xen} build process produces multiple binaries
+that contain functions not present in the \glslink{xen}{Xen} source itself.
 This is due to the inclusion of external static libraries and programs.
-Xen version 4.12 was compiled with \gls{gcc}[ 8.2] via the standard Xen build process.
+\glslink{xen}{Xen} version 4.12 was compiled with \gls{gcc}[ 8.2] via the standard \glslink{xen}{Xen} build process.
 This build process uses various optimization levels,
 ranging from~\texttt{O1} to~\texttt{O3}.
 The version of \texttt{objdump} used to disassemble the compiled binaries was 2.31.1.%
@@ -1256,11 +1255,11 @@ The version of \texttt{objdump} used to disassemble the compiled binaries was 2.
 \index{assembly!dis-}
 
 The verification effort presented here
-covered three of the binaries produced by the Xen build process:
+covered three of the binaries produced by the \glslink{xen}{Xen} build process:
 \lstinline|xenstore|, \lstinline|xen-cpuid|, and \lstinline|qemu-img-xen|.
 The \lstinline|xenstore| binary is involved in the functionality of
 XenStore\fturl{https://wiki.xen.org/wiki/XenStore},
-a hierarchical data structure shared amongst all Xen domains.
+a hierarchical data structure shared amongst all \glslink{xen}{Xen} domains.
 This sharing allows for the possibility of inter-domain communication,
 though in general XenStore is intended for simple configuration information.
 A smaller program than \lstinline|xenstore|, \lstinline|xen-cpuid|
@@ -1273,7 +1272,7 @@ as it supports migrating domains
 between processors with different variants of the same \gls{isa} \autocite{cpuid-masking}.
 The third binary used, \lstinline|qemu-img-xen|,
 consists of over three hundred functions
-that are not present in the Xen source code.
+that are not present in the \glslink{xen}{Xen} source code.
 It provides some of the functionality of \gls{qemu}.
 \Gls{qemu} is a free, open-source emulator.\fturl{https://www.qemu.org/}%
 \index{emulator}
@@ -1377,7 +1376,7 @@ but instead writes its result to a flag.
 Various other string-related instructions with the \texttt{rep} prefix are supported,
 however.
 
-The two recursive functions encountered in the analyzed Xen binaries
+The two recursive functions encountered in the analyzed \glslink{xen}{Xen} binaries
 both perform file-system-like tasks.
 Functions \lstinline|do_chmod| and \lstinline|do_ls|
 are similar to the permission-setting \lstinline|chmod| utility
@@ -1415,7 +1414,7 @@ provide a large degree of automation.
 They deal with memory aliasing and provide both the control flow of the function
 as well as invariants.
 
-The approach was applied to three binaries produced by the Xen hypervisor build process.
+The approach was applied to three binaries produced by \glslink{xen}{the Xen hypervisor} build process.
 They contain nested loops, complex data structures, variadic functions,
 and both internal and external function calls.
 A certificate could be generated and verified

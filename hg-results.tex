@@ -13,7 +13,7 @@ We applied \gls{hg} extraction to:
   \item a binary with a manually induced buffer overflow, confirming that no \gls{hg} is extracted; and
   \item all \glssymbol{bin-total} \gls{arch} binaries and all \glssymbol{lib-func-total} functions from the 25 shared objects we identified in the \gls{xen} hypervisor.
 \end{enumerate}
-This \lcnamecref{hg-extraction} focuses on the Xen case study specifically.
+This \lcnamecref{hg-extraction} focuses on the \glslink{xen}{Xen} case study specifically.
 \Gls{xen} is a mature, industrial-strength hypervisor used in many production systems, including Amazon's cloud platforms \autocite{chisnall2008definitive}.
 Hypervisors provide a method for managing multiple virtual instances of operating systems (guests) on a physical host.
 Xen is a suitable case study because of two things:
@@ -61,7 +61,7 @@ The analysis was performed on a machine with a six-core (twelve logical cores), 
 That machine had \SI{31}{\gibi\byte} of \gls{ram}
 and \SI{32}{\gibi\byte} of swap space on a KXG50PNV1T02 NVMe \gls{ssd}.
 Its \gls{os} was Linux Mint 20.1 Cinnamon.
-The version of Xen under test was 4.12.
+The version of \glslink{xen}{Xen} under test was 4.12.
 \begin{remark}[Parallelization]
   Our tool for \gls{hg} extraction is not in itself parallelized.
   That means the core count listed above did not directly affect the execution times shown below.
@@ -95,7 +95,7 @@ A breakdown of these cases occurs later in \cref{hg-results-summary}.
 \subsubsection{Concurrency}
 Binaries that contain multithreading-related function calls are out of scope for this analysis.
 This was determined primarily by the presence of \inlineasm{pthread} calls, mutexes, and semaphores.
-However, those binaries were still included in \cref{tab:xen} in order to account for all \gls{arch} Xen binaries.
+However, those binaries were still included in \cref{tab:xen} in order to account for all \gls{arch} \glslink{xen}{Xen} binaries.
 
 \subsubsection{Timeout}
 While our algorithm has a proof of termination,

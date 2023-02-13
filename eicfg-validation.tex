@@ -111,7 +111,7 @@ That baseline version functions as our regular tool but without the unwinding-re
             {\thead{Groups}} & {\thead{Binary\\Count}} & {\thead{Covered\\Insts}} & {\thead{Unwind\\Edges}} & {\thead{Unique\\Throws}} & {\thead{Caught\\Throws}} & {\thead{Time/\si\second}} & {\thead{Inst Diff}} \\ % {\thead{Edge\\Diff}}
             \midrule
             NASA & 13/14 & 1741089 & 1410 & 167 & 136 & 8276 & 1027 \\
-            Xen & 85/90 & 231880 & 0 & 0 & 0 & 32200 & 0 \\
+            \glslink{xen}{Xen} & 85/90 & 231880 & 0 & 0 & 0 & 32200 & 0 \\
             Magick & 15/17 & 172811 & 14 & 14 & 2 & 129 & 15 \\
             Cups & 163/164 & 317137 & 3938 & 33 & 0 & 6811 & -9 \\
             Other & 18/23 & 763063 & 63260 & 830 & 526 & 9324 & 11766 \\
@@ -138,7 +138,7 @@ We identified \glssymbol{unique-throws} unique throws and traced the exceptional
 Based on our analysis, we were able to identify \glssymbol{uncaught-throws} of them as uncaught; the remaining \glssymbol{caught-throws} all had a potential catch block in their unwinding path.
 On average, dealing with exceptional control flow can increase coverage by \glssymbol{avg-diff-inst} per unique throw, with each throw averaging \glssymbol{avg-unwinds} unwind edges.
 Those edges are ones tools such as Ghidra do not produce.
-Note the Xen binaries exhibited no change, as none contained any exceptional control flow.
+Note the \glslink{xen}{Xen} binaries exhibited no change, as none contained any exceptional control flow.
 
 \subsection{Unsound Heuristics}
 \begin{comment}

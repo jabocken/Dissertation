@@ -344,7 +344,7 @@ For example, the \gls{hg} work generates proofs of output assurance while the \g
 
 \begin{comment}
   % \gls{memuse} result summary
-  For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of the Xen hypervisor \autocite{xen} with minimal user interaction.
+  For example, we have shown that we can formally verify approximately \num{12000} lines of assembly code obtained by disassembling binaries of \glslink{xen}{the Xen hypervisor} \autocite{xen} with minimal user interaction.
 
   % cf recovery result summary
   To fill the latter gap, we provide binary-level approaches to dealing with complex, interprocedural control flow in the presence of indirect branches and even exceptions.
@@ -402,7 +402,7 @@ That additional information consists of the full set of memory regions for each 
 Having that information generated for them greatly reduces the work an end user must put in compared to our initial approach.
 
 %Analysis of Xen Binaries
-Unlike the previous work, this one was applied to assembly obtained by running \texttt{objdump} on three \emph{unmodified} binaries resulting from the Xen Project hypervisor build process \autocite{chisnall2008definitive}.
+Unlike the previous work, this one was applied to assembly obtained by running \texttt{objdump} on three \emph{unmodified} binaries resulting from \gls{xen} hypervisor build process \autocite{chisnall2008definitive}.
 Of the \num{352} functions present in those binaries, \num{251} or \gls{xen-percentage} were verified.
 Ultimately, over \num{12252} optimized instructions were covered with only \num{1047} manual lines of proof required.
 That is an approximate ratio of one manual line of proof for every \num{12} instructions handled, or an average of \num{16} manual lines of proof for each of the \num{65} loops handled.
