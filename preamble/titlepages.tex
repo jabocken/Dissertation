@@ -127,7 +127,7 @@
   \emph{patching},\footnote{updating a program in place without modifying the original code and recompiling it}
   and low-level analysis or verification in general.
   However, as you may have noticed from earlier in this paragraph, in order to deal with such dynamic control flow you need to figure out what the possible destinations are for the individual control flow transfers.
-  That can require knowing where you came from in the program, which means that analysis of dynamic control flow requires \emph{context}\footnote{in this context, information previously obtained in the program}.
+  That can require knowing where you came from in the program, which means that analysis of dynamic control flow requires \emph{context}.\footnote{in this context, information previously obtained in the program}
   Even worse, it is another undecidable problem that requires overapproximation.
 
   To soundly recover control flow, we developed \emph{\glspl{hg}}, the third contribution of this dissertation.
